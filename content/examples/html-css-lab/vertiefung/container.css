@@ -1,0 +1,18 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: clamp(1rem, 4vw, 3rem); font: 1rem/1.6 system-ui, sans-serif; color: #172438; background: #f4f6fa; }
+
+/* Die Seitenüberschrift wächst fließend zwischen 1,75 und 3 rem, ohne Media Query. */
+h1 { font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3rem); line-height: 1.15; margin-block: 0 1.5rem; }
+
+/* Der Container: seine Breite (inline-size) ist die Bezugsgröße für @container-Regeln der Kinder. */
+.slot { container: karte / inline-size; margin-bottom: 1.5rem; }
+
+.karte { display: grid; gap: 1rem; background: #fff; border: 1px solid #66758d; border-radius: 0.5rem; padding: 1rem; }
+.karte img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+/* 1 cqi = 1 % der Containerbreite: Die Titelgröße folgt der Karte, nicht dem Fenster. */
+.karte h2 { margin: 0; font-size: clamp(1.1rem, 5cqi, 1.75rem); overflow-wrap: anywhere; }
+
+/* Ab 32 rem Containerbreite stehen Bild und Text nebeneinander, egal wie breit das Fenster ist. */
+@container karte (min-width: 32rem) {
+  .karte { grid-template-columns: 12rem 1fr; align-items: start; }
+}

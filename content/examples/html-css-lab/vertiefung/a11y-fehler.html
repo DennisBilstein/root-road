@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seite mit absichtlichen Fehlern</title>
+  <style>
+    body { font: 1rem/1.6 system-ui, sans-serif; padding: 1rem; background: #fff; }
+    .blass { color: #9aa5b5; }
+    .klein { width: 16px; height: 16px; padding: 0; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Fehlerseite</h1>
+    <h3>Ebene übersprungen</h3>
+    <p class="blass">Zu wenig Kontrast für normalen Text.</p>
+    <img src="bilder/lernkarte-480.svg" width="480" height="320">
+    <input name="suche" type="search" placeholder="Suchen">
+    <button type="button"></button>
+    <button type="button" class="klein">x</button>
+    <span id="doppelt"></span><span id="doppelt"></span>
+  </div>
+</body>
+</html>

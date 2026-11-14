@@ -3,8 +3,8 @@ import {parse} from 'acorn';
 import vm from 'node:vm';
 const source=fs.readFileSync('assets/script-01.js','utf8');
 const ast=parse(source,{ecmaVersion:'latest',sourceType:'script'});
-const dir='assets/learning';fs.mkdirSync(dir,{recursive:true});
-const files=[];let chunk='',index=0;
+const dir='assets/learning',dataDir='assets/learning-data';fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});fs.rmSync(dataDir,{recursive:true,force:true});fs.mkdirSync(dataDir,{recursive:true});
+const files=[],dataFiles=[];let chunk='',index=0;
 function flush(){if(!chunk)return;const name='part-'+String(++index).padStart(2,'0')+'.js';fs.writeFileSync(dir+'/'+name,chunk);files.push('assets/learning/'+name);chunk='';}
 let literalNumber=0;
 function safe(node){if(!node)return true;if(node.type==='Literal')return !node.regex;if(node.type==='ArrayExpression')return node.elements.every(safe);if(node.type==='ObjectExpression')return node.properties.every(p=>p.type==='Property'&&!p.computed&&p.kind==='init'&&safe(p.value));if(node.type==='UnaryExpression')return node.operator==='-'&&node.argument.type==='Literal'&&typeof node.argument.value==='number';return false;}
@@ -19,10 +19,10 @@ for(const statement of ast.body){
  function visit(node){
   if(!node||typeof node!=='object')return;
   if((node.type==='ArrayExpression'||node.type==='ObjectExpression')&&node.end-node.start>80000&&safe(node)){
-   const name='RP_LITERAL_'+(++literalNumber),json=JSON.stringify(vm.runInNewContext('('+source.slice(node.start,node.end)+')',{}, {timeout:2000}));
-   add('var '+name+'_text="";\n');
-   for(let i=0;i<json.length;i+=40000)add(name+'_text += '+JSON.stringify(json.slice(i,i+40000))+';\n');
-   add('var '+name+'=JSON.parse('+name+'_text);'+name+'_text=null;\n');replacements.push({start:node.start,end:node.end,text:name});return;
+   /* Große Literale liegen als rohes JSON in eigenen Dateien (ohne doppeltes Escaping im Skript); bootstrap.js holt sie vor den Skripten. */
+   const name='RP_LITERAL_'+(++literalNumber),json=JSON.stringify(vm.runInNewContext('('+source.slice(node.start,node.end)+')',{}, {timeout:2000})),dataFile=dataDir+'/literal-'+literalNumber+'.json';
+   fs.writeFileSync(dataFile,json);dataFiles.push(dataFile);
+   add('var '+name+'=window.RP_LITERALS['+literalNumber+'];\n');replacements.push({start:node.start,end:node.end,text:name});return;
   }
    for(const value of Object.values(node)){
     if(Array.isArray(value)){value.forEach(visit);}
@@ -33,5 +33,5 @@ for(const statement of ast.body){
 }flush();
 const hoist=ast.body.filter(node=>node.type==='FunctionDeclaration').map(node=>source.slice(node.start,node.end)).join('\n');
 fs.writeFileSync(dir+'/declarations.js',hoist+'\n');
-fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:1,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files]},null,2)+'\n');
-console.log(`${files.length+1} geordnete Lernskripte statt monolithischem Browserabruf; Quellaggregat bleibt für Build/Prüfungen.`);
+fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:1,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files],data:dataFiles},null,2)+'\n');
+console.log(`${files.length+1} geordnete Lernskripte und ${dataFiles.length} JSON-Datensätze statt monolithischem Browserabruf; Quellaggregat bleibt für Build/Prüfungen.`);

@@ -1,0 +1,13 @@
+{
+  "name": "rootpfad-api-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Geprüfter Code für die API-Lektionen (api-m2). Keine Abhängigkeiten, nur eingebaute Node-Module.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\""
+  }
+}

@@ -1,0 +1,35 @@
++-------------+---------------------+
+| version     | applied_at          |
++-------------+---------------------+
+| 20261114001 | 2026-11-14 12:00:00 |
++-------------+---------------------+
++----------+------------+
+| migrated | still_open |
++----------+------------+
+|        3 |          3 |
++----------+------------+
++----+------------------+------------+--------------+
+| id | name             | first_name | last_name    |
++----+------------------+------------+--------------+
+|  1 | Ada Beispiel     | Ada        | Beispiel     |
+|  2 | Ben Muster       | Ben        | Muster       |
+|  3 | Cem Probe        | Cem        | Probe        |
+|  4 | Dana Test        | Dana       | Test         |
+|  5 | Eli Demo         | Eli        | Demo         |
+|  6 | Fay Lernbeispiel | Fay        | Lernbeispiel |
++----+------------------+------------+--------------+
++-------------------------+
+| rows_without_name_parts |
++-------------------------+
+|                       0 |
++-------------------------+
+--------------
+INSERT INTO customers (name, email, city, created_on) VALUES ('Zed Neu', 'zed@example.test', 'Köln', '2026-05-01')
+--------------
+
+ERROR 1364 (HY000) at line 26: Field 'first_name' doesn't have a default value
++--------------+
+| columns_left |
++--------------+
+|            2 |
++--------------+

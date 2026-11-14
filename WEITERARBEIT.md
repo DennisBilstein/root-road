@@ -1,4 +1,15 @@
-# ROOTPFAD – hier geht es weiter
+# Root Road – hier geht es weiter
+
+## Neuester Stand 14.11.2026: MariaDB Vertiefung (8 Lektionen), davor HTML & CSS Vertiefung (9 Lektionen), davor TypeScript, Node.js, Linux & Shell, Web-Sicherheit (33 Lektionen)
+
+MariaDB Vertiefung: `mariadb-m2` (8), Pfad `mariadb` jetzt 14 Lektionen. Quelle `content/tech-tracks/mariadb-vertiefung.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`; Lab `content/examples/sql-lab/` (Docker, `node run.mjs [NN] [--update]`, läuft nicht in der CI), Abnahme `content/assessments-platform-tracks.json`. Bestand danach 132 Module / 550 Lektionen / 1517+306=1823 Karten.
+HTML & CSS Vertiefung: `html-m2` (4) und `css-m2` (5), Pfad `htmlcss` jetzt 21 Lektionen. Quellen `content/tech-tracks/{html,css}-vertiefung.mjs` → `node scripts/prepare-html-css-vertiefung.mjs` → `npm run build`; Lab `content/examples/html-css-lab/vertiefung/`, Tests `tests/html-css-vertiefung.spec.mjs`, Abnahmen `content/assessments-html-css.json`.
+Bestand jetzt 131 Module / 542 Lektionen / 1493+306=1799 Karten; zuvor (nur Tech-Tracks) 129 / 533 / 1772; 87 Playwright-Tests grün (neu: `tests/tech-tracks.spec.mjs`), `npm run scan:secrets` sauber.
+Quellen `content/tech-tracks/*.mjs` → `node scripts/prepare-tech-tracks.mjs` (Gruppenliste dort pflegen) → `npm run build`. Details: README, Abschnitt „TypeScript, Node.js, Linux & Shell und Web-Sicherheit“.
+Offen: (1) Eigene Seite hat nur eine Teil-CSP ohne `script-src`/`default-src` (siehe Lektion ws-m2-l3); strikte Nonce-CSP erfordert Umbau der Inline-Skripte/Ereignisattribute, vorher im Report-Only-Modus testen.
+(2) Eine `unhandledrejection` „Transition was skipped“ entsteht bei sehr schnellem Lektionswechsel (View Transitions); harmlos, im Test herausgefiltert.
+(3) Ältere Skripte (`build-quiz-revisions.mjs`, `build-experts.mjs`) betten Daten ebenfalls mit `String.replace` ein; bei Inhalten mit `$'` oder `$&` dasselbe Muster wie in `build-learning-content.mjs` (Ersatzfunktion) verwenden.
+(4) Quellen: 186 Quellen warten laut `audit:learning` auf Abruf; alle URLs der 33 neuen Lektionen wurden am 14.11.2026 per HTTP-Abruf auf Erreichbarkeit geprüft, nicht inhaltlich.
 
 ## Neuester Stand 12.11.2026: Java- und Vue-Vertiefung (30 Lektionen)
 
@@ -57,7 +68,7 @@ SMTP-Versand geprüft. docs/mail-configuration.md enthält Konfiguration/Grenzen
 Kontolöschung mit Passwort+KONTO LÖSCHEN, letzter Admin geschützt; aktive Daten
 und lokaler Kontolernstand entfernt, danach Gast-Neustart. Laufender Sync darf
 nach Löschung keine Antwort zurück in lokalen Speicher schreiben.
-34 Manifest-Skripte jeweils <300000 Bytes, alle beim Start geladen (kein Lazy Loading).
+9 Manifest-Skripte jeweils <300000 Bytes plus 5 JSON-Datensätze in `assets/learning-data/` (Manifest-Feld `data`), alle beim Start geladen (kein Lazy Loading). Offene Stufe 3: Lektionstexte je Modul nachladen.
 Quellaggregat bleibt für Server/Build/Tests. Buildhook: split-learning-bundle.mjs.
 3 additive Fachvertiefungen in api-m1-l6 (SSRF),api-m1-l2 (HTTP Caching),m49-l3
 (Transactional Outbox); keine neuen IDs/Quizrevisionen. Quelle/Build persistent.
@@ -76,7 +87,7 @@ compression, private APIantworten ausgeschlossen. Tests für Export,Passwort,
 Sitzungswiderruf,Hashverifikation und Content-Encoding hinzugefügt. Kein Push
 oder öffentliches Deployment erfolgt. E-Mail-Reset/Löschung weiterhin offen.
 
-Abschließende Prüfung: 37 ROOTPFAD-Tests bestanden, Laravel-Labor9/Vue-Labor6
+Abschließende Prüfung: 37 Root-Road-Tests bestanden, Laravel-Labor9/Vue-Labor6
 bestanden, Vue-Typecheck/Build und beide npm-Audits ohne Befund. Build zweimal
 reproduzierbar. Alle116 Modulaufträge jetzt individuell ausgearbeitet, 0 reine
 Rubrikentwürfe (ältere90-Zahl unten veraltet). Weiterhin keine unabhängige
@@ -222,7 +233,7 @@ Stichtag 06.11.2026; MCP explizit 2026-07-28, OpenAPI 3.2.1. Keine pauschale
 Behauptung allerneuester Modellranglisten oder vollständiger Rechtsaktualisierung.
 `content/platform-curriculum.mjs`, `scripts/prepare-platform-content.mjs`.
 19 Quellen geprüft: `content/quality/platform-sources.json`.
-19 ROOTPFAD-Tests bestanden; Gesamtbestand 116 Module / 462 Lektionen.
+19 Root-Road-Tests bestanden; Gesamtbestand 116 Module / 462 Lektionen.
 Werkstatt jetzt 15 Spuren / 45 Aufgaben. Neue Pfade mariadb,apis,agents auch
 in serverseitiger Sync-Erlaubnisliste. MariaDB-SQL und MCP-Konfigurationen nicht
 gegen reale Systeme ausgeführt. Nächster Ausbau: isolierte Integrationslabore
@@ -233,7 +244,7 @@ mit 12 Lektionen und 36 Quizkarten. 6 neue Codeergänzungen für HTML/CSS erweit
 die Werkstatt auf 12 Spuren / 36 Aufgaben. Eigenes statisches Lernjournal unter
 `content/examples/html-css-lab`; Demoformular versendet bewusst nichts.
 Quellen: alle zwölf Links erreichbar, Protokoll `content/quality/html-css-sources.json`.
-18 ROOTPFAD-Tests bestanden, einschließlich 320px-Layout und Skiplink-Fokus.
+18 Root-Road-Tests bestanden, einschließlich 320px-Layout und Skiplink-Fokus.
 Gesamtbestand: 112 Module / 439 Lektionen. Generator: `scripts/prepare-html-css.mjs`.
 Server nach Build neu starten, damit die Admin-Fortschrittsberechnung den neuen
 Pfad kennt. Keine automatische Veröffentlichung oder Git-Push erfolgt.

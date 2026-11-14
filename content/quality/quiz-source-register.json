@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T12:45:12.942Z",
+  "generatedAt": "2026-11-14T21:58:07.789Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -912,6 +912,9 @@
       "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html",
       "questionIds": [
         "m16-l2#0@2026-11-07-full-v3",
+        "ws-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#2@2026-11-14-tech-tracks-v1",
         "x#76@2026-11-07-full-v3"
       ],
       "checkedAt": null,
@@ -934,6 +937,12 @@
       "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
       "questionIds": [
         "m16-l3#1@2026-11-07-full-v3",
+        "node-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#2@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#2@2026-11-14-tech-tracks-v1",
         "x#79@2026-11-07-full-v3"
       ],
       "checkedAt": null,
@@ -1021,6 +1030,9 @@
         "m30-l2#0@2026-11-07-full-v3",
         "m30-l2#1@2026-11-07-full-v3",
         "m30-l2#2@2026-11-07-full-v3",
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1",
         "x#136@2026-11-07-full-v3",
         "x#188@2026-11-07-full-v3",
         "x#198@2026-11-07-full-v3",
@@ -1744,6 +1756,9 @@
       "url": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
       "questionIds": [
         "m24-l4#1@2026-11-07-full-v3",
+        "html-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#2@2026-11-14-html-css-vertiefung-v1",
         "x#146@2026-11-07-full-v3"
       ],
       "checkedAt": null,
@@ -5401,7 +5416,10 @@
     {
       "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS",
       "questionIds": [
-        "js-m1-l5#0@2026-11-07-full-v3"
+        "js-m1-l5#0@2026-11-07-full-v3",
+        "ws-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -5451,7 +5469,13 @@
       "url": "https://docs.npmjs.com/cli/v11/commands/npm-ci",
       "questionIds": [
         "js-m1-l6#1@2026-11-07-full-v3",
-        "js-m1-l6#2@2026-11-07-full-v3"
+        "js-m1-l6#2@2026-11-07-full-v3",
+        "node-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -5463,7 +5487,13 @@
       "questionIds": [
         "js-m1-l7#0@2026-11-07-full-v3",
         "js-m1-l7#1@2026-11-07-full-v3",
-        "js-m1-l7#2@2026-11-07-full-v3"
+        "js-m1-l7#2@2026-11-07-full-v3",
+        "ts-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -5745,7 +5775,13 @@
       "questionIds": [
         "js-m2-l4#0@2026-11-12-java-vue-v1",
         "js-m2-l4#1@2026-11-12-java-vue-v1",
-        "js-m2-l4#2@2026-11-12-java-vue-v1"
+        "js-m2-l4#2@2026-11-12-java-vue-v1",
+        "html-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#2@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#2@2026-11-14-html-css-vertiefung-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -5806,7 +5842,10 @@
         "js-m2-l6#0@2026-11-12-java-vue-v1",
         "js-m2-l6#1@2026-11-12-java-vue-v1",
         "js-m2-l6#2@2026-11-12-java-vue-v1",
-        "css-m1-l6#1@2026-11-07-full-v3"
+        "css-m1-l6#1@2026-11-07-full-v3",
+        "css-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6013,7 +6052,10 @@
       "questionIds": [
         "js-m4-l2#0@2026-11-12-java-vue-v1",
         "js-m4-l2#1@2026-11-12-java-vue-v1",
-        "js-m4-l2#2@2026-11-12-java-vue-v1"
+        "js-m4-l2#2@2026-11-12-java-vue-v1",
+        "ws-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6025,7 +6067,10 @@
       "questionIds": [
         "js-m4-l2#0@2026-11-12-java-vue-v1",
         "js-m4-l2#1@2026-11-12-java-vue-v1",
-        "js-m4-l2#2@2026-11-12-java-vue-v1"
+        "js-m4-l2#2@2026-11-12-java-vue-v1",
+        "ws-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6432,6 +6477,354 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images",
+      "questionIds": [
+        "html-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#2@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
+      "questionIds": [
+        "html-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/tutorials/images/",
+      "questionIds": [
+        "html-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://web.dev/articles/optimize-cls",
+      "questionIds": [
+        "html-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
+      "questionIds": [
+        "html-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html",
+      "questionIds": [
+        "html-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#2@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developers.google.com/search/docs/appearance/title-link",
+      "questionIds": [
+        "html-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/sd-policies",
+      "questionIds": [
+        "html-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover",
+      "questionIds": [
+        "html-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
+      "questionIds": [
+        "html-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/name",
+      "questionIds": [
+        "html-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "questionIds": [
+        "html-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#2@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+      "questionIds": [
+        "html-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://github.com/dequelabs/axe-core",
+      "questionIds": [
+        "html-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "html-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark",
+      "questionIds": [
+        "css-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme",
+      "questionIds": [
+        "css-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties",
+      "questionIds": [
+        "css-m2-l1#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l1#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@layer",
+      "questionIds": [
+        "css-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction",
+      "questionIds": [
+        "css-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:where",
+      "questionIds": [
+        "css-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:has",
+      "questionIds": [
+        "css-m2-l2#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l2#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+      "questionIds": [
+        "css-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#2@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp",
+      "questionIds": [
+        "css-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/length#container_query_length_units",
+      "questionIds": [
+        "css-m2-l3#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l3#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html",
+      "questionIds": [
+        "css-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html",
+      "questionIds": [
+        "css-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://web.dev/articles/animations-guide",
+      "questionIds": [
+        "css-m2-l4#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l4#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.w3.org/WAI/test-evaluate/preliminary/",
+      "questionIds": [
+        "css-m2-l5#0@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#1@2026-11-14-html-css-vertiefung-v1",
+        "css-m2-l5#2@2026-11-14-html-css-vertiefung-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
       "url": "https://mariadb.com/docs/server/server-usage/backup-and-restore/backup-and-restore-overview",
       "questionIds": [
         "mariadb-m1-l1#0@2026-11-07-full-v3",
@@ -6550,6 +6943,306 @@
       "url": "https://mariadb.com/docs/server/server-usage/backup-and-restore/replication-as-a-backup-solution",
       "questionIds": [
         "mariadb-m1-l6#0@2026-11-07-full-v3"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/window-functions/",
+      "questionIds": [
+        "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/with/",
+      "questionIds": [
+        "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/recursive-common-table-expressions-overview/",
+      "questionIds": [
+        "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/foreign-keys/",
+      "questionIds": [
+        "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/constraint/",
+      "questionIds": [
+        "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/database-normalization-third-normal-form-3nf/",
+      "questionIds": [
+        "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/json-data-type/",
+      "questionIds": [
+        "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/json_value/",
+      "questionIds": [
+        "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/json_table/",
+      "questionIds": [
+        "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/generated-columns/",
+      "questionIds": [
+        "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/innodb-lock-modes/",
+      "questionIds": [
+        "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/innodb-system-variables/",
+      "questionIds": [
+        "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/select/",
+      "questionIds": [
+        "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/limit/",
+      "questionIds": [
+        "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/server-status-variables/",
+      "questionIds": [
+        "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/explain/",
+      "questionIds": [
+        "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/alter-table/",
+      "questionIds": [
+        "mariadb-m2-l6#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l6#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/innodb-online-ddl-overview/",
+      "questionIds": [
+        "mariadb-m2-l6#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l6#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/unicode/",
+      "questionIds": [
+        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/decimal/",
+      "questionIds": [
+        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/sql-mode/",
+      "questionIds": [
+        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/timestamp/",
+      "questionIds": [
+        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/mysqldump/",
+      "questionIds": [
+        "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/create-view/",
+      "questionIds": [
+        "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://mariadb.com/kb/en/start-transaction/",
+      "questionIds": [
+        "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6822,6 +7515,1275 @@
         "agents-m1-l4#0@2026-11-07-full-v3",
         "agents-m1-l6#0@2026-11-07-full-v3",
         "agents-m1-l6#2@2026-11-07-full-v3"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/basic-types.html",
+      "questionIds": [
+        "ts-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/tsconfig/",
+      "questionIds": [
+        "ts-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/",
+      "questionIds": [
+        "ts-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#2@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/typescript.html",
+      "questionIds": [
+        "ts-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l1#2@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+      "questionIds": [
+        "ts-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+      "questionIds": [
+        "ts-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+      "questionIds": [
+        "ts-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/tsconfig/#exactOptionalPropertyTypes",
+      "questionIds": [
+        "ts-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse",
+      "questionIds": [
+        "ts-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+      "questionIds": [
+        "ts-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+      "questionIds": [
+        "ts-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l1#2@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions",
+      "questionIds": [
+        "ts-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types",
+      "questionIds": [
+        "ts-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+      "questionIds": [
+        "ts-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+      "questionIds": [
+        "ts-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/conditional-types.html",
+      "questionIds": [
+        "ts-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/tsconfig/#erasableSyntaxOnly",
+      "questionIds": [
+        "ts-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/tsconfig/#verbatimModuleSyntax",
+      "questionIds": [
+        "ts-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads",
+      "questionIds": [
+        "ts-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ts-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick",
+      "questionIds": [
+        "node-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/util.html#utilparseargsconfig",
+      "questionIds": [
+        "node-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/process.html#processexitcode",
+      "questionIds": [
+        "node-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/packages.html",
+      "questionIds": [
+        "node-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/esm.html",
+      "questionIds": [
+        "node-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/timers.html#timers-promises-api",
+      "questionIds": [
+        "node-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal",
+      "questionIds": [
+        "node-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/process.html#event-unhandledrejection",
+      "questionIds": [
+        "node-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/fs.html",
+      "questionIds": [
+        "node-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/stream.html",
+      "questionIds": [
+        "node-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/path.html",
+      "questionIds": [
+        "node-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://owasp.org/www-community/attacks/Path_Traversal",
+      "questionIds": [
+        "node-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/http.html",
+      "questionIds": [
+        "node-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status",
+      "questionIds": [
+        "node-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html",
+      "questionIds": [
+        "node-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/sqlite.html",
+      "questionIds": [
+        "node-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/util.html#utilparseenvcontent",
+      "questionIds": [
+        "node-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.sqlite.org/pragma.html#pragma_user_version",
+      "questionIds": [
+        "node-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/test.html",
+      "questionIds": [
+        "node-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/assert.html",
+      "questionIds": [
+        "node-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/test.html#timers",
+      "questionIds": [
+        "node-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/process.html#signal-events",
+      "questionIds": [
+        "node-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/worker_threads.html",
+      "questionIds": [
+        "node-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/reference/dockerfile/",
+      "questionIds": [
+        "node-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/build/building/best-practices/",
+      "questionIds": [
+        "node-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/bash/manual/bash.html",
+      "questionIds": [
+        "lx-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#2@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/hier.7.html",
+      "questionIds": [
+        "lx-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.debian.org/doc/manuals/debian-reference/",
+      "questionIds": [
+        "lx-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/coreutils/manual/coreutils.html",
+      "questionIds": [
+        "lx-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/findutils/manual/find.html",
+      "questionIds": [
+        "lx-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/path_resolution.7.html",
+      "questionIds": [
+        "lx-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/credentials.7.html",
+      "questionIds": [
+        "lx-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html",
+      "questionIds": [
+        "lx-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/inode.7.html",
+      "questionIds": [
+        "lx-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.sudo.ws/docs/man/sudo.man/",
+      "questionIds": [
+        "lx-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/grep/manual/grep.html",
+      "questionIds": [
+        "lx-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/gawk/manual/gawk.html",
+      "questionIds": [
+        "lx-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/pipe.7.html",
+      "questionIds": [
+        "lx-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.shellcheck.net/wiki/",
+      "questionIds": [
+        "lx-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#2@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html",
+      "questionIds": [
+        "lx-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/signal.7.html",
+      "questionIds": [
+        "lx-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l1#2@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html",
+      "questionIds": [
+        "lx-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html",
+      "questionIds": [
+        "lx-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://manpages.debian.org/trixie/cron/crontab.5.en.html",
+      "questionIds": [
+        "lx-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://curl.se/docs/manpage.html",
+      "questionIds": [
+        "lx-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://download.samba.org/pub/rsync/rsync.1",
+      "questionIds": [
+        "lx-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#2@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man.openbsd.org/ssh-keygen",
+      "questionIds": [
+        "lx-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://man.openbsd.org/sshd_config",
+      "questionIds": [
+        "lx-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://wiki.debian.org/SecureApt",
+      "questionIds": [
+        "lx-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://owasp.org/www-community/attacks/Command_Injection",
+      "questionIds": [
+        "lx-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://manpages.debian.org/trixie/dpkg/dpkg-query.1.en.html",
+      "questionIds": [
+        "lx-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "lx-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/",
+      "questionIds": [
+        "ws-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A01_2025-Broken_Access_Control/",
+      "questionIds": [
+        "ws-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#2@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A05_2025-Injection/",
+      "questionIds": [
+        "ws-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#2@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#2@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/child_process.html",
+      "questionIds": [
+        "ws-m1-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP",
+      "questionIds": [
+        "ws-m1-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l3#2@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies",
+      "questionIds": [
+        "ws-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://web.dev/articles/fetch-metadata",
+      "questionIds": [
+        "ws-m1-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l5#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l5#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m1-l5#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/fs.html#fspromisesrealpathpath-options",
+      "questionIds": [
+        "ws-m1-l5#0@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#1@2026-11-14-tech-tracks-v1",
+        "ws-m1-l5#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A07_2025-Authentication_Failures/",
+      "questionIds": [
+        "ws-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#2@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://nodejs.org/api/crypto.html",
+      "questionIds": [
+        "ws-m2-l1#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l1#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc8725",
+      "questionIds": [
+        "ws-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc7636",
+      "questionIds": [
+        "ws-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9700",
+      "questionIds": [
+        "ws-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l2#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l2#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A02_2025-Security_Misconfiguration/",
+      "questionIds": [
+        "ws-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security",
+      "questionIds": [
+        "ws-m2-l3#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l3#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A03_2025-Software_Supply_Chain_Failures/",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://top10.owasp.org/2025/A09_2025-Security_Logging_and_Alerting_Failures/",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/NPM_Security_Cheat_Sheet.html",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.npmjs.com/cli/v11/commands/npm-audit",
+      "questionIds": [
+        "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
+        "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",

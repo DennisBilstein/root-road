@@ -1,7 +1,3901 @@
-RP_LITERAL_1_text += "s\":[\"Es formatiert nur den Quelltext\",\"Es legt fehlende Methoden und Deklarationen automatisch passend an\",\"Es startet den Debugger\"],\"correct\":1,\"explain\":\"So lässt sich der aufrufende Code zuerst schreiben und die Struktur daraus generieren.\"},{\"q\":\"Womit öffnest du in ADT direkt ein beliebiges Entwicklungsobjekt?\",\"options\":[\"Strg + Shift + A\",\"Strg + S\",\"F8\"],\"correct\":0,\"explain\":\"Strg+Shift+A ist der schnellste Einstieg in jedes Objekt, ohne Navigation durch Paketbäume.\"}],\"codeLang\":\"abap\"},{\"id\":\"abap-m20-l2\",\"title\":\"Vom SAP-Standard lernen\",\"minutes\":7,\"body\":\"<p>Die beste ABAP-Lernquelle ist im System selbst installiert — sie wird nur kaum genutzt:</p><ul><li><strong>ABAP-Schlüsselwortdokumentation (F1)</strong>: nicht nur Syntaxreferenz, sondern mit ausführbaren Beispielen zu praktisch jedem Sprachkonstrukt. Bei Unsicherheit über eine Syntaxvariante ist das schneller als jede Websuche — und immer zur installierten Release-Version passend.</li><li><strong>DEMO-Programme</strong>: Hunderte lauffähige Beispiele (Namensmuster <code>DEMO_*</code>) von String-Verarbeitung bis RAP.</li><li><strong>SAP-Standardklassen lesen</strong>: Wie hat SAP selbst eine Factory gebaut, wie eine Exception-Hierarchie geschnitten? Das ist Architekturlernen an echtem, produktiv eingesetztem Code.</li><li><strong>abapGit-Community</strong>: Offene Werkzeugsammlungen (Linter, Test-Doubles, Utilities), die sich in ein Entwicklungssystem laden lassen — mit Genehmigung und Augenmaß.</li></ul><p>Und die ehrlichste Quelle: der Verwendungsnachweis auf eine SAP-Klasse, um zu sehen, wie sie im Standard tatsächlich eingesetzt wird — nicht, wie die Dokumentation es sich vorstellt.</p>\",\"code\":\"\",\"tip\":\"Wenn du eine unbekannte SAP-Klasse verstehen willst, lies nicht ihre Dokumentation zuerst, sondern such über den Verwendungsnachweis drei echte Aufrufstellen im Standard. Du siehst dann sofort, welche Parameter in der Praxis tatsächlich gefüllt werden und welche theoretisch existieren, aber nie benutzt werden. Dieser Unterschied steht in keiner Doku.\",\"quiz\":[{\"q\":\"Was macht die ABAP-Schlüsselwortdokumentation (F1) besonders wertvoll?\",\"options\":[\"Sie enthält ausführbare Beispiele und passt exakt zur installierten Release-Version\",\"Sie ersetzt den Debugger\",\"Sie ist die einzige Quelle für Kundencode\"],\"correct\":0,\"explain\":\"Release-genaue Beispiele direkt im System sind oft verlässlicher als allgemeine Webquellen.\"},{\"q\":\"Wie verstehst du eine unbekannte SAP-Klasse am schnellsten?\",\"options\":[\"Nur die Dokumentation lesen\",\"Über den Verwendungsnachweis echte Aufrufstellen im Standard ansehen\",\"Sie kopieren und umbenennen\"],\"correct\":1,\"explain\":\"Echte Aufrufstellen zeigen, welche Parameter in der Praxis wirklich gefüllt werden.\"}],\"codeLang\":\"abap\"},{\"id\":\"abap-m20-l3\",\"title\":\"Anti-Patterns und rote Linien\",\"minutes\":9,\"body\":\"<p>Zum Abschluss die Dinge, die dich in einem Projekt teuer zu stehen kommen — teils technisch, teils beruflich:</p><ul><li><strong>Direktes Ändern von Tabelleninhalten in Produktion.</strong> Es kursieren Tricks, mit denen sich Datenbanktabellen über Standardtransaktionen direkt editieren lassen. Sie umgehen sämtliche Prüf- und Verbuchungslogik, hinterlassen keine Belegspur und sind in seriösen Projekten schlicht tabu — in regulierten Branchen zusätzlich ein Compliance-Verstoß. Wenn Daten falsch sind, gehört ein korrigierendes Programm geschrieben, das den fachlichen Weg geht.</li><li><strong>Modifikationen am SAP-Standard.</strong> Jede Modifikation musst du bei jedem Upgrade erneut abgleichen. Erweiterungspunkte (BAdI, Extension Points, Key User Tools) existieren genau deshalb.</li><li><strong><code>COMMIT WORK</code> in Schleifen und in wiederverwendbaren Bausteinen</strong> — zerreißt fremde LUWs (Modul 17).</li><li><strong>SELECT im LOOP</strong> und verschachtelte Schleifen über große Mengen (Modul 8/9).</li><li><strong>Leere <code>CATCH</code>-Blöcke</strong>, die Ausnahmen verschlucken. Ein Fehler, der niemandem auffällt, ist teurer als einer, der laut scheitert.</li><li><strong>Dynamisches SQL mit Nutzereingaben</strong> ohne Freigabeliste (Modul 15).</li><li><strong>Hartcodierte Mandanten, Werke, Buchungskreise oder Pfade</strong> — spätestens im Produktivsystem falsch.</li><li><strong><code>BREAK-POINT</code> oder Testdaten im transportierten Code.</strong> Der ATC meldet das; ignorier die Meldung nicht.</li></ul>\",\"code\":\"\\\" Anti-Pattern: verschluckte Ausnahme\\nTRY.\\n    lo_service->buchen( ls_beleg ).\\n  CATCH cx_root.\\nENDTRY.                      \\\" Fehler unsichtbar, Daten evtl. inkonsistent\\n\\n\\\" Besser: behandeln oder bewusst weiterreichen\\nTRY.\\n    lo_service->buchen( ls_beleg ).\\n  CATCH zcx_buchung_fehler INTO DATA(lx_fehler).\\n    log->add( lx_fehler ).\\n    RAISE EXCEPTION lx_fehler.\\nENDTRY.\",\"tip\":\"Die verlässlichste Faustregel aus vielen Projekten: Wenn eine Abkürzung sich unangenehm anfühlt, aber „diesmal schneller\\\" ist, wird sie mit hoher Wahrscheinlichkeit in sechs Monaten von jemandem gefunden, der nicht weiß, warum sie existiert. Dokumentiere entweder den Grund im Code — oder nimm den ordentlichen Weg. Genau diese Haltung unterscheidet einen Entwickler, dem man ein Produktivsystem anvertraut, von einem, dem man es nicht anvertraut.\",\"quiz\":[{\"q\":\"Warum sind direkte Tabellenänderungen in Produktion tabu?\",\"options\":[\"Sie sind technisch unmöglich\",\"Sie umgehen Prüf- und Verbuchungslogik und hinterlassen keine nachvollziehbare Belegspur\",\"Sie sind nur langsamer als der normale Weg\"],\"correct\":1,\"explain\":\"Neben der Datenkonsistenz ist das in regulierten Branchen zusätzlich ein Compliance-Problem.\"},{\"q\":\"Was ist das Problem an einem leeren CATCH-Block?\",\"options\":[\"Er verlangsamt das Programm\",\"Er verschluckt Fehler, sodass Inkonsistenzen unbemerkt bleiben\",\"Er ist syntaktisch nicht erlaubt\"],\"correct\":1,\"explain\":\"Ein Fehler, der niemandem auffällt, ist teurer als einer, der laut und früh scheitert.\"}],\"codeLang\":\"abap\"}],\"course\":\"abap\"},{\"id\":\"java-m1\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"Pseudocode, Algorithmen & die Brücke zu Java\",\"lessons\":[{\"id\":\"java-m1-l1\",\"title\":\"Pseudocode-Grundlagen (IHK-Konvention)\",\"minutes\":7,\"body\":\"<p>Pseudocode in der AP1 ist bewusst <strong>sprachunabhängig</strong> gehalten — meist an Java oder C# angelehnt. Der Prüfung liegt ein <strong>Syntax-Beiblatt</strong> bei; bewertet wird deine Logik, nicht die exakte Schreibweise.</p><ul><li><strong>Sequenz</strong> — Anweisung folgt auf Anweisung, von oben nach unten.</li><li><strong>Verzweigung</strong> — <code>IF ... THEN ... ELSE ... ENDIF</code>.</li><li><strong>Wiederholung</strong> — <code>FOR i &lt;- 1 TO n DO ... ENDFOR</code>, <code>WHILE ... DO</code>, <code>REPEAT ... UNTIL</code>.</li><li><strong>Zuweisung</strong> mit <code>&lt;-</code> oder <code>:=</code>, Ein-/Ausgabe mit <code>READ</code>/<code>WRITE</code>.</li><li><strong>Arrays</strong> mit eckigen Klammern — prüfe im Beiblatt, ob ab 0 oder 1 gezählt wird. Java zählt immer ab 0.</li></ul><p>Diese drei Grundbausteine sind der Kern der <strong>strukturierten Programmierung</strong>: Jeder Algorithmus lässt sich allein daraus zusammensetzen — in jeder Sprache.</p>\",\"code\":\"FUNCTION quadriere(zahl)\\n  ergebnis <- zahl * zahl\\n  RETURN ergebnis\\nENDFUNCTION\",\"codeLang\":\"Pseudocode\",\"tip\":\"Über 90 % der AP1-Algorithmenfragen sind Multiple Choice und verlangen, einen gegebenen Pseudocode nachzuvollziehen („Was liefert der Algorithmus für Eingabe X?\\\"). Übe deshalb vor allem das Trockendurchrechnen mit Stift und einer kleinen Wertetabelle — das ist die verlässlichste Vorbereitung, und genau dafür gibt es in diesem Kurs den Algorithmus-Trainer.\",\"quiz\":[{\"q\":\"Was bewertet die IHK bei Pseudocode-Aufgaben primär?\",\"options\":[\"Exakte Syntax nach festem Standard\",\"Die Logik und Korrektheit des Algorithmus\",\"Die Zeilenanzahl\"],\"correct\":1,\"explain\":\"Ein Syntax-Beiblatt liegt bei — Schreibfehler werden toleriert, solange die Logik stimmt.\"},{\"q\":\"Welche drei Bausteine bilden den Kern der strukturierten Programmierung?\",\"options\":[\"Sequenz, Verzweigung, Wiederholung\",\"Vererbung, Polymorphie, Kapselung\",\"Klasse, Objekt, Methode\"],\"correct\":0,\"explain\":\"Aus diesen drei Konstrukten lässt sich jeder Algorithmus aufbauen — unabhängig von der Programmiersprache.\"}]},{\"id\":\"java-m1-l2\",\"title\":\"Struktogramme & Programmablaufpläne (PAP)\",\"minutes\":8,\"body\":\"<p>Die AP1 prüft auch das Lesen und Erstellen von <strong>Struktogrammen</strong> (Nassi-Shneiderman) und <strong>Programmablaufplänen</strong> (PAP, DIN 66001). Beide beschreiben denselben Algorithmus in anderer Notation.</p><p><strong>Struktogramme</strong> stellen Sequenz, Verzweigung und Schleife als verschachtelte Kästen dar. Entscheidend: Es gibt <em>keine</em> Sprungpfeile — unstrukturierter Code (GOTO) ist darin gar nicht darstellbar.</p><div class=\\\"struk\\\"><div class=\\\"cond-head\\\">zahl % 2 == 0 ?</div><div class=\\\"cond-branches\\\"><div class=\\\"cond-branch yes\\\"><div class=\\\"branch-tag\\\">Ja</div>Ausgabe \\\"gerade\\\"</div><div class=\\\"cond-branch\\\"><div class=\\\"branch-tag\\\">Nein</div>Ausgabe \\\"ungerade\\\"</div></div></div><p style=\\\"font-size:.78rem;color:var(--text-dim);margin-top:-10px;\\\">Vereinfachte Darstellung einer Verzweigung im Struktogramm.</p><p><strong>Programmablaufpläne</strong> nutzen Flussdiagramm-Symbole: Oval = Start/Ende, Rechteck = Verarbeitung, Raute = Entscheidung, Parallelogramm = Ein-/Ausgabe.</p><div class=\\\"pap-flow\\\"><div class=\\\"pap-oval\\\">Start</div><div class=\\\"pap-arrow\\\">↓</div><div class=\\\"pap-rect\\\">Eingabe: zahl</div><div class=\\\"pap-arrow\\\">↓</div><div class=\\\"pap-diamond-wrap\\\"><div class=\\\"pap-diamond\\\"><span>zahl % 2 == 0?</span></div></div><div class=\\\"pap-branches\\\"><div class=\\\"pap-branch\\\"><div class=\\\"branch-label\\\">ja</div><div class=\\\"pap-rect\\\">Ausgabe \\\"gerade\\\"</div></div><div class=\\\"pap-branch\\\"><div class=\\\"branch-label\\\">nein</div><div class=\\\"pap-rect\\\">Ausgabe \\\"ungerade\\\"</div></div></div><div class=\\\"pap-arrow\\\">↓</div><div class=\\\"pap-oval\\\">Ende</div></div><p class=\\\"pap-caption\\\">Vereinfachter PAP zum selben Algorithmus.</p>\",\"code\":\"\",\"tip\":\"In der Prüfung sollst du gelegentlich denselben Algorithmus zwischen Pseudocode, Struktogramm und PAP übersetzen. Der sichere Weg: identifiziere zuerst die drei Grundbausteine — wo ist die Sequenz, wo die Verzweigung, wo die Schleife. Die Notation ist danach reine Formsache.\",\"quiz\":[{\"q\":\"Welches PAP-Symbol steht für eine Entscheidung?\",\"options\":[\"Rechteck\",\"Raute\",\"Oval\"],\"correct\":1,\"explain\":\"Die Raute markiert die Verzweigung; das Rechteck ist Verarbeitung, das Oval Start/Ende.\"},{\"q\":\"Was ist ein struktureller Vorteil von Struktogrammen?\",\"options\":[\"Sie sind schneller gezeichnet\",\"Sie erzwingen strukturierte Programmierung, weil Sprungpfeile nicht darstellbar sind\",\"Sie ersetzen Pseudocode vollständig\"],\"correct\":1,\"explain\":\"Ohne Sprungpfeile lässt sich GOTO-Spaghetticode gar nicht erst abbilden.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m1-l3\",\"title\":\"Vom Pseudocode zu Java: durchgerechnete Beispiele\",\"minutes\":10,\"order\":[\"body\",\"code\",\"body2\",\"code2\",\"body3\",\"code3\",\"code4\"],\"body\":\"<p>Die Übersetzung folgt klaren Mustern. Zwei vollständige Beispiele:</p><p><strong>Beispiel 1 — Maximum-Suche:</strong></p>\",\"code\":\"FUNCTION findeMaximum(zahlen)\\n  maximum <- zahlen[1]\\n  FOR EACH zahl IN zahlen DO\\n    IF zahl > maximum THEN\\n      maximum <- zahl\\n    ENDIF\\n  ENDFOR\\n  RETURN maximum\\nENDFUNCTION\",\"codeLang\":\"Pseudocode\",\"body2\":\"<p>In Java wird daraus eine Methode mit Rückgabetyp. Beachte: Java-Arrays beginnen bei Index <strong>0</strong>, der Pseudocode zählte ab 1.</p>\",\"code2\":\"public static int findeMaximum(int[] zahlen) {\\n    int maximum = zahlen[0];\\n    for (int zahl : zahlen) {\\n        if (zahl > maximum) {\\n            maximum = zahl;\\n        }\\n    }\\n    return maximum;\\n}\",\"code2Lang\":\"Java (wörtliche Übersetzung)\",\"body3\":\"<p><strong>Beispiel 2 — Durchschnitt.</strong> Hier lohnt der Vergleich zwischen wörtlicher und idiomatischer Übersetzung:</p>\",\"code3\":\"FUNCTION durchschnitt(zahlen)\\n  summe <- 0\\n  FOR EACH zahl IN zahlen DO\\n    summe <- summe + zahl\\n  ENDFOR\\n  RETURN summe / LAENGE(zahlen)\\nENDFUNCTION\",\"code3Lang\":\"Pseudocode\",\"code4\":\"// Wörtlich\\npublic static double durchschnitt(int[] zahlen) {\\n    int summe = 0;\\n    for (int zahl : zahlen) {\\n        summe += zahl;\\n    }\\n    return (double) summe / zahlen.length;\\n}\\n\\n// Idiomatisch mit Streams (Modul 11)\\npublic static double durchschnitt(int[] zahlen) {\\n    return IntStream.of(zahlen).average().orElse(0);\\n}\",\"code4Lang\":\"Java\",\"tip\":\"Achte im wörtlichen Beispiel auf den Cast (double). Ohne ihn rechnet Java eine Ganzzahldivision: 7/2 ergibt 3, nicht 3.5. Diese eine Zeile ist eine der häufigsten Fehlerquellen überhaupt — und ein beliebtes Prüfungsdetail, weil der Code kompiliert und trotzdem falsch rechnet.\",\"quiz\":[{\"q\":\"Welches Java-Konstrukt entspricht FOR EACH ... IN ... DO am direktesten?\",\"options\":[\"Die erweiterte for-Schleife (for (int x : array))\",\"while (true)\",\"do ... while\"],\"correct\":0,\"explain\":\"Die erweiterte for-Schleife („for-each\\\") iteriert über Arrays und alles, was Iterable implementiert.\"},{\"q\":\"Was ergibt in Java der Ausdruck 7 / 2 bei zwei int-Werten?\",\"options\":[\"3.5\",\"3\",\"Einen Kompilierfehler\"],\"correct\":1,\"explain\":\"Bei zwei Ganzzahlen führt Java eine Ganzzahldivision aus und schneidet den Rest ab — ein Cast auf double ist nötig.\"}]},{\"id\":\"java-m1-l4\",\"title\":\"Komplexität verstehen: Big-O für Prüfung und Praxis\",\"minutes\":7,\"body\":\"<p>Big-O beschreibt, wie Laufzeit oder Speicherbedarf mit der Eingabegröße wachsen — unabhängig von der Hardware.</p><table class=\\\"lesson-table\\\"><tr><th>Klasse</th><th>Beispiel</th><th>Java-Bezug</th></tr><tr><td>O(1)</td><td>Hash-Zugriff</td><td>HashMap.get(), ArrayList.get(i)</td></tr><tr><td>O(log n)</td><td>Binäre Suche</td><td>Arrays.binarySearch(), TreeMap</td></tr><tr><td>O(n)</td><td>Lineares Durchsuchen</td><td>ArrayList.contains(), LinkedList.get(i)</td></tr><tr><td>O(n log n)</td><td>Effizientes Sortieren</td><td>Arrays.sort(), Collections.sort()</td></tr><tr><td>O(n²)</td><td>Verschachtelte Schleifen</td><td>Zwei Schleifen über dieselbe Liste</td></tr></table><p>Diese Theorie ist kein Selbstzweck: Die Wahl zwischen <code>ArrayList</code>, <code>LinkedList</code> und <code>HashMap</code> in Modul 9 ist die praktische Anwendung genau dieser Klassen.</p>\",\"code\":\"\",\"tip\":\"Die AP1 fragt Big-O selten mit der O-Notation ab, sondern indirekt: „Wie oft wird diese Schleife bei n = 10 durchlaufen?\\\" Trainiere deshalb das konkrete Abzählen von Durchläufen. Bei zwei verschachtelten Schleifen mit je n Durchläufen sind es n·n — bei einer inneren Schleife bis n-i dagegen n·(n-1)/2.\",\"quiz\":[{\"q\":\"Welche Komplexität hat eine einzelne Schleife über n Elemente?\",\"options\":[\"O(1)\",\"O(n)\",\"O(n²)\"],\"correct\":1,\"explain\":\"Jedes Element wird genau einmal betrachtet — lineare Laufzeit.\"},{\"q\":\"Welche Java-Struktur bietet O(1) beim Zugriff über den Schlüssel?\",\"options\":[\"LinkedList\",\"HashMap\",\"ArrayList (über den Wert gesucht)\"],\"correct\":1,\"explain\":\"HashMap berechnet aus dem Schlüssel direkt die Position — unabhängig von der Größe.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m2\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"Datenmodellierung: ER-Modell & Normalisierung\",\"lessons\":[{\"id\":\"java-m2-l1\",\"title\":\"Entity-Relationship-Modell & Kardinalitäten\",\"minutes\":7,\"body\":\"<p>Das <strong>ER-Modell</strong> beschreibt die Fachlichkeit unabhängig von der technischen Umsetzung. Eine <strong>Entität</strong> ist ein Ding von Interesse, <strong>Attribute</strong> beschreiben sie, <strong>Beziehungen</strong> verbinden sie.</p><p><strong>Kardinalitäten</strong> legen fest, wie viele Instanzen verknüpft sein dürfen:</p><div class=\\\"er-row\\\"><div class=\\\"er-box\\\">Kunde</div><div class=\\\"er-link\\\"><span>1 : n</span><div class=\\\"line\\\"></div><span>gibt auf</span></div><div class=\\\"er-box\\\">Bestellung</div></div><div class=\\\"er-row\\\"><div class=\\\"er-box\\\">Bestellung</div><div class=\\\"er-link\\\"><span>n : m</span><div class=\\\"line\\\"></div><span>enthält</span></div><div class=\\\"er-box\\\">Produkt</div></div><p>Eine <strong>n:m-Beziehung</strong> lässt sich nicht direkt in zwei Tabellen abbilden — es entsteht immer eine <strong>Verknüpfungstabelle</strong> (hier: Bestellposition) mit Fremdschlüsseln zu beiden Seiten. In Java entspricht das später einer eigenen Entity-Klasse, nicht nur einer Liste.</p>\",\"code\":\"\",\"tip\":\"Lies Szenarien in der Prüfung immer in beide Richtungen: „Wie viele Bestellungen pro Kunde?\\\" UND „Wie viele Kunden pro Bestellung?\\\" Erst beide Antworten zusammen ergeben die Kardinalität.\",\"quiz\":[{\"q\":\"Wie wird eine n:m-Beziehung bei der Tabellenumsetzung aufgelöst?\",\"options\":[\"Gar nicht, sie ist nicht umsetzbar\",\"Über eine Verknüpfungstabelle mit Fremdschlüsseln zu beiden Seiten\",\"Durch Duplizieren aller Felder\"],\"correct\":1,\"explain\":\"Die Verknüpfungstabelle trägt beide Fremdschlüssel und oft zusätzliche Attribute wie Menge oder Preis.\"},{\"q\":\"Was ist ein Fremdschlüssel?\",\"options\":[\"Ein verschlüsseltes Feld\",\"Ein Attribut, das auf den Primärschlüssel einer anderen Tabelle verweist\",\"Ein zufällig erzeugter Wert\"],\"correct\":1,\"explain\":\"Der Fremdschlüssel setzt die referenzielle Integrität einer Beziehung technisch um.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m2-l2\",\"title\":\"Normalisierung 1NF bis 3NF\",\"minutes\":9,\"body\":\"<p>Normalisierung reduziert Redundanz und verhindert <strong>Anomalien</strong> beim Einfügen, Ändern und Löschen.</p><table class=\\\"lesson-table\\\"><tr><th>Normalform</th><th>Bedingung</th></tr><tr><td>1NF</td><td>Nur atomare Werte, keine Wiederholungsgruppen</td></tr><tr><td>2NF</td><td>1NF + jedes Nicht-Schlüsselattribut hängt vom <em>gesamten</em> Schlüssel ab</td></tr><tr><td>3NF</td><td>2NF + keine transitiven Abhängigkeiten zwischen Nicht-Schlüsselattributen</td></tr></table><p><strong>Beispiel:</strong> Eine Tabelle <code>Bestellung(BestellNr, Position, Produktname, Kundenname, Kundenort)</code> verstößt doppelt: Produktname hängt nur von der Position ab (2NF), Kundenort hängt vom Kundennamen statt vom Schlüssel ab (3NF). Normalisiert entstehen drei Tabellen: Kunde, Bestellung, Bestellposition.</p>\",\"code\":\"\",\"tip\":\"In der Praxis wird bewusst denormalisiert, etwa in Reporting-Tabellen oder Caches, um Lesezugriffe zu beschleunigen. Das ist kein Fehler, sondern eine begründbare Abwägung. In der Prüfung ist aber die reine Lehre gefragt — dort normalisierst du bis zur 3NF.\",\"quiz\":[{\"q\":\"Was verhindert die 2NF?\",\"options\":[\"Nicht-atomare Werte\",\"Teilabhängigkeiten von einem zusammengesetzten Schlüssel\",\"Transitive Abhängigkeiten\"],\"correct\":1,\"explain\":\"2NF fordert volle funktionale Abhängigkeit vom gesamten Primärschlüssel.\"},{\"q\":\"Was ist eine transitive Abhängigkeit?\",\"options\":[\"Ein Attribut hängt direkt vom Schlüssel ab\",\"Ein Nicht-Schlüsselattribut hängt von einem anderen Nicht-Schlüsselattribut ab\",\"Zwei Tabellen verweisen aufeinander\"],\"correct\":1,\"explain\":\"Genau diese indirekte Abhängigkeit verbietet die 3NF.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m2-l3\",\"title\":\"Vom ER-Modell zur Java-Klasse\",\"minutes\":7,\"body\":\"<p>Aus dem Datenmodell entstehen in Java <strong>Klassen</strong>: Entität → Klasse, Attribut → Feld, Primärschlüssel → ID-Feld, Beziehung → Referenz oder Collection.</p><p>Eine 1:n-Beziehung wird auf der „n\\\"-Seite meist als Referenz auf das Elternobjekt abgebildet, auf der „1\\\"-Seite als <code>List&lt;...&gt;</code>. Bei n:m entsteht eine eigene Klasse für die Verknüpfung — genau wie in der Datenbank.</p>\",\"code\":\"public class Kunde {\\n    private final Long id;\\n    private String name;\\n    private final List<Bestellung> bestellungen = new ArrayList<>();\\n\\n    public Kunde(Long id, String name) {\\n        this.id = id;\\n        this.name = name;\\n    }\\n    public List<Bestellung> getBestellungen() {\\n        return List.copyOf(bestellungen);   // defensive Kopie, Modul 12\\n    }\\n}\\n\\npublic class Bestellposition {          // aufgelöste n:m-Beziehung\\n    private final Bestellung bestellung;\\n    private final Produkt produkt;\\n    private final int menge;\\n}\",\"tip\":\"Ein häufiger Anfängerfehler: die interne Liste direkt über einen Getter herausgeben. Dann kann jeder Aufrufer von außen Elemente hinzufügen oder löschen, ohne dass deine Klasse es merkt — die Kapselung ist wirkungslos. List.copyOf() oder Collections.unmodifiableList() geben eine unveränderliche Sicht zurück.\",\"quiz\":[{\"q\":\"Wie wird eine 1:n-Beziehung in Java typischerweise abgebildet?\",\"options\":[\"Als Referenz auf der n-Seite und List auf der 1-Seite\",\"Immer nur als einzelnes Feld\",\"Über static-Variablen\"],\"correct\":0,\"explain\":\"Die n-Seite kennt ihr Elternobjekt, die 1-Seite hält eine Collection der Kinder.\"},{\"q\":\"Warum sollte ein Getter nicht die interne Liste direkt zurückgeben?\",\"options\":[\"Aus Performancegründen\",\"Weil Aufrufer sie dann von außen verändern können und die Kapselung wirkungslos wird\",\"Weil Java das verbietet\"],\"correct\":1,\"explain\":\"Eine unveränderliche Kopie oder Sicht schützt den internen Zustand.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m3\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"SQL-Grundlagen vertieft\",\"lessons\":[{\"id\":\"java-m3-l1\",\"title\":\"DDL, DML und DCL im Überblick\",\"minutes\":6,\"body\":\"<p>SQL gliedert sich in drei Teilsprachen — ein AP1-Klassiker als Zuordnungsfrage:</p><table class=\\\"lesson-table\\\"><tr><th>Kategorie</th><th>Befehle</th><th>Zweck</th></tr><tr><td>DDL (Definition)</td><td>CREATE, ALTER, DROP</td><td>Struktur anlegen und ändern</td></tr><tr><td>DML (Manipulation)</td><td>SELECT, INSERT, UPDATE, DELETE</td><td>Daten lesen und ändern</td></tr><tr><td>DCL (Control)</td><td>GRANT, REVOKE</td><td>Rechte vergeben und entziehen</td></tr></table><p>Manche Quellen führen zusätzlich <strong>TCL</strong> (Transaction Control) mit <code>COMMIT</code> und <code>ROLLBACK</code> als eigene Kategorie.</p>\",\"code\":\"\",\"tip\":\"Merkhilfe: DDL definiert die Möbel, DML bewegt die Sachen darin, DCL entscheidet, wer die Tür aufschließen darf. TRUNCATE ist übrigens DDL, nicht DML — es löscht die Tabelle strukturell leer und lässt sich in vielen Systemen nicht zurückrollen.\",\"quiz\":[{\"q\":\"Zu welcher Kategorie gehört CREATE TABLE?\",\"options\":[\"DML\",\"DDL\",\"DCL\"],\"correct\":1,\"explain\":\"CREATE verändert die Struktur — Data Definition Language.\"},{\"q\":\"Welche Befehle gehören zur Transaktionssteuerung?\",\"options\":[\"GRANT und REVOKE\",\"COMMIT und ROLLBACK\",\"CREATE und DROP\"],\"correct\":1,\"explain\":\"COMMIT schreibt eine Transaktion fest, ROLLBACK verwirft sie.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m3-l2\",\"title\":\"JOIN-Typen im Detail\",\"minutes\":9,\"body\":\"<p><strong>INNER JOIN</strong> liefert nur Zeilen mit Treffer auf beiden Seiten. <strong>LEFT OUTER JOIN</strong> behält zusätzlich alle Zeilen der linken Tabelle und füllt rechts mit NULL. <strong>RIGHT OUTER JOIN</strong> umgekehrt, <strong>FULL OUTER JOIN</strong> beides. <strong>CROSS JOIN</strong> bildet das kartesische Produkt — meist ein Versehen.</p>\",\"code\":\"-- Nur Kunden MIT Bestellung\\nSELECT k.name, b.betrag\\nFROM kunde k INNER JOIN bestellung b ON b.kunde_id = k.id;\\n\\n-- Alle Kunden, auch ohne Bestellung (betrag ist dann NULL)\\nSELECT k.name, b.betrag\\nFROM kunde k LEFT OUTER JOIN bestellung b ON b.kunde_id = k.id;\",\"codeLang\":\"SQL\",\"tip\":\"Eine subtile Falle, die auch erfahrene Entwickler trifft: Steht eine Bedingung auf die RECHTE Tabelle in der WHERE-Klausel (z. B. b.betrag > 100), wird ein LEFT JOIN faktisch zum INNER JOIN — die NULL-Zeilen erfüllen die Bedingung nicht und fliegen raus. Solche Bedingungen gehören in die ON-Klausel.\",\"quiz\":[{\"q\":\"Was liefert ein LEFT OUTER JOIN zusätzlich zum INNER JOIN?\",\"options\":[\"Doppelte Zeilen\",\"Zeilen der linken Tabelle ohne Treffer, rechts mit NULL\",\"Nur sortierte Ergebnisse\"],\"correct\":1,\"explain\":\"Die linke Tabelle bleibt vollständig erhalten.\"},{\"q\":\"Was erzeugt ein CROSS JOIN?\",\"options\":[\"Das kartesische Produkt beider Tabellen\",\"Eine leere Menge\",\"Nur eindeutige Paare\"],\"correct\":0,\"explain\":\"Jede Zeile links wird mit jeder Zeile rechts kombiniert.\"}]},{\"id\":\"java-m3-l3\",\"title\":\"Aggregation, GROUP BY, HAVING und Subqueries\",\"minutes\":8,\"body\":\"<p><strong>Aggregatfunktionen</strong> (COUNT, SUM, AVG, MIN, MAX) fassen Zeilen zusammen. <strong>GROUP BY</strong> legt die Gruppierungsebene fest, <strong>HAVING</strong> filtert <em>nach</em> der Aggregation — im Gegensatz zu WHERE, das <em>vor</em> der Gruppierung einzelne Zeilen filtert.</p>\",\"code\":\"SELECT kunde_id, COUNT(*) AS anzahl, SUM(betrag) AS gesamt\\nFROM bestellung\\nWHERE datum >= '2026-01-01'      -- filtert Zeilen VOR der Gruppierung\\nGROUP BY kunde_id\\nHAVING COUNT(*) > 5              -- filtert Gruppen NACH der Aggregation\\nORDER BY gesamt DESC;\",\"codeLang\":\"SQL\",\"tip\":\"WHERE COUNT(*) > 5 ist syntaktisch ungültig — zum Zeitpunkt der WHERE-Auswertung existiert noch keine Gruppe und damit kein COUNT. Diese Unterscheidung ist einer der zuverlässigsten Prüfungsklassiker überhaupt.\",\"quiz\":[{\"q\":\"Worin unterscheiden sich WHERE und HAVING?\",\"options\":[\"Kein Unterschied\",\"WHERE filtert Zeilen vor der Gruppierung, HAVING Gruppen danach\",\"HAVING funktioniert nur mit JOINs\"],\"correct\":1,\"explain\":\"Nur HAVING darf sich auf Aggregatfunktionen beziehen.\"},{\"q\":\"Wie prüft man in SQL korrekt auf einen fehlenden Wert?\",\"options\":[\"feld = NULL\",\"feld IS NULL\",\"feld == NULL\"],\"correct\":1,\"explain\":\"NULL ist kein Wert, sondern dessen Abwesenheit — Vergleiche mit = ergeben „unbekannt\\\".\"}]}],\"course\":\"java\"},{\"id\":\"java-m4\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"Vorgehensmodelle & Software-Lifecycle\",\"lessons\":[{\"id\":\"java-m4-l1\",\"title\":\"Wasserfall, V-Modell, Scrum und Kanban\",\"minutes\":8,\"body\":\"<p><strong>Wasserfall:</strong> strikt sequenzielle Phasen ohne planmäßigen Rücksprung — hohe Planungssicherheit, wenig Flexibilität.</p><p><strong>V-Modell:</strong> ergänzt den Wasserfall um eine Testphase je Entwicklungsphase (Komponententest ↔ Feinentwurf, Systemtest ↔ Grobentwurf, Abnahmetest ↔ Anforderungen).</p><p><strong>Scrum:</strong> iterativ in Sprints, Rollen (Product Owner, Scrum Master, Entwicklungsteam), Artefakte (Product Backlog, Sprint Backlog, Increment), Events (Planning, Daily, Review, Retrospektive).</p><p><strong>Kanban:</strong> kontinuierlicher Fluss ohne feste Sprints, begrenzt durch WIP-Limits.</p><table class=\\\"lesson-table\\\"><tr><th>Modell</th><th>Kennzeichen</th><th>Passt wenn</th></tr><tr><td>Wasserfall</td><td>Sequenziell, dokumentgetrieben</td><td>Anforderungen stabil und vollständig bekannt</td></tr><tr><td>V-Modell</td><td>Wasserfall plus Verifikationsstufen</td><td>Hohe Qualitätsanforderungen, oft öffentliche Auftraggeber</td></tr><tr><td>Scrum</td><td>Feste Iterationen, definierte Rollen</td><td>Anforderungen ändern sich, enger Kundenkontakt</td></tr><tr><td>Kanban</td><td>Fluss, WIP-Limits</td><td>Laufender Betrieb, unregelmäßige Aufgaben</td></tr></table>\",\"code\":\"\",\"tip\":\"Prüfungsfragen liefern meist ein Szenario und fragen nach dem passenden Modell. Der Schlüssel liegt fast immer in einem Satz zur Anforderungsstabilität: „Die Anforderungen sind vollständig spezifiziert\\\" deutet auf Wasserfall oder V-Modell, „Der Kunde möchte früh Zwischenstände sehen\\\" auf Scrum.\",\"quiz\":[{\"q\":\"Was ergänzt das V-Modell gegenüber dem Wasserfall?\",\"options\":[\"Tägliche Meetings\",\"Jeder Entwicklungsphase ist eine Testphase zugeordnet\",\"Verzicht auf Dokumentation\"],\"correct\":1,\"explain\":\"Die linke Seite des V beschreibt Entwurf, die rechte die zugehörigen Teststufen.\"},{\"q\":\"Welches Element gehört zu Kanban, nicht zu Scrum?\",\"options\":[\"Sprint Backlog\",\"WIP-Limit\",\"Sprint Review\"],\"correct\":1,\"explain\":\"Kanban begrenzt die parallele Arbeit statt in festen Iterationen zu planen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m4-l2\",\"title\":\"Lastenheft, Pflichtenheft & Anforderungsanalyse\",\"minutes\":6,\"body\":\"<p><strong>Lastenheft</strong> — vom <strong>Auftraggeber</strong>, beschreibt WAS gebraucht wird. <strong>Pflichtenheft</strong> — vom <strong>Auftragnehmer</strong>, beschreibt WIE es umgesetzt wird.</p><p>Anforderungen unterscheidet man in <strong>funktional</strong> (was das System tun soll) und <strong>nicht-funktional</strong> (Performance, Sicherheit, Usability, Wartbarkeit, Verfügbarkeit). Priorisiert wird häufig nach <strong>MoSCoW</strong>: Must, Should, Could, Won’t have.</p>\",\"code\":\"\",\"tip\":\"Merksatz: Der Auftrag-GEBER lastet dem Anbieter seine Wünsche auf (Lastenheft, WAS), der Auftrag-NEHMER verpflichtet sich zur konkreten Umsetzung (Pflichtenheft, WIE). Nicht-funktionale Anforderungen werden in Projekten regelmäßig vergessen — und sind später die teuersten Nachbesserungen.\",\"quiz\":[{\"q\":\"Wer erstellt das Lastenheft?\",\"options\":[\"Der Auftraggeber\",\"Der Auftragnehmer\",\"Das Testteam\"],\"correct\":0,\"explain\":\"Es beschreibt die Anforderungen aus Sicht des Bestellers.\"},{\"q\":\"Was ist eine nicht-funktionale Anforderung?\",\"options\":[\"Nutzer können Bestellungen anlegen\",\"Die Antwortzeit liegt unter 200 ms\",\"Die Mehrwertsteuer wird berechnet\"],\"correct\":1,\"explain\":\"Nicht-funktionale Anforderungen beschreiben Qualitätseigenschaften, keine Funktionen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m5\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"UML für Anwendungsentwickler\",\"lessons\":[{\"id\":\"java-m5-l1\",\"title\":\"Use-Case-Diagramme\",\"minutes\":6,\"body\":\"<p>Ein Use-Case-Diagramm zeigt <strong>Akteure</strong> (außerhalb der Systemgrenze) und <strong>Anwendungsfälle</strong> (Ellipsen innerhalb), verbunden durch Assoziationen. Die Systemgrenze ist ein Rechteck um alle Use Cases.</p><ul><li><code>&lt;&lt;include&gt;&gt;</code> — ein immer mit ausgeführter Teilanwendungsfall.</li><li><code>&lt;&lt;extend&gt;&gt;</code> — ein optionaler, nur unter Bedingung ausgeführter Fall.</li><li><strong>Generalisierung</strong> zwischen Akteuren: Ein „Administrator\\\" kann alles, was ein „Benutzer\\\" kann, und mehr.</li></ul>\",\"code\":\"\",\"tip\":\"Die verlässlichste Unterscheidung: Bei <<include>> ist der eingebundene Fall Pflichtbestandteil des Basisfalls („Bestellung aufgeben\\\" schließt „Zahlung prüfen\\\" immer ein). Bei <<extend>> ist es eine Erweiterung, die nur manchmal greift („Gutschein einlösen\\\"). Die Pfeilrichtung zeigt in beiden Fällen zum eingebundenen beziehungsweise erweiterten Fall — merken musst du dir die Verbindlichkeit, nicht die Grafik.\",\"quiz\":[{\"q\":\"Was kennzeichnet <<include>>?\",\"options\":[\"Einen optionalen Anwendungsfall\",\"Einen immer mit ausgeführten Teilanwendungsfall\",\"Eine Vererbung zwischen Akteuren\"],\"correct\":1,\"explain\":\"Der eingebundene Fall ist fester Bestandteil des Basisfalls.\"},{\"q\":\"Wo stehen Akteure im Use-Case-Diagramm?\",\"options\":[\"Innerhalb der Systemgrenze\",\"Außerhalb der Systemgrenze\",\"Es gibt keine Systemgrenze\"],\"correct\":1,\"explain\":\"Akteure sind per Definition außerhalb des betrachteten Systems.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m5-l2\",\"title\":\"Klassendiagramme & Beziehungstypen\",\"minutes\":9,\"body\":\"<p>Eine Klasse erscheint als Rechteck mit drei Feldern: Name, Attribute, Methoden. Sichtbarkeiten: <code>+</code> public, <code>-</code> private, <code>#</code> protected, <code>~</code> package-private — eine exakte Entsprechung zu Javas Modifikatoren.</p><table class=\\\"lesson-table\\\"><tr><th>UML-Beziehung</th><th>Notation</th><th>Java</th></tr><tr><td>Assoziation</td><td>Linie</td><td>Feld mit Referenz auf andere Klasse</td></tr><tr><td>Aggregation</td><td>Offene Raute</td><td>„hat-ein\\\", Teil lebt unabhängig weiter</td></tr><tr><td>Komposition</td><td>Gefüllte Raute</td><td>„hat-ein\\\", Teil stirbt mit dem Ganzen</td></tr><tr><td>Generalisierung</td><td>Pfeil, geschlossene Spitze</td><td>extends</td></tr><tr><td>Realisierung</td><td>Gestrichelter Pfeil</td><td>implements</td></tr></table><p>Zusätzlich stehen an den Enden <strong>Multiplizitäten</strong>: <code>1</code>, <code>0..1</code>, <code>1..*</code>, <code>*</code>.</p>\",\"code\":\"\",\"tip\":\"Komposition versus Aggregation ist der häufigste Stolperstein. Prüfe die Existenzfrage: Kann der Teil sinnvoll ohne das Ganze weiterexistieren? Eine Bestellposition ohne Bestellung ergibt keinen Sinn — Komposition. Ein Mitarbeiter ohne Abteilung schon — Aggregation.\",\"quiz\":[{\"q\":\"Welche UML-Beziehung entspricht \\\"implements\\\" in Java?\",\"options\":[\"Generalisierung\",\"Realisierung\",\"Komposition\"],\"correct\":1,\"explain\":\"Die Realisierung wird als gestrichelter Pfeil mit geschlossener Spitze gezeichnet.\"},{\"q\":\"Was bedeutet die Multiplizität 1..* ?\",\"options\":[\"Genau eins\",\"Mindestens eins, nach oben offen\",\"Höchstens eins\"],\"correct\":1,\"explain\":\"Der Stern steht für eine unbegrenzte Obergrenze.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m6\",\"part\":17,\"partTitle\":\"Java · AP1-Fundamente: Algorithmisches Denken\",\"title\":\"Testtheorie & Qualitätssicherung\",\"lessons\":[{\"id\":\"java-m6-l1\",\"title\":\"Black-Box, White-Box, Äquivalenzklassen, Grenzwerte\",\"minutes\":8,\"body\":\"<p><strong>White-Box-Tests</strong> kennen den Code und messen z. B. Zweigüberdeckung. <strong>Black-Box-Tests</strong> kennen nur Ein- und Ausgabe.</p><p><strong>Äquivalenzklassenbildung:</strong> Eingaben mit gleichem erwarteten Verhalten werden gruppiert, ein Vertreter je Klasse genügt. <strong>Grenzwertanalyse:</strong> zusätzlich die Ränder testen, weil sich dort Fehler häufen.</p><p><strong>Beispiel</strong> — gültiger Bereich 18 bis 65: Klassen sind &lt;18 (ungültig), 18–65 (gültig), &gt;65 (ungültig). Grenzwerte: 17, 18, 65, 66.</p>\",\"code\":\"\",\"tip\":\"Die Kombination aus Äquivalenzklassen und Grenzwertanalyse ist das effizienteste Verfahren überhaupt: minimale Testfallzahl bei maximaler Fehlerabdeckung. Genau deshalb steht es in jeder Prüfung — und wird trotzdem in echten Projekten ständig übersprungen.\",\"quiz\":[{\"q\":\"Was prüft die Grenzwertanalyse?\",\"options\":[\"Werte in der Mitte jeder Klasse\",\"Werte direkt an den Klassenrändern\",\"Nur ungültige Eingaben\"],\"correct\":1,\"explain\":\"An den Bereichsgrenzen treten Vergleichsfehler wie < statt <= am häufigsten auf.\"},{\"q\":\"Was kennzeichnet einen White-Box-Test?\",\"options\":[\"Kenntnis der internen Codestruktur\",\"Ausschließlich manuelle Durchführung\",\"Verzicht auf Testdaten\"],\"correct\":0,\"explain\":\"Nur mit Codekenntnis lassen sich Überdeckungsmaße wie Zweigüberdeckung bestimmen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m6-l2\",\"title\":\"Testpyramide und Teststufen\",\"minutes\":6,\"body\":\"<p>Die <strong>Testpyramide</strong> empfiehlt viele schnelle <strong>Unit-Tests</strong> als Basis, weniger <strong>Integrationstests</strong> in der Mitte und wenige langsame <strong>End-to-End-Tests</strong> an der Spitze. Das umgekehrte Verhältnis heißt „Ice-Cream-Cone\\\" und gilt als Antipattern.</p><p>Die klassischen <strong>Teststufen</strong> aus dem V-Modell: Komponententest, Integrationstest, Systemtest, Abnahmetest. Dazu kommen <strong>Regressionstests</strong>, die sicherstellen, dass bereits funktionierende Teile nicht durch Änderungen brechen.</p><p>In Java setzt du die Basis mit <strong>JUnit 5</strong> um (Modul 15), Test Doubles mit <strong>Mockito</strong>.</p>\",\"code\":\"\",\"tip\":\"Ein verlässliches Warnsignal in jedem Projekt: Wenn das Team hauptsächlich über langsame Oberflächentests Vertrauen gewinnt und Unit-Tests fehlen, dauert jede Rückmeldung Minuten statt Sekunden — und genau dann werden Tests irgendwann übersprungen.\",\"quiz\":[{\"q\":\"Welche Testart bildet die breite Basis der Testpyramide?\",\"options\":[\"End-to-End-Tests\",\"Unit-Tests\",\"Manuelle Abnahmetests\"],\"correct\":1,\"explain\":\"Sie sind schnell, zahlreich und lokalisieren Fehler präzise.\"},{\"q\":\"Wozu dienen Regressionstests?\",\"options\":[\"Neue Funktionen zu spezifizieren\",\"Sicherzustellen, dass bisher funktionierende Teile nach Änderungen weiter funktionieren\",\"Die Performance zu messen\"],\"correct\":1,\"explain\":\"Sie schützen den bereits erreichten Stand gegen unbeabsichtigte Nebenwirkungen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m7\",\"part\":18,\"partTitle\":\"Java · Java-Sprachkern\",\"title\":\"Einstieg: Programm, JVM, Typen\",\"lessons\":[{\"id\":\"java-m7-l1\",\"title\":\"Dein erstes Java-Programm\",\"minutes\":8,\"order\":[\"body\",\"code\",\"body2\",\"code2\",\"body3\"],\"body\":\"<p>Jedes Java-Programm lebt in einer <strong>Klasse</strong>. Der Einstiegspunkt ist die Methode <code>main</code> mit exakt dieser Signatur — jede Abweichung, und die JVM findet den Start nicht.</p>\",\"code\":\"public class HalloWelt {\\n    public static void main(String[] args) {\\n        String name = \\\"Java\\\";\\n        System.out.println(\\\"Hallo \\\" + name);\\n        System.out.println(\\\"Zeichen im Namen: \\\" + name.length());\\n    }\\n}\",\"body2\":\"<p>Was dabei passiert, unterscheidet Java von vielen anderen Sprachen:</p><ol><li>Der <strong>Compiler</strong> (<code>javac</code>) übersetzt den Quelltext in <strong>Bytecode</strong> (<code>.class</code>) — nicht in Maschinencode.</li><li>Die <strong>JVM</strong> (Java Virtual Machine) führt diesen Bytecode aus. Deshalb läuft dieselbe .class-Datei auf Windows, Linux und macOS — „write once, run anywhere\\\".</li><li>Der <strong>JIT-Compiler</strong> übersetzt häufig durchlaufenen Bytecode zur Laufzeit in nativen Maschinencode. Deshalb wird Java-Code nach kurzer Laufzeit deutlich schneller.</li></ol><p>Seit Java 11 kannst du eine einzelne Datei sogar direkt starten, ohne vorher zu kompilieren:</p>\",\"code2\":\"javac HalloWelt.java    # erzeugt HalloWelt.class\\njava HalloWelt          # führt den Bytecode aus\\n\\njava HalloWelt.java     # ab Java 11: direkt, ohne separaten Compilerlauf\",\"code2Lang\":\"Terminal\",\"body3\":\"<p>Drei Dinge, die dir ab jetzt überall begegnen:</p><ul><li><strong>Jede Anweisung endet mit Semikolon</strong>, Blöcke stehen in geschweiften Klammern.</li><li><strong>Java ist case-sensitiv</strong> — <code>String</code> und <code>string</code> sind verschieden. Konvention: Klassen <code>GroßGeschrieben</code>, Methoden und Variablen <code>kleinGeschrieben</code>, Konstanten <code>GROSS_MIT_UNTERSTRICH</code>.</li><li><strong>Kommentare:</strong> <code>//</code> bis Zeilenende, <code>/* ... */</code> über mehrere Zeilen, <code>/** ... */</code> als Javadoc für die API-Dokumentation.</li></ul>\",\"tip\":\"Die Signatur public static void main(String[] args) wirkt willkürlich, ist aber logisch: public, damit die JVM sie von außen aufrufen kann; static, weil beim Start noch kein Objekt existiert; void, weil kein Rückgabewert verarbeitet würde; String[] für die Kommandozeilenargumente. Wenn dein Programm mit „Main method not found\\\" abbricht, stimmt fast immer einer dieser vier Bestandteile nicht.\",\"quiz\":[{\"q\":\"Was erzeugt der Java-Compiler javac?\",\"options\":[\"Nativen Maschinencode\",\"Bytecode in einer .class-Datei\",\"Direkt ausführbare .exe-Dateien\"],\"correct\":1,\"explain\":\"Der plattformunabhängige Bytecode wird erst von der JVM ausgeführt — das ist die Grundlage der Plattformunabhängigkeit.\"},{\"q\":\"Warum muss main static sein?\",\"options\":[\"Aus Performancegründen\",\"Weil beim Programmstart noch kein Objekt der Klasse existiert\",\"Damit sie überschrieben werden kann\"],\"correct\":1,\"explain\":\"Statische Methoden gehören zur Klasse selbst und können ohne Instanz aufgerufen werden.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m7-l2\",\"title\":\"Primitive Typen und Referenztypen\",\"minutes\":9,\"body\":\"<p>Java kennt zwei grundverschiedene Kategorien von Typen — der Unterschied erklärt später fast jeden überraschenden Fehler.</p><table class=\\\"lesson-table\\\"><tr><th>Typ</th><th>Größe</th><th>Wertebereich / Zweck</th></tr><tr><td>byte</td><td>8 Bit</td><td>-128 bis 127</td></tr><tr><td>short</td><td>16 Bit</td><td>-32.768 bis 32.767</td></tr><tr><td>int</td><td>32 Bit</td><td>ca. ±2,1 Mrd. — der Standard für Ganzzahlen</td></tr><tr><td>long</td><td>64 Bit</td><td>sehr große Zahlen, Literal mit L: 10_000_000_000L</td></tr><tr><td>float / double</td><td>32 / 64 Bit</td><td>Gleitkomma; double ist der Standard</td></t";
-RP_LITERAL_1_text += "r><tr><td>char</td><td>16 Bit</td><td>Ein Unicode-Zeichen: 'A'</td></tr><tr><td>boolean</td><td>—</td><td>true oder false</td></tr></table><p><strong>Primitive</strong> Variablen enthalten den Wert direkt. <strong>Referenztypen</strong> (alle Objekte, Arrays, Strings) enthalten nur eine Referenz auf das Objekt im Heap. Eine Zuweisung kopiert bei Primitiven den Wert, bei Referenzen nur den Verweis — beide Variablen zeigen danach auf dasselbe Objekt.</p>\",\"code\":\"int a = 5;\\nint b = a;          // Wert wird kopiert\\nb = 10;             // a bleibt 5\\n\\nint[] x = {1, 2, 3};\\nint[] y = x;        // nur die Referenz wird kopiert\\ny[0] = 99;          // x[0] ist jetzt ebenfalls 99!\\n\\n// Geldbeträge NIEMALS als double:\\nSystem.out.println(0.1 + 0.2);            // 0.30000000000000004\\nSystem.out.println(new BigDecimal(\\\"0.1\\\")\\n        .add(new BigDecimal(\\\"0.2\\\")));     // 0.3\",\"tip\":\"Die Zeile 0.1 + 0.2 == 0.30000000000000004 ist kein Java-Bug, sondern die binäre Gleitkommadarstellung nach IEEE 754 — sie trifft jede Sprache. Für Geldbeträge gilt deshalb ausnahmslos: BigDecimal, und zwar mit dem String-Konstruktor. new BigDecimal(0.1) mit double-Argument übernimmt den Fehler nämlich mit.\",\"quiz\":[{\"q\":\"Was passiert bei int[] y = x; für zwei Arrays?\",\"options\":[\"Das Array wird kopiert\",\"Beide Variablen zeigen auf dasselbe Array im Speicher\",\"Es entsteht ein Kompilierfehler\"],\"correct\":1,\"explain\":\"Arrays sind Referenztypen — kopiert wird nur der Verweis, nicht der Inhalt.\"},{\"q\":\"Welcher Typ gehört zu Geldbeträgen?\",\"options\":[\"double\",\"float\",\"BigDecimal\"],\"correct\":2,\"explain\":\"Gleitkommatypen können Dezimalbrüche nicht exakt darstellen; BigDecimal rechnet exakt.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m7-l3\",\"title\":\"Strings und Textverarbeitung\",\"minutes\":8,\"body\":\"<p><code>String</code> ist in Java <strong>unveränderlich</strong> (immutable). Jede scheinbare Änderung erzeugt ein neues Objekt — das hat Konsequenzen für Vergleiche und Performance.</p><ul><li><strong>Vergleichen</strong> immer mit <code>equals()</code>, niemals mit <code>==</code>. Der Operator <code>==</code> vergleicht bei Referenztypen die Speicheradresse, nicht den Inhalt.</li><li><strong>Verketten in Schleifen</strong> mit <code>StringBuilder</code>, nicht mit <code>+</code>. Jedes <code>+</code> erzeugt sonst ein neues String-Objekt — aus O(n) wird O(n²).</li><li><strong>Text Blocks</strong> (ab Java 15) ersparen bei mehrzeiligem Text das Escaping.</li></ul>\",\"code\":\"String a = \\\"Hallo\\\";\\nString b = \\\"Hal\\\" + \\\"lo\\\";\\nString c = new String(\\\"Hallo\\\");\\n\\nSystem.out.println(a == b);        // true  (Compiler-Konstante, String Pool)\\nSystem.out.println(a == c);        // false (neues Objekt im Heap)\\nSystem.out.println(a.equals(c));   // true  (Inhalt gleich) -> so vergleicht man\\n\\n// Schleifen: StringBuilder statt +\\nStringBuilder sb = new StringBuilder();\\nfor (String teil : teile) {\\n    sb.append(teil).append(\\\", \\\");\\n}\\n\\n// Text Block (Java 15+)\\nString sql = \\\"\\\"\\\"\\n        SELECT name, betrag\\n        FROM bestellung\\n        WHERE betrag > 100\\n        \\\"\\\"\\\";\",\"tip\":\"Dass a == b im Beispiel true ergibt, ist die gefährlichste Falle überhaupt: Der Compiler legt identische Literale im String Pool zusammen, also scheint == „zu funktionieren\\\". Sobald der String aber zur Laufzeit entsteht — aus Benutzereingabe, Datei oder Datenbank — schlägt derselbe Vergleich fehl. Deshalb: bei Objekten grundsätzlich equals().\",\"quiz\":[{\"q\":\"Womit vergleicht man Strings inhaltlich?\",\"options\":[\"Mit ==\",\"Mit equals()\",\"Mit compareTo() == 1\"],\"correct\":1,\"explain\":\"== vergleicht bei Referenztypen die Identität des Objekts, nicht den Inhalt.\"},{\"q\":\"Warum StringBuilder statt + in Schleifen?\",\"options\":[\"+ ist syntaktisch verboten\",\"Jedes + erzeugt ein neues String-Objekt, wodurch die Laufzeit quadratisch wird\",\"StringBuilder ist threadsicher\"],\"correct\":1,\"explain\":\"Weil Strings unveränderlich sind, entsteht bei jeder Verkettung ein neues Objekt samt Kopieraufwand.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m7-l4\",\"title\":\"Kontrollstrukturen und moderne Syntax\",\"minutes\":8,\"body\":\"<p>Neben <code>if</code>, <code>for</code>, <code>while</code> und <code>do-while</code> bringt modernes Java einige Konstrukte, die Code deutlich klarer machen:</p><ul><li><strong>switch expressions</strong> (Java 14+) liefern einen Wert zurück, kennen kein versehentliches Durchfallen und erzwingen Vollständigkeit.</li><li><strong><code>var</code></strong> (Java 10+) leitet den Typ lokaler Variablen aus der Zuweisung ab — der Typ bleibt statisch geprüft, er wird nur nicht ausgeschrieben.</li><li><strong>Pattern Matching für instanceof</strong> (Java 16+) spart den expliziten Cast.</li></ul>\",\"code\":\"// Alte switch-Anweisung: break nicht vergessen!\\nswitch (status) {\\n    case \\\"A\\\": text = \\\"Offen\\\"; break;\\n    case \\\"C\\\": text = \\\"Abgeschlossen\\\"; break;\\n    default:  text = \\\"Unbekannt\\\";\\n}\\n\\n// switch expression: kein break, liefert einen Wert\\nString text = switch (status) {\\n    case \\\"A\\\" -> \\\"Offen\\\";\\n    case \\\"C\\\" -> \\\"Abgeschlossen\\\";\\n    default  -> \\\"Unbekannt\\\";\\n};\\n\\n// var: Typ wird abgeleitet, bleibt aber statisch\\nvar kunden = new ArrayList<Kunde>();\\n\\n// Pattern Matching statt Cast\\nif (obj instanceof String s && s.length() > 3) {\\n    System.out.println(s.toUpperCase());\\n}\",\"tip\":\"Das vergessene break in der alten switch-Anweisung („fall-through\\\") ist ein Klassiker: Der Code läuft dann in den nächsten case weiter und produziert falsche Ergebnisse, ohne zu warnen. Die switch expression mit Pfeil kennt dieses Verhalten gar nicht — ein Beispiel dafür, wie moderne Sprachfeatures nicht nur kürzer sind, sondern ganze Fehlerklassen unmöglich machen.\",\"quiz\":[{\"q\":\"Was passiert bei einem vergessenen break in der klassischen switch-Anweisung?\",\"options\":[\"Kompilierfehler\",\"Die Ausführung läuft in den nächsten case weiter (fall-through)\",\"Der Block wird übersprungen\"],\"correct\":1,\"explain\":\"Genau deshalb sind switch expressions mit Pfeilsyntax die sicherere Wahl.\"},{\"q\":\"Was bewirkt var bei einer lokalen Variable?\",\"options\":[\"Sie wird dynamisch typisiert wie in JavaScript\",\"Der Compiler leitet den statischen Typ aus der Zuweisung ab\",\"Sie wird automatisch final\"],\"correct\":1,\"explain\":\"var ist reine Schreiberleichterung — die Typprüfung findet weiterhin zur Compilezeit statt.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m8\",\"part\":18,\"partTitle\":\"Java · Java-Sprachkern\",\"title\":\"Objektorientierung im Kern\",\"lessons\":[{\"id\":\"java-m8-l1\",\"title\":\"Klassen, Objekte, Konstruktoren\",\"minutes\":9,\"body\":\"<p>Eine <strong>Klasse</strong> ist der Bauplan, ein <strong>Objekt</strong> die daraus erzeugte Instanz. Die vier Säulen der OOP begegnen dir ab hier ständig: <strong>Kapselung</strong>, <strong>Vererbung</strong>, <strong>Polymorphie</strong> und <strong>Abstraktion</strong>.</p><p><strong>Kapselung</strong> heißt: Felder sind <code>private</code>, der Zugriff läuft über Methoden. Das ist kein Formalismus — es erlaubt dir, die interne Darstellung später zu ändern oder Validierung einzuziehen, ohne jeden Aufrufer anzufassen.</p><p>Der <strong>Konstruktor</strong> heißt wie die Klasse und hat keinen Rückgabetyp. Gibst du keinen an, erzeugt der Compiler einen parameterlosen Standardkonstruktor — sobald du aber einen eigenen schreibst, verschwindet dieser.</p>\",\"code\":\"public class Konto {\\n    private final String iban;          // final: nach Konstruktion unveränderlich\\n    private BigDecimal saldo;\\n\\n    public Konto(String iban, BigDecimal startSaldo) {\\n        if (iban == null || iban.isBlank()) {\\n            throw new IllegalArgumentException(\\\"IBAN darf nicht leer sein\\\");\\n        }\\n        this.iban = iban;               // this unterscheidet Feld von Parameter\\n        this.saldo = startSaldo;\\n    }\\n\\n    public void einzahlen(BigDecimal betrag) {\\n        if (betrag.signum() <= 0) {\\n            throw new IllegalArgumentException(\\\"Betrag muss positiv sein\\\");\\n        }\\n        saldo = saldo.add(betrag);\\n    }\\n\\n    public BigDecimal getSaldo() { return saldo; }\\n}\",\"tip\":\"Validiere im Konstruktor, nicht erst in den Methoden. Ein Objekt sollte nach seiner Erzeugung nie in einem ungültigen Zustand sein können — dieses Prinzip heißt „immer gültige Instanz\\\" und erspart dir unzählige Null- und Plausibilitätsprüfungen an allen späteren Verwendungsstellen.\",\"quiz\":[{\"q\":\"Was passiert mit dem Standardkonstruktor, sobald du einen eigenen Konstruktor schreibst?\",\"options\":[\"Er bleibt zusätzlich erhalten\",\"Er wird nicht mehr erzeugt\",\"Er muss überschrieben werden\"],\"correct\":1,\"explain\":\"Der Compiler erzeugt den parameterlosen Konstruktor nur, wenn gar keiner deklariert ist.\"},{\"q\":\"Warum sollten Felder private sein?\",\"options\":[\"Weil Java das erzwingt\",\"Damit die interne Darstellung änderbar bleibt und Validierung möglich ist\",\"Aus Performancegründen\"],\"correct\":1,\"explain\":\"Kapselung trennt die stabile Schnittstelle von der veränderlichen Implementierung.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m8-l2\",\"title\":\"Vererbung und Polymorphie\",\"minutes\":9,\"body\":\"<p><code>extends</code> erzeugt eine Unterklasse, die alle sichtbaren Member erbt. <code>@Override</code> überschreibt eine geerbte Methode — die Annotation ist optional, aber du solltest sie immer setzen: Sie lässt den Compiler prüfen, ob du wirklich überschreibst und nicht versehentlich eine neue Methode mit ähnlichem Namen anlegst.</p><p><strong>Polymorphie</strong> heißt: Eine Variable vom Typ der Oberklasse kann Objekte jeder Unterklasse aufnehmen, und zur Laufzeit wird die Methode des tatsächlichen Objekts aufgerufen — „dynamic dispatch\\\".</p><p><code>super</code> ruft die Implementierung der Oberklasse auf. <code>final</code> an einer Methode verhindert Überschreiben, an einer Klasse verhindert es Vererbung.</p>\",\"code\":\"public abstract class Mitarbeiter {\\n    protected final String name;\\n    protected Mitarbeiter(String name) { this.name = name; }\\n\\n    public abstract BigDecimal monatsGehalt();   // muss implementiert werden\\n\\n    @Override\\n    public String toString() { return name + \\\": \\\" + monatsGehalt(); }\\n}\\n\\npublic class Festangestellter extends Mitarbeiter {\\n    private final BigDecimal jahresGehalt;\\n\\n    public Festangestellter(String name, BigDecimal jahresGehalt) {\\n        super(name);                     // muss erste Anweisung sein\\n        this.jahresGehalt = jahresGehalt;\\n    }\\n    @Override\\n    public BigDecimal monatsGehalt() {\\n        return jahresGehalt.divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP);\\n    }\\n}\\n\\n// Polymorphie: der Aufrufer kennt nur den Obertyp\\nList<Mitarbeiter> team = List.of(new Festangestellter(\\\"Ada\\\", ...), new Werkstudent(...));\\nteam.forEach(m -> System.out.println(m.monatsGehalt()));\",\"tip\":\"Setz @Override konsequent. Der klassische Fehler ist, public boolean equals(MeineKlasse other) zu schreiben statt equals(Object other) — das überschreibt nichts, sondern überlädt. Ohne die Annotation kompiliert das anstandslos, und dein equals wird von Collections nie aufgerufen. Mit @Override meckert der Compiler sofort.\",\"quiz\":[{\"q\":\"Was bewirkt die Annotation @Override?\",\"options\":[\"Sie ist Pflicht, sonst überschreibt die Methode nicht\",\"Der Compiler prüft, ob wirklich eine geerbte Methode überschrieben wird\",\"Sie macht die Methode final\"],\"correct\":1,\"explain\":\"Technisch optional, praktisch unverzichtbar — sie fängt Tippfehler und falsche Signaturen ab.\"},{\"q\":\"Was ist dynamic dispatch?\",\"options\":[\"Die Methode der tatsächlichen Objektklasse wird zur Laufzeit gewählt\",\"Der Compiler wählt die Methode fest aus\",\"Methoden werden zufällig aufgerufen\"],\"correct\":0,\"explain\":\"Der deklarierte Variablentyp bestimmt, was aufrufbar ist — das Objekt bestimmt, was ausgeführt wird.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m8-l3\",\"title\":\"Interfaces und abstrakte Klassen\",\"minutes\":8,\"body\":\"<p>Ein <strong>Interface</strong> beschreibt einen Vertrag ohne Zustand. Eine Klasse kann beliebig viele Interfaces implementieren, aber nur von <em>einer</em> Klasse erben — so löst Java das Mehrfachvererbungsproblem.</p><p>Seit Java 8 dürfen Interfaces <strong>default-Methoden</strong> mit Implementierung enthalten, seit Java 9 auch <code>private</code> Hilfsmethoden. Trotzdem bleibt der Unterschied:</p><table class=\\\"lesson-table\\\"><tr><th>Kriterium</th><th>Interface</th><th>Abstrakte Klasse</th></tr><tr><td>Zustand (Felder)</td><td>Nur Konstanten</td><td>Beliebige Felder</td></tr><tr><td>Mehrfach nutzbar</td><td>Ja, beliebig viele</td><td>Nein, nur eine Oberklasse</td></tr><tr><td>Konstruktor</td><td>Nein</td><td>Ja</td></tr><tr><td>Gedanke</td><td>„kann etwas\\\" (Fähigkeit)</td><td>„ist ein\\\" (Verwandtschaft)</td></tr></table>\",\"code\":\"public interface Zahlbar {\\n    BigDecimal betrag();\\n\\n    default boolean istKostenlos() {      // default-Methode, Java 8+\\n        return betrag().signum() == 0;\\n    }\\n}\\n\\npublic class Rechnung implements Zahlbar, Comparable<Rechnung> {\\n    private final BigDecimal summe;\\n\\n    @Override public BigDecimal betrag() { return summe; }\\n\\n    @Override public int compareTo(Rechnung other) {\\n        return this.summe.compareTo(other.summe);\\n    }\\n}\",\"tip\":\"Die Faustregel, die in Code-Reviews zählt: Programmiere gegen Interfaces, nicht gegen Implementierungen. Also List<String> liste = new ArrayList<>(); statt ArrayList<String> liste = .... Dann kannst du die Implementierung später gegen LinkedList oder eine unveränderliche Liste tauschen, ohne eine einzige Aufrufstelle anzufassen — und in Tests gegen ein Test Double.\",\"quiz\":[{\"q\":\"Wie viele Interfaces kann eine Java-Klasse implementieren?\",\"options\":[\"Genau eines\",\"Beliebig viele\",\"Höchstens zwei\"],\"correct\":1,\"explain\":\"Nur bei der Klassenvererbung ist Java auf eine Oberklasse beschränkt.\"},{\"q\":\"Was ist der wesentliche Unterschied zur abstrakten Klasse?\",\"options\":[\"Interfaces können keinen veränderlichen Zustand halten\",\"Interfaces sind schneller\",\"Abstrakte Klassen haben keine Methoden\"],\"correct\":0,\"explain\":\"Interfaces beschreiben Fähigkeiten, abstrakte Klassen teilen zusätzlich Zustand und Basisimplementierung.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m8-l4\",\"title\":\"Records, Enums und sealed types\",\"minutes\":8,\"body\":\"<p>Modernes Java bietet für häufige Muster eigene, knappe Konstrukte:</p><ul><li><strong><code>record</code></strong> (Java 16+) erzeugt eine unveränderliche Datenklasse samt Konstruktor, Gettern, <code>equals</code>, <code>hashCode</code> und <code>toString</code> — aus 50 Zeilen Boilerplate wird eine.</li><li><strong><code>enum</code></strong> definiert eine feste Menge von Konstanten, kann aber auch Felder und Methoden haben — weit mehr als nur benannte Zahlen.</li><li><strong><code>sealed</code></strong> (Java 17+) schränkt ein, welche Klassen erben dürfen. Zusammen mit <code>switch</code>-Pattern-Matching kann der Compiler dann prüfen, ob du alle Fälle behandelt hast.</li></ul>\",\"code\":\"public record Adresse(String strasse, String plz, String ort) {\\n    public Adresse {                       // kompakter Konstruktor: Validierung\\n        if (plz.length() != 5) throw new IllegalArgumentException(\\\"PLZ ungültig\\\");\\n    }\\n}\\n\\npublic enum Status {\\n    OFFEN(\\\"Offen\\\"), BEZAHLT(\\\"Bezahlt\\\"), STORNIERT(\\\"Storniert\\\");\\n\\n    private final String anzeige;\\n    Status(String anzeige) { this.anzeige = anzeige; }\\n    public String anzeige() { return anzeige; }\\n}\\n\\npublic sealed interface Zahlung permits Karte, Rechnung, Lastschrift { }\\n\\n// Der Compiler weiß: mehr Fälle kann es nicht geben\\nString text = switch (zahlung) {\\n    case Karte k       -> \\\"Karte \\\" + k.nummer();\\n    case Rechnung r    -> \\\"Rechnung\\\";\\n    case Lastschrift l -> \\\"Lastschrift\\\";\\n};\",\"tip\":\"Records sind kein reiner Schreibkomfort. Weil sie automatisch ein korrektes equals und hashCode mitbringen, verschwindet eine ganze Fehlerklasse: falsch oder gar nicht implementierte Gleichheit, die dann stillschweigend HashSet und HashMap kaputtmacht (Modul 9). Für reine Datenträger — DTOs, Wertobjekte, Rückgabetupel — ist record heute die richtige Standardwahl.\",\"quiz\":[{\"q\":\"Was erzeugt ein record automatisch?\",\"options\":[\"Nur den Konstruktor\",\"Konstruktor, Getter, equals, hashCode und toString\",\"Eine Datenbanktabelle\"],\"correct\":1,\"explain\":\"Records sind unveränderliche Datenträger mit vollständig generierter Standardausstattung.\"},{\"q\":\"Wozu dient sealed?\",\"options\":[\"Um eine Klasse zu verschlüsseln\",\"Um einzuschränken, welche Klassen erben dürfen\",\"Um Felder unveränderlich zu machen\"],\"correct\":1,\"explain\":\"Der begrenzte Typbaum erlaubt dem Compiler die Vollständigkeitsprüfung in switch.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m9\",\"part\":18,\"partTitle\":\"Java · Java-Sprachkern\",\"title\":\"Collections & Generics\",\"lessons\":[{\"id\":\"java-m9-l1\",\"title\":\"List, Set, Map — welche wann?\",\"minutes\":9,\"body\":\"<p>Das Collections-Framework ist Javas Arbeitspferd. Die Wahl der richtigen Struktur entscheidet über Korrektheit <em>und</em> Performance.</p><table class=\\\"lesson-table\\\"><tr><th>Typ</th><th>Eigenschaft</th><th>Zugriff</th><th>Einsatz</th></tr><tr><td>ArrayList</td><td>Reihenfolge, Duplikate erlaubt</td><td>get(i) O(1), contains O(n)</td><td>Standardliste</td></tr><tr><td>LinkedList</td><td>Doppelt verkettet</td><td>get(i) O(n), Einfügen vorn O(1)</td><td>Queue/Deque, selten als Liste</td></tr><tr><td>HashSet</td><td>Keine Duplikate, ungeordnet</td><td>add/contains O(1)</td><td>Eindeutigkeit prüfen</td></tr><tr><td>LinkedHashSet</td><td>Keine Duplikate, Einfügereihenfolge</td><td>O(1)</td><td>Eindeutig UND geordnet</td></tr><tr><td>TreeSet / TreeMap</td><td>Sortiert</td><td>O(log n)</td><td>Sortierte Ausgabe, Bereichsabfragen</td></tr><tr><td>HashMap</td><td>Schlüssel → Wert</td><td>get/put O(1)</td><td>Nachschlagen, Zuordnungen</td></tr></table><p>Eine verbreitete Fehlannahme: LinkedList sei „schneller beim Einfügen\\\". Das gilt nur, wenn du bereits an der Stelle stehst (über einen Iterator). Der Zugriff über einen Index muss dagegen die Kette durchlaufen — in der Praxis ist ArrayList fast immer die bessere Wahl.</p>\",\"code\":\"// Unveränderliche Sammlungen (Java 9+) — bevorzugt für Konstanten und Rückgaben\\nList<String> fest = List.of(\\\"a\\\", \\\"b\\\", \\\"c\\\");\\nMap<String, Integer> preise = Map.of(\\\"Apfel\\\", 2, \\\"Birne\\\", 3);\\n\\n// Häufigkeiten zählen, ohne Fallunterscheidung\\nMap<String, Integer> zaehler = new HashMap<>();\\nfor (String wort : woerter) {\\n    zaehler.merge(wort, 1, Integer::sum);\\n}\\n\\n// Gruppierte Listen aufbauen\\nMap<String, List<Kunde>> nachOrt = new HashMap<>();\\nfor (Kunde k : kunden) {\\n    nachOrt.computeIfAbsent(k.ort(), o -> new ArrayList<>()).add(k);\\n}\",\"tip\":\"merge() und computeIfAbsent() ersetzen den ewigen Dreisatz aus containsKey, get und put. Sie sind nicht nur kürzer, sondern vermeiden auch den typischen Fehler, zwischen Prüfung und Zugriff eine Bedingung zu ändern. Wer diese beiden Methoden kennt, schreibt spürbar weniger fehleranfälligen Map-Code.\",\"quiz\":[{\"q\":\"Welche Struktur garantiert Eindeutigkeit bei konstantem Zugriff?\",\"options\":[\"ArrayList\",\"HashSet\",\"LinkedList\"],\"correct\":1,\"explain\":\"HashSet verhindert Duplikate und prüft die Zugehörigkeit in O(1).\"},{\"q\":\"Warum ist ArrayList meist besser als LinkedList?\",\"options\":[\"Sie braucht weniger Speicher pro Element und bietet O(1)-Indexzugriff\",\"Sie ist threadsicher\",\"Sie sortiert automatisch\"],\"correct\":0,\"explain\":\"LinkedList lohnt fast nur als Queue/Deque; für Indexzugriffe ist sie deutlich langsamer.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m9-l2\",\"title\":\"equals, hashCode und Comparable\",\"minutes\":9,\"body\":\"<p>Hier liegt einer der folgenschwersten Fallstricke der Sprache. <code>HashSet</code> und <code>HashMap</code> finden ein Objekt nur wieder, wenn <code>hashCode()</code> und <code>equals()</code> zusammenpassen.</p><p><strong>Der Vertrag:</strong></p><ul><li>Sind zwei Objekte nach <code>equals</code> gleich, <em>müssen</em> sie denselben <code>hashCode</code> liefern.</li><li>Gleicher <code>hashCode</code> bedeutet umgekehrt nicht zwingend Gleichheit (Kollision ist erlaubt).</li><li>Überschreibst du eines, überschreibe immer auch das andere.</li></ul><p><code>Comparable</code> definiert die <em>natürliche</em> Sortierreihenfolge einer Klasse, <code>Comparator</code> eine beliebige alternative — etwa für unterschiedliche Sortierungen derselben Daten.</p>\",\"code\":\"public class Artikel {\\n    private final String nummer;\\n    private final String bezeichnung;\\n\\n    @Override\\n    public boolean equals(Object o) {\\n        if (this == o) return true;\\n        if (!(o instanceof Artikel a)) return false;\\n        return nummer.equals(a.nummer);       // fachliche Identität\\n    }\\n    @Override\\n    public int hashCode() { return Objects.hash(nummer); }\\n}\\n\\n// Comparator: mehrere Sortierungen nebeneinander\\nartikel.sort(Comparator.comparing(Artikel::bezeichnung)\\n                       .thenComparing(Artikel::nummer)\\n                       .reversed());\",\"tip\":\"Der teuerste Fehler dieser Lektion in freier Wildbahn: ein veränderliches Feld in hashCode() zu verwenden. Legst du das Objekt in ein HashSet und änderst danach dieses Feld, landet es im falschen Bucket — es ist dann im Set enthalten, wird aber von contains() nicht mehr gefunden und von remove() nicht entfernt. Nimm für hashCode nur unveränderliche, fachlich identifizierende Felder. Oder nutz gleich ein record.\",\"quiz\":[{\"q\":\"Was fordert der equals/hashCode-Vertrag?\",\"options\":[\"Gleiche Objekte müssen gleichen hashCode liefern\",\"Gleicher hashCode bedeutet immer Gleichheit\",\"hashCode muss eindeutig sein\"],\"correct\":0,\"explain\":\"Die Umkehrung gilt nicht — Kollisionen sind erlaubt und normal.\"},{\"q\":\"Was passiert, wenn ein in hashCode verwendetes Feld nach dem Einfügen ins HashSet geändert wird?\",\"options\":[\"Nichts Besonderes\",\"Das Objekt wird im falschen Bucket gesucht und ist praktisch unauffindbar\",\"Das Set sortiert sich neu\"],\"correct\":1,\"explain\":\"Deshalb gehören nur unveränderliche Felder in hashCode.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m9-l3\",\"title\":\"Generics und Wildcards\",\"minutes\":9,\"body\":\"<p><strong>Generics</strong> bringen Typsicherheit zur Compilezeit: <code>List&lt;String&gt;</code> nimmt nur Strings auf, Casts entfallen. Zur Laufzeit ist die Typinformation allerdings gelöscht (<strong>Type Erasure</strong>) — deshalb gibt es kein <code>new T[]</code> und kein <code>instanceof List&lt;String&gt;</code>.</p><p><strong>Wildcards</strong> steuern, wie flexibel ein Parameter sein darf. Die Merkregel heißt <strong>PECS</strong>: <em>Producer extends, Consumer super</em>.</p><ul><li><code>? extends T</code> — du liest aus der Struktur (sie produziert T).</li><li><code>? super T</code> — du schreibst hinein (sie konsumiert T).</li></ul>\",\"code\":\"// Ohne Generics: unsicher, Cast nötig, Fehler erst zur Laufzeit\\nList liste = new ArrayList();\\nliste.add(\\\"Text\\\");\\nInteger i = (Integer) liste.get(0);   // ClassCastException zur Laufzeit\\n\\n// Generische Methode\\npublic static <T extends Comparable<T>> T max(List<? extends T> werte) {\\n    T groesster = werte.get(0);\\n    for (T w : werte) {\\n        if (w.compareTo(groesster) > 0) groesster = w;\\n    }\\n    return groesster;\\n}\\n\\n// PECS in der Praxis\\nvoid kopiere(List<? extends Number> quelle, List<? super Number> ziel) {\\n    for (Number n : quelle) ziel.add(n);\\n}\",\"tip\":\"Type Erasure erklärt eine Fehlermeldung, über die jeder irgendwann stolpert: Zwei Methoden, die sich nur im generischen Parameter unterscheiden (verarbeite(List<String>) und verarbeite(List<Integer>)), lassen sich nicht überladen. Nach dem Löschen der Typinformation haben beide dieselbe Signatur. Die Lösung sind unterschiedliche Methodennamen — nicht mehr Generics.\",\"quiz\":[{\"q\":\"Was bedeutet Type Erasure?\",\"options\":[\"Generics werden zur Laufzeit entfernt und existieren nur zur Compilezeit\",\"Generics löschen ungenutzte Objekte\",\"Typen werden zufällig gewählt\"],\"correct\":0,\"explain\":\"Deshalb sind Konstrukte wie new T[] oder instanceof List<String> nicht möglich.\"},{\"q\":\"Wofür steht PECS?\",\"options\":[\"Producer extends, Consumer super\",\"Public extends, Class super\",\"Parameter extends, Class static\"],\"correct\":0,\"explain\":\"Liest du Werte heraus, nutze extends; fügst du Werte hinzu, nutze super.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m9-l4\",\"title\":\"Iteration, Modifikation und typische Fallen\",\"minutes\":8,\"body\":\"<p>Beim Durchlaufen und gleichzeitigen Ändern einer Collection gilt eine harte Regel: Wer während einer for-each-Schleife Elemente entfernt, bekommt eine <code>ConcurrentModificationException</code> — auch ohne Threads.</p><p>Die korrekten Wege:</p><ul><li><code>removeIf()</code> — der kürzeste und klarste Weg.</li><li><code>Iterator.remove()</code> — wenn du mehr Kontrolle brauchst.</li><li>Eine neue Collection aufbauen, statt die alte zu verändern.</li></ul><p>Zweite Falle: <code>Arrays.asList()</code> liefert eine <em>feste</em> Liste über dem Array — <code>add()</code> wirft <code>UnsupportedOperationException</code>. Ebenso sind <code>List.of()</code> und <code>Map.of()</code> unveränderlich.</p>\",\"code\":\"// Falsch: ConcurrentModificationException\\nfor (String s : liste) {\\n    if (s.isBlank()) liste.remove(s);\\n}\\n\\n// Richtig und lesbar\\nliste.removeIf(String::isBlank);\\n\\n// Richtig mit Iterator\\nIterator<String> it = liste.iterator();\\nwhile (it.hasNext()) {\\n    if (it.next().isBlank()) it.remove();\\n}\\n\\n// Falle: feste Größe\\nList<String> fest = Arrays.asList(\\\"a\\\", \\\"b\\\");\\nfest.add(\\\"c\\\");                      // UnsupportedOperationException\\nList<String> frei = new ArrayList<>(Arrays.asList(\\\"a\\\", \\\"b\\\"));  // so geht es\",\"tip\":\"Die ConcurrentModificationException heißt irreführend — sie hat mit Nebenläufigkeit meist nichts zu tun. Der Iterator merkt lediglich an einem internen Änderungszähler, dass die Collection zwischen zwei Schritten strukturell verändert wurde, und bricht ab, statt unbemerkt Elemente zu überspringen. Dieses „Fail-Fast\\\"-Verhalten ist ein Feature, kein Defekt.\",\"quiz\":[{\"q\":\"Wie entfernst du korrekt Elemente während der Iteration?\",\"options\":[\"Mit list.remove() in der for-each-Schleife\",\"Mit removeIf() oder Iterator.remove()\",\"Gar nicht, das ist unmöglich\"],\"correct\":1,\"explain\":\"Beide Wege informieren die Collection über die Änderung und halten den Iterator konsistent.\"},{\"q\":\"Was liefert Arrays.asList(\\\"a\\\",\\\"b\\\")?\",\"options\":[\"Eine normal erweiterbare ArrayList\",\"Eine Liste fester Größe über dem Array\",\"Ein unveränderliches Set\"],\"correct\":1,\"explain\":\"Setzen einzelner Werte ist erlaubt, Hinzufügen und Entfernen nicht.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m10\",\"part\":18,\"partTitle\":\"Java · Java-Sprachkern\",\"title\":\"Exceptions & Ressourcen\",\"lessons\":[{\"id\":\"java-m10-l1\",\"title\":\"Checked, Unchecked und die Fehlerhierarchie\",\"minutes\":8,\"body\":\"<p>Alles Werfbare stammt von <code>Throwable</code> ab. Darunter teilt sich der Baum:</p><ul><li><strong><code>Error</code></strong> — schwere JVM-Probleme wie <code>OutOfMemoryError</code>. Nicht fangen, nicht behandeln.</li><li><strong>Checked Exceptions</strong> (<code>Exception</code>, nicht <code>RuntimeException</code>) — der Compiler erzwingt Behandlung oder Weitergabe per <code>throws</code>. Beispiel: <code>IOException</code>.</li><li><strong>Unchecked Exceptions</strong> (<code>RuntimeException</code>) — Programmierfehler wie <code>NullPointerException</code>, <code>IllegalArgumentException</code>, <code>IndexOutOfBoundsException</code>.</li></ul><p>Die Faustregel: <strong>Checked</strong> für Situationen, aus denen ein Aufrufer sinnvoll wieder herauskommen kann (Datei fehlt, Netzwerk weg). <strong>Unchecked</strong> für Verletzungen des Vertrags, die der Aufrufer hätte vermeiden müssen.</p>\",\"code\":\"// Mehrere Typen in einem catch, Reihenfolge: speziell vor allgemein\\ntry {\\n    verarbeite(datei);\\n} catch (FileNotFoundException e) {\\n    log.warn(\\\"Datei fehlt: {}\\\", datei, e);\\n} catch (IOException | ParseException e) {\\n    throw new VerarbeitungsException(\\\"Verarbeitung fehlgeschlagen: \\\" + datei, e);\\n} finally {\\n    aufraeumen();          // läuft immer, auch bei return\\n}\",\"tip\":\"Wenn du eine Exception umwandelst, gib die ursprüngliche IMMER als cause mit (der zweite Konstruktorparameter). Sonst verlierst du den echten Stacktrace und damit die Stelle, an der das Problem tatsächlich entstanden ist. Ein „VerarbeitungsException: Verarbeitung fehlgeschlagen\\\" ohne Ursache ist in der Fehlersuche wertlos.\",\"quiz\":[{\"q\":\"Was kennzeichnet eine Checked Exception?\",\"options\":[\"Der Compiler erzwingt Behandlung oder Weitergabe\",\"Sie kann nicht gefangen werden\",\"Sie tritt nur zur Compilezeit auf\"],\"correct\":0,\"explain\":\"Checked Exceptions stehen für erwartbare Ausnahmesituationen, mit denen der Aufrufer umgehen muss.\"},{\"q\":\"Wozu dient der cause-Parameter beim Umwandeln einer Exception?\",\"options\":[\"Zur Verschönerung der Meldung\",\"Er erhält den ursprünglichen Stacktrace und damit die eigentliche Fehlerquelle\",\"Er ist reine Konvention ohne Wirkung\"],\"correct\":1,\"explain\":\"Ohne cause geht die Information verloren, wo der Fehler wirklich entstand.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m10-l2\",\"title\":\"try-with-resources und sauberes Aufräumen\",\"minutes\":7,\"body\":\"<p>Jede Ressource, die geöffnet wird — Datei, Datenbankverbindung, Netzwerksocket — muss geschlossen werden, <em>auch im Fehlerfall</em>. Der klassische <code>finally</code>-Block dafür ist fehleranfällig und geschwätzig.</p><p><strong>try-with-resources</strong> schließt automatisch alles, was <code>AutoCloseable</code> implementiert — in umgekehrter Öffnungsreihenfolge, und selbst dann, wenn im Block eine Exception fliegt.</p>\",\"code\":\"// Alt: fehleranfällig\\nBufferedReader r = null;\\ntry {\\n    r = new BufferedReader(new FileReader(pfad));\\n    return r.readLine();\\n} finally {\\n    if (r != null) r.close();      // close() kann selbst werfen ...\\n}\\n\\n// Modern: automatisch und sicher\\ntry (BufferedReader reader = Files.newBufferedReader(Path.of(pfad));\\n     Connection con = dataSource.getConnection()) {\\n    return reader.readLine();\\n}   // beide werden geschlossen, Connection zuerst\",\"tip\":\"Ein unterschätztes Detail: Wirft der try-Block eine Exception UND schlägt zusätzlich das Schließen fehl, würde im alten Muster die zweite die erste überschreiben — der eigentliche Fehler verschwindet. try-with-resources hängt den Schließfehler stattdessen als „suppressed exception\\\" an. Abrufen kannst du ihn mit getSuppressed(); sichtbar ist er ohnehin im Stacktrace.\",\"quiz\":[{\"q\":\"Welche Bedingung muss eine Klasse für try-with-resources erfüllen?\",\"options\":[\"Sie muss Serializable implementieren\",\"Sie muss AutoCloseable (oder Closeable) implementieren\",\"Sie muss final sein\"],\"correct\":1,\"explain\":\"Die close()-Methode aus AutoCloseable wird automatisch aufgerufen.\"},{\"q\":\"In welcher Reihenfolge werden mehrere Ressourcen geschlossen?\",\"options\":[\"In Öffnungsreihenfolge\",\"In umgekehrter Öffnungsreihenfolge\",\"Zufällig\"],\"correct\":1,\"explain\":\"Zuletzt geöffnete Ressourcen werden zuerst geschlossen — analog zum Stack.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m10-l3\",\"title\":\"Eigene Exceptions und der Umgang mit null\",\"minutes\":8,\"body\":\"<p>Gute Exception-Hierarchien spiegeln fachliche Fehlerkategorien, nicht technische Zufälle. Eine gemeinsame Basisklasse pro Fachbereich, darunter spezifische Typen für Fälle, auf die ein Aufrufer <em>unterschiedlich reagieren muss</em>.</p><p>Die <code>NullPointerException</code> ist Javas häufigster Laufzeitfehler. Die wirksamsten Gegenmittel:</p><ul><li><strong>Nie <code>null</code> zurückgeben</strong>, wo eine Collection erwartet wird — gib eine leere Liste zurück.</li><li><strong><code>Optional</code></strong> als Rückgabetyp, wenn ein Wert legitim fehlen kann (Modul 11).</li><li><strong>Früh prüfen</strong> mit <code>Objects.requireNonNull</code> im Konstruktor — dann scheitert es dort, wo der Fehler entsteht, nicht drei Schichten später.</li></ul>\",\"code\":\"public class KontoNichtGefundenException extends RuntimeException {\\n    private final String iban;\\n\\n    public KontoNichtGefundenException(String iban) {\\n        super(\\\"Kein Konto zur IBAN \\\" + iban);\\n        this.iban = iban;\\n    }\\n    public String getIban() { return iban; }\\n}\\n\\npublic Kontoauszug erstelle(String iban) {\\n    Objects.requireNonNull(iban, \\\"iban darf nicht null sein\\\");\\n    return repository.findByIban(iban)\\n            .map(this::baueAuszug)\\n            .orElseThrow(() -> new KontoNichtGefundenException(iban));\\n}\",\"tip\":\"Eine Regel, die in Reviews immer wieder auffällt: catch (Exception e) {} — ein leerer Catch-Block. Damit verschwindet der Fehler spurlos, das Programm läuft mit inkonsistentem Zustand weiter, und niemand erfährt davon. Ein Fehler, der laut und früh scheitert, ist immer billiger als einer, der still weiterläuft. Wenn du wirklich nichts tun willst, kommentiere zumindest, warum das hier sicher ist.\",\"quiz\":[{\"q\":\"Was solltest du statt null bei einer leeren Ergebnismenge zurückgeben?\",\"options\":[\"Eine leere Collection\",\"null mit Kommentar\",\"Eine Exception\"],\"correct\":0,\"explain\":\"Leere Collections ersparen jedem Aufrufer die Null-Prüfung.\"},{\"q\":\"Warum ist ein leerer catch-Block problematisch?\",\"options\":[\"Er verlangsamt das Programm\",\"Der Fehler verschwindet spurlos und das Programm läuft mit inkonsistentem Zustand weiter\",\"Er ist syntaktisch ungültig\"],\"correct\":1,\"explain\":\"Stille Fehler sind die teuersten, weil sie erst weit entfernt von ihrer Ursache auffallen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m11\",\"part\":19,\"partTitle\":\"Java · Modernes Java\",\"title\":\"Lambdas, Streams & funktionale Programmierung\",\"lessons\":[{\"id\":\"java-m11-l1\",\"title\":\"Lambdas und funktionale Interfaces\",\"minutes\":9,\"body\":\"<p>Ein <strong>Lambda</strong> ist eine kompakt geschriebene Funktion. Möglich ist das überall dort, wo ein <strong>funktionales Interface</strong> erwartet wird — ein Interface mit genau einer abstrakten Methode.</p><table class=\\\"lesson-table\\\"><tr><th>Interface</th><th>Signatur</th><th>Typischer Einsatz</th></tr><tr><td>Predicate&lt;T&gt;</td><td>T → boolean</td><td>filter()</td></tr><tr><td>Function&lt;T,R&gt;</td><td>T → R</td><td>map()</td></tr><tr><td>Consumer&lt;T&gt;</td><td>T → void</td><td>forEach()</td></tr><tr><td>Supplier&lt;T&gt;</td><td>() → T</td><td>Lazy-Erzeugung, orElseGet()</td></tr><tr><td>BinaryOperator&lt;T&gt;</td><td>(T,T) → T</td><td>reduce()</td></tr></table><p><strong>Methodenreferenzen</strong> (<code>::</code>) sind die Kurzform für Lambdas, die nichts weiter tun als eine bestehende Methode aufzurufen.</p>\",\"code\":\"// Lambda in vier Schreibweisen — alle gleichwertig\\nPredicate<String> leer1 = (String s) -> { return s.isBlank(); };\\nPredicate<String> leer2 = (s) -> s.isBlank();\\nPredicate<String> leer3 = s -> s.isBlank();\\nPredicate<String> leer4 = String::isBlank;        // Methodenreferenz\\n\\n// Eigenes funktionales Interface\\n@FunctionalInterface\\ninterface Rabattregel {\\n    BigDecimal berechne(BigDecimal betrag);\\n}\\nRabattregel standard = b -> b.multiply(new BigDecimal(\\\"0.05\\\"));\\n\\n// Funktionen verketten\\nFunction<String, String> trimmen = String::trim;\\nFunction<String, String> pipeline = trimmen.andThen(String::toUpperCase);\",\"tip\":\"Setz die Annotation @FunctionalInterface an eigene funktionale Interfaces. Sie ist technisch nicht nötig, aber der Compiler prüft dann, dass wirklich nur eine abstrakte Methode existiert. Fügt später jemand eine zweite hinzu, bricht der Build sofort — statt an hundert Lambda-Aufrufstellen gleichzeitig.\",\"quiz\":[{\"q\":\"Was kennzeichnet ein funktionales Interface?\",\"options\":[\"Es hat genau eine abstrakte Methode\",\"Es hat keine Methoden\",\"Es erbt von Function\"],\"correct\":0,\"explain\":\"Default- und statische Methoden sind zusätzlich erlaubt — nur eine abstrakte Methode darf es geben.\"},{\"q\":\"Welches Interface passt zu filter()?\",\"options\":[\"Function\",\"Predicate\",\"Consumer\"],\"correct\":1,\"explain\":\"filter() erwartet eine Bedingung, also T → boolean.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m11-l2\",\"title\":\"Die Stream-Pipeline\",\"minutes\":10,\"body\":\"<p>Ein <strong>Stream</strong> ist keine Datenstruktur, sondern eine Verarbeitungskette über einer Quelle. Jede Pipeline besteht aus drei Teilen:</p><ol><li><strong>Quelle</strong> — <code>collection.stream()</code>, <code>Stream.of(...)</code>, <code>Files.lines(...)</code>.</li><li><strong>Intermediäre Operationen</strong> — <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>distinct</code>, <code>limit</code>. Sie sind <strong>lazy</strong>: Es passiert noch nichts.</li><li><strong>Terminale Operation</strong> — <code>collect</code>, <code>forEach</code>, <code>count</code>, <code>reduce</code>, <code>anyMatch</code>. Erst sie stößt die Verarbeitung an.</li></ol><p>Die Laziness ist kein Detail: Bei <code>findFirst()</code> nach einem <code>filter()</code> wird nicht die ganze Liste gefiltert, sondern nur so weit gelesen, bis der erste Treffer feststeht.</p>\",\"code\":\"List<String> namen = kunden.stream()\\n        .filter(k -> k.umsatz().compareTo(GRENZE) > 0)\\n        .map(Kunde::name)\\n        .sorted()\\n        .toList();                    // Java 16+, unveränderliche Liste\\n\\n// Ohne terminale Operation passiert gar nichts:\\nkunden.stream().map(k -> { System.out.println(\\\"nie\\\"); return k; });\\n\\n// Primitive Streams vermeiden Boxing\\nint summe = bestellungen.stream().mapToInt(Bestellung::menge).sum();\\nOptionalDouble schnitt = IntStream.of(werte).average();\\n\\n// flatMap: verschachtelte Strukturen flach ziehen\\nList<Position> alle = bestellungen.stream()\\n        .flatMap(b -> b.positionen().stream())\\n        .toList();\",\"tip\":\"Die wichtigste Regel für Streams lautet: keine Seiteneffekte. Eine externe Liste innerhalb von forEach() zu befüllen funktioniert zwar sequenziell, bricht aber bei parallelStream() sofort — und die Ursache ist fürchterlich zu finden. Sammle stattdessen mit collect(), das ist auch parallel korrekt. Und: parallelStream() lohnt erst bei sehr großen Mengen und rechenintensiven Operationen; bei kleinen Listen ist es messbar langsamer.\",\"quiz\":[{\"q\":\"Wann beginnt ein Stream tatsächlich zu arbeiten?\",\"options\":[\"Sofort bei stream()\",\"Erst bei der terminalen Operation\",\"Nach dem ersten map()\"],\"correct\":1,\"explain\":\"Intermediäre Operationen bauen nur die Pipeline auf — sie sind lazy.\"},{\"q\":\"Warum sollte man in Streams Seiteneffekte vermeiden?\",\"options\":[\"Weil es verboten ist\",\"Weil der Code bei parallelStream() sonst fehlerhaft und nicht reproduzierbar wird\",\"Weil es langsamer ist\"],\"correct\":1,\"explain\":\"Nur seiteneffektfreie Pipelines lassen sich gefahrlos parallelisieren.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m11-l3\",\"title\":\"Collectors: Ergebnisse einsammeln\",\"minutes\":9,\"body\":\"<p><code>collect()</code> ist die vielseitigste terminale Operation. Die Fabrikmethoden in <code>Collectors</code> decken fast jeden Auswertungsfall ab — besonders <code>groupingBy</code> ersetzt ganze Schleifenkonstrukte.</p>\",\"code\":\"// Gruppieren\\nMap<String, List<Kunde>> nachOrt =\\n        kunden.stream().collect(Collectors.groupingBy(Kunde::ort));\\n\\n// Gruppieren und gleichzeitig aggregieren (downstream collector)\\nMap<String, Long> anzahlProOrt =\\n        kunden.stream().collect(Collectors.groupingBy(Kunde::ort, Collectors.counting()));\\n\\nMap<String, BigDecimal> umsatzProOrt = kunden.stream()\\n        .collect(Collectors.groupingBy(Kunde::ort,\\n                 Collectors.reducing(BigDecimal.ZERO, Kunde::umsatz, BigDecimal::add)));\\n\\n// Aufteilen in zwei Gruppen\\nMap<Boolean, List<Kunde>> vipUndRest =\\n        kunden.stream().collect(Collectors.partitioningBy(Kunde::istVip));\\n\\n// Zu Map, mit Konfliktbehandlung bei doppelten Schlüsseln\\nMap<String, Kunde> nachNummer = kunden.stream()\\n        .collect(Collectors.toMap(Kunde::nummer, k -> k, (alt, neu) -> neu));\\n\\n// Zu String zusammenfügen\\nString liste = kunden.stream().map(Kunde::name)\\n        .collect(Collectors.joining(\\\", \\\", \\\"[\\\", \\\"]\\\"));\",\"tip\":\"Collectors.toMap() wirft e";
-RP_LITERAL_1_text += "ine IllegalStateException, sobald zwei Elemente denselben Schlüssel liefern — und zwar mitten in der Verarbeitung, oft erst in Produktion mit echten Daten. Gib deshalb grundsätzlich die dritte Merge-Funktion mit und entscheide bewusst, was bei Dubletten gelten soll. Das ist einer der häufigsten Stream-Fehler überhaupt.\",\"quiz\":[{\"q\":\"Was leistet Collectors.groupingBy()?\",\"options\":[\"Es sortiert den Stream\",\"Es gruppiert Elemente nach einem Schlüssel in eine Map\",\"Es entfernt Duplikate\"],\"correct\":1,\"explain\":\"Optional lässt sich pro Gruppe ein weiterer Collector zum Aggregieren angeben.\"},{\"q\":\"Was passiert bei Collectors.toMap() mit doppelten Schlüsseln ohne Merge-Funktion?\",\"options\":[\"Der letzte Wert gewinnt\",\"Es wird eine IllegalStateException geworfen\",\"Der Eintrag wird übersprungen\"],\"correct\":1,\"explain\":\"Deshalb gehört die dritte Merge-Funktion praktisch immer dazu.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m11-l4\",\"title\":\"Optional richtig einsetzen\",\"minutes\":7,\"body\":\"<p><code>Optional&lt;T&gt;</code> macht im Typ sichtbar, dass ein Wert fehlen darf — statt dies dem Aufrufer über eine Kommentarzeile oder gar nicht mitzuteilen.</p><p><strong>Richtig eingesetzt</strong> als <em>Rückgabetyp</em> von Methoden, die legitim nichts finden können. <strong>Nicht</strong> als Feld, nicht als Parameter und nicht in Collections — dort erzeugt es nur Verpackungsaufwand.</p>\",\"code\":\"// Antipattern: isPresent + get — nur umständliches null-Handling\\nOptional<Kunde> k = repo.findByNummer(nr);\\nif (k.isPresent()) { return k.get().name(); } else { return \\\"unbekannt\\\"; }\\n\\n// Idiomatisch: als Kette\\nreturn repo.findByNummer(nr)\\n        .map(Kunde::name)\\n        .orElse(\\\"unbekannt\\\");\\n\\n// Alternative Enden\\nkunde.orElseGet(() -> ladeStandardKunden());        // lazy, nur bei Bedarf\\nkunde.orElseThrow(() -> new KundeNichtGefunden(nr));\\nkunde.ifPresentOrElse(this::verarbeite, this::meldeFehlend);\",\"tip\":\"Der Unterschied zwischen orElse und orElseGet wird ständig übersehen: orElse(teureBerechnung()) wertet das Argument IMMER aus — auch dann, wenn der Optional gefüllt ist und das Ergebnis gar nicht gebraucht wird. orElseGet(() -> teureBerechnung()) ruft die Funktion nur im Bedarfsfall auf. Bei einer Datenbankabfrage als Fallback ist das kein Stilfrage, sondern ein echter Performancefehler.\",\"quiz\":[{\"q\":\"Wofür ist Optional gedacht?\",\"options\":[\"Als Feldtyp in Entitäten\",\"Als Rückgabetyp für Methoden, die legitim nichts finden können\",\"Als Ersatz für alle Collections\"],\"correct\":1,\"explain\":\"Als Feld oder Parameter bringt Optional nur Overhead ohne echten Nutzen.\"},{\"q\":\"Was unterscheidet orElse von orElseGet?\",\"options\":[\"Kein Unterschied\",\"orElse wertet sein Argument immer aus, orElseGet nur bei leerem Optional\",\"orElseGet wirft eine Exception\"],\"correct\":1,\"explain\":\"Bei teuren Fallbacks ist das ein spürbarer Unterschied.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m12\",\"part\":19,\"partTitle\":\"Java · Modernes Java\",\"title\":\"Speichermodell & Performance\",\"lessons\":[{\"id\":\"java-m12-l1\",\"title\":\"Stack, Heap und Garbage Collection\",\"minutes\":9,\"body\":\"<p>Die JVM verwaltet zwei zentrale Speicherbereiche:</p><ul><li><strong>Stack</strong> — pro Thread, enthält Methodenaufrufe, lokale Variablen und primitive Werte. Streng nach dem LIFO-Prinzip, sehr schnell. Zu tiefe Rekursion sprengt ihn: <code>StackOverflowError</code>.</li><li><strong>Heap</strong> — geteilt von allen Threads, enthält alle Objekte. Wird von der <strong>Garbage Collection</strong> aufgeräumt.</li></ul><p>Die GC entfernt Objekte, die von keiner lebenden Referenz mehr erreichbar sind. Du kannst sie nicht erzwingen — <code>System.gc()</code> ist eine unverbindliche Bitte. Der Heap ist generationsweise aufgeteilt: Neue Objekte landen in der <em>Young Generation</em>, überlebende wandern in die <em>Old Generation</em>. Das ist effizient, weil die allermeisten Objekte sehr kurz leben.</p><p>Ein <strong>Memory Leak</strong> entsteht in Java nicht durch vergessenes Freigeben, sondern durch <em>vergessene Referenzen</em>: Eine statische Liste, die immer weiter wächst, hält jedes Element am Leben.</p>\",\"code\":\"public class Cache {\\n    // Leak: wächst unbegrenzt, nichts wird je entfernt\\n    private static final Map<String, byte[]> CACHE = new HashMap<>();\\n\\n    public static void put(String k, byte[] v) { CACHE.put(k, v); }\\n}\\n\\n// Besser: begrenzte Größe oder schwache Referenzen\\nprivate static final Map<String, byte[]> CACHE =\\n        Collections.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {\\n            @Override protected boolean removeEldestEntry(Map.Entry<String, byte[]> e) {\\n                return size() > 1000;          // LRU-Verhalten\\n            }\\n        });\",\"tip\":\"Wenn eine Anwendung über Tage langsam immer mehr Speicher braucht, ist die Ursache fast nie die GC, sondern eine Sammlung, die nie geleert wird — statische Maps, Listener, die nie abgemeldet werden, oder ThreadLocals in einem Thread-Pool. Ein Heap-Dump (jmap) plus Analyse mit dem Eclipse Memory Analyzer zeigt in Minuten, welcher Objektbaum den Speicher hält.\",\"quiz\":[{\"q\":\"Wo liegen Objekte in Java?\",\"options\":[\"Auf dem Stack\",\"Auf dem Heap\",\"In der Klassendatei\"],\"correct\":1,\"explain\":\"Der Stack hält nur lokale Variablen, Parameter und Referenzen — die Objekte selbst liegen im Heap.\"},{\"q\":\"Wodurch entsteht in Java typischerweise ein Memory Leak?\",\"options\":[\"Durch vergessenes free()\",\"Durch Referenzen, die unnötig gehalten werden, etwa in statischen Sammlungen\",\"Durch zu viele Klassen\"],\"correct\":1,\"explain\":\"Die GC räumt nur auf, was nicht mehr erreichbar ist.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m12-l2\",\"title\":\"Unveränderlichkeit und defensive Kopien\",\"minutes\":8,\"body\":\"<p><strong>Immutable</strong> Objekte lassen sich nach der Erzeugung nicht mehr ändern. Sie sind automatisch threadsicher, können bedenkenlos geteilt und als Map-Schlüssel verwendet werden — und eliminieren eine ganze Klasse von Fehlern.</p><p>Damit eine Klasse wirklich unveränderlich ist, reicht <code>final</code> an den Feldern nicht: Enthält sie eine Collection oder ein veränderliches Objekt, muss beim Hereingeben <em>und</em> beim Herausgeben kopiert werden.</p>\",\"code\":\"public final class Bestellung {\\n    private final String nummer;\\n    private final List<Position> positionen;\\n\\n    public Bestellung(String nummer, List<Position> positionen) {\\n        this.nummer = nummer;\\n        this.positionen = List.copyOf(positionen);   // Kopie beim Hereingeben\\n    }\\n    public List<Position> positionen() {\\n        return positionen;                           // bereits unveränderlich\\n    }\\n    // „Ändern\\\" erzeugt ein neues Objekt\\n    public Bestellung mitPosition(Position p) {\\n        var neu = new ArrayList<>(positionen);\\n        neu.add(p);\\n        return new Bestellung(nummer, neu);\\n    }\\n}\",\"tip\":\"Ohne die Kopie im Konstruktor ist die Unveränderlichkeit eine Illusion: Der Aufrufer behält eine Referenz auf die übergebene Liste und kann sie danach weiter verändern — dein „unveränderliches\\\" Objekt ändert sich mit. Genau dieser Fall wird in Code-Reviews am häufigsten übersehen, weil die Klasse auf den ersten Blick korrekt aussieht.\",\"quiz\":[{\"q\":\"Warum sind unveränderliche Objekte threadsicher?\",\"options\":[\"Weil die JVM sie sperrt\",\"Weil es keinen veränderlichen Zustand gibt, um den Threads konkurrieren könnten\",\"Weil sie synchronized sind\"],\"correct\":1,\"explain\":\"Ohne Zustandsänderung kann es keine Race Condition geben.\"},{\"q\":\"Warum reicht final an einem List-Feld nicht aus?\",\"options\":[\"final verhindert nur das Neuzuweisen der Referenz, nicht das Ändern des Inhalts\",\"final wirkt bei Listen gar nicht\",\"Weil Listen immer unveränderlich sind\"],\"correct\":0,\"explain\":\"Der Inhalt bleibt änderbar — deshalb braucht es eine unveränderliche Kopie.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m12-l3\",\"title\":\"Typische Performance-Fallen\",\"minutes\":8,\"body\":\"<p>Die meisten Java-Performanceprobleme stammen aus wenigen, immer gleichen Mustern:</p><ul><li><strong>String-Verkettung in Schleifen</strong> — aus O(n) wird O(n²). Lösung: <code>StringBuilder</code>.</li><li><strong>Autoboxing in Schleifen</strong> — <code>Integer</code> statt <code>int</code> erzeugt Millionen Objekte. Lösung: primitive Typen und <code>IntStream</code>.</li><li><strong>Falsche Collection</strong> — <code>contains()</code> auf einer großen <code>ArrayList</code> ist O(n); ein <code>HashSet</code> macht daraus O(1).</li><li><strong>Verschachtelte Schleifen über dieselbe Menge</strong> — quadratische Laufzeit, oft durch eine Map auflösbar.</li><li><strong>N+1-Abfragen</strong> gegen die Datenbank in einer Schleife (Modul 17).</li></ul>\",\"code\":\"// Autoboxing-Falle: erzeugt zwei Millionen Integer-Objekte\\nLong summe = 0L;                       // Wrapper statt primitive!\\nfor (long i = 0; i < 1_000_000; i++) {\\n    summe += i;                        // jedes += boxt neu\\n}\\n\\n// Korrekt: primitiv\\nlong summe2 = 0L;\\n\\n// Quadratisch: zwei Listen gegeneinander\\nfor (Kunde k : kunden) {\\n    for (Bestellung b : bestellungen) {\\n        if (b.kundeId().equals(k.id())) { ... }    // O(n*m)\\n    }\\n}\\n\\n// Linear: einmal indizieren, dann nachschlagen\\nMap<String, List<Bestellung>> index = bestellungen.stream()\\n        .collect(Collectors.groupingBy(Bestellung::kundeId));\\nfor (Kunde k : kunden) {\\n    List<Bestellung> seine = index.getOrDefault(k.id(), List.of());\\n}\",\"tip\":\"Die Grundregel lautet trotzdem: erst messen, dann optimieren. Nutze einen Profiler wie VisualVM oder den in IntelliJ integrierten, statt zu raten — und für Mikrobenchmarks JMH, weil selbstgebaute Zeitmessungen durch JIT-Optimierung und Aufwärmeffekte regelmäßig um Größenordnungen danebenliegen. Lesbarer Code schlägt vorauseilende Optimierung fast immer.\",\"quiz\":[{\"q\":\"Was ist das Problem bei Long summe = 0L in einer Millionenschleife?\",\"options\":[\"Es kompiliert nicht\",\"Jede Addition erzeugt durch Autoboxing ein neues Objekt\",\"Long kann nicht addieren\"],\"correct\":1,\"explain\":\"Der Wrapper-Typ zwingt zu Boxing und Unboxing bei jedem Schritt.\"},{\"q\":\"Wie löst man zwei verschachtelte Schleifen über verknüpfte Listen auf?\",\"options\":[\"Durch mehr Threads\",\"Durch einen Index als Map, danach Nachschlagen in O(1)\",\"Gar nicht\"],\"correct\":1,\"explain\":\"Aus O(n·m) wird so O(n+m) — derselbe Gedanke wie ein Datenbankindex.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m13\",\"part\":19,\"partTitle\":\"Java · Modernes Java\",\"title\":\"Nebenläufigkeit\",\"lessons\":[{\"id\":\"java-m13-l1\",\"title\":\"Threads, Runnable und der Lebenszyklus\",\"minutes\":8,\"body\":\"<p>Ein <strong>Thread</strong> ist ein eigener Ausführungsstrang innerhalb des Prozesses. Alle Threads teilen sich den Heap — genau daraus entstehen die Probleme der nächsten Lektion.</p><p>Zustände eines Threads: <code>NEW</code> → <code>RUNNABLE</code> → (<code>BLOCKED</code> / <code>WAITING</code> / <code>TIMED_WAITING</code>) → <code>TERMINATED</code>.</p><p>Threads direkt zu erzeugen ist heute selten richtig — Thread-Pools (nächste Lektion) verwalten sie effizienter. Wichtig zu verstehen ist trotzdem der Unterschied zwischen <code>start()</code> und <code>run()</code>: <code>start()</code> startet einen neuen Thread, <code>run()</code> führt den Code einfach im aktuellen Thread aus.</p>\",\"code\":\"Runnable aufgabe = () -> System.out.println(Thread.currentThread().getName());\\n\\nThread t = new Thread(aufgabe, \\\"worker-1\\\");\\nt.start();        // neuer Thread\\n// t.run();       // FALSCH: läuft im aufrufenden Thread, keine Nebenläufigkeit\\n\\nt.join();         // wartet, bis t fertig ist\\n\\n// Virtual Threads (Java 21): sehr leichtgewichtig, Millionen möglich\\nThread virtuell = Thread.ofVirtual().start(aufgabe);\",\"tip\":\"Virtual Threads aus Java 21 verändern die Praxis grundlegend: Sie sind so leichtgewichtig, dass man pro Anfrage einen eigenen Thread nehmen kann, statt Pools zu dimensionieren. Für blockierende Aufgaben wie Datenbank- oder HTTP-Aufrufe ist das heute der empfohlene Weg — für rein rechenintensive Arbeit bleibt der klassische Pool mit so vielen Threads wie CPU-Kerne richtig.\",\"quiz\":[{\"q\":\"Was ist der Unterschied zwischen start() und run()?\",\"options\":[\"Kein Unterschied\",\"start() startet einen neuen Thread, run() führt den Code im aktuellen Thread aus\",\"run() ist schneller\"],\"correct\":1,\"explain\":\"Der direkte Aufruf von run() erzeugt überhaupt keine Nebenläufigkeit.\"},{\"q\":\"Wofür eignen sich Virtual Threads besonders?\",\"options\":[\"Für rechenintensive Berechnungen\",\"Für viele blockierende Aufgaben wie Netzwerk- und Datenbankaufrufe\",\"Für die grafische Oberfläche\"],\"correct\":1,\"explain\":\"Beim Blockieren geben sie den Trägerthread frei — deshalb skalieren sie enorm.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m13-l2\",\"title\":\"Race Conditions, synchronized und volatile\",\"minutes\":10,\"body\":\"<p>Sobald zwei Threads denselben veränderlichen Zustand anfassen, drohen zwei verschiedene Probleme:</p><ul><li><strong>Race Condition</strong> — <code>zaehler++</code> ist keine einzelne Operation, sondern Lesen, Erhöhen, Schreiben. Zwei Threads können dieselbe Ausgangszahl lesen; eine Erhöhung geht verloren.</li><li><strong>Sichtbarkeit</strong> — ohne Synchronisation darf ein Thread Änderungen eines anderen dauerhaft <em>nicht sehen</em>, weil Werte in CPU-Caches oder Registern liegen.</li></ul><p><code>synchronized</code> löst beides: gegenseitiger Ausschluss <em>und</em> Sichtbarkeit. <code>volatile</code> löst <strong>nur</strong> die Sichtbarkeit — es macht <code>zaehler++</code> nicht atomar. Für Zähler nimmt man <code>AtomicInteger</code>, für Sammlungen die Klassen aus <code>java.util.concurrent</code>.</p>\",\"code\":\"// Kaputt: verlorene Erhöhungen\\nprivate int zaehler = 0;\\npublic void erhoehe() { zaehler++; }\\n\\n// Korrekt per Sperre\\nprivate final Object lock = new Object();\\npublic void erhoehe() { synchronized (lock) { zaehler++; } }\\n\\n// Besser: ohne Sperre, atomar\\nprivate final AtomicInteger zaehler = new AtomicInteger();\\npublic void erhoehe() { zaehler.incrementAndGet(); }\\n\\n// volatile: nur Sichtbarkeit, ideal für ein Abbruch-Flag\\nprivate volatile boolean abbrechen = false;\\n\\n// Threadsichere Sammlungen\\nMap<String, Integer> map = new ConcurrentHashMap<>();\\nmap.merge(\\\"key\\\", 1, Integer::sum);      // atomar\",\"tip\":\"Der gefährlichste Aspekt von Nebenläufigkeitsfehlern ist, dass sie im Test meist nicht auftreten: Auf dem Entwicklungsrechner mit wenig Last passiert die kritische Überschneidung vielleicht in einem von einer Million Durchläufe — in Produktion unter Volllast dann ständig. Verlass dich deshalb nie darauf, dass „es funktioniert\\\", sondern nur auf ein korrektes Synchronisationskonzept. Und: Halte kritische Abschnitte so kurz wie möglich.\",\"quiz\":[{\"q\":\"Warum ist zaehler++ nicht threadsicher?\",\"options\":[\"Weil es zu langsam ist\",\"Weil es aus Lesen, Erhöhen und Schreiben besteht und dazwischen unterbrochen werden kann\",\"Weil int zu klein ist\"],\"correct\":1,\"explain\":\"Zwei Threads können denselben Ausgangswert lesen — eine Erhöhung geht verloren.\"},{\"q\":\"Was leistet volatile?\",\"options\":[\"Gegenseitigen Ausschluss\",\"Nur Sichtbarkeit von Änderungen zwischen Threads\",\"Atomare Rechenoperationen\"],\"correct\":1,\"explain\":\"Für atomare Zähloperationen braucht es AtomicInteger oder synchronized.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m13-l3\",\"title\":\"ExecutorService und Thread-Pools\",\"minutes\":9,\"body\":\"<p>Threads selbst zu erzeugen skaliert schlecht: Jeder kostet Speicher und Erzeugungszeit. Ein <strong>ExecutorService</strong> verwaltet einen Pool wiederverwendbarer Threads und nimmt Aufgaben entgegen.</p><ul><li><code>Runnable</code> — Aufgabe ohne Rückgabewert.</li><li><code>Callable&lt;T&gt;</code> — Aufgabe mit Rückgabewert, liefert ein <code>Future&lt;T&gt;</code>.</li><li><code>Future.get()</code> blockiert, bis das Ergebnis da ist — und verpackt geworfene Exceptions in eine <code>ExecutionException</code>.</li></ul><p>Pools müssen sauber beendet werden, sonst hält die JVM den Prozess offen. Seit Java 19 implementiert <code>ExecutorService</code> <code>AutoCloseable</code> und passt damit in try-with-resources.</p>\",\"code\":\"try (var pool = Executors.newFixedThreadPool(4)) {\\n    List<Callable<BigDecimal>> aufgaben = kunden.stream()\\n            .map(k -> (Callable<BigDecimal>) () -> berechneUmsatz(k))\\n            .toList();\\n\\n    List<Future<BigDecimal>> ergebnisse = pool.invokeAll(aufgaben);\\n\\n    BigDecimal gesamt = BigDecimal.ZERO;\\n    for (Future<BigDecimal> f : ergebnisse) {\\n        gesamt = gesamt.add(f.get());     // wirft ExecutionException bei Fehler\\n    }\\n}   // schließt den Pool und wartet auf die laufenden Aufgaben\\n\\n// Für viele blockierende Aufgaben (Java 21)\\nvar pool = Executors.newVirtualThreadPerTaskExecutor();\",\"tip\":\"Die Pool-Größe ist keine Geschmacksfrage: Für CPU-gebundene Arbeit nimmt man etwa so viele Threads wie Kerne (Runtime.availableProcessors()) — mehr bringt nichts und kostet Kontextwechsel. Für I/O-gebundene Arbeit dürfen es deutlich mehr sein, weil die Threads ohnehin überwiegend warten. Seit Java 21 löst man den zweiten Fall am elegantesten mit Virtual Threads, ganz ohne Dimensionierung.\",\"quiz\":[{\"q\":\"Was liefert die Ausführung eines Callable über einen ExecutorService?\",\"options\":[\"Ein Future mit dem späteren Ergebnis\",\"Direkt den Wert\",\"Immer null\"],\"correct\":0,\"explain\":\"Future.get() blockiert, bis das Ergebnis vorliegt.\"},{\"q\":\"Wie dimensioniert man einen Pool für CPU-intensive Aufgaben?\",\"options\":[\"So viele Threads wie möglich\",\"Etwa so viele wie verfügbare Prozessorkerne\",\"Immer genau einen\"],\"correct\":1,\"explain\":\"Mehr Threads bringen bei reiner Rechenlast keinen Gewinn, nur Kontextwechsel.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m13-l4\",\"title\":\"CompletableFuture: asynchrone Ketten\",\"minutes\":8,\"body\":\"<p><code>CompletableFuture</code> erlaubt es, asynchrone Schritte zu verketten, statt auf jedes Zwischenergebnis blockierend zu warten. Das ist die Grundlage moderner, reaktiver Java-Anwendungen.</p><ul><li><code>supplyAsync</code> startet eine Berechnung.</li><li><code>thenApply</code> transformiert das Ergebnis, <code>thenCompose</code> verkettet einen weiteren asynchronen Aufruf.</li><li><code>thenCombine</code> führt zwei unabhängige Ergebnisse zusammen.</li><li><code>exceptionally</code> beziehungsweise <code>handle</code> behandeln Fehler innerhalb der Kette.</li></ul>\",\"code\":\"CompletableFuture<Kunde> kundeF   = CompletableFuture.supplyAsync(() -> ladeKunde(id));\\nCompletableFuture<Bonitaet> bonF  = CompletableFuture.supplyAsync(() -> pruefeBonitaet(id));\\n\\nCompletableFuture<Angebot> angebot = kundeF\\n        .thenCombine(bonF, this::baueAngebot)      // beide parallel, dann zusammen\\n        .thenApply(this::rundePreise)\\n        .exceptionally(ex -> {\\n            log.error(\\\"Angebot fehlgeschlagen\\\", ex);\\n            return Angebot.leer();\\n        });\\n\\nAngebot ergebnis = angebot.join();   // erst hier wird gewartet\",\"tip\":\"Achte darauf, welcher Thread deine Fortsetzungen ausführt: Ohne eigenen Executor landen sie im gemeinsamen ForkJoinPool.commonPool(). Blockierende Aufrufe dort legen potenziell die parallelen Streams der ganzen Anwendung lahm. Gib bei blockierender Arbeit deshalb immer einen eigenen Executor mit — supplyAsync(..., meinPool).\",\"quiz\":[{\"q\":\"Wozu dient thenCombine?\",\"options\":[\"Zum Abbrechen einer Kette\",\"Um zwei unabhängige asynchrone Ergebnisse zusammenzuführen\",\"Um synchron zu warten\"],\"correct\":1,\"explain\":\"Beide Berechnungen laufen parallel, die Funktion verbindet ihre Resultate.\"},{\"q\":\"Warum sollte man bei blockierender Arbeit einen eigenen Executor angeben?\",\"options\":[\"Aus Stilgründen\",\"Weil sonst der gemeinsame ForkJoinPool blockiert und andere Aufgaben ausbremst\",\"Weil es sonst nicht kompiliert\"],\"correct\":1,\"explain\":\"Der commonPool ist knapp dimensioniert und wird anwendungsweit geteilt.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m14\",\"part\":19,\"partTitle\":\"Java · Modernes Java\",\"title\":\"Datum, Zeit, Dateien & JSON\",\"lessons\":[{\"id\":\"java-m14-l1\",\"title\":\"java.time richtig verwenden\",\"minutes\":8,\"body\":\"<p>Die alten Klassen <code>Date</code>, <code>Calendar</code> und <code>SimpleDateFormat</code> sind veränderlich, nicht threadsicher und in der Bedienung fehleranfällig. Seit Java 8 gilt ausschließlich <code>java.time</code> — unveränderlich und klar getrennt nach Anwendungsfall:</p><table class=\\\"lesson-table\\\"><tr><th>Typ</th><th>Enthält</th><th>Einsatz</th></tr><tr><td>LocalDate</td><td>Datum ohne Zeit</td><td>Geburtstag, Fälligkeit</td></tr><tr><td>LocalTime</td><td>Zeit ohne Datum</td><td>Öffnungszeit</td></tr><tr><td>LocalDateTime</td><td>Datum und Zeit, ohne Zone</td><td>Lokaler Termin</td></tr><tr><td>ZonedDateTime</td><td>Mit Zeitzone</td><td>Termine über Zonen hinweg</td></tr><tr><td>Instant</td><td>Zeitpunkt auf der UTC-Zeitachse</td><td>Zeitstempel, Protokolle</td></tr><tr><td>Duration / Period</td><td>Zeitspanne / Datumsspanne</td><td>Differenzen</td></tr></table>\",\"code\":\"LocalDate heute = LocalDate.now();\\nLocalDate faellig = heute.plusDays(30);              // erzeugt ein NEUES Objekt\\nboolean ueberfaellig = faellig.isBefore(LocalDate.now());\\n\\nPeriod alter = Period.between(geburtstag, heute);\\nint jahre = alter.getYears();\\n\\nDuration dauer = Duration.between(start, ende);\\nlong minuten = dauer.toMinutes();\\n\\nDateTimeFormatter fmt = DateTimeFormatter.ofPattern(\\\"dd.MM.yyyy\\\");\\nString text = faellig.format(fmt);\\nLocalDate zurueck = LocalDate.parse(\\\"31.12.2026\\\", fmt);\\n\\n// Für gespeicherte Zeitstempel: UTC verwenden\\nInstant zeitstempel = Instant.now();\",\"tip\":\"Speichere Zeitstempel grundsätzlich als Instant beziehungsweise in UTC und wandle erst bei der Anzeige in die Zeitzone des Nutzers um. Wer lokale Zeiten speichert, bekommt spätestens bei der Sommerzeitumstellung Probleme: Eine Stunde existiert doppelt, eine gar nicht. Genau daran scheitern jedes Jahr echte Abrechnungssysteme.\",\"quiz\":[{\"q\":\"Was liefert heute.plusDays(30) bei einem LocalDate?\",\"options\":[\"Es verändert das Objekt\",\"Es liefert ein neues Objekt, das Original bleibt unverändert\",\"Es wirft eine Exception\"],\"correct\":1,\"explain\":\"Alle java.time-Typen sind unveränderlich — jede Operation gibt ein neues Objekt zurück.\"},{\"q\":\"Welcher Typ passt für einen gespeicherten Zeitstempel?\",\"options\":[\"LocalDateTime\",\"Instant (UTC)\",\"LocalTime\"],\"correct\":1,\"explain\":\"Instant ist zeitzonenunabhängig und damit eindeutig.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m14-l2\",\"title\":\"Dateien lesen und schreiben mit NIO.2\",\"minutes\":8,\"body\":\"<p>Die moderne Datei-API rund um <code>Path</code> und <code>Files</code> ersetzt die alte <code>File</code>-Klasse. Sie ist kürzer, liefert aussagekräftige Exceptions statt eines nichtssagenden <code>false</code> und arbeitet plattformunabhängig.</p><p>Für große Dateien gilt: nicht komplett in den Speicher laden. <code>Files.lines()</code> liefert einen Stream, der zeilenweise liest — und muss wegen der offenen Datei in try-with-resources stehen.</p>\",\"code\":\"Path pfad = Path.of(\\\"daten\\\", \\\"kunden.csv\\\");     // plattformneutral\\n\\n// Kleine Datei komplett\\nString inhalt = Files.readString(pfad, StandardCharsets.UTF_8);\\nList<String> zeilen = Files.readAllLines(pfad);\\n\\n// Große Datei: streamen, nicht laden\\ntry (Stream<String> stream = Files.lines(pfad, StandardCharsets.UTF_8)) {\\n    long treffer = stream.filter(z -> z.contains(\\\"Berlin\\\")).count();\\n}\\n\\n// Schreiben (Verzeichnis vorher sicherstellen)\\nFiles.createDirectories(pfad.getParent());\\nFiles.writeString(pfad, inhalt, StandardCharsets.UTF_8,\\n        StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);\",\"tip\":\"Gib das Encoding immer explizit an. Ohne Angabe nutzte Java bis Version 17 die Plattformvorgabe — auf einem deutschen Windows also Windows-1252, auf dem Linux-Server UTF-8. Ergebnis: Umlaute, die lokal korrekt aussehen und in Produktion zerschossen sind. Seit Java 18 ist UTF-8 die Vorgabe, aber expliziter Code bleibt eindeutig und funktioniert auf jeder Version gleich.\",\"quiz\":[{\"q\":\"Warum muss Files.lines() in try-with-resources stehen?\",\"options\":[\"Aus Konvention\",\"Weil der Stream eine offene Datei hält, die geschlossen werden muss\",\"Weil es sonst nicht kompiliert\"],\"correct\":1,\"explain\":\"Anders als Collection-Streams besitzt er eine Systemressource.\"},{\"q\":\"Warum sollte das Encoding explizit angegeben werden?\",\"options\":[\"Um Speicher zu sparen\",\"Weil sonst plattformabhängig unterschiedlich kodiert wird und Umlaute brechen\",\"Weil UTF-8 langsamer ist\"],\"correct\":1,\"explain\":\"Der Klassiker: lokal korrekt, auf dem Server zerschossen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m14-l3\",\"title\":\"JSON und Datenaustausch\",\"minutes\":7,\"body\":\"<p>JSON ist das Standardformat für den Datenaustausch. Java bringt keinen eigenen JSON-Parser mit — üblich sind <strong>Jackson</strong> (am weitesten verbreitet) oder <strong>Gson</strong>.</p><p>Das Grundprinzip heißt <strong>Serialisierung</strong> (Objekt → JSON) und <strong>Deserialisierung</strong> (JSON → Objekt). Für Zieltypen eignen sich <code>record</code>-Klassen besonders gut: unveränderlich, knapp, mit korrektem <code>equals</code>.</p>\",\"code\":\"// Jackson\\nObjectMapper mapper = new ObjectMapper()\\n        .registerModule(new JavaTimeModule())          // für java.time\\n        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);\\n\\npublic record KundeDto(String nummer, String name, LocalDate seit) {}\\n\\nString json = mapper.writeValueAsString(new KundeDto(\\\"K1\\\", \\\"Ada\\\", LocalDate.now()));\\nKundeDto zurueck = mapper.readValue(json, KundeDto.class);\\n\\n// Listen brauchen einen TypeReference, wegen Type Erasure (Modul 9)\\nList<KundeDto> liste = mapper.readValue(json, new TypeReference<List<KundeDto>>() {});\",\"tip\":\"Zwei Praxishinweise, die regelmäßig Zeit kosten: Erstens braucht Jackson für java.time das JavaTimeModule, sonst landen Datumsangaben als kryptische Zahlenarrays im JSON. Zweitens verwende für Schnittstellen eigene DTO-Klassen statt deiner Domänenobjekte — sonst ändert jede interne Umbenennung stillschweigend deine öffentliche API, und externe Aufrufer brechen.\",\"quiz\":[{\"q\":\"Was bedeutet Deserialisierung?\",\"options\":[\"Objekt in JSON umwandeln\",\"JSON in ein Java-Objekt umwandeln\",\"Eine Datei löschen\"],\"correct\":1,\"explain\":\"Serialisierung ist der umgekehrte Weg vom Objekt zum Textformat.\"},{\"q\":\"Warum eigene DTO-Klassen für Schnittstellen statt der Domänenobjekte?\",\"options\":[\"Damit interne Änderungen nicht ungewollt die öffentliche API verändern\",\"Weil Jackson Domänenobjekte nicht lesen kann\",\"Aus Performancegründen\"],\"correct\":0,\"explain\":\"Die DTO-Schicht entkoppelt interne Modellierung von der veröffentlichten Schnittstelle.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m15\",\"part\":20,\"partTitle\":\"Java · Professionelle Entwicklung\",\"title\":\"Testen mit JUnit 5\",\"lessons\":[{\"id\":\"java-m15-l1\",\"title\":\"JUnit 5: Struktur und Assertions\",\"minutes\":9,\"body\":\"<p>Ein guter Test folgt dem <strong>AAA-Muster</strong>: <em>Arrange</em> (Vorbereiten), <em>Act</em> (Ausführen), <em>Assert</em> (Prüfen). Der Testname sollte beschreiben, <em>was</em> erwartet wird — nicht „test1\\\".</p><ul><li><code>@Test</code> markiert eine Testmethode, <code>@BeforeEach</code>/<code>@AfterEach</code> laufen vor/nach jedem Test.</li><li><code>@DisplayName</code> erlaubt sprechende Namen im Report.</li><li><code>@ParameterizedTest</code> führt denselben Test mit vielen Datensätzen aus — ideal für Äquivalenzklassen und Grenzwerte aus Modul 6.</li><li><code>assertThrows</code> prüft, dass eine Exception fliegt — inklusive Meldung.</li></ul>\",\"code\":\"class KontoTest {\\n\\n    private Konto konto;\\n\\n    @BeforeEach\\n    void setUp() {\\n        konto = new Konto(\\\"DE123\\\", new BigDecimal(\\\"100.00\\\"));\\n    }\\n\\n    @Test\\n    @DisplayName(\\\"Einzahlung erhöht den Saldo um den Betrag\\\")\\n    void einzahlungErhoehtSaldo() {\\n        konto.einzahlen(new BigDecimal(\\\"50.00\\\"));            // Act\\n        assertEquals(new BigDecimal(\\\"150.00\\\"), konto.getSaldo());\\n    }\\n\\n    @Test\\n    void negativeEinzahlungWirdAbgelehnt() {\\n        var ex = assertThrows(IllegalArgumentException.class,\\n                () -> konto.einzahlen(new BigDecimal(\\\"-5\\\")));\\n        assertTrue(ex.getMessage().contains(\\\"positiv\\\"));\\n    }\\n\\n    @ParameterizedTest\\n    @ValueSource(ints = {17, 18, 65, 66})                    // Grenzwertanalyse\\n    void altersgrenzePruefen(int alter) {\\n        assertEquals(alter >= 18 && alter <= 65, Regel.istZulaessig(alter));\\n    }\\n}\",\"tip\":\"Ein Test, der nie rot war, beweist nichts. Wenn du einen Test für bestehenden Code schreibst, brich die Implementierung testweise absichtlich — läuft der Test trotzdem grün durch, prüft er nicht, was du glaubst. Diese Zehn-Sekunden-Gegenprobe deckt erstaunlich viele wertlose Tests auf.\",\"quiz\":[{\"q\":\"Wofür steht das AAA-Muster im Test?\",\"options\":[\"Arrange, Act, Assert\",\"Analyze, Apply, Archive\",\"Assert, Attach, Abort\"],\"correct\":0,\"explain\":\"Vorbereiten, Ausführen, Prüfen — diese Dreiteilung macht Tests lesbar.\"},{\"q\":\"Wofür eignet sich @ParameterizedTest besonders?\",\"options\":[\"Für Tests ohne Daten\",\"Um denselben Test mit mehreren Eingabewerten laufen zu lassen, etwa bei Grenzwerten\",\"Um Tests zu deaktivieren\"],\"correct\":1,\"explain\":\"Genau die Kombination aus Äquivalenzklassen und Grenzwerten aus der Testtheorie.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m15-l2\",\"title\":\"Test Doubles mit Mockito\",\"minutes\":9,\"body\":\"<p>Ein Unit-Test soll <em>eine</em> Einheit prüfen — nicht nebenbei Datenbank und Netzwerk. Abhängigkeiten werden deshalb durch <strong>Test Doubles</strong> ersetzt:</p><ul><li><strong>Stub</strong> — liefert vorgegebene Antworten.</li><li><strong>Mock</strong> — zusätzlich wird geprüft, <em>ob und wie</em> er aufgerufen wurde.</li><li><strong>Fake</strong> — eine vereinfachte, aber funktionierende Implementierung (z. B. eine In-Memory-Datenbank).</li></ul><p>Voraussetzung dafür ist <strong>Dependency Injection</strong>: Die Klasse bekommt ihre Abhängigkeiten von außen, statt sie selbst mit <code>new</code> zu erzeugen (Modul 19).</p>\",\"code\":\"@ExtendWith(MockitoExtension.class)\\nclass BestellServiceTest {\\n\\n    @Mock  private KundeRepository repo;\\n    @Mock  private MailSender mailer;\\n    @InjectMocks private BestellService service;\\n\\n    @Test\\n    void versendetBestaetigungBeiGueltigerBestellung() {\\n        when(repo.findByNummer(\\\"K1\\\")).thenReturn(Optional.of(new Kunde(\\\"K1\\\", \\\"Ada\\\")));\\n\\n        service.bestelle(\\\"K1\\\", artikel);\\n\\n        verify(mailer).sende(eq(\\\"K1\\\"), contains(\\\"Bestätigung\\\"));\\n        verify(mailer, never()).sendeFehler(any());\\n    }\\n\\n    @Test\\n    void unbekannterKundeFuehrtZuFehler() {\\n        when(repo.findByNummer(\\\"X\\\")).thenReturn(Optional.empty());\\n        assertThrows(KundeNichtGefunden.class, () -> service.bestelle(\\\"X\\\", artikel));\\n    }\\n}\",\"tip\":\"Mocke nur, was du selbst besitzt — also deine eigenen Interfaces, nicht fremde Bibliotheksklassen. Wer eine externe API mockt, testet am Ende nur die eigene Annahme über deren Verhalten; ändert die Bibliothek ihr tatsächliches Verhalten, bleibt der Test grün und die Produktion bricht. Für fremde Systeme sind Integrationstests oder ein Fake die ehrlichere Wahl.\",\"quiz\":[{\"q\":\"Was unterscheidet einen Mock von einem Stub?\",\"options\":[\"Kein Unterschied\",\"Beim Mock wird zusätzlich geprüft, ob und wie er aufgerufen wurde\",\"Ein Stub ist schneller\"],\"correct\":1,\"explain\":\"Stubs liefern nur Antworten; Mocks verifizieren zusätzlich die Interaktion.\"},{\"q\":\"Was ist die Voraussetzung dafür, Abhängigkeiten im Test ersetzen zu können?\",\"options\":[\"Dependency Injection statt new im Methodenrumpf\",\"Möglichst viele statische Methoden\",\"Finale Klassen\"],\"correct\":0,\"explain\":\"Nur von außen gesetzte Abhängigkeiten lassen sich im Test austauschen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m15-l3\",\"title\":\"TDD, Testabdeckung und was Tests wirklich wert sind\",\"minutes\":8,\"body\":\"<p><strong>Test-Driven Development</strong> folgt dem Zyklus <em>Red – Green – Refactor</em>: erst ein fehlschlagender Test, dann die minimale Implementierung, dann aufräumen bei grünen Tests. Der eigentliche Gewinn ist nicht die Testabdeckung, sondern der Druck auf ein sauberes Design — schwer testbarer Code ist fast immer schlecht geschnittener Code.</p><p><strong>Code Coverage</strong> (z. B. mit JaCoCo) misst, welcher Anteil des Codes von Tests durchlaufen wurde. Die Kennzahl ist nützlich, aber verführerisch: Sie sagt, was <em>ausgeführt</em> wurde — nicht, was tatsächlich <em>geprüft</em> wurde. Ein Test ohne einzige Assertion erzeugt 100 % Abdeckung und null Sicherheit.</p>\",\"code\":\"// 1. Red: Test zuerst, er schlägt fehl\\n@Test\\nvoid rabattAbHundertEuro() {\\n    assertEquals(new BigDecimal(\\\"10.00\\\"),\\n                 rechner.rabatt(new BigDecimal(\\\"100.00\\\")));\\n}\\n\\n// 2. Green: einfachste Implementierung, die den Test erfüllt\\npublic BigDecimal rabatt(BigDecimal betrag) {\\n    return betrag.compareTo(GRENZE) >= 0\\n            ? betrag.multiply(new BigDecimal(\\\"0.10\\\"))\\n            : BigDecimal.ZERO;\\n}\\n\\n// 3. Refactor: benennen, extrahieren, vereinfachen — Tests bleiben grün\",\"tip\":\"Eine Zahl, die in Projekten viel Streit erspart: Nicht die Höhe der Abdeckung entscheidet, sondern wo sie liegt. 95 % auf trivialen Gettern und 40 % auf der Preisberechnung sind schlechter als 70 % gleichmäßig über die Geschäftslogik. Prüfe deshalb die Abdeckung der fachlich riskanten Klassen gezielt, statt einer globalen Prozentmarke hinterherzujagen.\",\"quiz\":[{\"q\":\"Wie lautet der TDD-Zyklus?\",\"options\":[\"Red, Green, Refactor\",\"Plan, Build, Ship\",\"Write, Deploy, Fix\"],\"correct\":0,\"explain\":\"Erst der fehlschlagende Test, dann die Implementierung, dann das Aufräumen.\"},{\"q\":\"Was sagt eine hohe Code Coverage NICHT aus?\",\"options\":[\"Welcher Code ausgeführt wurde\",\"Dass das Verhalten tatsächlich geprüft wurde\",\"Welche Zeilen erreicht wurden\"],\"correct\":1,\"explain\":\"Ein Test ohne Assertion erzeugt Abdeckung, aber keinerlei Sicherheit.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m16\",\"part\":20,\"partTitle\":\"Java · Professionelle Entwicklung\",\"title\":\"Build, Abhängigkeiten & Ökosystem\",\"lessons\":[{\"id\":\"java-m16-l1\",\"title\":\"Maven und Gradle verstehen\",\"minutes\":8,\"body\":\"<p>Ein Build-Werkzeug übernimmt Kompilieren, Testen, Paketieren und vor allem das <strong>Abhängigkeitsmanagement</strong> — inklusive der transitiven Abhängigkeiten deiner Abhängigkeiten.</p><p><strong>Maven</strong> ist deklarativ (XML, feste Konventionen, vorhersehbar), <strong>Gradle</strong> ist flexibler (Kotlin/Groovy-DSL, schneller durch Build-Cache). Beide kennen denselben Lebenszyklus: <code>compile</code> → <code>test</code> → <code>package</code> → <code>install</code>/<code>publish</code>.</p><p>Die <strong>Scopes</strong> steuern, wann eine Abhängigkeit verfügbar ist: <code>compile</code> überall, <code>test</code> nur in Tests, <code>provided</code> zur Compilezeit (stellt die Laufzeitumgebung bereit).</p>\",\"code\":\"<!-- Maven: pom.xml -->\\n<dependency>\\n    <groupId>org.junit.jupiter</groupId>\\n    <artifactId>junit-jupiter</artifactId>\\n    <version>5.11.0</version>\\n    <scope>test</scope>\\n</dependency>\\n\\nmvn clean verify        # baut und testet alles von Grund auf\\nmvn dependency:tree     # zeigt, woher eine Bibliothek wirklich kommt\",\"codeLang\":\"Maven / Terminal\",\"tip\":\"Wenn zur Laufzeit eine NoSuchMethodError oder ClassNotFoundException auftaucht, obwohl alles kompiliert, liegt fast immer ein Versionskonflikt vor: Zwei Abhängigkeiten ziehen dieselbe Bibliothek in unterschiedlichen Versionen, und es gewinnt die falsche. mvn dependency:tree zeigt den Konflikt in Sekunden — das ist der erste Befehl, den du bei solchen Fehlern eingibst.\",\"quiz\":[{\"q\":\"Was bedeutet der Scope test bei einer Abhängigkeit?\",\"options\":[\"Sie wird nur beim Kompilieren und Ausführen der Tests verwendet\",\"Sie wird nie verwendet\",\"Sie ist nur in Produktion aktiv\"],\"correct\":0,\"explain\":\"So landet etwa JUnit nicht im ausgelieferten Artefakt.\"},{\"q\":\"Womit findest du Versionskonflikte transitiver Abhängigkeiten?\",\"options\":[\"mvn clean\",\"mvn dependency:tree\",\"mvn compile\"],\"correct\":1,\"explain\":\"Der Abhängigkeitsbaum zeigt, welche Version sich durchgesetzt hat und warum.\"}]},{\"id\":\"java-m16-l2\",\"title\":\"Logging statt System.out\",\"minutes\":7,\"body\":\"<p><code>System.out.println</code> gehört nicht in Produktivcode: nicht abschaltbar, keine Zeitstempel, keine Level, kein Kontext, keine Ziele außer der Konsole.</p><p>Standard ist <strong>SLF4J</strong> als Fassade mit <strong>Logback</strong> oder <strong>Log4j2</strong> als Implementierung. Die Level bilden eine Hierarchie: <code>ERROR</code> → <code>WARN</code> → <code>INFO</code> → <code>DEBUG</code> → <code>TRACE</code>.</p><ul><li><strong>ERROR</strong> — etwas ist kaputt, jemand muss handeln.</li><li><strong>WARN</strong> — auffällig, aber verkraftbar.</li><li><strong>INFO</strong> — fachlich relevante Ereignisse.</li><li><strong>DEBUG/TRACE</strong> — Details für die Fehlersuche, in Produktion meist aus.</li></ul>\",\"code\":\"private static final Logger log = LoggerFactory.getLogger(BestellService.class);\\n\\n// Platzhalter statt Konkatenation: wird nur bei aktivem Level ausgewertet\\nlog.debug(\\\"Verarbeite Bestellung {} für Kunde {}\\\", nummer, kundeId);\\n\\n// Exception IMMER als letztes Argument, nicht in den Text\\ntry {\\n    verarbeite(bestellung);\\n} catch (VerarbeitungsException e) {\\n    log.error(\\\"Bestellung {} fehlgeschlagen\\\", nummer, e);   // e = voller Stacktrace\\n}\",\"tip\":\"Zwei Fehler, die man in fast jedem Projekt findet. Erstens: log.debug(\\\"Wert: \\\" + teureBerechnung()) — die Konkatenation läuft auch dann, wenn DEBUG gar nicht aktiv ist. Mit Platzhaltern {} passiert das nicht. Zweitens: log.error(\\\"Fehler: \\\" + e.getMessage()) — damit verlierst du den Stacktrace und damit die Zeile, in der es wirklich knallte. Übergib das Exception-Objekt als letztes Argument.\",\"quiz\":[{\"q\":\"Warum Platzhalter {} statt String-Konkatenation im Logaufruf?\",\"options\":[\"Aus Stilgründen\",\"Weil die Auswertung nur erfolgt, wenn das Level aktiv ist\",\"Weil + nicht erlaubt ist\"],\"correct\":1,\"explain\":\"Das spart bei deaktiviertem DEBUG-Level messbar Rechenzeit.\"},{\"q\":\"Wie loggt man eine Exception vollständig?\",\"options\":[\"Als letztes Argument das Exception-Objekt übergeben\",\"Nur e.getMessage() in den Text schreiben\",\"Mit printStackTrace()\"],\"correct\":0,\"explain\":\"Nur so landet der vollständige Stacktrace im Log.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m16-l3\",\"title\":\"Bibliotheken, Versionen und Sicherheit\",\"minutes\":7,\"body\":\"<p><strong>Semantic Versioning</strong> (MAJOR.MINOR.PATCH) ist ein Versprechen: PATCH behebt Fehler, MINOR ergänzt abwärtskompatibel, MAJOR darf brechen. Wer das Schema kennt, kann Updates einschätzen, statt sie pauschal zu vermeiden.</p><p>Jede Abhängigkeit ist zugleich ein Sicherheitsrisiko und eine Wartungslast. Bekannte Schwachstellen werden als <strong>CVE</strong> veröffentlicht; Werkzeuge wie der <strong>OWASP Dependency-Check</strong> oder <strong>Dependabot</strong> prüfen dein Projekt automatisch dagegen.</p><p>Nützliche Bibliotheken, die sich fast immer lohnen: <strong>JUnit 5</strong> + <strong>Mockito</strong> (Tests), <strong>AssertJ</strong> (lesbare Assertions), <strong>Jackson</strong> (JSON), <strong>SLF4J/Logback</strong> (Logging), <strong>Apache Commons</strong> / <strong>Guava</strong> (Hilfsfunktionen).</p>\",\"code\":\"\",\"tip\":\"Die Log4Shell-Lücke von 2021 war deshalb so verheerend, weil kaum ein Team wusste, dass die betroffene Bibliothek überhaupt im Projekt steckte — sie kam transitiv über andere Abhängigkeiten herein. Die Lehre für deine eigenen Projekte: Kenne deinen Abhängigkeitsbaum, halte ihn klein, und lass ihn automatisiert auf bekannte Schwachstellen prüfen. Jede Bibliothek, die du nicht aufnimmst, musst du auch nie patchen.\",\"quiz\":[{\"q\":\"Was besagt eine Erhöhung der MAJOR-Version nach Semantic Versioning?\",\"options\":[\"Nur Fehlerbehebungen\",\"Es darf inkompatible Änderungen geben\",\"Sicherheitsupdate\"],\"correct";
-RP_LITERAL_1_text += "\":1,\"explain\":\"PATCH behebt Fehler, MINOR ergänzt kompatibel, MAJOR darf brechen.\"},{\"q\":\"Warum sind transitive Abhängigkeiten ein Sicherheitsthema?\",\"options\":[\"Sie sind langsamer\",\"Sie gelangen unbemerkt ins Projekt und können bekannte Schwachstellen mitbringen\",\"Sie kosten Lizenzgebühren\"],\"correct\":1,\"explain\":\"Genau dieses Muster machte Log4Shell so schwer einzugrenzen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m17\",\"part\":20,\"partTitle\":\"Java · Professionelle Entwicklung\",\"title\":\"Datenbankzugriff mit Java\",\"lessons\":[{\"id\":\"java-m17-l1\",\"title\":\"JDBC und PreparedStatement\",\"minutes\":9,\"body\":\"<p><strong>JDBC</strong> ist Javas Standardschnittstelle zur Datenbank. Die zentrale Sicherheitsregel lautet: <strong>niemals</strong> Benutzereingaben in SQL-Strings zusammensetzen — immer <code>PreparedStatement</code> mit Platzhaltern.</p><p>Ein <code>PreparedStatement</code> ist nicht nur sicher gegen <strong>SQL-Injection</strong>, sondern meist auch schneller, weil die Datenbank den Ausführungsplan wiederverwenden kann.</p>\",\"code\":\"// GEFÄHRLICH: SQL-Injection möglich\\nString sql = \\\"SELECT * FROM kunde WHERE name = '\\\" + eingabe + \\\"'\\\";\\n// Eingabe:  ' OR '1'='1   -> liefert die gesamte Tabelle\\n\\n// SICHER: Parameter werden als Daten behandelt, nie als Code\\nString sql = \\\"SELECT id, name FROM kunde WHERE name = ? AND aktiv = ?\\\";\\ntry (Connection con = dataSource.getConnection();\\n     PreparedStatement ps = con.prepareStatement(sql)) {\\n\\n    ps.setString(1, eingabe);\\n    ps.setBoolean(2, true);\\n\\n    try (ResultSet rs = ps.executeQuery()) {\\n        List<Kunde> treffer = new ArrayList<>();\\n        while (rs.next()) {\\n            treffer.add(new Kunde(rs.getLong(\\\"id\\\"), rs.getString(\\\"name\\\")));\\n        }\\n        return treffer;\\n    }\\n}\",\"tip\":\"Der entscheidende Punkt ist nicht „PreparedStatement ist sicherer\\\", sondern warum: Es trennt Code von Daten. Die SQL-Struktur wird einmal geparst, der Parameter danach eingesetzt — er kann die Abfragelogik gar nicht mehr verändern, egal welche Zeichen er enthält. Dieselbe Trennung gilt in jeder Sprache und für jede Abfragesprache, auch für LDAP oder Shell-Aufrufe.\",\"quiz\":[{\"q\":\"Warum schützt PreparedStatement vor SQL-Injection?\",\"options\":[\"Es entfernt Sonderzeichen\",\"Es trennt SQL-Struktur von Daten, Parameter können die Abfragelogik nicht verändern\",\"Es verschlüsselt die Abfrage\"],\"correct\":1,\"explain\":\"Die Abfrage wird geparst, bevor die Parameter eingesetzt werden.\"},{\"q\":\"Was gehört bei JDBC zwingend in try-with-resources?\",\"options\":[\"Nur die Connection\",\"Connection, Statement und ResultSet\",\"Nichts davon\"],\"correct\":1,\"explain\":\"Alle drei halten Systemressourcen und müssen sicher geschlossen werden.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m17-l2\",\"title\":\"Transaktionen und Verbindungspools\",\"minutes\":8,\"body\":\"<p>Eine <strong>Transaktion</strong> fasst mehrere Anweisungen zu einer unteilbaren Einheit zusammen — sie erfüllt die <strong>ACID</strong>-Eigenschaften: Atomarität, Konsistenz, Isolation, Dauerhaftigkeit.</p><p>JDBC arbeitet standardmäßig im <strong>Autocommit</strong>-Modus: Jede Anweisung wird sofort festgeschrieben. Für zusammengehörige Änderungen musst du das abschalten und selbst committen — oder rollbacken.</p><p>Verbindungen sind teuer. In jeder ernsthaften Anwendung übernimmt ein <strong>Connection Pool</strong> (Standard: <strong>HikariCP</strong>) die Wiederverwendung.</p>\",\"code\":\"try (Connection con = dataSource.getConnection()) {\\n    con.setAutoCommit(false);                 // Transaktion beginnt\\n    try {\\n        belasteKonto(con, von, betrag);\\n        schreibeGut(con, nach, betrag);\\n        con.commit();                         // beides oder nichts\\n    } catch (SQLException e) {\\n        con.rollback();\\n        throw new UeberweisungFehlgeschlagen(\\\"Übertrag abgebrochen\\\", e);\\n    }\\n}\",\"tip\":\"Die Überweisung ist das Lehrbuchbeispiel, aber der Praxisfehler sieht anders aus: Ein Entwickler ruft in einer Schleife über 500 Positionen jedes Mal commit() auf. Bricht der Lauf bei Position 300 ab, sind 300 Datensätze geschrieben und 200 fehlen — ein Zustand, den die Fachabteilung von Hand aufräumen darf. Die Transaktionsgrenze gehört um die fachliche Einheit, nicht um die technische Einzelanweisung.\",\"quiz\":[{\"q\":\"Wofür steht ACID?\",\"options\":[\"Atomicity, Consistency, Isolation, Durability\",\"Access, Control, Index, Data\",\"Async, Cache, Init, Deploy\"],\"correct\":0,\"explain\":\"Die vier Garantien, die eine Transaktion einer Datenbank abverlangt.\"},{\"q\":\"Was passiert bei eingeschaltetem Autocommit?\",\"options\":[\"Nichts wird gespeichert\",\"Jede einzelne Anweisung wird sofort festgeschrieben\",\"Alles wird erst beim Schließen geschrieben\"],\"correct\":1,\"explain\":\"Für mehrteilige fachliche Einheiten muss Autocommit deshalb abgeschaltet werden.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m17-l3\",\"title\":\"JPA/Hibernate: ORM und seine Tücken\",\"minutes\":9,\"body\":\"<p><strong>JPA</strong> ist der Standard für objektrelationales Mapping, <strong>Hibernate</strong> die verbreitetste Implementierung. Eine <code>@Entity</code>-Klasse wird auf eine Tabelle abgebildet, der <code>EntityManager</code> verwaltet den <em>Persistenzkontext</em>: Geladene Objekte gelten als „managed\\\", Änderungen daran werden beim Commit automatisch geschrieben (Dirty Checking).</p><p>Die berüchtigtste Falle ist das <strong>N+1-Problem</strong>: Du lädst 100 Bestellungen (1 Abfrage) und greifst danach je Bestellung auf den Kunden zu — Hibernate setzt 100 weitere Abfragen ab. Lösung: <code>JOIN FETCH</code> oder ein Entity Graph.</p>\",\"code\":\"@Entity\\npublic class Bestellung {\\n    @Id @GeneratedValue private Long id;\\n\\n    @ManyToOne(fetch = FetchType.LAZY)        // Standard für ToOne wäre EAGER\\n    private Kunde kunde;\\n\\n    @OneToMany(mappedBy = \\\"bestellung\\\", cascade = CascadeType.ALL, orphanRemoval = true)\\n    private List<Position> positionen = new ArrayList<>();\\n}\\n\\n// N+1: eine Abfrage für die Liste, dann eine je Kunde\\nList<Bestellung> alle = em.createQuery(\\\"SELECT b FROM Bestellung b\\\", Bestellung.class)\\n                          .getResultList();\\nalle.forEach(b -> System.out.println(b.getKunde().getName()));   // 100 Extra-Abfragen\\n\\n// Lösung: in einer Abfrage mitladen\\nList<Bestellung> alle = em.createQuery(\\n        \\\"SELECT b FROM Bestellung b JOIN FETCH b.kunde\\\", Bestellung.class)\\n        .getResultList();\",\"tip\":\"Schalte im Entwicklungsprofil das SQL-Logging ein (bei Hibernate show_sql plus format_sql) und sieh dir an, wie viele Abfragen eine Seite tatsächlich auslöst. Fast jedes Team entdeckt dabei beim ersten Mal ein N+1-Problem, das in der Oberfläche völlig unauffällig war — bis die Testdaten von 20 auf 20.000 Zeilen wuchsen. ORM macht Datenbankzugriffe bequem, aber nicht unsichtbar.\",\"quiz\":[{\"q\":\"Was ist das N+1-Problem?\",\"options\":[\"Eine Abfrage für die Liste plus je eine weitere pro Element\",\"Ein Fehler beim Zählen\",\"Ein Problem mit Primärschlüsseln\"],\"correct\":0,\"explain\":\"Typisch beim Zugriff auf lazy geladene Beziehungen innerhalb einer Schleife.\"},{\"q\":\"Womit lässt es sich vermeiden?\",\"options\":[\"Mit mehr Speicher\",\"Mit JOIN FETCH oder einem Entity Graph\",\"Durch Abschalten der Transaktionen\"],\"correct\":1,\"explain\":\"Die Beziehung wird dann in derselben Abfrage mitgeladen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m18\",\"part\":21,\"partTitle\":\"Java · Praxiswissen, das kein Lehrbuch zeigt\",\"title\":\"Debugging & fremden Code verstehen\",\"lessons\":[{\"id\":\"java-m18-l1\",\"title\":\"Stacktraces richtig lesen\",\"minutes\":8,\"body\":\"<p>Ein Stacktrace ist kein Rauschen, sondern ein präzises Protokoll. So liest man ihn:</p><ol><li><strong>Erste Zeile</strong>: Exception-Typ und Meldung — das WAS.</li><li><strong>Oberste <code>at</code>-Zeile</strong>: wo es geknallt hat.</li><li><strong>Von oben nach unten</strong> lesen, bis die erste Zeile <em>deines</em> Codes auftaucht — dort liegt fast immer die Ursache.</li><li><strong><code>Caused by</code></strong> am Ende ist der eigentliche Auslöser. Bei verschachtelten Ursachen ist das <em>unterste</em> „Caused by\\\" die Wurzel.</li></ol><p>Bei einer <code>NullPointerException</code> auf Java 14+ zeigen die <strong>Helpful NullPointerExceptions</strong> exakt, welche Referenz null war — ein enormer Fortschritt gegenüber der früheren nackten Meldung.</p>\",\"code\":\"Exception in thread \\\"main\\\" java.lang.IllegalStateException: Konto gesperrt\\n    at com.firma.KontoService.abbuchen(KontoService.java:84)    <- dein Code: hier ansetzen\\n    at com.firma.ZahlungsJob.run(ZahlungsJob.java:31)\\n    at java.base/java.lang.Thread.run(Thread.java:1583)\\nCaused by: java.sql.SQLException: connection timed out\\n    at org.postgresql.Driver.connect(Driver.java:259)          <- die eigentliche Wurzel\\n\\n// Helpful NPE (Java 14+):\\n// Cannot invoke \\\"Adresse.ort()\\\" because the return value of\\n// \\\"Kunde.adresse()\\\" is null\",\"tip\":\"Der häufigste Anfängerfehler beim Debuggen ist, den Stacktrace nur zu überfliegen und sofort im obersten Framework-Frame zu suchen. Scroll stattdessen bis zur ersten Zeile mit deinem Paketnamen — und lies immer bis zum letzten „Caused by\\\". In neun von zehn Fällen steht die Antwort dort, und das Lesen dauert zwanzig Sekunden.\",\"quiz\":[{\"q\":\"Welcher Teil eines Stacktrace nennt die eigentliche Ursache?\",\"options\":[\"Die erste at-Zeile\",\"Das unterste \\\"Caused by\\\"\",\"Die letzte Zeile der Datei\"],\"correct\":1,\"explain\":\"Verschachtelte Ursachen werden von außen nach innen aufgeführt — ganz unten steht die Wurzel.\"},{\"q\":\"Was bringen Helpful NullPointerExceptions ab Java 14?\",\"options\":[\"Sie verhindern NPEs\",\"Sie nennen genau, welche Referenz null war\",\"Sie unterdrücken die Meldung\"],\"correct\":1,\"explain\":\"Statt einer nackten NPE bekommst du den konkreten Ausdruck genannt.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m18-l2\",\"title\":\"Der Debugger als Profiwerkzeug\",\"minutes\":9,\"body\":\"<p>Die meisten nutzen vom Debugger nur „Breakpoint setzen und F8 drücken\\\". Die eigentlichen Werkzeuge sind andere:</p><ul><li><strong>Bedingte Breakpoints</strong> halten nur bei einer Bedingung (<code>kunde.id() == 4711</code>) — unverzichtbar in Schleifen über zehntausend Datensätze.</li><li><strong>Exception-Breakpoints</strong> halten beim Werfen einer bestimmten Exception, ganz ohne zu wissen, wo im Code das passiert.</li><li><strong>Field Watchpoints</strong> halten an, sobald ein Feld gelesen oder geschrieben wird — so findet man, wer einen Wert überschreibt.</li><li><strong>Evaluate Expression</strong> führt beliebigen Code im angehaltenen Zustand aus — auch Methodenaufrufe.</li><li><strong>Drop Frame</strong> setzt den aktuellen Methodenaufruf zurück und lässt ihn erneut laufen, ohne Neustart.</li></ul>\",\"code\":\"// Statt im Code herumzuschreiben: bedingter Breakpoint in der IDE\\nfor (Bestellung b : bestellungen) {\\n    verarbeite(b);        // Breakpoint mit Bedingung: b.nummer().equals(\\\"B-4711\\\")\\n}\\n\\n// Für Remote-Debugging der laufenden Anwendung:\\njava -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar app.jar\",\"tip\":\"Nutz den Debugger nicht nur zur Fehlersuche, sondern zum Verstehen: Setz einen Breakpoint mitten in eine fremde Codebasis und schau dir den Aufrufstack an — du siehst in zwei Minuten, wie der Weg von der Schnittstelle bis zur Datenbank verläuft. Das ist schneller als jede Architekturdokumentation und immer aktuell.\",\"quiz\":[{\"q\":\"Wofür ist ein Field Watchpoint das richtige Werkzeug?\",\"options\":[\"Um anzuhalten, sobald ein Feld gelesen oder geschrieben wird\",\"Um Variablen zu löschen\",\"Um Tests auszuführen\"],\"correct\":0,\"explain\":\"So findet man die Stelle, die einen Wert unerwartet überschreibt.\"},{\"q\":\"Was leistet ein bedingter Breakpoint?\",\"options\":[\"Er hält nur, wenn eine angegebene Bedingung zutrifft\",\"Er hält immer\",\"Er deaktiviert andere Breakpoints\"],\"correct\":0,\"explain\":\"Unverzichtbar, wenn nur ein bestimmter Datensatz von vielen problematisch ist.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m18-l3\",\"title\":\"Sich in fremdem Code zurechtfinden\",\"minutes\":8,\"body\":\"<p>Die realistische Projektsituation ist nicht die grüne Wiese, sondern eine gewachsene Codebasis, die niemand vollständig überblickt. Das ist eine eigene Fähigkeit:</p><ul><li><strong>Find Usages</strong> (in IntelliJ <kbd>Alt</kbd>+<kbd>F7</kbd>) — wer ruft das auf? Beantwortet die meisten „was passiert, wenn ich das ändere\\\"-Fragen.</li><li><strong>Call Hierarchy</strong> (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>H</kbd>) — der Aufrufbaum in beide Richtungen.</li><li><strong>Structure View</strong> (<kbd>Ctrl</kbd>+<kbd>F12</kbd>) — Überblick über eine große Klasse, ohne zu scrollen.</li><li><strong>Git blame / History</strong> — wer hat diese Zeile warum geschrieben? Die Commit-Nachricht erklärt oft mehr als jeder Kommentar.</li><li><strong>Tests lesen</strong> — sie sind die ehrlichste Dokumentation: Sie zeigen, wie die Klasse tatsächlich gedacht ist, und sind nachweislich aktuell.</li></ul><p>Die Reihenfolge, in der Erfahrene vorgehen: erst die Datenstrukturen und das Domänenmodell, dann die Einstiegspunkte (Controller, Main, Scheduler), erst zuletzt die Details.</p>\",\"code\":\"\",\"tip\":\"Wenn du eine unbekannte Klasse verstehen willst, lies zuerst ihre Tests — nicht ihren Quelltext. Tests zeigen die beabsichtigte Verwendung, die Randfälle, an die jemand gedacht hat, und sie lügen nicht, weil sie sonst fehlschlagen würden. Gibt es keine Tests, ist das bereits eine wichtige Information über den Zustand der Codebasis.\",\"quiz\":[{\"q\":\"Welches Werkzeug beantwortet „Wer ruft diese Methode auf?\\\"\",\"options\":[\"Find Usages / Call Hierarchy\",\"Der Formatierer\",\"Der Profiler\"],\"correct\":0,\"explain\":\"Der Verwendungsnachweis ist das zentrale Werkzeug zur Abschätzung von Änderungsfolgen.\"},{\"q\":\"Warum sind Tests eine gute Dokumentationsquelle?\",\"options\":[\"Sie sind kürzer\",\"Sie zeigen die beabsichtigte Verwendung und sind nachweislich aktuell\",\"Sie enthalten immer Kommentare\"],\"correct\":1,\"explain\":\"Veraltete Tests fallen auf, weil sie fehlschlagen — veraltete Kommentare nicht.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m19\",\"part\":21,\"partTitle\":\"Java · Praxiswissen, das kein Lehrbuch zeigt\",\"title\":\"Entwurfsmuster & Clean Code\",\"lessons\":[{\"id\":\"java-m19-l1\",\"title\":\"SOLID in der Praxis\",\"minutes\":9,\"body\":\"<p>Die fünf Prinzipien, die guten objektorientierten Entwurf beschreiben:</p><ul><li><strong>S</strong>ingle Responsibility — eine Klasse, ein Grund zur Änderung. Eine Klasse, die Daten lädt, rechnet <em>und</em> E-Mails verschickt, hat drei.</li><li><strong>O</strong>pen/Closed — offen für Erweiterung, geschlossen für Änderung. Neue Fälle über neue Implementierungen ergänzen, statt bestehende if-Ketten aufzubohren.</li><li><strong>L</strong>iskov Substitution — eine Unterklasse muss überall dort einsetzbar sein, wo die Oberklasse erwartet wird, ohne Überraschungen.</li><li><strong>I</strong>nterface Segregation — viele kleine, spezifische Interfaces statt eines großen, das niemand vollständig braucht.</li><li><strong>D</strong>ependency Inversion — von Abstraktionen abhängen, nicht von konkreten Klassen.</li></ul>\",\"code\":\"// Verletzt Dependency Inversion: nicht testbar, nicht austauschbar\\npublic class BestellService {\\n    private final MySqlKundeRepository repo = new MySqlKundeRepository();\\n}\\n\\n// Erfüllt es: Abhängigkeit kommt von außen, als Interface\\npublic class BestellService {\\n    private final KundeRepository repo;\\n    public BestellService(KundeRepository repo) {\\n        this.repo = Objects.requireNonNull(repo);\\n    }\\n}\",\"tip\":\"Wenn du dir nur ein Prinzip merkst, dann Dependency Inversion — es ist das folgenreichste. Sobald Abhängigkeiten von außen hereingereicht werden statt im Konstruktor per new zu entstehen, wird die Klasse testbar, austauschbar und wiederverwendbar. Fast alle anderen Verbesserungen ergeben sich daraus fast von selbst.\",\"quiz\":[{\"q\":\"Was fordert das Single-Responsibility-Prinzip?\",\"options\":[\"Eine Klasse soll nur eine Methode haben\",\"Eine Klasse soll nur einen Grund zur Änderung haben\",\"Eine Klasse darf nichts erben\"],\"correct\":1,\"explain\":\"Mehrere Änderungsgründe bedeuten mehrere Verantwortlichkeiten in einer Klasse.\"},{\"q\":\"Warum macht Dependency Inversion eine Klasse testbar?\",\"options\":[\"Weil Interfaces schneller sind\",\"Weil Abhängigkeiten von außen gesetzt und damit durch Test Doubles ersetzt werden können\",\"Weil der Compiler Tests generiert\"],\"correct\":1,\"explain\":\"Intern erzeugte Abhängigkeiten lassen sich im Test nicht austauschen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m19-l2\",\"title\":\"Die wichtigsten Entwurfsmuster\",\"minutes\":10,\"body\":\"<p>Muster sind benannte Lösungen für wiederkehrende Entwurfsprobleme — ihr größter Nutzen ist die gemeinsame Sprache im Team.</p><ul><li><strong>Strategy</strong> — austauschbares Verhalten hinter einem Interface. In Java oft schlicht ein Lambda.</li><li><strong>Factory</strong> — Objekterzeugung kapseln; der Aufrufer kennt nur den Typ, nicht die Implementierung.</li><li><strong>Builder</strong> — Objekte mit vielen optionalen Feldern lesbar zusammensetzen, statt Konstruktoren mit acht Parametern.</li><li><strong>Observer</strong> — Beobachter informieren; in Java über Listener oder Events.</li><li><strong>Singleton</strong> — genau eine Instanz. In Java am sichersten als <code>enum</code>; oft ist ein von außen gereichtes Objekt aber die bessere Lösung.</li><li><strong>Adapter</strong> — eine fremde Schnittstelle auf die eigene umsetzen. Die wichtigste Verteidigungslinie gegen Bibliotheksabhängigkeit.</li></ul>\",\"code\":\"// Strategy — in modernem Java oft nur ein Lambda\\nMap<Kundentyp, UnaryOperator<BigDecimal>> rabatte = Map.of(\\n        Kundentyp.STANDARD, b -> b.multiply(new BigDecimal(\\\"0.05\\\")),\\n        Kundentyp.PREMIUM,  b -> b.multiply(new BigDecimal(\\\"0.15\\\")));\\nBigDecimal rabatt = rabatte.get(typ).apply(betrag);\\n\\n// Builder — lesbar statt Konstruktor mit acht Parametern\\nBestellung b = Bestellung.builder()\\n        .kunde(kunde)\\n        .position(artikel, 3)\\n        .lieferdatum(LocalDate.now().plusDays(5))\\n        .build();\\n\\n// Singleton als enum: threadsicher, serialisierungsfest\\npublic enum Konfiguration {\\n    INSTANCE;\\n    public String wert(String schluessel) { ... }\\n}\",\"tip\":\"Muster sind Werkzeuge, keine Auszeichnungen. Der typische Fehler von Fortgeschrittenen ist, sie einzusetzen, weil man sie kann — eine AbstractSingletonProxyFactoryBean für ein Problem, das drei Zeilen gebraucht hätte. Die ehrliche Frage lautet: Gibt es hier wirklich mehrere Varianten, oder erfinde ich gerade Flexibilität, die niemand braucht? Muster, die man erst bei Bedarf einführt, altern besser.\",\"quiz\":[{\"q\":\"Welches Muster kapselt austauschbares Verhalten hinter einem Interface?\",\"options\":[\"Singleton\",\"Strategy\",\"Adapter\"],\"correct\":1,\"explain\":\"In modernem Java genügt dafür oft schon ein Lambda oder eine Methodenreferenz.\"},{\"q\":\"Wozu dient das Builder-Muster?\",\"options\":[\"Um Objekte mit vielen optionalen Feldern lesbar zu erzeugen\",\"Um Objekte zu löschen\",\"Um Vererbung zu ersetzen\"],\"correct\":0,\"explain\":\"Es ersetzt unleserliche Konstruktoren mit vielen gleichartigen Parametern.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m19-l3\",\"title\":\"Code Smells und Refactoring\",\"minutes\":8,\"body\":\"<p><strong>Code Smells</strong> sind keine Fehler, sondern Warnzeichen für strukturelle Probleme:</p><table class=\\\"lesson-table\\\"><tr><th>Smell</th><th>Symptom</th><th>Refactoring</th></tr><tr><td>Long Method</td><td>Methode über zwei Bildschirme</td><td>Extract Method</td></tr><tr><td>Large Class</td><td>Klasse macht zu viel</td><td>Extract Class</td></tr><tr><td>Long Parameter List</td><td>Fünf und mehr Parameter</td><td>Parameterobjekt, Builder</td></tr><tr><td>Duplicated Code</td><td>Dieselbe Logik mehrfach</td><td>Extract Method, Vererbung</td></tr><tr><td>Feature Envy</td><td>Methode nutzt fast nur fremde Daten</td><td>Move Method</td></tr><tr><td>Primitive Obsession</td><td>String für IBAN, int für Geld</td><td>Eigener Werttyp (record)</td></tr><tr><td>Magic Number</td><td>Unerklärte Literale im Code</td><td>Benannte Konstante</td></tr></table><p><strong>Refactoring</strong> heißt: Struktur verbessern, <em>ohne</em> das Verhalten zu ändern. Die Voraussetzung dafür sind Tests — ohne sie ist es kein Refactoring, sondern Umbauen auf Verdacht.</p>\",\"code\":\"// Primitive Obsession: alles String, nichts geprüft\\npublic void ueberweise(String vonIban, String nachIban, BigDecimal betrag) { }\\n\\n// Eigener Werttyp: Validierung an einer Stelle, Verwechslung unmöglich\\npublic record Iban(String wert) {\\n    public Iban {\\n        if (wert == null || !wert.matches(\\\"[A-Z]{2}\\\\\\\\d{2}[A-Z0-9]{10,30}\\\"))\\n            throw new IllegalArgumentException(\\\"Ungültige IBAN: \\\" + wert);\\n    }\\n}\\npublic void ueberweise(Iban von, Iban nach, Geldbetrag betrag) { }\",\"tip\":\"Der Werttyp im Beispiel löst ein Problem, das Tests kaum finden: Bei zwei String-Parametern nebeneinander lassen sich Absender und Empfänger vertauschen, und der Compiler schweigt. Mit eigenen Typen wird aus einem Laufzeitfehler in Produktion ein Kompilierfehler am Arbeitsplatz. Das ist der praktische Kern von „Primitive Obsession vermeiden\\\".\",\"quiz\":[{\"q\":\"Was ist die Voraussetzung für sicheres Refactoring?\",\"options\":[\"Eine gute IDE\",\"Tests, die das bestehende Verhalten absichern\",\"Ein Code-Review\"],\"correct\":1,\"explain\":\"Ohne Tests kann niemand belegen, dass sich das Verhalten nicht geändert hat.\"},{\"q\":\"Was bedeutet Primitive Obsession?\",\"options\":[\"Zu viele Klassen\",\"Fachliche Konzepte werden als String oder int statt als eigener Typ modelliert\",\"Zu wenige Kommentare\"],\"correct\":1,\"explain\":\"Eigene Werttypen bündeln Validierung und verhindern Verwechslungen.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m20\",\"part\":21,\"partTitle\":\"Java · Praxiswissen, das kein Lehrbuch zeigt\",\"title\":\"Anti-Patterns & rote Linien\",\"lessons\":[{\"id\":\"java-m20-l1\",\"title\":\"Die klassischen Java-Fallen\",\"minutes\":9,\"body\":\"<p>Eine Sammlung der Fehler, die in echten Projekten immer wieder auftreten — und jeweils der Grund dahinter:</p><ul><li><strong>Objekte mit <code>==</code> vergleichen</strong> statt mit <code>equals()</code>. Funktioniert bei kleinen Zahlen und Literalen scheinbar, bricht mit echten Daten.</li><li><strong><code>equals</code> ohne <code>hashCode</code></strong> — das Objekt verschwindet in <code>HashSet</code> und <code>HashMap</code>.</li><li><strong>Veränderliche Objekte als Map-Schlüssel</strong> — nach einer Änderung unauffindbar.</li><li><strong><code>catch (Exception e)</code> ohne Behandlung</strong> — der Fehler verschwindet still.</li><li><strong>Öffentliche veränderliche Felder</strong> statt Kapselung.</li><li><strong><code>float</code>/<code>double</code> für Geld</strong> — Rundungsfehler ab dem ersten Betrag.</li><li><strong>Ressourcen ohne try-with-resources</strong> — Verbindungslecks, die erst unter Last auffallen.</li></ul>\",\"code\":\"// Integer-Cache-Falle: unter 128 gecacht, darüber nicht\\nInteger a = 127, b = 127;\\nSystem.out.println(a == b);      // true  — zufällig, wegen Cache\\n\\nInteger c = 128, d = 128;\\nSystem.out.println(c == d);      // false — dasselbe Muster, anderes Ergebnis!\\nSystem.out.println(c.equals(d)); // true  — so ist es richtig\\n\\n// Deshalb: bei Wrapper-Typen und Objekten immer equals()\",\"tip\":\"Die Integer-Cache-Falle ist deshalb so heimtückisch, weil der Code mit Testdaten funktioniert und mit Produktivdaten nicht: Java hält Integer von -128 bis 127 in einem Cache, größere Werte nicht. Ein Vergleich mit == liefert bei Artikelnummer 100 das richtige Ergebnis und bei 1000 das falsche. Solche Fehler kosten Tage — und werden von einer einzigen Regel verhindert: Objekte vergleicht man mit equals().\",\"quiz\":[{\"q\":\"Warum liefert Integer a=127,b=127; a==b true, aber bei 128 false?\",\"options\":[\"Wegen eines Compilerfehlers\",\"Java cacht Integer-Objekte von -128 bis 127, darüber entstehen neue Objekte\",\"Weil 128 zu groß für int ist\"],\"correct\":1,\"explain\":\"Genau deshalb darf man Wrapper-Typen nie mit == vergleichen.\"},{\"q\":\"Was passiert, wenn equals überschrieben wird, hashCode aber nicht?\",\"options\":[\"Nichts\",\"Das Objekt wird in HashSet/HashMap nicht wiedergefunden\",\"Der Code kompiliert nicht\"],\"correct\":1,\"explain\":\"Die Hash-basierten Sammlungen suchen im falschen Bucket.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m20-l2\",\"title\":\"Sicherheitsgrundlagen für Anwendungsentwickler\",\"minutes\":9,\"body\":\"<p>Sicherheit ist keine Spezialdisziplin, sondern Teil normaler Sorgfalt. Die wichtigsten Punkte für Java-Anwendungen:</p><ul><li><strong>Eingaben validieren</strong> — grundsätzlich mit Positivlisten (was ist erlaubt), nicht mit Negativlisten (was ist verboten).</li><li><strong>SQL-Injection</strong> — ausschließlich <code>PreparedStatement</code> (Modul 17).</li><li><strong>Passwörter</strong> — niemals im Klartext oder mit MD5/SHA-1. Korrekt ist ein langsames Verfahren mit Salt: <strong>bcrypt</strong>, <strong>scrypt</strong> oder <strong>Argon2</strong>.</li><li><strong>Geheimnisse</strong> gehören nicht in den Quelltext und nicht ins Repository, sondern in Umgebungsvariablen oder einen Secret Store.</li><li><strong>Zufallszahlen</strong> für Tokens mit <code>SecureRandom</code>, nie mit <code>Random</code>.</li><li><strong>Fehlermeldungen nach außen</strong> dürfen keine Stacktraces, SQL-Fragmente oder Pfade enthalten — das ist Aufklärungsmaterial für Angreifer.</li></ul>\",\"code\":\"// Falsch: schnelles Hashverfahren, kein Salt\\nString hash = DigestUtils.md5Hex(passwort);        // in Sekunden knackbar\\n\\n// Richtig: bewusst langsam, mit Salt\\nString hash = BCrypt.hashpw(passwort, BCrypt.gensalt(12));\\nboolean ok  = BCrypt.checkpw(eingabe, hash);\\n\\n// Token sicher erzeugen\\nbyte[] token = new byte[32];\\nnew SecureRandom().nextBytes(token);\\nString base64 = Base64.getUrlEncoder().withoutPadding().encodeToString(token);\\n\\n// Geheimnisse aus der Umgebung, nicht aus dem Code\\nString dbPass = System.getenv(\\\"DB_PASSWORD\\\");\",\"tip\":\"Dass Passwort-Hashing absichtlich langsam sein soll, wirkt zunächst widersinnig. Der Grund: Ein Angreifer mit gestohlener Datenbank probiert Milliarden Kandidaten durch. MD5 schafft davon Milliarden pro Sekunde, bcrypt mit Kostenfaktor 12 nur einige Dutzend. Für deinen Login ist ein Zehntelsekunde unmerklich — für den Angreifer wird aus Stunden ein Jahrhundert.\",\"quiz\":[{\"q\":\"Womit speichert man Passwörter korrekt?\",\"options\":[\"MD5\",\"SHA-256 ohne Salt\",\"bcrypt, scrypt oder Argon2 mit Salt\"],\"correct\":2,\"explain\":\"Bewusst langsame Verfahren mit Salt machen massenhaftes Durchprobieren unwirtschaftlich.\"},{\"q\":\"Welche Klasse erzeugt sicherheitstaugliche Zufallswerte?\",\"options\":[\"Random\",\"SecureRandom\",\"Math.random()\"],\"correct\":1,\"explain\":\"Random ist vorhersagbar und für Tokens oder Schlüssel ungeeignet.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m20-l3\",\"title\":\"Produktionsreife: woran man erwachsenen Code erkennt\",\"minutes\":9,\"body\":\"<p>Der Unterschied zwischen „läuft bei mir\\\" und produktionsreif lässt sich erstaunlich präzise benennen:</p><ul><li><strong>Konfigurierbar</strong> — keine hartkodierten Pfade, URLs, Zeitlimits oder Zugangsdaten. Alles über Konfiguration oder Umgebungsvariablen.</li><li><strong>Beobachtbar</strong> — aussagekräftige Logs mit Kontext, Metriken, ein Health-Endpunkt.</li><li><strong>Fehlertolerant</strong> — Zeitlimits bei externen Aufrufen, definiertes Verhalten bei Ausfall, keine unbegrenzten Wiederholungen.</li><li><strong>Wiederaufsetzbar</strong> — ein abgebrochener Batchlauf darf beim erneuten Start keine Doppelbuchungen erzeugen (Idempotenz).</li><li><strong>Getestet</strong> — die fachlich riskanten Pfade sind abgedeckt, nicht nur die Getter.</li><li><strong>Dokumentiert, wo es nötig ist</strong> — nicht das Was, sondern das Warum: Warum diese ungewöhnliche Reihenfolge? Warum dieser Sonderfall?</li></ul><p>Die ehrlichste Prüffrage für jede Komponente lautet: <em>Was passiert, wenn sie nachts um drei ausfällt und niemand zusieht?</em> Wenn die Antwort „dann muss jemand von Hand aufräumen\\\" ist, ist sie noch nicht fertig.</p>\",\"code\":\"// Nicht produktionsreif\\nString url = \\\"http://localhost:8080/api\\\";       // hartkodiert\\nvar antwort = client.send(request, ofString()); // kein Timeout, kein Fehlerpfad\\n\\n// Produktionsreif\\nHttpClient client = HttpClient.newBuilder()\\n        .connectTimeout(Duration.ofSeconds(5))\\n        .build();\\n\\nHttpRequest request = HttpRequest.newBuilder(URI.create(config.apiUrl()))\\n        .timeout(Duration.ofSeconds(10))\\n        .GET().build();\\n\\ntry {\\n    HttpResponse<String> res = client.send(request, BodyHandlers.ofString());\\n    if (res.statusCode() >= 400) {\\n        throw new ApiException(\\\"Antwortcode \\\" + res.statusCode());\\n    }\\n} catch (IOException | InterruptedException e) {\\n    Thread.currentThread().interrupt();          // Interrupt-Status erhalten\\n    throw new ApiException(\\\"Aufruf fehlgeschlagen\\\", e);\\n}\",\"tip\":\"Ein Detail aus dem Beispiel, das fast alle übersehen: Beim Fangen einer InterruptedException muss man den Interrupt-Status mit Thread.currentThread().interrupt() wiederherstellen. Sonst verschluckt dein catch-Block das Abbruchsignal, und übergeordnete Schichten — etwa ein Thread-Pool beim Herunterfahren — warten vergeblich darauf, dass dein Code sich beenden lässt. Es ist eine Zeile, und sie unterscheidet sauberen von scheinbar sauberem Code.\",\"quiz\":[{\"q\":\"Was muss beim Fangen einer InterruptedException geschehen?\",\"options\":[\"Nichts weiter\",\"Den Interrupt-Status mit Thread.currentThread().interrupt() wiederherstellen\",\"Den Thread beenden\"],\"correct\":1,\"explain\":\"Sonst geht das Abbruchsignal verloren und übergeordnete Schichten können den Thread nicht beenden.\"},{\"q\":\"Welche Frage prüft am besten die Produktionsreife?\",\"options\":[\"Ist der Code kurz?\",\"Was passiert, wenn die Komponente nachts ausfällt und niemand zusieht?\",\"Nutzt er die neuesten Sprachfeatures?\"],\"correct\":1,\"explain\":\"Unbeaufsichtigter Betrieb deckt fehlende Timeouts, Idempotenz und Beobachtbarkeit auf.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m21\",\"part\":22,\"partTitle\":\"Java · Spring Boot\",\"title\":\"Spring-Grundlagen & Dependency Injection\",\"lessons\":[{\"id\":\"java-m21-l1\",\"title\":\"Was Spring Boot eigentlich löst\",\"minutes\":9,\"body\":\"<p>Spring dreht die Verantwortung für Objekterzeugung um: Nicht deine Klassen erzeugen ihre Abhängigkeiten mit <code>new</code>, sondern ein <strong>Container</strong> baut sie und reicht sie herein. Dieses Prinzip heißt <strong>Inversion of Control</strong>; die konkrete Technik dahinter ist die <strong>Dependency Injection</strong> aus Modul 19.</p><p>Die vom Container verwalteten Objekte heißen <strong>Beans</strong>. Spring Boot ergänzt dazu drei Dinge, die den Unterschied zum klassischen Spring ausmachen:</p><ul><li><strong>Auto-Configuration</strong> — Spring Boot erkennt anhand der Abhängigkeiten im Classpath, was du vorhast, und konfiguriert Sinnvolles vor. Liegt ein JDBC-Treiber und eine H2-Datenbank bereit, entsteht automatisch eine DataSource.</li><li><strong>Starter</strong> — gebündelte Abhängigkeiten mit aufeinander abgestimmten Versionen. <code>spring-boot-starter-web</code> zieht Tomcat, Jackson und Validierung in passenden Versionen nach.</li><li><strong>Eingebetteter Server</strong> — die Anwendung ist ein ausführbares JAR mit eigenem Tomcat, kein Deployment-Artefakt für einen Applikationsserver.</li></ul>\",\"code\":\"@SpringBootApplication      // = @Configuration + @EnableAutoConfiguration + @ComponentScan\\npublic class ShopApplication {\\n    public static void main(String[] args) {\\n        SpringApplication.run(ShopApplication.class, args);\\n    }\\n}\",\"tip\":\"Auto-Configuration ist bequem, aber keine Magie — und genau so solltest du sie behandeln. Starte die Anwendung einmal mit dem Schalter --debug: Spring Boot druckt dann einen Auto-Configuration-Report, der für jede Konfiguration angibt, ob sie griff und warum beziehungsweise warum nicht. Wenn etwas „unerklärlich\\\" nicht funktioniert, steht die Antwort fast immer in diesem Report.\",\"quiz\":[{\"q\":\"Was bedeutet Inversion of Control?\",\"options\":[\"Der Container erzeugt und verdrahtet die Objekte statt der Klassen selbst\",\"Der Code läuft rückwärts\",\"Die Kontrolle liegt beim Benutzer\"],\"correct\":0,\"explain\":\"Statt selbst new aufzurufen, bekommen Klassen ihre Abhängigkeiten hereingereicht.\"},{\"q\":\"Wozu dient ein Spring-Boot-Starter?\",\"options\":[\"Zum Starten der Anwendung\",\"Er bündelt aufeinander abgestimmte Abhängigkeiten in passenden Versionen\",\"Er erzeugt die Datenbank\"],\"correct\":1,\"explain\":\"Starter lösen das Problem, Versionen dutzender Bibliotheken manuell abzustimmen.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m21-l2\",\"title\":\"Beans, Injektion und Bean-Scopes\",\"minutes\":9,\"body\":\"<p>Beans entstehen auf zwei Wegen: durch <strong>Stereotyp-Annotationen</strong> an eigenen Klassen (<code>@Component</code> und seine Spezialisierungen <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>) oder durch <code>@Bean</code>-Methoden in einer <code>@Configuration</code>-Klasse — Letzteres vor allem für Fremdklassen, die du nicht annotieren kannst.</p><p>Für die Injektion gilt eine klare Empfehlung: <strong>Konstruktorinjektion</strong>. Sie macht Abhängigkeiten sichtbar und verpflichtend, erlaubt <code>final</code>-Felder und funktioniert im Test ganz ohne Spring. Feldinjektion per <code>@Autowired</code> ist kürzer, aber versteckt Abhängigkeiten und ist nur mit Reflection testbar.</p><p><strong>Scopes</strong>: Standard ist <code>singleton</code> — eine Instanz pro Container. Genau deshalb müssen Beans <strong>zustandslos</strong> sein: Ein veränderliches Feld in einem Singleton-Service wird von allen gleichzeitigen Anfragen geteilt (Modul 13).</p>\",\"code\":\"@Service\\npublic class BestellService {\\n    private final BestellRepository repo;\\n    private final MailSender mailer;\\n\\n    // Ab Spring 4.3: bei genau einem Konstruktor ist @Autowired überflüssig\\n    public BestellService(BestellRepository repo, MailSender mailer) {\\n        this.repo = repo;\\n        this.mailer = mailer;\\n    }\\n}\\n\\n@Configuration\\npublic class ClientConfig {\\n    @Bean\\n    public RestClient zahlungsClient(@Value(\\\"${zahlung.url}\\\") String url) {\\n        return RestClient.builder().baseUrl(url).build();\\n    }\\n}\",\"tip\":\"Ein Fehler, der sich erst unter Last zeigt: ein veränderliches Feld in einem Singleton-Service, etwa ein zwischengespeicherter Benutzername oder ein wiederverwendetes SimpleDateFormat. Im Test mit einer Anfrage funktioniert das; in Produktion mit fünfzig gleichzeitigen Anfragen entstehen falsche Zuordnungen, die praktisch nicht reproduzierbar sind. Beans sind zustandslos — Zustand gehört in Parameter, Rückgabewerte oder die Datenbank.\",\"quiz\":[{\"q\":\"Welche Injektionsart ist zu bevorzugen?\",\"options\":[\"Feldinjektion mit @Autowired\",\"Konstruktorinjektion\",\"Setter-Injektion\"],\"correct\":1,\"explain\":\"Sie macht Abhängigkeiten explizit, erlaubt final-Felder und funktioniert im Test ohne Spring.\"},{\"q\":\"Warum müssen Singleton-Beans zustandslos sein?\",\"options\":[\"Aus Performancegründen\",\"Weil sich alle gleichzeitigen Anfragen dieselbe Instanz teilen\",\"Weil Spring das prüft\"],\"correct\":1,\"explain\":\"Veränderliche Felder werden dann zwischen Anfragen geteilt — eine klassische Race Condition.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m21-l3\",\"title\":\"Konfiguration, Profile und Geheimnisse\",\"minutes\":8,\"body\":\"<p>Konfiguration gehört nicht in den Code (Modul 20). Spring Boot liest sie aus <code>application.yml</code> beziehungsweise <code>application.properties</code> — und überlagert sie nach einer festen Rangfolge: Kommandozeilenargumente schlagen Umgebungsvariablen, diese schlagen Profildateien, diese die Basisdatei.</p><p><strong>Profile</strong> trennen Umgebungen: <code>application-dev.yml</code>, <code>application-prod.yml</code>, aktiviert über <code>SPRING_PROFILES_ACTIVE=prod</code>.</p><p>Statt einzelner <code>@Value</code>-Annotationen empfiehlt sich <code>@ConfigurationProperties</code>: typsicher, gebündelt, validierbar — und beim Start schlägt eine fehlende Pflichtangabe sofort fehl, statt erst beim ersten Zugriff.</p>\",\"code\":\"# application.yml\\nzahlung:\\n  url: https://api.example.com\\n  timeout: 5s\\n  api-key: ${ZAHLUNG_API_KEY}      # aus der Umgebung, nicht im Repository\\n\\n---\\n@ConfigurationProperties(prefix = \\\"zahlung\\\")\\n@Validated\\npublic record ZahlungConfig(\\n        @NotBlank String url,\\n        @NotNull Duration timeout,\\n        @NotBlank String apiKey) { }\",\"codeLang\":\"YAML / Java\",\"tip\":\"Der wirksamste Konfigurationsgrundsatz lautet: Dasselbe Artefakt muss unverändert durch alle Stufen wandern. Wenn du für Produktion neu bauen musst, testest du nicht das, was du ausliefern wirst. Alles Umgebungsspezifische — URLs, Zugangsdaten, Zeitlimits — kommt von außen über Umgebungsvariablen. Geheimnisse gehören nie ins Repository; ein versehentlich committeter Schlüssel gilt als kompromittiert, auch wenn du den Commit löschst.\",\"quiz\":[{\"q\":\"Was hat die höchste Priorität in Spring Boots Konfigurationsrangfolge?\",\"options\":[\"application.yml\",\"Kommandozeilenargumente\",\"Die Profildatei\"],\"correct\":1,\"explain\":\"Kommandozeilenargumente überlagern Umgebungsvariablen und alle Dateien.\"},{\"q\":\"Welchen Vorteil bietet @ConfigurationProperties gegenüber vielen @Value?\",\"options\":[\"Typsichere, gebündelte und validierbare Konfiguration mit Fehlern beim Start\",\"Es ist schneller\",\"Es verschlüsselt Werte\"],\"correct\":0,\"explain\":\"Fehlende Pflichtwerte lassen die Anwendung sofort beim Start scheitern statt später im Betrieb.\"}]}],\"course\":\"java\"},{\"id\":\"java-m22\",\"part\":22,\"partTitle\":\"Java · Spring Boot\",\"title\":\"REST-APIs mit Spring Web\",\"lessons\":[{\"id\":\"java-m22-l1\",\"title\":\"Controller, Mapping und HTTP richtig nutzen\",\"minutes\":9,\"body\":\"<p>Ein <code>@RestController</code> bündelt <code>@Controller</code> und <code>@ResponseBody</code>: Rückgabewerte werden automatisch als JSON serialisiert (Jackson, Modul 14).</p><p>Gutes API-Design nutzt HTTP so, wie es gedacht ist:</p><table class=\\\"lesson-table\\\"><tr><th>Methode</th><th>Zweck</th><th>Typischer Status</th></tr><tr><td>GET</td><td>Lesen, ohne Nebenwirkung</td><td>200, 404</td></tr><tr><td>POST</td><td>Anlegen</td><td>201 mit Location-Header</td></tr><tr><td>PUT</td><td>Vollständig ersetzen (idempotent)</td><td>200 / 204</td></tr><tr><td>PATCH</td><td>Teilweise ändern</td><td>200</td></tr><tr><td>DELETE</td><td>Löschen (idempotent)</td><td>204</td></tr></table><p>Ressourcen werden als Substantive im Plural benannt (<code>/api/bestellungen/42</code>), nicht als Verben (<code>/api/getBestellung</code>) — die Aktion steckt bereits in der HTTP-Methode.</p>\",\"code\":\"@RestController\\n@RequestMapping(\\\"/api/bestellungen\\\")\\npublic class BestellController {\\n\\n    private final BestellService service;\\n    public BestellController(BestellService service) { this.service = service; }\\n\\n    @GetMapping(\\\"/{id}\\\")\\n    public BestellDto lesen(@PathVariable long id) {\\n        return service.finde(id)\\n                .orElseThrow(() -> new NichtGefundenException(\\\"Bestellung \\\" + id));\\n    }\\n\\n    @GetMapping\\n    public Page<BestellDto> liste(@RequestParam(defaultValue = \\\"OFFEN\\\") Status status,\\n                                   Pageable pageable) {\\n        return service.suche(status, pageable);\\n    }\\n\\n    @PostMapping\\n    public ResponseEntity<BestellDto> anlegen(@Valid @RequestBody NeueBestellung eingabe) {\\n        BestellDto neu = service.anlegen(eingabe);\\n        return ResponseEntity\\n                .created(URI.create(\\\"/api/bestellungen/\\\" + neu.id()))\\n                .body(neu);\\n    }\\n}\",\"tip\":\"Gib niemals deine JPA-Entities direkt aus einem Controller zurück. Drei Gründe: Jede Umbenennung eines Feldes verändert stillschweigend deine öffentliche API; lazy geladene Beziehungen lösen beim Serialisieren unkontrolliert Nachladungen aus oder werfen eine LazyInitializationException; und interne Felder wie Passwort-Hashes landen versehentlich in der Antwort. Eigene";
-RP_LITERAL_1_text += " DTOs sind etwas Tipparbeit und ersparen dir alle drei Probleme.\",\"quiz\":[{\"q\":\"Welchen Statuscode liefert ein erfolgreiches POST zum Anlegen üblicherweise?\",\"options\":[\"200\",\"201 mit Location-Header\",\"204\"],\"correct\":1,\"explain\":\"201 Created signalisiert eine neue Ressource; der Location-Header nennt ihre URL.\"},{\"q\":\"Warum sollten JPA-Entities nicht direkt als API-Antwort dienen?\",\"options\":[\"Sie sind zu groß\",\"Interne Änderungen verändern die API, Lazy-Beziehungen und sensible Felder machen Probleme\",\"Jackson kann sie nicht lesen\"],\"correct\":1,\"explain\":\"Eine eigene DTO-Schicht entkoppelt internes Modell und veröffentlichte Schnittstelle.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m22-l2\",\"title\":\"Validierung und zentrale Fehlerbehandlung\",\"minutes\":9,\"body\":\"<p><strong>Bean Validation</strong> prüft Eingaben deklarativ: <code>@NotBlank</code>, <code>@Size</code>, <code>@Positive</code>, <code>@Email</code> am DTO, ausgelöst durch <code>@Valid</code> am Controller-Parameter. Schlägt die Prüfung fehl, wirft Spring eine <code>MethodArgumentNotValidException</code>.</p><p>Fehler gehören nicht in jeden Controller, sondern an eine zentrale Stelle: <code>@RestControllerAdvice</code>. Für das Antwortformat gibt es seit Spring 6 den Standard <strong>ProblemDetail</strong> (RFC 9457) — ein einheitliches, maschinenlesbares Fehlerobjekt statt selbst erfundener JSON-Strukturen.</p>\",\"code\":\"public record NeueBestellung(\\n        @NotBlank(message = \\\"Kundennummer fehlt\\\") String kundeNr,\\n        @NotEmpty List<@Valid PositionDto> positionen,\\n        @Positive BigDecimal gesamtbetrag) { }\\n\\n@RestControllerAdvice\\npublic class FehlerBehandlung {\\n\\n    @ExceptionHandler(NichtGefundenException.class)\\n    public ProblemDetail nichtGefunden(NichtGefundenException e) {\\n        var pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());\\n        pd.setTitle(\\\"Ressource nicht gefunden\\\");\\n        return pd;\\n    }\\n\\n    @ExceptionHandler(MethodArgumentNotValidException.class)\\n    public ProblemDetail ungueltig(MethodArgumentNotValidException e) {\\n        var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\\n        pd.setTitle(\\\"Eingabe ungültig\\\");\\n        pd.setProperty(\\\"felder\\\", e.getBindingResult().getFieldErrors().stream()\\n                .collect(Collectors.toMap(FieldError::getField,\\n                                          FieldError::getDefaultMessage, (a, b) -> a)));\\n        return pd;\\n    }\\n}\",\"tip\":\"Achte darauf, was deine Fehlerantworten nach außen verraten. Ein durchgereichter Stacktrace oder eine Meldung wie „Spalte kunde_nr in Tabelle bestellung nicht gefunden\\\" ist Aufklärungsmaterial über deine interne Struktur. Nach außen gehört eine sachliche, stabile Meldung; die Details gehören ins Log — idealerweise mit einer Korrelations-ID, die auch in der Antwort steht, damit der Support beides zusammenführen kann.\",\"quiz\":[{\"q\":\"Wodurch wird die Validierung eines Request-Body ausgelöst?\",\"options\":[\"Automatisch immer\",\"Durch @Valid am Controller-Parameter\",\"Durch einen Aufruf von validate()\"],\"correct\":1,\"explain\":\"Ohne @Valid werden die Constraints am DTO nicht geprüft.\"},{\"q\":\"Was ist ProblemDetail?\",\"options\":[\"Ein standardisiertes Fehlerantwortformat nach RFC 9457\",\"Eine Logging-Bibliothek\",\"Ein Validierungsannotation\"],\"correct\":0,\"explain\":\"Es ersetzt selbst erfundene Fehler-JSON-Strukturen durch ein einheitliches Format.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m22-l3\",\"title\":\"Schichten, DTOs und saubere API-Evolution\",\"minutes\":8,\"body\":\"<p>Eine bewährte Schichtung trennt drei Verantwortlichkeiten:</p><ul><li><strong>Controller</strong> — HTTP: Eingabe entgegennehmen, validieren, Statuscodes setzen. Keine Geschäftslogik.</li><li><strong>Service</strong> — Geschäftslogik und Transaktionsgrenzen. Kennt kein HTTP.</li><li><strong>Repository</strong> — Datenzugriff. Kennt keine Geschäftsregeln.</li></ul><p>Der Test dafür ist einfach: Lässt sich dein Service unverändert auch von einem Batchlauf oder einer Konsolenanwendung aufrufen? Wenn er <code>HttpServletRequest</code> oder <code>ResponseEntity</code> kennt, lautet die Antwort nein.</p><p>Für die <strong>API-Evolution</strong> gilt: Felder ergänzen ist abwärtskompatibel, umbenennen und entfernen nicht. Wer breaking changes braucht, versioniert — meist über den Pfad (<code>/api/v2/...</code>).</p>\",\"code\":\"@Service\\npublic class BestellService {\\n    private final BestellRepository repo;\\n\\n    @Transactional\\n    public BestellDto anlegen(NeueBestellung eingabe) {\\n        Bestellung entity = new Bestellung(eingabe.kundeNr());\\n        eingabe.positionen().forEach(p -> entity.addPosition(p.artikel(), p.menge()));\\n        return BestellDto.von(repo.save(entity));       // Mapping an einer Stelle\\n    }\\n}\\n\\npublic record BestellDto(long id, String kundeNr, BigDecimal summe, Status status) {\\n    public static BestellDto von(Bestellung b) {\\n        return new BestellDto(b.getId(), b.getKundeNr(), b.summe(), b.getStatus());\\n    }\\n}\",\"tip\":\"Die Mapping-Schicht wird oft als lästig empfunden — bis zur ersten Umbenennung eines Datenbankfeldes. Dann ändert sich genau eine Methode, statt dass alle Clients brechen. Für einfache Fälle reicht eine statische Fabrikmethode wie hier; erst bei vielen Objekten lohnt eine Bibliothek wie MapStruct, die das Mapping zur Compilezeit generiert.\",\"quiz\":[{\"q\":\"Woran erkennst du, dass Geschäftslogik fälschlich im Controller liegt?\",\"options\":[\"Der Controller ist kurz\",\"Der Service kennt HTTP-Typen wie ResponseEntity oder HttpServletRequest\",\"Es gibt DTOs\"],\"correct\":1,\"explain\":\"Ein sauberer Service ist auch aus einem Batchlauf heraus aufrufbar.\"},{\"q\":\"Welche API-Änderung ist abwärtskompatibel?\",\"options\":[\"Ein Feld umbenennen\",\"Ein optionales Feld ergänzen\",\"Ein Feld entfernen\"],\"correct\":1,\"explain\":\"Bestehende Clients ignorieren unbekannte Felder; Umbenennen und Entfernen brechen sie.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m23\",\"part\":22,\"partTitle\":\"Java · Spring Boot\",\"title\":\"Datenzugriff mit Spring Data JPA\",\"lessons\":[{\"id\":\"java-m23-l1\",\"title\":\"Repositories und Query-Methoden\",\"minutes\":9,\"body\":\"<p>Spring Data erzeugt die Implementierung eines Repository-Interfaces zur Laufzeit. Du deklarierst nur die Signatur — aus dem Methodennamen wird die Abfrage abgeleitet.</p><ul><li><code>findByNachnameAndOrt(String n, String o)</code> → WHERE nachname = ? AND ort = ?</li><li><code>findByBetragGreaterThanOrderByDatumDesc(BigDecimal b)</code> → mit Vergleich und Sortierung</li><li><code>existsByEmail(String email)</code>, <code>countByStatus(Status s)</code>, <code>deleteByStatus(Status s)</code></li></ul><p>Wird der Name unleserlich lang, ist das ein Signal: Dann gehört die Abfrage in ein <code>@Query</code> mit JPQL — benannt nach der Fachlichkeit, nicht nach der Bedingung.</p>\",\"code\":\"public interface BestellRepository extends JpaRepository<Bestellung, Long> {\\n\\n    List<Bestellung> findByStatusOrderByDatumDesc(Status status);\\n\\n    Optional<Bestellung> findByNummer(String nummer);\\n\\n    boolean existsByKundeNrAndStatus(String kundeNr, Status status);\\n\\n    @Query(\\\"\\\"\\\"\\n           SELECT b FROM Bestellung b\\n           WHERE b.datum >= :ab AND b.summe > :mindest\\n           ORDER BY b.summe DESC\\n           \\\"\\\"\\\")\\n    List<Bestellung> findeGrossauftraege(@Param(\\\"ab\\\") LocalDate ab,\\n                                          @Param(\\\"mindest\\\") BigDecimal mindest);\\n}\",\"tip\":\"Nutze konsequent Optional als Rückgabetyp für Einzeltreffer und niemals null (Modul 11). Und ein Detail mit Sprengkraft: findAll() ohne Pageable lädt die gesamte Tabelle in den Speicher. Mit 200 Testdatensätzen fällt das nie auf, mit zwei Millionen Produktivzeilen killt es die Anwendung. Für alles, was wachsen kann, gilt: paginieren.\",\"quiz\":[{\"q\":\"Wie entsteht die Implementierung eines Spring-Data-Repositorys?\",\"options\":[\"Sie wird generiert und zur Laufzeit bereitgestellt\",\"Man schreibt sie selbst\",\"Sie wird vom Compiler erzeugt\"],\"correct\":0,\"explain\":\"Spring Data leitet die Abfrage aus dem Methodennamen oder der @Query-Annotation ab.\"},{\"q\":\"Was ist an findAll() ohne Paginierung riskant?\",\"options\":[\"Es ist zu langsam beim Kompilieren\",\"Es lädt die gesamte Tabelle in den Speicher\",\"Es funktioniert nur mit H2\"],\"correct\":1,\"explain\":\"Bei wachsenden Datenmengen ist das ein Ausfallrisiko.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m23-l2\",\"title\":\"@Transactional und seine Fallstricke\",\"minutes\":10,\"body\":\"<p><code>@Transactional</code> setzt die Transaktionsgrenze — üblicherweise am <strong>Service</strong>, nicht am Repository, weil erst die Geschäftsoperation die fachliche Einheit bildet (Modul 17).</p><p>Drei Fallstricke, die regelmäßig Datenverlust oder unerwartetes Verhalten verursachen:</p><ul><li><strong>Selbstaufruf</strong> — Spring wickelt die Bean in einen Proxy. Ruft eine Methode eine andere annotierte Methode <em>derselben</em> Klasse direkt auf, läuft der Aufruf am Proxy vorbei, und die Annotation wirkt nicht.</li><li><strong>Rollback-Regeln</strong> — standardmäßig rollt Spring nur bei <em>unchecked</em> Exceptions zurück. Eine Checked Exception lässt die Transaktion committen, sofern du nicht <code>rollbackFor</code> angibst.</li><li><strong>Nur public</strong> — an privaten oder paketsichtbaren Methoden hat die Annotation keine Wirkung (beim Standard-Proxy-Mechanismus).</li></ul><p><code>@Transactional(readOnly = true)</code> an Lesemethoden erlaubt Optimierungen und verhindert versehentliche Schreibzugriffe.</p>\",\"code\":\"@Service\\npublic class BestellService {\\n\\n    @Transactional(readOnly = true)\\n    public Optional<BestellDto> finde(long id) { ... }\\n\\n    @Transactional(rollbackFor = FachlicheException.class)\\n    public void abschliessen(long id) throws FachlicheException { ... }\\n\\n    // FALLE: interner Aufruf umgeht den Proxy — keine neue Transaktion!\\n    public void verarbeiteAlle(List<Long> ids) {\\n        ids.forEach(this::verarbeiteEine);      // @Transactional wirkt hier NICHT\\n    }\\n    @Transactional\\n    public void verarbeiteEine(long id) { ... }\\n}\",\"tip\":\"Der Selbstaufruf-Fallstrick ist besonders heimtückisch, weil der Code offensichtlich richtig aussieht: Die Annotation steht da, sie ist korrekt geschrieben — und wirkt trotzdem nicht. Die Lösung ist keine Trickserei mit Selbstinjektion, sondern besseres Design: Verschiebe die transaktionale Methode in eine eigene Bean. Dann läuft der Aufruf über den Proxy, und die Verantwortlichkeiten sind zusätzlich sauberer getrennt.\",\"quiz\":[{\"q\":\"Warum wirkt @Transactional bei einem Aufruf innerhalb derselben Klasse nicht?\",\"options\":[\"Wegen fehlender Rechte\",\"Weil der Aufruf am Spring-Proxy vorbeigeht\",\"Weil die Methode zu kurz ist\"],\"correct\":1,\"explain\":\"Nur Aufrufe über den Proxy von außen aktivieren den Transaktionsinterzeptor.\"},{\"q\":\"Bei welchen Exceptions rollt Spring standardmäßig zurück?\",\"options\":[\"Bei allen\",\"Nur bei unchecked Exceptions (RuntimeException)\",\"Nur bei checked Exceptions\"],\"correct\":1,\"explain\":\"Für Checked Exceptions muss rollbackFor gesetzt werden.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m23-l3\",\"title\":\"Paginierung, Projektionen und N+1 in Spring Data\",\"minutes\":9,\"body\":\"<p>Das <strong>N+1-Problem</strong> aus Modul 17 tritt in Spring Data besonders leicht auf, weil das Nachladen unsichtbar geschieht. Drei Werkzeuge dagegen:</p><ul><li><strong><code>@EntityGraph</code></strong> — deklariert, welche Beziehungen mitgeladen werden sollen.</li><li><strong><code>JOIN FETCH</code></strong> in einer <code>@Query</code>.</li><li><strong>Projektionen</strong> — lade nur die benötigten Felder statt ganzer Entities. Das ist oft die beste Lösung, weil gar keine Beziehungen entstehen.</li></ul><p><strong>Paginierung</strong> läuft über <code>Pageable</code> und liefert ein <code>Page</code> mit Inhalt, Gesamtzahl und Seiteninformationen. Achtung: <code>Page</code> setzt eine zusätzliche COUNT-Abfrage ab; wo die Gesamtzahl nicht gebraucht wird, ist <code>Slice</code> sparsamer.</p>\",\"code\":\"public interface BestellRepository extends JpaRepository<Bestellung, Long> {\\n\\n    @EntityGraph(attributePaths = {\\\"kunde\\\", \\\"positionen\\\"})\\n    List<Bestellung> findByStatus(Status status);\\n\\n    // Projektion: lädt nur zwei Spalten statt ganzer Entities\\n    interface BestellUebersicht {\\n        String getNummer();\\n        BigDecimal getSumme();\\n    }\\n    Page<BestellUebersicht> findByKundeNr(String kundeNr, Pageable pageable);\\n}\\n\\n// Aufruf mit Seitengröße und Sortierung\\nvar seite = repo.findByKundeNr(\\\"K1\\\", PageRequest.of(0, 20, Sort.by(\\\"datum\\\").descending()));\",\"tip\":\"Aktiviere in der Entwicklung unbedingt das SQL-Logging (spring.jpa.show-sql plus formatiertes Ausgabeformat) und schau beim Bauen jeder Listenansicht einmal hin. Die Frage lautet nicht „funktioniert es?\\\", sondern „wie viele Abfragen sind das?\\\". Eine Übersichtsseite mit 20 Einträgen, die 60 Abfragen absetzt, funktioniert tadellos — bis sie unter Last steht.\",\"quiz\":[{\"q\":\"Wozu dient @EntityGraph?\",\"options\":[\"Zum Erzeugen von Diagrammen\",\"Um festzulegen, welche Beziehungen in derselben Abfrage mitgeladen werden\",\"Zum Validieren von Entities\"],\"correct\":1,\"explain\":\"Es verhindert das N+1-Problem, ohne die Abfrage selbst schreiben zu müssen.\"},{\"q\":\"Was unterscheidet Page von Slice?\",\"options\":[\"Page führt zusätzlich eine COUNT-Abfrage für die Gesamtzahl aus\",\"Slice ist sortiert\",\"Es gibt keinen Unterschied\"],\"correct\":0,\"explain\":\"Wo die Gesamtzahl nicht angezeigt wird, spart Slice diese Abfrage.\"}],\"codeLang\":\"java\"}],\"course\":\"java\"},{\"id\":\"java-m24\",\"part\":22,\"partTitle\":\"Java · Spring Boot\",\"title\":\"Testen, Sicherheit & Betrieb\",\"lessons\":[{\"id\":\"java-m24-l1\",\"title\":\"Die Teststrategie einer Spring-Boot-Anwendung\",\"minutes\":10,\"body\":\"<p>Spring bietet gestufte Testarten — die Wahl entscheidet über Laufzeit und Aussagekraft (Testpyramide, Modul 6):</p><table class=\\\"lesson-table\\\"><tr><th>Art</th><th>Lädt</th><th>Einsatz</th></tr><tr><td>Plain JUnit</td><td>Nichts von Spring</td><td>Geschäftslogik — schnellste und häufigste Wahl</td></tr><tr><td>@WebMvcTest</td><td>Nur die Web-Schicht</td><td>Controller, Mapping, Validierung, Statuscodes</td></tr><tr><td>@DataJpaTest</td><td>Nur JPA plus Testdatenbank</td><td>Repositories und Abfragen</td></tr><tr><td>@SpringBootTest</td><td>Den gesamten Kontext</td><td>Wenige End-to-End-Pfade</td></tr></table><p>Für realistische Datenbanktests sind <strong>Testcontainers</strong> der Standard: eine echte PostgreSQL-Instanz im Container statt H2. Das erspart die klassische Falle, dass Abfragen gegen H2 laufen und gegen die Produktionsdatenbank scheitern.</p>\",\"code\":\"@WebMvcTest(BestellController.class)\\nclass BestellControllerTest {\\n\\n    @Autowired MockMvc mvc;\\n    @MockitoBean BestellService service;      // Service wird ersetzt\\n\\n    @Test\\n    void liefert404BeiUnbekannterBestellung() throws Exception {\\n        when(service.finde(99L)).thenReturn(Optional.empty());\\n\\n        mvc.perform(get(\\\"/api/bestellungen/99\\\"))\\n           .andExpect(status().isNotFound());\\n    }\\n\\n    @Test\\n    void lehntUngueltigeEingabeAb() throws Exception {\\n        mvc.perform(post(\\\"/api/bestellungen\\\")\\n                .contentType(MediaType.APPLICATION_JSON)\\n                .content(\\\"{\\\\\\\"kundeNr\\\\\\\":\\\\\\\"\\\\\\\"}\\\"))\\n           .andExpect(status().isBadRequest());\\n    }\\n}\",\"tip\":\"Die verbreitetste Fehlentscheidung beim Testen von Spring-Anwendungen ist, alles mit @SpringBootTest zu erschlagen. Das lädt den kompletten Kontext, dauert Sekunden pro Test und sagt bei einem Fehlschlag wenig darüber aus, wo das Problem liegt. Faustregel: Geschäftslogik ohne Spring testen, Schichten mit der jeweils passenden Slice-Annotation, und nur eine Handvoll echter End-to-End-Tests.\",\"quiz\":[{\"q\":\"Was lädt @WebMvcTest?\",\"options\":[\"Den gesamten Anwendungskontext\",\"Nur die Web-Schicht mit dem angegebenen Controller\",\"Nur die Datenbankschicht\"],\"correct\":1,\"explain\":\"Abhängige Services werden durch Test Doubles ersetzt — dadurch ist der Test schnell und fokussiert.\"},{\"q\":\"Warum Testcontainers statt H2?\",\"options\":[\"H2 ist kostenpflichtig\",\"Weil gegen eine echte Datenbank getestet wird und SQL-Unterschiede nicht erst in Produktion auffallen\",\"Weil H2 keine Transaktionen kann\"],\"correct\":1,\"explain\":\"Abfragen, die gegen H2 laufen, können gegen PostgreSQL oder Oracle scheitern.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m24-l2\",\"title\":\"Spring Security: Grundlagen absichern\",\"minutes\":9,\"body\":\"<p>Spring Security setzt eine Kette von Filtern vor die Anwendung. Zwei Begriffe muss man auseinanderhalten: <strong>Authentifizierung</strong> klärt <em>wer</em> jemand ist, <strong>Autorisierung</strong> klärt, <em>was</em> diese Person darf.</p><p>Konfiguriert wird heute programmatisch über eine <code>SecurityFilterChain</code>-Bean. Wichtig für APIs: Wenn du zustandslos mit Tokens arbeitest, brauchst du keinen CSRF-Schutz — bei formularbasierten Sitzungen mit Cookies dagegen unbedingt. Pauschales Abschalten ohne diese Unterscheidung ist einer der häufigsten Sicherheitsfehler.</p><p>Passwörter werden über einen <code>PasswordEncoder</code> gespeichert — <code>BCryptPasswordEncoder</code> ist die Standardwahl (Modul 20).</p>\",\"code\":\"@Configuration\\n@EnableWebSecurity\\npublic class SecurityConfig {\\n\\n    @Bean\\n    SecurityFilterChain api(HttpSecurity http) throws Exception {\\n        return http\\n            .securityMatcher(\\\"/api/**\\\")\\n            .csrf(csrf -> csrf.disable())          // vertretbar: zustandsloses Token-API\\n            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\\n            .authorizeHttpRequests(auth -> auth\\n                .requestMatchers(HttpMethod.GET, \\\"/api/oeffentlich/**\\\").permitAll()\\n                .requestMatchers(\\\"/api/admin/**\\\").hasRole(\\\"ADMIN\\\")\\n                .anyRequest().authenticated())\\n            .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))\\n            .build();\\n    }\\n\\n    @Bean\\n    PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(12); }\\n}\",\"tip\":\"Achte auf die Reihenfolge der Regeln: Spring Security wertet sie von oben nach unten aus, die erste passende gewinnt. Steht anyRequest().permitAll() zu weit oben, sind alle folgenden Einschränkungen wirkungslos — und der Code sieht trotzdem abgesichert aus. Deshalb gehört an das Ende immer anyRequest().authenticated() oder .denyAll(): Was nicht ausdrücklich erlaubt wurde, ist verboten.\",\"quiz\":[{\"q\":\"Was unterscheidet Authentifizierung von Autorisierung?\",\"options\":[\"Kein Unterschied\",\"Authentifizierung klärt wer jemand ist, Autorisierung was er darf\",\"Autorisierung kommt zuerst\"],\"correct\":1,\"explain\":\"Erst die Identität feststellen, dann die Berechtigungen prüfen.\"},{\"q\":\"Warum gehört anyRequest().authenticated() ans Ende der Regelkette?\",\"options\":[\"Aus Stilgründen\",\"Weil die erste passende Regel gewinnt und alles nicht ausdrücklich Erlaubte verboten sein soll\",\"Weil Spring das erzwingt\"],\"correct\":1,\"explain\":\"Eine zu früh platzierte permitAll-Regel macht alle folgenden Einschränkungen wirkungslos.\"}],\"codeLang\":\"java\"},{\"id\":\"java-m24-l3\",\"title\":\"Actuator, Observability und Produktionsbetrieb\",\"minutes\":9,\"body\":\"<p><strong>Spring Boot Actuator</strong> liefert Betriebsendpunkte ohne eigenen Code: <code>/actuator/health</code> für Kubernetes-Probes (mit <code>liveness</code> und <code>readiness</code>), <code>/actuator/metrics</code> und <code>/actuator/prometheus</code> für Kennzahlen, <code>/actuator/info</code> für Buildinformationen.</p><p>Wichtig: <strong>Nur freigeben, was gebraucht wird.</strong> Endpunkte wie <code>env</code>, <code>heapdump</code> oder <code>configprops</code> verraten Konfiguration und Speicherinhalte — sie gehören abgesichert oder abgeschaltet.</p><p>Für die Fehlersuche über Systemgrenzen hinweg ist <strong>verteiltes Tracing</strong> (Micrometer Tracing) entscheidend: Jede Anfrage erhält eine Trace-ID, die durch alle beteiligten Dienste und in jede Logzeile wandert.</p>\",\"code\":\"# application-prod.yml\\nmanagement:\\n  endpoints:\\n    web:\\n      exposure:\\n        include: health,info,prometheus     # bewusst nur diese drei\\n  endpoint:\\n    health:\\n      probes:\\n        enabled: true                       # liveness + readiness\\n      show-details: when-authorized\\n\\nlogging:\\n  pattern:\\n    level: \\\"%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]\\\"\",\"codeLang\":\"YAML\",\"tip\":\"Die Unterscheidung zwischen Liveness und Readiness rettet Produktionsbetrieb: Liveness beantwortet „läuft der Prozess noch?\\\" — ist sie rot, wird der Container neu gestartet. Readiness beantwortet „kann er gerade Anfragen bedienen?\\\" — ist sie rot, bekommt er nur keinen Verkehr mehr. Wer eine Datenbankprüfung in die Liveness-Probe legt, bewirkt bei einem kurzen Datenbankausfall einen Neustart aller Instanzen gleichzeitig. Externe Abhängigkeiten gehören in Readiness, nie in Liveness.\",\"quiz\":[{\"q\":\"Welche Actuator-Endpunkte sollten in Produktion offen sein?\",\"options\":[\"Alle, für maximale Transparenz\",\"Nur die benötigten, etwa health, info und prometheus\",\"Keine\"],\"correct\":1,\"explain\":\"Endpunkte wie env oder heapdump verraten Konfiguration und Speicherinhalte.\"},{\"q\":\"Was gehört NICHT in eine Liveness-Probe?\",\"options\":[\"Eine Prüfung, ob der Prozess arbeitsfähig ist\",\"Die Erreichbarkeit der Datenbank\",\"Ein einfacher Statuswert\"],\"correct\":1,\"explain\":\"Sonst löst ein kurzer Datenbankausfall den Neustart aller Instanzen aus — externe Abhängigkeiten gehören in Readiness.\"}]}],\"course\":\"java\"}]";
-var RP_LITERAL_1=JSON.parse(RP_LITERAL_1_text);RP_LITERAL_1_text=null;
-MODULES.push.apply(MODULES, RP_LITERAL_1);
+function renderSidebar(){
+  var nav = document.getElementById('moduleNav');
+  nav.innerHTML = '';
+  var currentModule = moduleOfLesson(state.currentId);
+  var lastPart = null;
+  MODULES.forEach(function(m){
+    if(m.part !== lastPart){
+      var label = document.createElement('div');
+      label.className = 'part-label';
+      label.textContent = 'Teil ' + m.part + ' · ' + m.partTitle;
+      nav.appendChild(label);
+      lastPart = m.part;
+    }
+    var det = document.createElement('details');
+    det.className = 'module';
+    if(currentModule && currentModule.id === m.id) det.open = true;
+    var doneInModule = m.lessons.filter(function(l){ return state.completed.has(l.id); }).length;
+    var sum = document.createElement('summary');
+    sum.innerHTML = '<span class="chev">▸</span><span>'+esc(m.title)+'</span><span class="mod-count">'+doneInModule+'/'+m.lessons.length+'</span>';
+    det.appendChild(sum);
+    m.lessons.forEach(function(l){
+      var btn = document.createElement('button');
+      var aktiv = state.currentId === l.id;
+      btn.className = 'lesson-btn' + (aktiv ? ' active' : '');
+      /* Die aktive Lektion nicht nur einfaerben, sondern auch ansagen. */
+      if(aktiv) btn.setAttribute('aria-current', 'true'); else btn.removeAttribute('aria-current');
+      var done = state.completed.has(l.id);
+      btn.innerHTML = '<span class="check'+(done?' done':'')+'">'+(done?'✓':'')+'</span><span>'+esc(l.title)+'</span>';
+      btn.onclick = function(){ selectLesson(l.id); };
+      det.appendChild(btn);
+    });
+    nav.appendChild(det);
+  });
+
+  [['navHeute','heute'],['navIntro','intro'],['navProfile','profile'],['navReview','review'],['navExam','exam'],['navTracer','tracer'],['navKlausur','klausur'],['navSubnet','subnet'],['navTutor','tutor'],
+   ['navExercises','exercises'],['navFehler','fehler'],['navMerk','merk'],['navSheet','cheatsheet'],['navGlossar','glossar']].forEach(function(p){
+    var b = document.getElementById(p[0]);
+    if(!b) return;
+    var aktiv = state.currentId === p[1];
+    b.className = 'nav-link' + (aktiv ? ' active' : '');
+    if(aktiv) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  updateDueBadge();
+}
+function renderQuiz(lesson){
+  if(!lesson.quiz || !lesson.quiz.length) return '';
+  var html = '<div class="quiz"><h3>Kurz-Check</h3>';
+  lesson.quiz.forEach(function(q, qi){
+    html += '<fieldset class="qcard" id="q_'+lesson.id+'_'+qi+'"><legend>'+esc(q.q)+'</legend>';
+    q.options.forEach(function(opt, oi){
+      html += '<label class="opt"><input type="radio" name="rq_'+lesson.id+'_'+qi+'" value="'+oi+'"> <span>'+esc(opt)+'</span></label>';
+    });
+    html += '<div class="qfeedback" id="fb_'+lesson.id+'_'+qi+'"></div></fieldset>';
+  });
+  html += '<button class="check-btn" onclick="checkQuiz(\''+lesson.id+'\')">Antworten prüfen</button>';
+  html += '<div class="ex-meta" id="quizNote_'+lesson.id+'" hidden></div></div>';
+  return html;
+}
+function checkQuiz(lessonId){
+  var lesson = lessonById(lessonId);
+  var answeredAll = true;
+  var gain = 0;
+  lesson.quiz.forEach(function(q, qi){
+    var sel = document.querySelector('input[name="rq_'+lessonId+'_'+qi+'"]:checked');
+    var fb = document.getElementById('fb_'+lessonId+'_'+qi);
+    if(!sel){
+      answeredAll = false;
+      fb.className = 'qfeedback show wrong';
+      fb.textContent = 'Bitte wähle eine Antwort aus.';
+      return;
+    }
+    var val = parseInt(sel.value, 10);
+    var ok = val === q.correct;
+    var cardId = rpQuestionId(lesson,qi);
+    recordAnswer(cardId, ok);
+    /* Antwort aus der Lektion heraus plant die Karte ins Wiederholungssystem ein. */
+    if(ok){ if(!state.srs[cardId]) rateCard(cardId, 2); }
+    else { rateCard(cardId, 0); }
+    if(ok && !state.xpLog['quiz:' + cardId]){ state.xpLog['quiz:' + cardId] = 1; gain += 10; }
+
+    if(ok){
+      fb.className = 'qfeedback show correct';
+      fb.textContent = '✓ Richtig. ' + q.explain;
+    } else {
+      fb.className = 'qfeedback show wrong';
+      fb.textContent = '✗ Nicht ganz. Richtig ist: „' + q.options[q.correct] + '". ' + q.explain;
+    }
+  });
+  if(gain) awardXp(gain, 'Quizfragen richtig');
+  if(answeredAll){
+    var note = document.getElementById('quizNote_'+lessonId);
+    if(note){
+      note.hidden = false;
+      note.textContent = 'Diese Fragen sind jetzt im Wiederholungs-Trainer eingeplant — falsch beantwortete kommen heute noch einmal.';
+    }
+  }
+  saveProgress();
+  /* Der Lernbegleiter zaehlt die Karten dieser Lektion mit. */
+  try{ renderRail(); }catch(e){}
+}
+function renderLessonBlocks(lesson){
+  /* Reihenfolge der Text-/Codeblöcke: pro Lektion überschreibbar. */
+  var order = lesson.order || ['body','code','code2','body2','code3','code4'];
+  var html = '';
+  order.forEach(function(key){
+    var val = lesson[key];
+    if(!val) return;
+    if(key.indexOf('code') === 0){ html += codeBlock(val, lesson[key + 'Lang']); }
+    else { html += '<div class="lesson-body">' + val + '</div>'; }
+  });
+  return html;
+}
+var exFilter = 0;
+var LEVEL_NAMES = { 1:'Einsteiger', 2:'Fortgeschritten', 3:'Experte' };
+function setExFilter(lvl){ exFilter = lvl; renderContent(); }
+function toggleHint(exId, idx){
+  var el = document.getElementById('hint_'+exId+'_'+idx);
+  if(el) el.hidden = !el.hidden;
+}
+function toggleSolution(exId){
+  var el = document.getElementById('sol_'+exId);
+  if(el) el.hidden = !el.hidden;
+}
+function togglePrompt(exId){
+  var el = document.getElementById('prompt_'+exId);
+  if(el) el.hidden = !el.hidden;
+}
+function toggleSolved(id){
+  if(state.solved[id]){ delete state.solved[id]; }
+  else {
+    state.solved[id] = Date.now();
+    awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + id);
+    checkMilestones();
+  }
+  saveProgress();
+  renderContent();
+}
+function copyPrompt(exId){
+  var ex = EXERCISES.find(function(e){ return e.id===exId; });
+  if(!ex) return;
+  var text =
+    'Ich bereite mich auf die IHK-Abschlussprüfung Teil 1 als Fachinformatiker Anwendungsentwicklung vor (Level: '+LEVEL_NAMES[ex.level]+', Thema: '+ex.topic+') und habe folgende Prüfungsaufgabe bearbeitet.\n\n'+
+    'AUFGABE:\n'+ex.title+' — '+ex.task.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'\n\n'+
+    'MEINE LÖSUNG:\n[HIER DEINE LÖSUNG EINFÜGEN]\n\n'+
+    'Bitte prüfe meine Lösung so, wie ein IHK-Prüfer sie bewerten würde:\n'+
+    '1. Ist die Lösung fachlich korrekt? Falls nein: welcher konkrete Fall bricht?\n'+
+    '2. Bekäme sie die volle Punktzahl? Fehlt ein Rechenweg, eine Begründung oder eine Einheit?\n'+
+    '3. Steckt ein typischer Prüfungsfehler darin (Off-by-one, Faktor 8 zwischen Bit und Byte, MAX statt MIN im Netzplan, Skonto vom Listenpreis)?\n'+
+    '4. Ist die Antwort zum Operator der Aufgabe passend formuliert — nennen, beschreiben, begründen oder berechnen?\n'+
+    '5. Zeige eine Musterlösung und erkläre jede Abweichung kurz.\n\n'+
+    'Sei konkret und ehrlich, keine Gefälligkeitsbewertung. Wenn meine Lösung gut ist, sag das auch.';
+  var btn = document.getElementById('cp_'+exId);
+  try{
+    navigator.clipboard.writeText(text).then(function(){
+      if(btn){ var old = btn.textContent; btn.textContent = '✓ Kopiert'; setTimeout(function(){ btn.textContent = old; }, 1600); }
+    }).catch(function(){});
+  }catch(e){}
+}
+function renderExercises(){
+  var html = '<div class="breadcrumb">Praxis</div><h1>Übungsaufgaben</h1>'+
+    '<p class="intro-sub">'+EXERCISES.length+' Prüfungsaufgaben in drei Schwierigkeitsstufen — mit gestaffelten Tipps und vollständiger Musterlösung samt Rechenweg. Unter jeder Aufgabe steht ein Schreibfeld: Trag deine eigene Lösung ein, und Claude korrigiert sie direkt hier — mit Punkten, Teilpunkten auf den Rechenweg und dem, was gefehlt hätte.</p>';
+
+  html += '<div class="filter-row">';
+  html += '<button class="filter-btn'+(exFilter===0?' active':'')+'" onclick="setExFilter(0)">Alle ('+EXERCISES.length+')</button>';
+  [1,2,3].forEach(function(l){
+    var count = EXERCISES.filter(function(e){ return e.level===l; }).length;
+    html += '<button class="filter-btn'+(exFilter===l?' active':'')+'" onclick="setExFilter('+l+')">'+LEVEL_NAMES[l]+' ('+count+')</button>';
+  });
+  html += '</div>';
+
+  var list = exFilter===0 ? EXERCISES : EXERCISES.filter(function(e){ return e.level===exFilter; });
+
+  list.forEach(function(ex){
+    html += '<div class="ex-card">';
+    var solved = !!state.solved[ex.id];
+    html += '<div class="ex-head"><h3 id="exh_'+ex.id+'" data-ok="'+(solved?'1':'0')+'">'+(solved?'<span style="color:var(--success);">✓ </span>':'')+esc(ex.title)+'</h3>'+
+      '<span class="badge lvl'+ex.level+'">'+LEVEL_NAMES[ex.level]+'</span>'+
+      '<span class="badge topic">'+esc(ex.topic)+'</span></div>';
+    html += '<div class="ex-task">'+ex.task+'</div>';
+
+    html += '<div class="ex-actions">';
+    html += '<button class="ex-btn'+(solved?'':' primary')+'" id="sv_'+ex.id+'" onclick="toggleSolved(\''+ex.id+'\')">'+
+            (solved ? '✓ Gelöst' : 'Als gelöst markieren +'+xpAnzeige(30)+' XP')+'</button>';
+    ex.hints.forEach(function(h, i){
+      html += '<button class="ex-btn" onclick="toggleHint(\''+ex.id+'\','+i+')">💡 Tipp '+(i+1)+'</button>';
+    });
+    html += '<button class="ex-btn" onclick="toggleSolution(\''+ex.id+'\')">✅ Lösung anzeigen</button>';
+    html += '<button class="ex-btn primary" onclick="ueUmschalten(\''+ex.id+'\')">✍ Lösung schreiben &amp; prüfen lassen</button>';
+    html += '</div>';
+
+    ex.hints.forEach(function(h, i){
+      html += '<div class="ex-panel hint" id="hint_'+ex.id+'_'+i+'" hidden><div class="hint-label">Tipp '+(i+1)+'</div><p>'+h+'</p></div>';
+    });
+
+    html += '<div id="sol_'+ex.id+'" hidden>'+codeBlock(ex.solution, ex.solutionLang)+
+      '<div class="ex-panel"><strong>Hinweis zur Lösung:</strong> '+ex.solutionNote+'</div></div>';
+
+    var ueTxt = (state.ueTexte || {})[ex.id] || '';
+    var ueOffen = !!ue.offen[ex.id] || !!ueTxt || !!ue.erg[ex.id];
+    var ueMax = KL_PUNKTE[ex.level] || 8;
+    var ueHtml = ueErgHtml(ex.id);
+    html += '<div class="ue" id="ue_'+ex.id+'"'+(ueOffen ? '' : ' hidden')+'>'+
+      '<label class="ue-label" for="ueFeld_'+ex.id+'">Deine Lösung — Rechenweg mit Einheiten, Begründungen ausformuliert.</label>'+
+      '<textarea class="ue-feld" id="ueFeld_'+ex.id+'" rows="4" spellcheck="false" '+
+        'placeholder="Schreib so, wie du es in der Prüfung auf Papier tätest." '+
+        'oninput="ueSchreiben(\''+ex.id+'\', this.value)" '+
+        'onkeydown="ueTaste(event, \''+ex.id+'\')">'+esc(ueTxt)+'</textarea>'+
+      '<div class="ue-leiste">'+
+        '<button class="ex-btn primary" id="ueBtn_'+ex.id+'" onclick="uePruefen(\''+ex.id+'\')">Lösung prüfen lassen</button>'+
+        '<button class="ex-btn" onclick="ueLeeren(\''+ex.id+'\')">Leeren</button>'+
+        '<button class="ex-btn" onclick="togglePrompt(\''+ex.id+'\')">Prüfauftrag für den Chat</button>'+
+        '<span class="ue-note" id="ueNote_'+ex.id+'">Strg + Enter prüft · '+ueMax+' Punkte möglich · +'+xpAnzeige(10)+' XP</span>'+
+      '</div>'+
+      '<div class="ue-erg" id="ueErg_'+ex.id+'"'+(ueHtml ? '' : ' hidden')+'>'+ueHtml+'</div>'+
+      '</div>';
+
+    html += '<div class="ex-panel" id="prompt_'+ex.id+'" hidden>'+
+      '<p style="margin-bottom:8px;"><strong>So lässt du deine eigene Lösung prüfen:</strong> Kopiere den Prüfauftrag, füge ihn in VS Code in den Claude-Chat ein, ersetze den Platzhalter durch deinen Code — und du bekommst ein ehrliches Review statt nur „richtig/falsch".</p>'+
+      '<button class="ex-btn primary" id="cp_'+ex.id+'" onclick="copyPrompt(\''+ex.id+'\')">Prüfauftrag kopieren</button>'+
+      '<div class="ex-meta">Enthält: Aufgabenstellung, Platzhalter für deine Lösung und fünf konkrete Prüfkriterien (fachliche Korrektheit, Punktwürdigkeit, typische Prüfungsfehler, Operatorbezug, Musterlösung).</div>'+
+      '</div>';
+
+    html += '</div>';
+  });
+
+  return html;
+}
+var ue = { offen:{}, busy:{}, erg:{}, fehler:{}, speichern:null };
+function ueUmschalten(exId){
+  var box = document.getElementById('ue_' + exId);
+  if(!box) return;
+  box.hidden = !box.hidden;
+  ue.offen[exId] = !box.hidden;
+  if(!box.hidden){
+    if(!tutor.ready) tutorInit();
+    var f = document.getElementById('ueFeld_' + exId);
+    if(f) f.focus();
+  }
+}
+function ueSchreiben(exId, wert){
+  state.ueTexte = state.ueTexte || {};
+  var w = String(wert == null ? '' : wert);
+  if(w.trim()) state.ueTexte[exId] = w; else delete state.ueTexte[exId];
+  clearTimeout(ue.speichern);
+  ue.speichern = setTimeout(saveProgress, 900);
+}
+function ueTaste(ev, exId){
+  if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); uePruefen(exId); }
+}
+function ueLeeren(exId){
+  var f = document.getElementById('ueFeld_' + exId);
+  if(f){ f.value = ''; f.focus(); }
+  ueSchreiben(exId, '');
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueErgZeichnen(exId);
+  var n = document.getElementById('ueNote_' + exId);
+  if(n){ n.className = 'ue-note'; n.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+}
+function ueKnopfStand(exId){
+  var b = document.getElementById('ueBtn_' + exId);
+  if(!b) return;
+  b.disabled = !!ue.busy[exId];
+  b.textContent = ue.busy[exId] ? 'Claude korrigiert …' : 'Lösung prüfen lassen';
+}
+function ueErgZeichnen(exId){
+  var box = document.getElementById('ueErg_' + exId);
+  if(!box) return;
+  var h = ueErgHtml(exId);
+  box.innerHTML = h;
+  box.hidden = !h;
+}
+function ueErgHtml(exId){
+  if(ue.busy[exId]){
+    return '<div class="ue-warten"><span class="kl-spinner" aria-hidden="true"></span>'+
+           '<span>Claude liest deine Lösung gegen die Musterlösung und vergibt Teilpunkte auf den Rechenweg.</span></div>';
+  }
+  if(ue.fehler[exId]){
+    return '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Kein Ergebnis</span>'+esc(ue.fehler[exId])+'</div>';
+  }
+  var r = ue.erg[exId];
+  if(!r) return '';
+  var q = r.max ? r.punkte / r.max : 0;
+  var klasse = q >= 0.8 ? 'gut' : (q >= 0.5 ? 'teils' : 'schwach');
+  var h = '<div class="ue-kopf"><span class="ue-punkte '+klasse+'">'+r.punkte+' / '+r.max+' Punkte</span>'+
+          (r.urteil ? '<span class="ue-urteil">'+esc(r.urteil)+'</span>' : '')+'</div>';
+  if(r.staerken) h += '<div class="kl-rueck gut"><span class="kl-rueck-lbl">Das war richtig</span>'+esc(r.staerken)+'</div>';
+  if(r.luecken)  h += '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Das hat gefehlt</span>'+esc(r.luecken)+'</div>';
+  if(r.tipp)     h += '<div class="kl-rueck tipp"><span class="kl-rueck-lbl">Fürs nächste Mal</span>'+esc(r.tipp)+'</div>';
+  h += '<div class="ex-meta">Eine Einschätzung, kein amtliches Ergebnis — im Zweifel zählt die Musterlösung. '+
+       'Mit „Lösung anzeigen“ vergleichst du selbst.</div>';
+  return h;
+}
+function ueFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'not_declared':
+    case 'capability_disabled':
+    case 'sampling_disabled':
+      return 'Die Prüfung durch Claude ist hier nicht freigegeben. Vergleiche über „Lösung anzeigen“ selbst — '+
+             'oder nimm den Prüfauftrag mit in den Chat.';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und prüfe dann erneut — dein Text bleibt stehen.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und prüfe noch einmal.';
+    case 'prompt_too_large':
+      return 'Deine Lösung ist zu lang für eine Bewertung. Kürze sie auf den Rechenweg und das Ergebnis.';
+    case 'refused':
+      return 'Diese Antwort konnte nicht bewertet werden. Formuliere sie bitte anders.';
+    case 'invalid_json':
+    case 'empty_completion':
+      return 'Die Bewertung kam nicht in verwertbarer Form zurück. Versuch es gleich noch einmal.';
+    default:
+      return 'Die Prüfung hat nicht geklappt. Versuch es gleich noch einmal — dein Text bleibt stehen.';
+  }
+}
+function ueGeloestAnzeigen(exId){
+  var b = document.getElementById('sv_' + exId);
+  if(b){ b.className = 'ex-btn'; b.textContent = '✓ Gelöst'; }
+  var h = document.getElementById('exh_' + exId);
+  if(h && h.getAttribute('data-ok') !== '1'){
+    h.setAttribute('data-ok', '1');
+    h.insertAdjacentHTML('afterbegin', '<span style="color:var(--success);">✓ </span>');
+  }
+}
+async function uePruefen(exId){
+  var ex = EXERCISES.find(function(e){ return e.id === exId; });
+  if(!ex || ue.busy[exId]) return;
+
+  var feld = document.getElementById('ueFeld_' + exId);
+  var text = (feld ? feld.value : ((state.ueTexte || {})[exId] || '')).trim();
+  var note = document.getElementById('ueNote_' + exId);
+  if(!text){
+    if(note){ note.className = 'ue-note warn'; note.textContent = 'Schreib zuerst etwas ins Feld — ein angefangener Rechenweg reicht.'; }
+    if(feld) feld.focus();
+    return;
+  }
+  if(note){ note.className = 'ue-note'; note.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    delete ue.erg[exId];
+    ue.fehler[exId] = ueFehlertext('not_granted');
+    ueErgZeichnen(exId);
+    var p = document.getElementById('prompt_' + exId);
+    if(p) p.hidden = false;
+    return;
+  }
+
+  ue.busy[exId] = true;
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueKnopfStand(exId);
+  ueErgZeichnen(exId);
+
+  var max = KL_PUNKTE[ex.level] || 8;
+  var anweisung = [
+    'Du bist Korrektor der IHK-Abschlusspruefung Teil 1 im Beruf Fachinformatiker fuer',
+    'Anwendungsentwicklung. Bewerte die Loesung eines Prueflings zu EINER Aufgabe.',
+    '',
+    'BEWERTUNGSREGELN:',
+    '- Bewerte streng, aber fair, so wie ein echter Korrektor.',
+    '- Der RECHENWEG zaehlt: Teilpunkte fuer richtige Ansaetze, auch wenn das Endergebnis falsch ist.',
+    '- Ein richtiges Ergebnis ohne nachvollziehbaren Weg bekommt nicht die volle Punktzahl.',
+    '- Einheiten, Rundungen und ausformulierte Begruendungen gehoeren dazu.',
+    '- Die Musterloesung ist nicht der einzige Weg: ein anderer, fachlich richtiger Weg ist voll zu werten.',
+    '- Eine leere oder themenfremde Antwort bekommt 0 Punkte.',
+    '- Erfinde keine Paragraphen, Normen, Zahlen oder Fristen.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau dieser Form:',
+    '{"punkte": 6, "max": ' + max + ', "urteil": "ein Halbsatz, z. B. im Kern richtig, Einheit fehlt",',
+    ' "staerken": "ein bis zwei Saetze, was richtig war",',
+    ' "luecken": "ein bis drei Saetze, was fehlt oder falsch ist",',
+    ' "tipp": "ein Satz, worauf der Pruefling beim naechsten Mal achten soll"}',
+    'Auf Deutsch, mit Du-Anrede. Kein Text vor oder nach dem JSON.',
+    '',
+    'AUFGABE (' + max + ' Punkte, Thema: ' + ex.topic + ', Stufe: ' + (LEVEL_NAMES[ex.level] || '') + ')',
+    ex.title,
+    klText(ex.task).slice(0, 1600),
+    '',
+    'MUSTERLOESUNG:',
+    String(ex.solution || '').slice(0, 2400),
+    '',
+    'HINWEIS ZUR BEWERTUNG:',
+    klText(ex.solutionNote || '').slice(0, 800),
+    '',
+    'ANTWORT DES PRUEFLINGS:',
+    text.slice(0, 2400)
+  ].join('\n');
+
+  try{
+    var r = await kiJson(anweisung, 'complex');
+    if(Array.isArray(r)) r = r[0];
+    if(!r || typeof r !== 'object') throw { code:'invalid_json' };
+    var punkte = Math.max(0, Math.min(max, Math.round(Number(r.punkte) || 0)));
+    ue.erg[exId] = {
+      punkte: punkte,
+      max: max,
+      urteil: String(r.urteil || ''),
+      staerken: String(r.staerken || ''),
+      luecken: String(r.luecken || ''),
+      tipp: String(r.tipp || '')
+    };
+    awardXp(10, 'Lösung prüfen lassen', 'uepruef:' + exId);
+    state.tutorFragen = (state.tutorFragen || 0) + 1;
+    if(state.tutorFragen >= 1) grantBadge('tutor_fan');
+    if(state.tutorFragen >= 25) grantBadge('tutor_profi');
+    if(punkte >= max * 0.8 && !state.solved[exId]){
+      state.solved[exId] = Date.now();
+      awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + exId);
+      checkMilestones();
+      ueGeloestAnzeigen(exId);
+    }
+    saveProgress();
+  }catch(e){
+    ue.fehler[exId] = ueFehlertext(e && e.code);
+  }finally{
+    ue.busy[exId] = false;
+    ueKnopfStand(exId);
+    ueErgZeichnen(exId);
+  }
+}
+function shuffled(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+var review = { queue:[], idx:0, picked:-1, right:0, done:0, mode:'due', konf:null };
+var KONF_STUFEN = [
+  { k:'sicher',   t:'Sicher',   s:'Das sitzt' },
+  { k:'unsicher', t:'Unsicher', s:'Eher Gefühl' },
+  { k:'geraten',  t:'Geraten',  s:'Keine Ahnung' }
+];
+function setzeKonf(k){
+  if(review.picked !== -1) return;   /* nach dem Aufdecken nicht mehr aenderbar */
+  review.konf = (review.konf === k) ? null : k;
+  renderContent();
+}
+function merkeKonf(ok){
+  if(!review.konf) return;
+  state.kalib = state.kalib || {};
+  var e = state.kalib[review.konf] || { n:0, r:0 };
+  e.n++; if(ok) e.r++;
+  state.kalib[review.konf] = e;
+}
+function kalibQuote(k){
+  var e = (state.kalib || {})[k];
+  if(!e || !e.n) return null;
+  return e.r / e.n;
+}
+function startReview(mode){
+  var pool;
+  if(mode === 'new'){ pool = shuffled(newCards()).slice(0, 12); }
+  else if(mode === 'weak'){
+    pool = shuffled(CARDS.filter(function(c){
+      var s = state.stats[c.id];
+      return s && s.wrong > 0;
+    })).slice(0, 15);
+  } else { pool = shuffled(dueCards()); }
+  review = { queue:pool, idx:0, picked:-1, right:0, done:0, mode:mode };
+  state.currentId = 'review';
+  render();
+}
+function pickReview(i){
+  if(review.picked !== -1) return;
+  review.picked = i;
+  var card = review.queue[review.idx];
+  var ok = i === card.correct;
+  review.done++;
+  if(ok) review.right++;
+  var hadWrong = state.stats[card.id] && state.stats[card.id].wrong > 0;
+  recordAnswer(card.id, ok);
+  merkeKonf(ok);
+  if(ok && hadWrong) grantBadge('comeback');
+  /* Dreimal daneben und trotzdem geknackt */
+  if(ok && state.stats[card.id] && state.stats[card.id].wrong >= 3) grantBadge('dickkopf');
+
+  var tk = todayKey();
+  if(!state.cardsToday || state.cardsToday.day !== tk) state.cardsToday = { day:tk, n:0 };
+  state.cardsToday.n++;
+  if(state.cardsToday.n >= 25) grantBadge('cards25');
+  if(state.cardsToday.n >= 50) grantBadge('cards50');
+
+  if(ok){
+    var s = state.srs[card.id];
+    awardXp(5 + ((s && s.iv >= 7) ? 3 : 0), 'Karte gewusst');
+  }
+  renderContent();
+}
+function rateAndNext(rating){
+  var card = review.queue[review.idx];
+  rateCard(card.id, rating);
+  review.idx++;
+  review.picked = -1;
+  review.konf = null;
+  renderContent();
+  renderSidebar();
+}
+function renderReview(){
+  var due = dueCards().length, fresh = newCards().length;
+
+  if(!review.queue.length || review.idx >= review.queue.length){
+    var finished = review.done > 0;
+    var h = '<div class="breadcrumb">Training</div><h1>Wiederholen</h1>';
+    if(finished){
+      var pct = Math.round((review.right / review.done) * 100);
+      h += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+           '<div class="score-sub">'+review.right+' von '+review.done+' richtig · Session abgeschlossen</div></div>';
+    } else {
+      h += '<p class="intro-sub">Aktives Abrufen schlägt Wiederlesen — deutlich. Jede Frage aus allen '+TOTAL+' Lektionen wird hier nach dem Vergessenskurven-Prinzip wieder vorgelegt: richtig beantwortete Karten kommen in immer größeren Abständen, falsche noch am selben Tag.</p>';
+    }
+    h += '<div class="today-grid" style="margin-top:20px;">';
+    h += '<div class="today-item '+(due?'due accent':'')+'" onclick="startReview(\'due\')"><span class="ti-label">Heute fällig</span><span class="ti-value">'+due+'</span><span class="ti-sub">'+(due?'Jetzt wiederholen':'Alles erledigt 🎉')+'</span></div>';
+    h += '<div class="today-item" onclick="startReview(\'new\')"><span class="ti-label">Neue Karten</span><span class="ti-value">'+fresh+'</span><span class="ti-sub">12 neue lernen</span></div>';
+    var weakCount = CARDS.filter(function(c){ var s = state.stats[c.id]; return s && s.wrong > 0; }).length;
+    h += '<div class="today-item '+(weakCount?'weak':'')+'" onclick="startReview(\'weak\')"><span class="ti-label">Fehlerkarten</span><span class="ti-value">'+weakCount+'</span><span class="ti-sub">Gezielt nachholen</span></div>';
+    h += '</div>';
+
+    var learned = CARDS.filter(function(c){ return !!state.srs[c.id]; }).length;
+    h += '<div class="ex-panel" style="margin-top:22px;"><strong>Dein Kartenstand:</strong> '+learned+' von '+CARDS.length+' Karten im System. '+
+         (learned < CARDS.length ? 'Karten landen automatisch hier, sobald du das Quiz einer Lektion beantwortest — oder du startest sie direkt über „Neue Karten".' : 'Alle Karten sind eingeplant.')+'</div>';
+    return h;
+  }
+
+  var card = review.queue[review.idx];
+  var revealed = review.picked !== -1;
+  var s = srsOf(card.id);
+  var html = '<div class="srs-stage">';
+  html += '<div class="srs-progress"><span>'+(review.idx+1)+' / '+review.queue.length+'</span>'+
+          '<div class="srs-bar"><div style="width:'+Math.round((review.idx/review.queue.length)*100)+'%"></div></div>'+
+          '<span>'+review.right+' richtig</span>'+
+          '<button class="ex-btn" style="padding:4px 10px;" onclick="review.queue=[];renderContent();">Beenden</button></div>';
+
+  html += '<div class="srs-card">';
+  html += '<div class="srs-meta"><span class="badge topic">'+esc(card.moduleTitle)+'</span>'+
+          (s ? '<span class="mastery-pill">Intervall: '+(s.iv||0)+' Tage</span>' : '<span class="mastery-pill mid">neue Karte</span>')+'</div>';
+  html += '<div class="srs-q">'+esc(card.q)+'</div>';
+
+  if(!revealed){
+    html += '<div class="konf"><span class="konf-frage">Wie sicher bist du — <em>bevor</em> du antwortest?</span>'+
+      '<div class="konf-reihe">';
+    KONF_STUFEN.forEach(function(st){
+      html += '<button type="button" class="konf-btn'+(review.konf === st.k ? ' an' : '')+'" '+
+        'aria-pressed="'+(review.konf === st.k ? 'true' : 'false')+'" '+
+        'onclick="setzeKonf(\''+st.k+'\')">'+st.t+
+        '<span class="konf-sub">'+st.s+'</span></button>';
+    });
+    html += '</div></div>';
+  } else if(review.konf){
+    var korrekt = review.picked === card.correct;
+    var urteil = (review.konf === 'sicher' && !korrekt)
+      ? { cls:'warn', txt:'Du warst dir sicher und lagst daneben. Genau diese Karten kosten in der Prüfung Punkte — sie kommt bewusst bald wieder.' }
+      : (review.konf === 'geraten' && korrekt)
+        ? { cls:'ok', txt:'Geraten und getroffen. Das zählt noch nicht als Wissen — die Karte bleibt im kurzen Takt.' }
+        : { cls:'', txt:'Einschätzung und Ergebnis passen zusammen.' };
+    html += '<div class="konf-echo '+urteil.cls+'">'+urteil.txt+'</div>';
+  }
+
+  html += '<div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    var cls = '';
+    if(revealed){
+      if(i === card.correct) cls = ' correct';
+      else if(i === review.picked) cls = ' wrong';
+    }
+    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' onclick="pickReview('+i+')">'+esc(opt)+'</button>';
+  });
+  html += '</div>';
+
+  if(revealed){
+    html += '<div class="srs-explain">'+(review.picked === card.correct ? '✓ ' : '✗ ')+esc(card.explain)+
+            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
+    html += '<div><div class="ti-label" style="margin-bottom:6px;">Wie sicher saß das?</div><div class="rate-row">'+
+      '<button class="rate-btn again" onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
+      '<button class="rate-btn" onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
+      '<button class="rate-btn" onclick="rateAndNext(2)">Gut<span class="rt-sub"><kbd>3</kbd> normal</span></button>'+
+      '<button class="rate-btn easy" onclick="rateAndNext(3)">Einfach<span class="rt-sub"><kbd>4</kbd> langes Intervall</span></button>'+
+      '</div></div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+var PART_TITLES = {};
+MODULES.forEach(function(m){ PART_TITLES[m.part] = m.partTitle; });
+var ZUSATZ_TEILE = [10, 11];
+var EXAM_MODES = {
+  kurz:     { label:'Kurztest',        n:15, min:12, parts:null, desc:'15 Fragen quer durch den gesamten Kurs. Ideal als tägliche Standortbestimmung.' },
+  standard: { label:'Vollprüfung',     n:30, min:30, parts:null, desc:'30 Fragen, gewichtet nach deiner Fehlerquote \u2014 Schwaches kommt \u00f6fter. Querschnitt — realistischer Querschnitt über Algorithmen, Datenbanken, UML, Netzwerk, Sicherheit und Wirtschaft.' },
+  ap1:      { label:'Prüfungslänge',   n:40, min:90, parts:null, desc:'40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1. Zwei Minuten pro Frage, so wie am Prüfungstag.' },
+  fehler:   { label:'Fehlerheft',      n:20, min:20, parts:null, nurFehler:true, desc:'Nur Fragen, die dir schon einmal danebengegangen sind.' },
+  php:      { label:'PHP & Laravel',   n:20, min:25, parts:[10], desc:'20 Fragen aus dem Zusatzteil PHP & Laravel \u2014 vom Einsteiger bis zum Experten. Z\u00e4hlt nicht zur AP1.' },
+  git:      { label:'Git',             n:15, min:15, parts:[11], desc:'15 Fragen zu Git und Zusammenarbeit. Z\u00e4hlt nicht zur AP1.' },
+  weak:     { label:'Schwachstellen',  n:20, min:20, parts:null, weak:true, desc:'20 Fragen bevorzugt aus Themen, in denen du bisher Fehler gemacht hast.' }
+};
+var exam = { active:false, mode:null, qs:[], answers:[], idx:0, endsAt:0, timer:null, finished:false, result:null };
+function stopExamTimer(){ if(exam.timer){ clearInterval(exam.timer); exam.timer = null; } }
+function gewichtetZiehen(pool, n){
+  var rest = pool.map(function(c){
+    var t = state.stats[c.id];
+    var g = 1.0;
+    if(t && (t.right + t.wrong) > 0){
+      var q = t.right / (t.right + t.wrong);
+      g = 0.35 + (1 - q) * 2.4;
+    }
+    return { c:c, g:g };
+  });
+  var raus = [];
+  var ziel = Math.min(n, rest.length);
+  while(raus.length < ziel && rest.length){
+    var summe = rest.reduce(function(a, x){ return a + x.g; }, 0);
+    var wurf = Math.random() * summe, i = 0;
+    while(i < rest.length - 1 && wurf > rest[i].g){ wurf -= rest[i].g; i++; }
+    raus.push(rest[i].c);
+    rest.splice(i, 1);
+  }
+  return raus;
+}
+function startExam(modeId){
+  var mode = EXAM_MODES[modeId];
+  var pool = CARDS.slice();
+  if(mode.parts) pool = pool.filter(function(c){ return mode.parts.indexOf(c.part) !== -1; });
+  else if(!mode.allPaths) pool = pool.filter(function(c){ return c.part >= 1 && c.part <= 9; });
+  if(mode.nurFehler){
+    pool = shuffled(pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; }));
+  } else if(mode.weak){
+    var bad = pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; });
+    var rest = pool.filter(function(c){ return bad.indexOf(c) === -1; });
+    pool = shuffled(bad).concat(shuffled(rest));
+  } else {
+    /* Gewichtete Ziehung: Schwaches kommt oefter, Ungestelltes bekommt mittleres Gewicht. */
+    pool = gewichtetZiehen(pool, mode.n);
+  }
+  if(!pool.length){
+    showToast('<span class="t-xp">Nichts dabei</span><span class="t-reason">Es gibt noch keine passenden Fragen für diesen Modus.</span>');
+    return;
+  }
+  var qs = pool.slice(0, Math.min(mode.n, pool.length));
+  exam = { active:true, mode:modeId, qs:qs, answers:qs.map(function(){ return -1; }), idx:0,
+           endsAt: Date.now() + mode.min * 60000, timer:null, finished:false, result:null };
+  stopExamTimer();
+  exam.timer = setInterval(tickExam, 1000);
+  state.currentId = 'exam';
+  render();
+}
+function tickExam(){
+  var el = document.getElementById('examTimer');
+  var left = exam.endsAt - Date.now();
+  if(left <= 0){ finishExam(true); return; }
+  if(!el) return;
+  var s = Math.floor(left / 1000);
+  var mm = String(Math.floor(s / 60)).padStart(2,'0');
+  var ss = String(s % 60).padStart(2,'0');
+  el.textContent = mm + ':' + ss;
+  el.className = 'timer' + (left < 60000 ? ' crit' : (left < 300000 ? ' warn' : ''));
+}
+function answerExam(i){
+  exam.answers[exam.idx] = i;
+  renderContent();
+}
+function gotoExamQ(i){ exam.idx = i; renderContent(); }
+function nextExamQ(d){
+  exam.idx = Math.max(0, Math.min(exam.qs.length - 1, exam.idx + d));
+  renderContent();
+}
+function finishExam(auto){
+  if(exam.finished) return;
+  if(!auto){
+    var open = exam.answers.filter(function(a){ return a === -1; }).length;
+    if(open > 0 && !window.confirm(open + ' Frage(n) noch unbeantwortet. Trotzdem abgeben?')) return;
+  }
+  stopExamTimer();
+  exam.finished = true;
+  var right = 0, byPart = {};
+  exam.qs.forEach(function(c, i){
+    var ok = exam.answers[i] === c.correct;
+    if(ok) right++;
+    recordAnswer(c.id, ok);
+    if(!ok) rateCard(c.id, 0); else if(!state.srs[c.id]) rateCard(c.id, 2);
+    var p = byPart[c.part] || (byPart[c.part] = { right:0, total:0 });
+    p.total++; if(ok) p.right++;
+  });
+  exam.result = { right:right, total:exam.qs.length, byPart:byPart, auto:!!auto };
+  state.exams.push({ ts:Date.now(), score:right, total:exam.qs.length, mode:exam.mode,
+                     byPart:JSON.parse(JSON.stringify(byPart)) });
+  var quote = Math.round((right / exam.qs.length) * 100);
+  awardXp(right * 3, 'Prüfung: ' + right + '/' + exam.qs.length + ' richtig');
+  if(quote >= 70) grantBadge('exam_pass');
+  if(quote >= 90) grantBadge('exam_ace');
+  if(right === exam.qs.length && exam.qs.length > 0) grantBadge('exam_perfect');
+  var gesamt = (EXAM_MODES[exam.mode] || {}).min * 60000;
+  if(quote >= 70 && !auto && gesamt && (exam.endsAt - Date.now()) > gesamt / 2) grantBadge('speedster');
+  /* Nach einer verhauenen Pruefung direkt eine bestanden */
+  var vorher = state.exams[state.exams.length - 2];
+  if(quote >= 70 && vorher && (vorher.score / vorher.total) < 0.5) grantBadge('phoenix');
+  /* Knapp vor Ablauf der Zeit bestanden */
+  if(quote >= 70 && gesamt && (exam.endsAt - Date.now()) < 60000) grantBadge('nervenstark');
+  saveProgress();
+  renderContent();
+  renderSidebar();
+}
+function renderExam(){
+  if(!exam.active){
+    var h = '<div class="breadcrumb">Training</div><h1>Prüfungssimulator</h1>'+
+      '<p class="intro-sub">Unter Zeitdruck abrufen zu können ist eine eigene Fähigkeit — und genau die entscheidet in der AP1, wo rund 95 % der Aufgaben Multiple Choice sind. Nach jedem Durchlauf siehst du, welcher Themenbereich dich ausgebremst hat.</p>';
+    h += '<div class="exam-setup">';
+    Object.keys(EXAM_MODES).forEach(function(k){
+      var m = EXAM_MODES[k];
+      h += '<div class="exam-mode" onclick="startExam(\''+k+'\')"><h3>'+m.label+'</h3>'+
+           '<p>'+m.desc+'</p><p style="margin-top:8px;"><span class="badge topic">'+m.n+' Fragen</span> <span class="badge topic">'+m.min+' Min.</span></p></div>';
+    });
+    h += '</div>';
+
+    if(state.exams.length){
+      h += '<h2 class="sec-h">Deine letzten Durchläufe</h2>';
+      h += '<table class="lesson-table"><tr><th>Datum</th><th>Modus</th><th>Ergebnis</th><th>Quote</th></tr>';
+      state.exams.slice(-8).reverse().forEach(function(e){
+        var pct = Math.round((e.score / e.total) * 100);
+        var d = new Date(e.ts);
+        h += '<tr><td>'+d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+'</td>'+
+             '<td>'+((EXAM_MODES[e.mode]||{}).label || e.mode)+'</td>'+
+             '<td>'+e.score+'/'+e.total+'</td>'+
+             '<td style="color:'+(pct>=70?'var(--success)':'var(--danger)')+';font-weight:600;">'+pct+'%</td></tr>';
+      });
+      h += '</table>';
+      var best = state.exams.reduce(function(a,e){ return Math.max(a, e.score/e.total); }, 0);
+      h += '<div class="ex-panel">Bestquote bisher: <strong>'+Math.round(best*100)+'%</strong>. Als Richtwert gilt eine Quote ab 70 % als solide Prüfungsvorbereitung — darunter lohnt gezieltes Nacharbeiten über den Modus „Schwachstellen".</div>';
+    }
+    return h;
+  }
+
+  if(exam.finished){
+    var r = exam.result;
+    var pct = Math.round((r.right / r.total) * 100);
+    var h2 = '<div class="breadcrumb">Ergebnis</div><h1>'+(EXAM_MODES[exam.mode]||{}).label+'</h1>';
+    if(r.auto) h2 += '<div class="ex-panel" style="border-left:3px solid var(--danger);">⏱ Zeit abgelaufen — automatisch abgegeben.</div>';
+    h2 += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+          '<div class="score-sub">'+r.right+' von '+r.total+' Fragen richtig</div></div>';
+
+    h2 += '<h2 class="sec-h">Nach Themenbereich</h2>';
+    Object.keys(r.byPart).sort().forEach(function(p){
+      var v = r.byPart[p], q = Math.round((v.right / v.total) * 100);
+      var col = q >= 80 ? 'var(--success)' : (q >= 50 ? 'var(--accent2)' : 'var(--danger)');
+      h2 += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+            '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+            '<span class="tval">'+v.right+'/'+v.total+'</span></div>';
+    });
+
+    var wrong = exam.qs.filter(function(c,i){ return exam.answers[i] !== c.correct; });
+    if(wrong.length){
+      h2 += '<h2 class="sec-h">Das saß noch nicht ('+wrong.length+')</h2>';
+      h2 += '<p style="font-size:.85rem;color:var(--text-dim);">Alle davon liegen jetzt im Wiederholungs-Trainer und kommen heute noch einmal.</p>';
+      exam.qs.forEach(function(c, i){
+        if(exam.answers[i] === c.correct) return;
+        h2 += '<div class="ex-card"><div class="ex-head"><h3>'+esc(c.q)+'</h3><span class="badge topic">'+esc(c.moduleTitle)+'</span></div>'+
+              '<p style="font-size:.87rem;margin:0 0 6px;"><span style="color:var(--danger);">Deine Antwort:</span> '+
+              (exam.answers[i] === -1 ? '<em>nicht beantwortet</em>' : esc(c.options[exam.answers[i]]))+'<br>'+
+              '<span style="color:var(--success);">Richtig:</span> '+esc(c.options[c.correct])+'</p>'+
+              '<p style="font-size:.85rem;color:var(--text-dim);margin:0;">'+esc(c.explain)+'</p>'+
+              '<div class="ex-actions"><button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
+      });
+    } else {
+      h2 += '<div class="ex-panel" style="border-left:3px solid var(--success);">Fehlerfrei — stark. Erhöhe beim nächsten Mal Umfang oder Tempo.</div>';
+    }
+    h2 += '<div class="ex-actions" style="margin-top:20px;"><button class="check-btn" onclick="exam.active=false;renderContent();">Neuen Durchlauf starten</button>'+
+          '<button class="ex-btn" onclick="startReview(\'weak\')">Fehlerkarten jetzt wiederholen</button></div>';
+    return h2;
+  }
+
+  var card = exam.qs[exam.idx];
+  var picked = exam.answers[exam.idx];
+  var h3 = '<div class="exam-bar"><span class="timer" id="examTimer">--:--</span>'+
+    '<span style="font-size:.85rem;color:var(--text-dim);">Frage '+(exam.idx+1)+'/'+exam.qs.length+'</span>'+
+    '<button class="check-btn" style="padding:7px 14px;" onclick="finishExam(false)">Abgeben</button>'+
+    '<div class="exam-qnav">';
+  exam.qs.forEach(function(q, i){
+    h3 += '<button class="qdot'+(exam.answers[i] !== -1 ? ' answered' : '')+(i === exam.idx ? ' current' : '')+'" onclick="gotoExamQ('+i+')">'+(i+1)+'</button>';
+  });
+  h3 += '</div></div>';
+
+  h3 += '<div class="srs-card"><div class="srs-meta"><span class="badge topic">Teil '+card.part+'</span></div>'+
+        '<div class="srs-q">'+esc(card.q)+'</div><div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    h3 += '<button class="srs-opt" style="'+(picked === i ? 'border-color:var(--accent);background:var(--part-bg);font-weight:600;' : '')+'" onclick="answerExam('+i+')">'+esc(opt)+'</button>';
+  });
+  h3 += '</div><div class="ex-actions">'+
+        '<button class="ex-btn" onclick="nextExamQ(-1)" '+(exam.idx===0?'disabled':'')+'>← Zurück</button>'+
+        '<button class="ex-btn primary" onclick="nextExamQ(1)" '+(exam.idx===exam.qs.length-1?'disabled':'')+'>Weiter →</button>'+
+        '<button class="ex-btn" onclick="answerExam(-1)">Antwort verwerfen</button>'+
+        '</div></div>';
+  h3 += '<p class="ex-meta">Während der Prüfung gibt es bewusst kein Feedback — die Auswertung kommt erst nach der Abgabe, wie in der echten Prüfung.</p>';
+  return h3;
+}
+var tracer = { id:null, step:0, fb:null, finalFb:null, finished:false };
+function startTrace(id){
+  tracer = { id:id, step:0, fb:null, finalFb:null, finished:false };
+  state.currentId = 'tracer';
+  render();
+}
+function traceById(id){ return TRACES.find(function(t){ return t.id===id; }); }
+function normVal(s){
+  return String(s).toLowerCase().replace(/\s+/g,'').replace(/[\[\]]/g,'').replace(/;/g,',');
+}
+function traceAdvance(force){
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  if(!pending) return;
+  if(pending.ask && !force){
+    var inp = document.getElementById('predictInput');
+    var val = inp ? inp.value : '';
+    if(!val.trim()){ tracer.fb = { ok:false, msg:'Trag einen Wert ein — raten ist erlaubt, Überspringen lernt nichts.' }; renderContent(); return; }
+    var ok = normVal(val) === normVal(pending.values[pending.ask]);
+    if(!ok){
+      tracer.fb = { ok:false, msg:'Noch nicht. Rechne die Zeile Schritt für Schritt nach — oder lass dir den Wert zeigen.' };
+      renderContent(); return;
+    }
+    tracer.fb = { ok:true, msg:'Richtig.' };
+    awardXp(15, 'Vorhersage getroffen', 'trace:' + tracer.id + ':' + (tracer.step + 1));
+  } else {
+    tracer.fb = force && pending.ask ? { ok:false, msg:'Wert aufgedeckt — schau dir die Zeile genau an, bevor du weitergehst.' } : null;
+  }
+  tracer.step++;
+  if(tracer.step >= t.steps.length - 1) tracer.finished = true;
+  renderContent();
+  var box = document.getElementById('predictInput');
+  if(box) box.focus();
+}
+function checkFinal(){
+  var t = traceById(tracer.id);
+  var inp = document.getElementById('finalInput');
+  var val = inp ? inp.value : '';
+  var ok = normVal(val) === normVal(t.result);
+  tracer.finalFb = ok
+    ? { ok:true, msg:'✓ Richtig — genau das liefert der Algorithmus zurück.' }
+    : { ok:false, msg:'✗ Nicht ganz. Sieh dir die letzte Zeile der Tabelle an: Welcher Wert steht dort in der Ergebnisvariablen?' };
+  if(ok){
+    if(state.tracesDone.indexOf(t.id) === -1) state.tracesDone.push(t.id);
+    awardXp(40, 'Trockendurchlauf gelöst', 'tracedone:' + t.id);
+    checkMilestones();
+  }
+  renderContent();
+}
+function renderTracer(){
+  if(!tracer.id){
+    var h = '<div class="breadcrumb">Training</div><h1>Algorithmus-Trainer</h1>'+
+      '<p class="intro-sub">Die häufigste Aufgabenform der AP1 lautet sinngemäß: „Was liefert dieser Algorithmus für Eingabe X?" Genau das übst du hier — Zeile für Zeile, mit einer Wertetabelle, wie du sie in der Prüfung auf Papier führen würdest. An kritischen Stellen musst du den nächsten Wert selbst vorhersagen, bevor er aufgedeckt wird.</p>';
+    h += '<div class="module-grid" style="margin-top:22px;">';
+    TRACES.forEach(function(t){
+      h += '<div class="module-card" onclick="startTrace(\''+t.id+'\')">'+
+           '<div class="mnum">'+(t.level===1?'EINSTEIGER':'FORTGESCHRITTEN')+'</div>'+
+           '<h3>'+esc(t.title)+'</h3><p class="mono" style="font-size:.78rem;">'+esc(t.input)+'</p>'+
+           '<p style="margin-top:6px;">'+t.steps.filter(function(s){return s.ask;}).length+' Vorhersagen · '+t.steps.length+' Schritte</p></div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  var html = '<div class="breadcrumb">Algorithmus-Trainer</div>';
+  html += '<div class="lesson-head"><div><h1>'+esc(t.title)+'</h1>'+
+          '<div class="meta-row"><span class="mono">'+esc(t.input)+'</span><span>Schritt '+(tracer.step+1)+'/'+t.steps.length+'</span></div></div>'+
+          '<button class="ex-btn" onclick="tracer.id=null;renderContent();">Andere Aufgabe</button></div>';
+  html += '<p style="font-size:.9rem;">'+t.intro+'</p>';
+
+  var cur = t.steps[tracer.step];
+  html += '<div class="trace-wrap"><div class="trace-code">';
+  t.code.forEach(function(line, i){
+    html += '<span class="trace-line'+(i === cur.line ? ' active' : '')+'">'+esc(line)+'</span>';
+  });
+  html += '</div><div style="overflow-x:auto;"><table class="trace-table"><tr><th>#</th>';
+  t.vars.forEach(function(v){ html += '<th>'+esc(v)+'</th>'; });
+  html += '</tr>';
+  for(var i = 0; i <= tracer.step; i++){
+    var st = t.steps[i];
+    html += '<tr'+(i === tracer.step ? ' class="now"' : '')+'><td>'+(i+1)+'</td>';
+    t.vars.forEach(function(v){ html += '<td>'+esc(st.values[v] !== undefined ? st.values[v] : '—')+'</td>'; });
+    html += '</tr>';
+  }
+  html += '</table></div></div>';
+
+  html += '<div class="ex-panel"><strong>Zeile '+(cur.line+1)+':</strong> '+esc(cur.note)+'</div>';
+
+  if(pending){
+    if(pending.ask){
+      html += '<div class="predict-box"><label for="predictInput">Vorhersage: Welchen Wert hat <span class="mono">'+esc(pending.ask)+'</span> nach dem nächsten Schritt?</label>'+
+        '<div class="predict-row"><input class="predict-input" id="predictInput" autocomplete="off" placeholder="z. B. '+(pending.ask==='zahlen'?'[2, 5, 9, 1]':'12')+'" onkeydown="if(event.key===\'Enter\')traceAdvance(false)">'+
+        '<button class="check-btn" onclick="traceAdvance(false)">Prüfen</button>'+
+        '<button class="ex-btn" onclick="traceAdvance(true)">Zeigen</button></div>';
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'">'+esc(tracer.fb.msg)+'</div>';
+      html += '</div>';
+    } else {
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'" style="margin-bottom:10px;">'+esc(tracer.fb.msg)+'</div>';
+      html += '<button class="check-btn" onclick="traceAdvance(false)">Nächster Schritt →</button>';
+    }
+  } else {
+    html += '<div class="predict-box"><label for="finalInput">Letzte Frage: Was liefert der Algorithmus zurück?</label>'+
+      '<div class="predict-row"><input class="predict-input" id="finalInput" autocomplete="off" onkeydown="if(event.key===\'Enter\')checkFinal()">'+
+      '<button class="check-btn" onclick="checkFinal()">Prüfen</button></div>';
+    if(tracer.finalFb){
+      html += '<div class="predict-fb '+(tracer.finalFb.ok?'ok':'no')+'">'+esc(tracer.finalFb.msg)+'</div>';
+      if(tracer.finalFb.ok){
+        html += '<div class="callout callout-tip" style="margin-bottom:0;"><div class="callout-label">★ Was du daraus mitnimmst</div><p>'+t.lesson+'</p></div>';
+      }
+    }
+    html += '</div>';
+    html += '<div class="ex-actions"><button class="ex-btn" onclick="tracer.id=null;renderContent();">Nächste Aufgabe wählen</button>'+
+            '<button class="ex-btn" onclick="startTrace(\''+t.id+'\')">Nochmal von vorn</button></div>';
+  }
+  return html;
+}
+var SEARCH_INDEX = [];
+var indexFertig = false;
+function buildIndex(){
+  MODULES.forEach(function(m){
+    m.lessons.forEach(function(l){
+      var text = ['body','body2','body3','tip','code','code2','code3','code4']
+                   .map(function(k){ return l[k] || ''; }).join(' ');
+      SEARCH_INDEX.push({ id:l.id, kind:'lesson', title:l.title, sub:'Teil '+m.part+' · '+m.title,
+                          hay:(l.title + ' ' + m.title + ' ' + text).replace(/<[^>]+>/g,' ').toLowerCase() });
+    });
+  });
+  EXERCISES.forEach(function(x){
+    SEARCH_INDEX.push({ id:'exercises', kind:'exercise', title:x.title, sub:'Übung · '+x.topic+' · '+(['','Einsteiger','Fortgeschritten','Experte'][x.level]),
+                        hay:(x.title + ' ' + x.topic + ' ' + x.task).replace(/<[^>]+>/g,' ').toLowerCase() });
+  });
+  TRACES.forEach(function(t){
+    SEARCH_INDEX.push({ id:'trace:'+t.id, kind:'trace', title:t.title, sub:'Algorithmus-Trainer · '+t.input,
+                        hay:(t.title + ' ' + t.input + ' ' + t.code.join(' ')).toLowerCase() });
+  });
+  [['review','Wiederholen (Spaced Repetition)','Training'],
+   ['exam','Prüfungssimulator','Training'],
+   ['tracer','Algorithmus-Trainer','Training'],
+   ['subnet','Subnetting-Trainer','Training'],
+   ['tutor','AP1-Tutor','Training'],
+   ['exercises','Übungsaufgaben','Praxis'],
+   ['cheatsheet','Spickzettel','Referenz'],
+   ['glossar','Syntax-Glossar','Referenz · Befehle nachschlagen (let, const, JOIN, rebase)'],
+   ['intro','Kursübersicht','Start']].forEach(function(a){
+    SEARCH_INDEX.push({ id:a[0], kind:'nav', title:a[1], sub:a[2], hay:(a[1]+' '+a[2]).toLowerCase() });
+  });
+  indexFertig = true;
+}
+function renderKiEinstellungen(){
+  var an = !!tutor.fn;
+  var h = '<h2 class="sec-h">Tutor-Verbindung</h2>';
+  h += '<div class="ex-panel">';
+  h += '<p style="margin-bottom:12px;">Status: <span class="sync-hint'+(an ? ' on' : '')+'">'+
+       esc(kiHerkunftText())+'</span></p>';
+  h += '<p style="margin-bottom:14px;">Auf claude.ai laeuft der Tutor ueber dein eigenes Konto. '+
+       'Wird der Kurs auf einem eigenen Server betrieben, traegst du hier die Adresse deines '+
+       'Dienstes ein &mdash; der API-Schluessel bleibt dabei auf dem Server und niemals im Browser.</p>';
+  h += '<div class="sb-grid">';
+  h += '<label class="sb-field"><span>Bezugsquelle</span>'+
+       '<select class="sb-input" onchange="kiModusSetzen(this.value)">'+
+       ['auto','artifact','backend','aus'].map(function(m){
+         var t = { auto:'Automatisch', artifact:'Nur Claude (Artifact)',
+                   backend:'Nur eigener Dienst', aus:'Tutor abschalten' }[m];
+         return '<option value="'+m+'"'+(KI.modus === m ? ' selected' : '')+'>'+t+'</option>';
+       }).join('')+'</select></label>';
+  h += '<label class="sb-field"><span>Adresse des eigenen Dienstes</span>'+
+       '<input class="sb-input" type="url" spellcheck="false" placeholder="https://api.deine-domain.de/tutor" '+
+       'value="'+esc(KI.endpunkt)+'" oninput="kiEndpunktSetzen(this.value)"></label>';
+  h += '</div>';
+  h += '<div class="ex-actions"><button class="ex-btn primary" type="button" '+
+       'onclick="tutorNeuVerbinden()">Verbindung neu aufbauen</button></div>';
+  h += '<details class="kl-details"><summary>Welches Protokoll der Dienst sprechen muss</summary>'+
+       codeBlock(
+         "POST <deine Adresse>\n"+
+         "Content-Type: application/json\n\n"+
+         "{ \"nachrichten\": [ {\"role\":\"user\",\"content\":\"...\"} ],\n"+
+         "  \"modus\": \"text\" | \"json\",\n"+
+         "  \"stufe\": \"fast\" | \"default\" | \"complex\" }\n\n"+
+         "Antwort, Weg a - laufender Text:\n"+
+         "  Content-Type: text/event-stream\n"+
+         "  data: {\"text\":\"bisheriger Text\"}\n"+
+         "  data: [DONE]\n\n"+
+         "Antwort, Weg b - eine JSON-Antwort:\n"+
+         "  {\"text\":\"...\",\"truncated\":false}\n"+
+         "  bei modus \"json\" direkt das gewuenschte Objekt\n\n"+
+         "Der Server haelt den API-Schluessel, setzt Zeitlimits\n"+
+         "und begrenzt die Anfragen je Nutzer.",
+         'Schnittstelle')+'</details>';
+  h += '</div>';
+  return h;
+}
+function renderProfile(){
+  var lp = levelProgress();
+  var xp = state.xp || 0;
+  var mastered = Object.keys(state.srs).filter(function(k){ return (state.srs[k].iv || 0) >= 21; }).length;
+  var bestExam = state.exams.reduce(function(a,e){ return Math.max(a, e.score / e.total); }, 0);
+  var earned = BADGES.filter(function(b){ return state.badges[b.id]; }).length;
+
+  var h = '<div class="breadcrumb">Profil</div>';
+  h += renderRangkarte();
+  h += renderKennzahlen();
+  h += '<h2 class="sec-h">Rangleiter</h2>';
+  h += '<p class="intro-sub">Fünfundzwanzig Stufen vom Kabelträger bis zum Architekten der Matrix. XP gibt es für jede abgeschlossene Lektion, jede richtige Erstantwort und jede gelöste Aufgabe.</p>';
+  h += renderLeiter();
+  h += renderPruefungsverlauf();
+  h += '<h2 class="sec-h">Abzeichen</h2>';
+  h += renderAbzeichen();
+
+  h += renderKalibrierung();
+
+  h += '<h2 class="sec-h">Fortschritt nach Kursteil</h2>';
+  PARTS.forEach(function(p){
+    var ls = [];
+    MODULES.filter(function(m){ return m.part === p; }).forEach(function(m){ ls = ls.concat(m.lessons); });
+    var done = ls.filter(function(l){ return state.completed.has(l.id); }).length;
+    var q = ls.length ? Math.round((done / ls.length) * 100) : 0;
+    var col = q >= 80 ? 'var(--success)' : (q >= 40 ? 'var(--accent)' : 'var(--accent2)');
+    h += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+         '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+         '<span class="tval">'+done+'/'+ls.length+'</span></div>';
+  });
+
+  h += '<h2 class="sec-h">Zahlen</h2>';
+  h += '<div class="stat-row">'+
+    '<div class="stat-tile"><div class="num">'+state.completed.size+'</div><div class="lbl">Lektionen fertig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.srs).length+'</div><div class="lbl">Karten aktiv</div></div>'+
+    '<div class="stat-tile"><div class="num">'+mastered+'</div><div class="lbl">Karten gefestigt</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.solved).length+'</div><div class="lbl">Übungen gelöst</div></div>'+
+    '<div class="stat-tile"><div class="num">'+state.tracesDone.length+'/'+TRACES.length+'</div><div class="lbl">Durchläufe</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(bestExam ? Math.round(bestExam*100)+'%' : '—')+'</div><div class="lbl">Beste Prüfung</div></div>'+
+    '</div>';
+
+  h += renderKiEinstellungen();
+
+  h += '<h2 class="sec-h">Dein Lernplan</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:14px;">Mit einem Prüfungstermin rechnet dir die Heute-Ansicht aus, '+
+    'wie viele Lektionen pro Tag noch nötig sind. Das Tagesziel steuert den Ring — lieber klein ansetzen '+
+    'und täglich erreichen als groß und selten.</p>'+
+    '<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Prüfungstermin</span>'+
+        '<input type="date" id="pruefDatum" class="dat-feld" value="'+esc(state.pruefungsdatum || '')+'" '+
+        'onchange="setzePruefung(this.value)">'+
+      '</label>'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Lektionen pro Tag</span>'+
+        '<input type="number" id="tagesZiel" class="dat-feld" min="1" max="30" '+
+        'style="width:90px;" value="'+(state.tagesziel || 3)+'" onchange="setzeZiel(this.value)">'+
+      '</label>'+
+      '<button class="ex-btn" onclick="fokusUmschalten()">Lesemodus umschalten</button>'+
+      '<button class="ex-btn" onclick="selectLesson(\'tasten\')">Tastaturkürzel</button>'+
+    '</div></div>';
+
+  h += '<h2 class="sec-h">Geräte und Sicherung</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:10px;"><strong>Status:</strong> <span id="syncHint" class="sync-hint">wird geprüft …</span></p>'+
+    '<p style="margin-bottom:10px;">Auf claude.ai gleicht sich dein Fortschritt zwischen allen Geräten ab, an denen du mit demselben Konto angemeldet bist. '+
+    'Für eine lokal gespeicherte Kopie oder als Sicherung nutzt du den Export: Er legt deinen kompletten Stand als Text in die Zwischenablage. '+
+    'Beim Import wird <em>zusammengeführt</em>, nicht überschrieben — abgeschlossene Lektionen, XP und Abzeichen gehen also nie verloren.</p>'+
+    '<div class="ex-actions">'+
+      '<button class="ex-btn primary" onclick="exportProgress()">Fortschritt exportieren</button>'+
+      '<button class="ex-btn" onclick="showImport()">Fortschritt importieren</button>'+
+      '<button class="ex-btn" id="ioApply" hidden onclick="applyImport()">Übernehmen</button>'+
+    '</div>'+
+    '<textarea class="io-area" id="ioArea" hidden spellcheck="false"></textarea>'+
+    '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Wie XP entstehen:</strong> Lektion abschließen +'+xpAnzeige(50)+' · Quizfrage erstmals richtig +'+xpAnzeige(10)+' · Karteikarte gewusst +'+xpAnzeige(5)+' (gefestigte Karten +'+xpAnzeige(8)+') · Vorhersage im Algorithmus-Trainer +'+xpAnzeige(15)+' · Trockendurchlauf gelöst +'+xpAnzeige(40)+' · Übungsaufgabe gelöst +'+xpAnzeige(30)+' · Prüfung '+xpAnzeige(3)+' XP je richtiger Antwort · Abzeichen +'+xpAnzeige(25)+'. Punkte gibt es pro Aufgabe nur einmal — Wiederholen zählt fürs Gedächtnis, nicht fürs Punktekonto.</div>';
+  return h;
+}
+var subnet = { task:null, checked:false, right:0, total:0, streak:0, kind:0 };
+function sbRand(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function sbPick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function sbToInt(a, b, c, d){ return ((a * 16777216) + (b * 65536) + (c * 256) + d); }
+function sbToIp(n){
+  n = n >>> 0;
+  return [Math.floor(n / 16777216) % 256, Math.floor(n / 65536) % 256,
+          Math.floor(n / 256) % 256, n % 256].join('.');
+}
+function sbMaskInt(p){ return p === 0 ? 0 : (4294967296 - Math.pow(2, 32 - p)); }
+function sbMaskStr(p){ return sbToIp(sbMaskInt(p)); }
+function sbNorm(s){ return String(s == null ? '' : s).replace(/\s+/g, '').replace(/,/g, '.').toLowerCase(); }
+function sbBase(prefix){
+  var r = sbRand(1, 3), a, b;
+  if(r === 1){ a = 10;  b = sbRand(0, 255); }
+  else if(r === 2){ a = 172; b = sbRand(16, 31); }
+  else { a = 192; b = 168; }
+  if(r === 3 && prefix < 16) prefix = 16;
+  var ip = sbToInt(a, b, sbRand(0, 255), sbRand(1, 254));
+  return (ip - (ip % Math.pow(2, 32 - prefix))) + sbRand(1, Math.min(200, Math.pow(2, 32 - prefix) - 2));
+}
+function makeSubnetTask(){
+  var kind = sbRand(1, 4);
+  var p, ipInt, netInt, size, t;
+
+  if(kind === 1){
+    /* Adresse analysieren */
+    p = sbRand(24, 30);
+    ipInt = sbBase(p);
+    size = Math.pow(2, 32 - p);
+    netInt = ipInt - (ipInt % size);
+    t = {
+      kind: 1,
+      titel: 'Adresse analysieren',
+      frage: 'Gegeben ist die Adresse <strong>' + sbToIp(ipInt) + ' / ' + p + '</strong> ' +
+             '(Subnetzmaske ' + sbMaskStr(p) + ').<br>Bestimme Netzadresse, Broadcast-Adresse, den ersten und letzten nutzbaren Host sowie die Anzahl nutzbarer Hosts.',
+      felder: [
+        { k:'netz',  l:'Netzadresse',        ph:'z. B. 192.168.1.0' },
+        { k:'bc',    l:'Broadcast-Adresse',  ph:'z. B. 192.168.1.255' },
+        { k:'first', l:'Erster Host',        ph:'z. B. 192.168.1.1' },
+        { k:'last',  l:'Letzter Host',       ph:'z. B. 192.168.1.254' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: {
+        netz:  sbToIp(netInt),
+        bc:    sbToIp(netInt + size - 1),
+        first: sbToIp(netInt + 1),
+        last:  sbToIp(netInt + size - 2),
+        hosts: String(size - 2)
+      },
+      weg:
+        'Maske /' + p + ' = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse im letzten Oktett: 256 - ' + (sbMaskInt(p) % 256) + ' = ' + Math.min(size, 256) + '\n' +
+        'Netzadresse   = alle Hostbits auf 0   -> ' + sbToIp(netInt) + '\n' +
+        'Broadcast     = alle Hostbits auf 1   -> ' + sbToIp(netInt + size - 1) + '\n' +
+        'Erster Host   = Netzadresse + 1       -> ' + sbToIp(netInt + 1) + '\n' +
+        'Letzter Host  = Broadcast - 1         -> ' + sbToIp(netInt + size - 2) + '\n' +
+        'Hostbits      = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts= 2^' + (32 - p) + ' - 2 = ' + size + ' - 2 = ' + (size - 2)
+    };
+  } else if(kind === 2){
+    /* Maske und Praefix umrechnen */
+    p = sbRand(17, 30);
+    var hin = sbRand(0, 1) === 1;
+    t = {
+      kind: 2,
+      titel: 'Maske und Praefix umrechnen',
+      frage: hin
+        ? 'Wandle das Praefix <strong>/' + p + '</strong> in die Subnetzmaske in Dezimalschreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.'
+        : 'Wandle die Subnetzmaske <strong>' + sbMaskStr(p) + '</strong> in die CIDR-Schreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.',
+      felder: hin
+        ? [ { k:'maske', l:'Subnetzmaske', ph:'z. B. 255.255.255.0' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ]
+        : [ { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 24' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ],
+      loesung: hin
+        ? { maske: sbMaskStr(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) }
+        : { cidr: String(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) },
+      weg:
+        '/' + p + ' bedeutet ' + p + ' gesetzte Bits von links.\n' +
+        'Maske: ' + sbMaskStr(p) + '\n' +
+        'Merkreihe der Oktettwerte: 128 192 224 240 248 252 254 255\n' +
+        'Hostbits = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts = 2^' + (32 - p) + ' - 2 = ' + (Math.pow(2, 32 - p) - 2)
+    };
+  } else if(kind === 3){
+    /* Vom Hostbedarf zum Praefix */
+    var ziel = sbPick([6, 12, 25, 30, 50, 60, 100, 120, 200, 250, 400, 500]);
+    var hb = 1;
+    while(Math.pow(2, hb) - 2 < ziel) hb++;
+    p = 32 - hb;
+    t = {
+      kind: 3,
+      titel: 'Vom Hostbedarf zum Praefix',
+      frage: 'Ein Subnetz soll mindestens <strong>' + ziel + ' Hosts</strong> aufnehmen koennen. ' +
+             'Bestimme das groesstmoegliche Praefix (also das kleinste ausreichende Netz), die zugehoerige Subnetzmaske und die tatsaechlich nutzbare Hostanzahl.',
+      felder: [
+        { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'maske', l:'Subnetzmaske',       ph:'z. B. 255.255.255.192' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: { cidr: String(p), maske: sbMaskStr(p), hosts: String(Math.pow(2, hb) - 2) },
+      weg:
+        'Gesucht: kleinstes h mit 2^h - 2 >= ' + ziel + '\n' +
+        '  2^' + (hb - 1) + ' - 2 = ' + (Math.pow(2, hb - 1) - 2) + '  -> zu wenig\n' +
+        '  2^' + hb + ' - 2 = ' + (Math.pow(2, hb) - 2) + '  -> ausreichend\n' +
+        'Hostbits = ' + hb + '\n' +
+        'Praefix  = 32 - ' + hb + ' = /' + p + '\n' +
+        'Maske    = ' + sbMaskStr(p)
+    };
+  } else {
+    /* Netz aufteilen */
+    var start = sbRand(24, 27);
+    var anzahl = sbPick([2, 4, 8, 16]);
+    var zusatz = Math.round(Math.log(anzahl) / Math.log(2));
+    p = start + zusatz;
+    if(p > 30){ p = 30; zusatz = p - start; anzahl = Math.pow(2, zusatz); }
+    var basis = sbBase(start);
+    var basisNet = basis - (basis % Math.pow(2, 32 - start));
+    var block = Math.pow(2, 32 - p);
+    t = {
+      kind: 4,
+      titel: 'Netz aufteilen',
+      frage: 'Das Netz <strong>' + sbToIp(basisNet) + ' / ' + start + '</strong> soll in ' +
+             '<strong>' + anzahl + ' gleich grosse Subnetze</strong> geteilt werden. ' +
+             'Bestimme das neue Praefix, die Blockgroesse, die Anzahl nutzbarer Hosts je Subnetz und die Netzadresse des <strong>zweiten</strong> Subnetzes.',
+      felder: [
+        { k:'cidr',  l:'Neues Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'block', l:'Blockgroesse (Adressen)',  ph:'nur die Zahl' },
+        { k:'hosts', l:'Nutzbare Hosts je Subnetz', ph:'nur die Zahl' },
+        { k:'netz2', l:'Netzadresse Subnetz 2',    ph:'z. B. 192.168.1.64' }
+      ],
+      loesung: {
+        cidr:  String(p),
+        block: String(block),
+        hosts: String(block - 2),
+        netz2: sbToIp(basisNet + block)
+      },
+      weg:
+        'Benoetigte zusaetzliche Netzbits: 2^x >= ' + anzahl + '  ->  x = ' + zusatz + '\n' +
+        'Neues Praefix = /' + start + ' + ' + zusatz + ' = /' + p + '\n' +
+        'Maske         = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse  = 2^(32-' + p + ') = ' + block + ' Adressen\n' +
+        'Hosts je Netz = ' + block + ' - 2 = ' + (block - 2) + '\n' +
+        'Subnetz 1     = ' + sbToIp(basisNet) + '\n' +
+        'Subnetz 2     = ' + sbToIp(basisNet) + ' + ' + block + ' = ' + sbToIp(basisNet + block)
+    };
+  }
+  return t;
+}
+function newSubnetTask(){
+  subnet.task = makeSubnetTask();
+  subnet.checked = false;
+  render();
+}
+function checkSubnetTask(){
+  var t = subnet.task;
+  if(!t || subnet.checked) return;
+  var alleRichtig = true;
+  t.eingabe = {};
+  t.felder.forEach(function(f){
+    var el = document.getElementById('sb_' + f.k);
+    var v = el ? el.value : '';
+    t.eingabe[f.k] = v;
+    if(sbNorm(v) !== sbNorm(t.loesung[f.k])) alleRichtig = false;
+  });
+  subnet.checked = true;
+  subnet.total++;
+  if(alleRichtig){
+    subnet.right++;
+    subnet.streak++;
+    state.subnetSolved = (state.subnetSolved || 0) + 1;
+    awardXp(10, 'Subnetting-Aufgabe geloest');
+    if(state.subnetSolved >= 10) grantBadge('subnet10');
+    if(state.subnetSolved >= 50) grantBadge('subnet50');
+    if(subnet.streak >= 10) grantBadge('subnet_serie');
+  } else {
+    subnet.streak = 0;
+  }
+  t.korrekt = alleRichtig;
+  render();
+}
+function renderSubnet(){
+  if(!subnet.task) subnet.task = makeSubnetTask();
+  var t = subnet.task;
+
+  var h = '<div class="breadcrumb">Training</div><h1>Subnetting-Trainer</h1>';
+  h += '<p class="intro-sub">Subnetting lernt man nicht durch Lesen, sondern durch Wiederholung. Dieser Trainer erzeugt bei jedem Klick eine neue Aufgabe aus vier Typen &mdash; Adresse analysieren, Maske umrechnen, Praefix aus dem Hostbedarf bestimmen und ein Netz aufteilen. Jede geloeste Aufgabe bringt '+xpAnzeige(10)+' XP.</p>';
+
+  h += '<div class="stat-row" style="margin-bottom:18px;">'+
+    '<div class="stat-tile"><div class="num">'+subnet.right+'</div><div class="lbl">richtig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.total+'</div><div class="lbl">bearbeitet</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(subnet.total ? Math.round(subnet.right/subnet.total*100)+'%' : '&mdash;')+'</div><div class="lbl">Quote</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.streak+'</div><div class="lbl">Serie</div></div>'+
+    '</div>';
+
+  h += '<div class="ex-card">';
+  h += '<div class="ex-head"><h3>'+esc(t.titel)+'</h3><span class="badge topic">Aufgabentyp '+t.kind+'</span></div>';
+  h += '<div class="ex-task"><p>'+t.frage+'</p></div>';
+
+  h += '<div class="sb-grid">';
+  t.felder.forEach(function(f){
+    var val = (t.eingabe && t.eingabe[f.k] != null) ? esc(t.eingabe[f.k]) : '';
+    var cls = '';
+    if(subnet.checked){
+      cls = (sbNorm(val) === sbNorm(t.loesung[f.k])) ? ' sb-ok' : ' sb-bad';
+    }
+    h += '<label class="sb-field"><span>'+esc(f.l)+'</span>'+
+         '<input type="text" id="sb_'+f.k+'" class="sb-input'+cls+'" value="'+val+'" '+
+         'placeholder="'+esc(f.ph)+'" autocomplete="off" spellcheck="false"'+
+         (subnet.checked ? ' disabled' : '')+'></label>';
+  });
+  h += '</div>';
+
+  h += '<div class="ex-actions">';
+  if(!subnet.checked){
+    h += '<button class="ex-btn primary" onclick="checkSubnetTask()">Pr&uuml;fen</button>';
+    h += '<button class="ex-btn" onclick="newSubnetTask()">&uuml;berspringen</button>';
+  } else {
+    h += '<button class="ex-btn primary" onclick="newSubnetTask()">N&auml;chste Aufgabe</button>';
+  }
+  h += '</div>';
+
+  if(subnet.checked){
+    h += '<div class="ex-panel '+(t.korrekt ? 'hint' : '')+'">'+
+         '<strong>'+(t.korrekt ? '✓ Alles richtig.' : '✗ Noch nicht ganz.')+'</strong>'+
+         (t.korrekt ? '' : ' Die richtigen Werte stehen unten markiert.')+'</div>';
+    if(!t.korrekt){
+      h += '<div class="sb-grid">';
+      t.felder.forEach(function(f){
+        h += '<div class="sb-field"><span>'+esc(f.l)+'</span>'+
+             '<div class="sb-sol">'+esc(t.loesung[f.k])+'</div></div>';
+      });
+      h += '</div>';
+    }
+    h += codeBlock(t.weg, 'Rechenweg');
+  }
+
+  h += '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Sofort-Spickzettel:</strong> '+
+       'Oktettwerte von links &mdash; 128 &middot; 192 &middot; 224 &middot; 240 &middot; 248 &middot; 252 &middot; 254 &middot; 255. '+
+       'Blockgr&ouml;&szlig;e = 256 &minus; Maskenwert. Nutzbare Hosts = 2^Hostbits &minus; 2. '+
+       'Subnetze = 2^zus&auml;tzliche Netzbits. Broadcast = n&auml;chste Netzadresse &minus; 1.</div>';
+
+  return h;
+}
+var KI = {
+  /* 'auto' probiert erst das Artifact, dann den eigenen Endpunkt.
+     'artifact' | 'backend' | 'aus' erzwingen einen Weg. */
+  modus: 'auto',
+  /* Eigener HTTPS-Endpunkt, z.B. 'https://api.deine-domain.de/tutor'.
+     Der API-Schluessel gehoert AUSSCHLIESSLICH auf den Server - niemals
+     in diese Datei, sie liegt beim Kunden im Browser. */
+  endpunkt: '',
+  zeitlimit: 90000
+};
+var kiGespeichert = null;
+var kiRoh = null;
+try{
+  kiGespeichert = localStorage.getItem('rootpfad-ki');
+  if(kiGespeichert){
+    kiRoh = JSON.parse(kiGespeichert);
+    if(kiRoh && typeof kiRoh === 'object'){
+      if(typeof kiRoh.modus === 'string') KI.modus = kiRoh.modus;
+      if(typeof kiRoh.endpunkt === 'string') KI.endpunkt = kiRoh.endpunkt;
+    }
+  }
+}catch(e){}
+function kiSpeichern(){
+  try{
+    localStorage.setItem('rootpfad-ki', JSON.stringify({ modus:KI.modus, endpunkt:KI.endpunkt }));
+  }catch(e){}
+}
+function kiBackendAnbieter(endpunkt){
+
+  async function anfrage(nachrichten, opt, modus){
+    opt = opt || {};
+    var ctl = new AbortController();
+    var timer = setTimeout(function(){ ctl.abort(); }, KI.zeitlimit);
+    /* Ein von aussen gereichtes Abbruchsignal mit durchreichen. */
+    if(opt.signal){
+      if(opt.signal.aborted) ctl.abort();
+      else opt.signal.addEventListener('abort', function(){ ctl.abort(); });
+    }
+
+    var antwort;
+    try{
+      antwort = await fetch(endpunkt, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nachrichten: nachrichten,
+          modus: modus,
+          stufe: opt.modelTier || 'default'
+        }),
+        signal: ctl.signal
+      });
+    }catch(e){
+      clearTimeout(timer);
+      if(e && e.name === 'AbortError') throw { code:'aborted', message:'abgebrochen' };
+      throw { code:'network', message:'Der Tutor-Dienst ist nicht erreichbar.' };
+    }
+
+    if(!antwort.ok){
+      clearTimeout(timer);
+      if(antwort.status === 429) throw { code:'rate_limited', message:'zu viele Anfragen' };
+      if(antwort.status === 401 || antwort.status === 403) throw { code:'not_granted', message:'kein Zugang' };
+      if(antwort.status === 413) throw { code:'prompt_too_large', message:'Anfrage zu gross' };
+      throw { code:'server', message:'Der Tutor-Dienst antwortete mit Fehler ' + antwort.status + '.' };
+    }
+
+    var typ = (antwort.headers.get('content-type') || '').toLowerCase();
+
+    /* Weg a: Ereignisstrom, Text waechst mit jedem Stueck. */
+    if(typ.indexOf('text/event-stream') >= 0 && antwort.body && antwort.body.getReader){
+      var leser = antwort.body.getReader();
+      var dek = new TextDecoder();
+      var puffer = '';
+      var text = '';
+      var abgeschnitten = false;
+      try{
+        for(;;){
+          var stueck = await leser.read();
+          if(stueck.done) break;
+          puffer += dek.decode(stueck.value, { stream:true });
+          var zeilen = puffer.split(String.fromCharCode(10));
+          puffer = zeilen.pop();
+          for(var i = 0; i < zeilen.length; i++){
+            var z = zeilen[i].trim();
+            if(z.indexOf('data:') !== 0) continue;
+            var nutz = z.slice(5).trim();
+            if(!nutz || nutz === '[DONE]') continue;
+            try{
+              var d = JSON.parse(nutz);
+              if(typeof d.text === 'string'){
+                text = d.text;
+                if(opt.onText) opt.onText({ text: text });
+              }
+              if(d.truncated) abgeschnitten = true;
+            }catch(e){}
+          }
+        }
+      }finally{
+        clearTimeout(timer);
+      }
+      return { text: text, truncated: abgeschnitten };
+    }
+
+    /* Weg b: eine einzelne JSON-Antwort. */
+    var daten;
+    try{
+      daten = await antwort.json();
+    }catch(e){
+      clearTimeout(timer);
+      throw { code:'invalid_json', message:'Die Antwort war kein gueltiges JSON.' };
+    }
+    clearTimeout(timer);
+
+    if(modus === 'json') return daten;
+    var fertig = typeof daten.text === 'string' ? daten.text : String(daten.text || '');
+    if(opt.onText && fertig) opt.onText({ text: fertig });
+    return { text: fertig, truncated: !!daten.truncated };
+  }
+
+  function senden(nachrichten, opt){ return anfrage(nachrichten, opt, 'text'); }
+  senden.json = function(anweisung, opt){
+    return anfrage([{ role:'user', content:String(anweisung) }], opt, 'json');
+  };
+  senden.herkunft = 'backend';
+  return senden;
+}
+async function kiAnbieterWaehlen(){
+  if(KI.modus === 'aus') return null;
+
+  if(KI.modus === 'auto' || KI.modus === 'artifact'){
+    try{
+      if(window.claude && window.claude.use){
+        var fn = await window.claude.use('sample');
+        if(fn){ fn.herkunft = 'artifact'; return fn; }
+      }
+    }catch(e){}
+    if(KI.modus === 'artifact') return null;
+  }
+
+  if((KI.modus === 'auto' || KI.modus === 'backend') && KI.endpunkt){
+    return kiBackendAnbieter(KI.endpunkt);
+  }
+  return null;
+}
+function kiHerkunftText(){
+  if(!tutor.fn) return 'nicht verfügbar';
+  if(tutor.fn.herkunft === 'backend') return 'eigener Dienst';
+  return 'Claude über dein Konto';
+}
+var tutor = {
+  ready: false,      /* sample aufgeloest */
+  fn: null,          /* die sample-Funktion */
+  off: false,        /* endgueltig nicht verfuegbar */
+  turns: [],         /* {role, content} - ohne die Anweisungsrunde */
+  busy: false,
+  ctl: null,
+  hinweis: '',
+  vorlage: ''        /* vorbelegte Frage aus einer Lektion */
+};
+var TUTOR_INDEX = (function(){
+  var out = [];
+  PARTS.forEach(function(p){
+    var mods = MODULES.filter(function(m){ return m.part === p; });
+    if(!mods.length) return;
+    out.push('TEIL ' + p + ' - ' + mods[0].partTitle);
+    mods.forEach(function(m){
+      out.push('  ' + m.id + ' ' + m.title + ': ' +
+        m.lessons.map(function(l){ return l.title; }).join(' | '));
+    });
+  });
+  return out.join('\n');
+})();
+function tutorAnweisung(){
+  return [
+    'Du bist der Lern-Tutor in einem Online-Kurs zur Vorbereitung auf die IHK-Abschlusspruefung Teil 1',
+    '(AP1) im Beruf Fachinformatiker fuer Anwendungsentwicklung in Deutschland.',
+    '',
+    'SO ANTWORTEST DU:',
+    '- Immer auf Deutsch, mit Du-Anrede, sachlich und freundlich.',
+    '- Kurz und praezise. Zwei bis sechs Saetze reichen meistens.',
+    '- Erst die Antwort, dann die Begruendung. Nie umgekehrt.',
+    '- Bei Rechenaufgaben IMMER den vollstaendigen Rechenweg Schritt fuer Schritt,',
+    '  mit Einheiten, und das Ergebnis am Ende klar benannt.',
+    '- Wenn es zum Thema eine Lektion im Kurs gibt, nenne sie am Ende in einer',
+    '  eigenen Zeile im Format: Dazu im Kurs: <Modultitel> - <Lektionstitel>',
+    '- Wenn eine Frage typische Pruefungsfallen enthaelt, weise darauf hin.',
+    '- Wenn du etwas nicht sicher weisst, sage das offen. Erfinde keine',
+    '  Paragraphen, Normen, Zahlen oder Fristen.',
+    '- Nutze einfache Formatierung: kurze Absaetze, Aufzaehlungen mit "- ",',
+    '  Tabellen nur wenn sie wirklich helfen. Kein Markdown-Fettdruck noetig.',
+    '',
+    'WAS DU TUN KANNST, wenn darum gebeten wird:',
+    '- einen Begriff erklaeren, auch mit Beispiel',
+    '- eine Uebungsaufgabe im AP1-Stil stellen und danach bewerten',
+    '- eine Loesung der lernenden Person pruefen und sagen, wo Punkte fehlen',
+    '- den Unterschied zwischen zwei Begriffen herausarbeiten',
+    '- eine Merkhilfe vorschlagen',
+    '',
+    'ZUSATZTEILE PHP & LARAVEL (Teil 10) und GIT (Teil 11): gehoeren nicht zur AP1. Fragen dazu beantwortest',
+    'du als erfahrene PHP- und Laravel-Entwicklerin bzw. erfahrener Entwickler, mit kurzen,',
+    'lauffaehigen Codebeispielen fuer aktuelles PHP 8 und Laravel. Weise auf Sicherheit',
+    '(XSS, SQL-Injection, Mass Assignment, fehlende Autorisierung) hin, wo es passt.',
+    '',
+    'DAS IST DER AUFBAU DES KURSES (nutze ihn fuer Verweise):',
+    TUTOR_INDEX,
+    '',
+    'Antworte ab jetzt auf die Fragen der lernenden Person.'
+  ].join('\n');
+}
+async function tutorInit(){
+  if(tutor.ready || tutor.off) return;
+  try{
+    tutor.fn = await kiAnbieterWaehlen();
+  }catch(e){ tutor.fn = null; }
+  tutor.ready = true;
+  if(!tutor.fn) tutor.off = true;
+  if(state.currentId === 'tutor') renderContent();
+}
+async function tutorNeuVerbinden(){
+  tutor.ready = false;
+  tutor.off = false;
+  tutor.fn = null;
+  tutor.hinweis = '';
+  await tutorInit();
+  renderContent();
+  if(typeof dockZeichnen === 'function') dockZeichnen();
+}
+function kiModusSetzen(wert){
+  KI.modus = wert || 'auto';
+  kiSpeichern();
+  tutorNeuVerbinden();
+}
+function kiEndpunktSetzen(wert){
+  KI.endpunkt = String(wert || '').trim();
+  kiSpeichern();
+}
+function tutorFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'sampling_disabled':
+    case 'not_declared':
+    case 'capability_disabled':
+      tutor.off = true;
+      return 'Der Tutor ist in dieser Ansicht nicht verfuegbar. Der Rest des Kurses funktioniert unveraendert.';
+    case 'network':
+      return 'Der Tutor-Dienst ist nicht erreichbar. Pruefe deine Verbindung und die Adresse in den Einstellungen.';
+    case 'server':
+      return 'Der Tutor-Dienst hat mit einem Fehler geantwortet. Versuche es in einigen Minuten erneut.';
+    case 'aborted':
+      return '';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und frag dann noch einmal.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und versuche es noch einmal.';
+    case 'prompt_too_large':
+      return 'Die Unterhaltung ist zu lang geworden. Setze sie mit \u201aNeu beginnen\u2018 zurueck.';
+    case 'refused':
+      return 'Diese Frage kann ich so nicht beantworten. Formuliere sie bitte anders.';
+    case 'empty_completion':
+      return 'Darauf kam keine Antwort. Stelle die Frage etwas konkreter.';
+    case 'invalid_json':
+      return 'Die Bewertung kam in einer unerwarteten Form zurueck. Versuche es noch einmal \u2014 '+
+             'bei Wiederholung liegt es meist an einer zu langen Eingabe.';
+    case 'cancelled':
+      return '';
+    default:
+      /* Den Rohcode mitgeben: sonst sucht man im Dunkeln. */
+      return 'Das hat nicht geklappt. Versuche es gleich noch einmal.'+
+             (code ? ' (Grund: ' + code + ')' : '');
+  }
+}
+function tutorAbbrechen(){
+  if(tutor.ctl) tutor.ctl.abort();
+}
+function tutorNeu(){
+  tutorAbbrechen();
+  tutor.turns = [];
+  tutor.hinweis = '';
+  chatAktualisieren();
+}
+function chatAktualisieren(){
+  if(state.currentId === 'tutor') renderContent();
+  dockZeichnen();
+  var k = document.getElementById('dockKnopf');
+  if(k && tutor.off){ k.hidden = true; }
+  /* Kam die Antwort, waehrend das Dock zu war, meldet der Knopf das. */
+  var p = document.getElementById('dockPunkt');
+  if(p){
+    var letzte = tutor.turns[tutor.turns.length - 1];
+    p.hidden = !(!dock.offen && !tutor.busy && letzte && letzte.role === 'assistant' && letzte.content);
+  }
+}
+function tutorSchnell(text){
+  var ta = document.getElementById('tutorInput');
+  if(ta){ ta.value = text; ta.focus(); }
+  tutorSenden();
+}
+function tutorSenden(){
+  var ta = document.getElementById('tutorInput');
+  var frage = ta ? ta.value.trim() : '';
+  if(!frage) return;
+  if(ta) ta.value = '';
+  tutorFrage(frage);
+}
+function dockFrage(frage){
+  var f = document.getElementById('dockFeld');
+  if(!frage && f) frage = f.value.trim();
+  if(!frage) return;
+  if(f){ f.value = ''; f.style.height = 'auto'; }
+  tutorFrage(frage);
+}
+async function tutorFrage(frage){
+  if(tutor.busy || tutor.off || !tutor.fn) return;
+  frage = String(frage || '').trim();
+  if(!frage) return;
+
+  tutor.turns.push({ role:'user', content: frage });
+  tutor.turns.push({ role:'assistant', content: '', pending:true });
+  tutor.busy = true;
+  tutor.hinweis = '';
+  chatAktualisieren();
+
+  var ziel = tutor.turns[tutor.turns.length - 1];
+  tutor.ctl = new AbortController();
+
+  /* Aelteste Runden verwerfen, damit der Kontext nicht ueberlaeuft.
+     Anweisung und Seitenkontext bleiben immer erhalten. */
+  var verlauf = tutor.turns.filter(function(t){ return !t.pending; });
+  while(verlauf.length > 12) verlauf.shift();
+  var eingabe = [
+    { role:'user', content: tutorAnweisung() },
+    { role:'user', content: dockKontext() }
+  ].concat(verlauf.map(function(t){ return { role:t.role, content:t.content }; }));
+  /* Die Folge muss auf einer Frage enden. */
+  while(eingabe.length && eingabe[eingabe.length - 1].role !== 'user') eingabe.pop();
+
+  try{
+    var res = await tutor.fn(eingabe, {
+      cache: false,
+      signal: tutor.ctl.signal,
+      modelTier: 'default',
+      onText: function(u){
+        ziel.content = u.text;
+        ziel.pending = false;
+        var el = document.getElementById('tutorLive');
+        if(el) el.textContent = u.text;
+        var box = document.getElementById('tutorVerlauf');
+        if(box) box.scrollTop = box.scrollHeight;
+        var dl = document.getElementById('dockLive');
+        if(dl) dl.textContent = u.text;
+        var dv = document.getElementById('dockVerlauf');
+        if(dv) dv.scrollTop = dv.scrollHeight;
+      }
+    });
+    ziel.content = res.text;
+    ziel.pending = false;
+    if(res.truncated) tutor.hinweis = 'Die Antwort wurde gek\u00fcrzt. Frag nach weniger auf einmal.';
+    state.tutorFragen = (state.tutorFragen || 0) + 1;
+    if(state.tutorFragen >= 1) grantBadge('tutor_fan');
+    if(state.tutorFragen >= 25) grantBadge('tutor_profi');
+    awardXp(5, 'Frage an den Tutor', 'tutor:' + state.tutorFragen);
+    saveProgress();
+  }catch(e){
+    var txt = (e && e.text) ? e.text : '';
+    ziel.content = txt;
+    ziel.pending = false;
+    if(!txt) tutor.turns.pop();
+    tutor.hinweis = tutorFehlertext(e && e.code);
+  }finally{
+    tutor.busy = false;
+    tutor.ctl = null;
+    chatAktualisieren();
+    var d = document.getElementById('dockFeld');
+    if(dock.offen && d){ d.focus(); }
+    else {
+      var i = document.getElementById('tutorInput');
+      if(i) i.focus();
+    }
+  }
+}
+function tutorZuLektion(lessonId){
+  var l = FLAT.find(function(x){ return x.id === lessonId; });
+  var m = moduleOfLesson(lessonId);
+  var frage = 'Erkl\u00e4re mir den Kern dieser Lektion in eigenen Worten und nenne die h\u00e4ufigste Pr\u00fcfungsfalle dazu.';
+  /* Ohne Tutor-Faehigkeit bleibt der alte Weg ueber die eigene Seite. */
+  if(tutor.off || !tutor.fn){
+    if(l && m) tutor.vorlage = 'Ich lerne gerade die Lektion \u201e' + l.title + '\u201c aus dem Modul \u201e' +
+      m.title + '\u201c. ' + frage;
+    selectLesson('tutor');
+    return;
+  }
+  dockOeffnen();
+  var f = document.getElementById('dockFeld');
+  if(f){ f.value = frage; dockWachsen(f); f.focus(); }
+}
+function renderTutor(){
+  if(!tutor.ready) tutorInit();
+
+  var h = '<div class="breadcrumb">Training</div><h1>AP1-Tutor</h1>';
+
+  if(tutor.off){
+    h += '<p class="intro-sub">Der Tutor beantwortet deine Fragen zum Kursstoff. In dieser Ansicht ist er gerade nicht verf\u00fcgbar \u2014 ' +
+         'das kann daran liegen, dass die Seite als lokale Datei ge\u00f6ffnet ist oder die Nutzung nicht freigegeben wurde. ' +
+         'Alle anderen Funktionen des Kurses arbeiten unver\u00e4ndert weiter.</p>';
+    return h;
+  }
+  if(!tutor.fn){
+    h += '<p class="intro-sub">Der Tutor wird geladen \u2026</p>';
+    return h;
+  }
+
+  h += '<p class="intro-sub">Frag alles zum Pr\u00fcfungsstoff: Begriffe erkl\u00e4ren lassen, eine \u00dcbungsaufgabe anfordern, ' +
+       'deine eigene L\u00f6sung pr\u00fcfen lassen oder zwei Begriffe gegen\u00fcberstellen. Der Tutor kennt den Aufbau dieses Kurses ' +
+       'und verweist auf die passende Lektion. Jede Frage bringt ' + xpAnzeige(5) + ' XP.</p>' +
+       '<p class="intro-sub">Derselbe Tutor sitzt unten rechts in jeder Ansicht \u2014 dort beantwortet er Fragen, '+
+       'ohne dass du die Lektion verl\u00e4sst. Der Verlauf ist hier und dort derselbe.</p>';
+
+  h += '<div class="tutor-box">';
+  h += '<div class="tutor-verlauf" id="tutorVerlauf">';
+  if(!tutor.turns.length){
+    h += '<div class="tutor-leer">Noch keine Frage gestellt. Unten anfangen \u2014 oder einen der Vorschl\u00e4ge nehmen.</div>';
+  }
+  tutor.turns.forEach(function(t, i){
+    var letzte = (i === tutor.turns.length - 1);
+    if(t.role === 'user'){
+      h += '<div class="tutor-msg user"><div class="tutor-rolle">Du</div><div class="tutor-text">'+esc(t.content)+'</div></div>';
+    } else {
+      h += '<div class="tutor-msg bot"><div class="tutor-rolle">Tutor</div>'+
+           '<div class="tutor-text"'+(letzte ? ' id="tutorLive"' : '')+'>'+
+           (t.pending ? '<span class="tutor-denkt">denkt nach \u2026</span>' : esc(t.content))+
+           '</div></div>';
+    }
+  });
+  h += '</div>';
+
+  if(tutor.hinweis){
+    h += '<div class="tutor-hinweis">'+esc(tutor.hinweis)+'</div>';
+  }
+
+  var vor = tutor.vorlage ? esc(tutor.vorlage) : '';
+  tutor.vorlage = '';
+  h += '<div class="tutor-eingabe">'+
+       '<textarea id="tutorInput" class="tutor-input" rows="3" spellcheck="false" '+
+       (tutor.busy ? 'disabled ' : '')+
+       'placeholder="Deine Frage \u2026 (Strg+Enter sendet)">'+vor+'</textarea>'+
+       '<div class="ex-actions" style="margin-top:10px;">';
+  if(tutor.busy){
+    h += '<button class="ex-btn" onclick="tutorAbbrechen()">Stopp</button>';
+  } else {
+    h += '<button class="ex-btn primary" onclick="tutorSenden()">Fragen</button>';
+  }
+  h += '<button class="ex-btn" onclick="tutorNeu()">Neu beginnen</button>';
+  h += '</div></div>';
+  h += '</div>';
+
+  if(!tutor.turns.length){
+    h += '<h2 class="sec-h">Womit soll ich anfangen?</h2><div class="tutor-chips">';
+    [ 'Erkl\u00e4re mir Subnetting an einem Beispiel mit /26.',
+      'Was ist der Unterschied zwischen Datenschutz und Datensicherheit?',
+      'Stelle mir eine Netzplan-Aufgabe im AP1-Stil.',
+      'Warum zeigt der Pfeil bei include anders als bei extend?',
+      'Gib mir eine Merkhilfe f\u00fcr die OSI-Schichten.',
+      'Pr\u00fcfe meine L\u00f6sung: Ich soll 192.168.5.130/26 analysieren.',
+      'Was sind die drei Lernarten beim maschinellen Lernen?',
+      'Erkl\u00e4re Kapselung so, als w\u00e4re ich im ersten Lehrjahr.'
+    ].forEach(function(t){
+      h += '<button class="tutor-chip" onclick="tutorSchnell(\''+t.replace(/'/g, "\\'")+'\')">'+esc(t)+'</button>';
+    });
+    h += '</div>';
+  }
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Wie der Tutor arbeitet:</strong> '+
+       'Deine Frage geht an Claude \u2014 mit deinem eigenen Konto, direkt aus dieser Seite heraus. '+
+       'Es wird kein fremder Dienst genutzt und kein Schl\u00fcssel gespeichert. Beim ersten Mal fragt dein Browser, '+
+       'ob die Seite das darf. Der Verlauf bleibt nur in dieser Sitzung und wird nicht gespeichert. '+
+       '<em>Pr\u00fcfe wichtige Angaben \u2014 Paragraphen, Fristen, Zahlen \u2014 immer gegen die Lektion oder das Formelblatt.</em></div>';
+
+  return h;
+}
+function wireTutor(){
+  var ta = document.getElementById('tutorInput');
+  if(!ta) return;
+  ta.onkeydown = function(ev){
+    if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); tutorSenden(); }
+  };
+  if(!tutor.busy && !dock.offen) ta.focus();
+}
+function weichRendern(fn){
+  var reduziert = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(document.startViewTransition && !reduziert){
+    try{ document.startViewTransition(fn); return; }catch(e){}
+  }
+  fn();
+}
+function fokusUmschalten(){
+  var an = document.documentElement.getAttribute('data-fokus') === '1';
+  document.documentElement.setAttribute('data-fokus', an ? '0' : '1');
+  try{ localStorage.setItem('ap1-fokus', an ? '0' : '1'); }catch(e){}
+  var h = document.getElementById('fokusHinweis');
+  if(h){
+    h.textContent = an ? 'Lesemodus aus' : 'Lesemodus an · F beendet ihn';
+    h.classList.add('an');
+    clearTimeout(h._t);
+    h._t = setTimeout(function(){ h.classList.remove('an'); }, 1900);
+  }
+}
+function pruefungsTage(){
+  if(!state.pruefungsdatum) return null;
+  var z = new Date(state.pruefungsdatum + 'T00:00:00');
+  if(isNaN(z)) return null;
+  var heute = new Date(); heute.setHours(0,0,0,0);
+  return Math.round((z - heute) / 86400000);
+}
+function setzePruefung(wert){
+  state.pruefungsdatum = wert || '';
+  saveProgress();
+  renderContent();
+}
+function setzeZiel(wert){
+  var n = parseInt(wert, 10);
+  state.tagesziel = (isNaN(n) || n < 1) ? 3 : Math.min(n, 30);
+  saveProgress();
+  renderContent();
+}
+function heuteGeschafft(){
+  var t = todayKey();
+  return (state.dayCount && state.dayCount.day === t) ? state.dayCount.n : 0;
+}
+function lernplan(){
+  var tage = pruefungsTage();
+  if(tage === null || tage <= 0) return null;
+
+  var offeneModule = [];
+  var offenGesamt = 0;
+  MODULES.forEach(function(m){
+    var offen = m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length;
+    if(offen){ offeneModule.push({ m:m, offen:offen }); offenGesamt += offen; }
+  });
+  if(!offenGesamt) return { fertig:true, puffer:tage, module:[] };
+
+  /* Puffer fuer die Schlussphase: ein Fuenftel, mindestens 3, hoechstens 14 Tage. */
+  var puffer = Math.min(14, Math.max(3, Math.round(tage * 0.2)));
+  /* Bei sehr wenig Restzeit darf der Puffer nicht groesser werden als
+     die verbleibenden Tage - mindestens ein Lerntag bleibt immer. */
+  puffer = Math.min(puffer, Math.max(0, tage - 1));
+  var lerntage = Math.max(1, tage - puffer);
+  var proTag = offenGesamt / lerntage;
+
+  var heute = new Date(); heute.setHours(0,0,0,0);
+  var summe = 0;
+  var plan = offeneModule.map(function(e){
+    summe += e.offen;
+    var tagNr = Math.min(lerntage, Math.ceil(summe / proTag));
+    var d = new Date(heute.getTime() + tagNr * DAY);
+    return { modul:e.m, offen:e.offen, datum:d };
+  });
+  var pufferStart = new Date(heute.getTime() + lerntage * DAY);
+  return { fertig:false, proTag:Math.ceil(proTag), puffer:puffer,
+           pufferStart:pufferStart, module:plan, machbar:proTag <= (state.tagesziel || 3) };
+}
+function datumKurz(d){
+  return d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit' });
+}
+function renderLernplan(){
+  var p = lernplan();
+  if(!p){
+    if(state.pruefungsdatum) return '';
+    return '<div class="plan-hinweis">Trag im <button class="ex-btn" onclick="selectLesson(\'profile\')">Profil</button> '+
+           'deinen Prüfungstermin ein — dann rechnet dir der Lernplan aus, welches Modul bis wann sitzen muss.</div>';
+  }
+  if(p.fertig){
+    return '<div class="plan-hinweis gut">Alle Lektionen sind durch. Die verbleibenden '+p.puffer+' Tage '+
+           'gehören der Wiederholung: Karteikarten, Fehlerheft und Prüfungssimulationen.</div>';
+  }
+  var h = '<h2 class="sec-h">Lernplan bis zur Prüfung</h2>';
+  h += '<p class="intro-sub">'+p.proTag+' Lektionen pro Tag bis zum '+datumKurz(p.pufferStart)+'. '+
+       'Danach bleiben '+p.puffer+' Tage nur zum Wiederholen. '+
+       (p.machbar ? 'Dein Tagesziel reicht dafür.' : '<b>Das liegt über deinem Tagesziel</b> — zieh es im Profil nach oben oder plane längere Einheiten.')+
+       '</p>';
+  h += '<ol class="plan-liste">';
+  p.module.slice(0, 8).forEach(function(e){
+    h += '<li class="plan-zeile">'+
+      '<button class="plan-titel" onclick="selectLesson(\''+e.modul.lessons[0].id+'\')">'+esc(e.modul.title)+'</button>'+
+      '<span class="plan-offen">'+e.offen+' offen</span>'+
+      '<span class="plan-datum">bis '+datumKurz(e.datum)+'</span></li>';
+  });
+  h += '</ol>';
+  if(p.module.length > 8){
+    h += '<p class="plan-rest">… und '+(p.module.length - 8)+' weitere Module danach.</p>';
+  }
+  return h;
+}
+function renderKalibrierung(){
+  var stufen = KONF_STUFEN.filter(function(st){ return kalibQuote(st.k) !== null; });
+  if(!stufen.length) return '';
+  var h = '<h2 class="sec-h">Selbsteinschätzung</h2>';
+  h += '<p class="intro-sub">Wie gut deckt sich dein Gefühl mit dem Ergebnis? '+
+       'Die erste Zeile ist die wichtige: Wer sich sicher ist und daneben liegt, merkt den Fehler sonst erst in der Prüfung.</p>';
+  stufen.forEach(function(st){
+    var e = state.kalib[st.k];
+    var q = Math.round((e.r / e.n) * 100);
+    var col = st.k === 'sicher'
+      ? (q >= 90 ? 'var(--success)' : q >= 75 ? 'var(--accent2)' : 'var(--danger)')
+      : 'var(--accent)';
+    h += '<div class="topic-bar-row"><span class="tname">'+st.t+'</span>'+
+         '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+         '<span class="tval">'+q+'% · '+e.n+'</span></div>';
+  });
+  var qs = kalibQuote('sicher');
+  if(qs !== null && qs < 0.9){
+    h += '<div class="ex-panel" style="margin-top:12px;"><strong>Dein blinder Fleck:</strong> '+
+         'Bei „Sicher" liegst du in '+Math.round((1-qs)*100)+' % der Fälle falsch. '+
+         'Solange dieser Wert über 10 % liegt, ist dein Gefühl für den eigenen Wissensstand noch nicht geeicht — '+
+         'geh die betroffenen Karten im Fehlerheft noch einmal durch.</div>';
+  }
+  return h;
+}
+var LF_TITEL = {
+  1:'Das Unternehmen und die eigene Rolle',
+  2:'Arbeitsplätze ausstatten',
+  3:'Clients in Netzwerke einbinden',
+  4:'Schutzbedarfsanalyse durchführen',
+  5:'Software zur Datenverwaltung anpassen',
+  6:'Serviceanfragen bearbeiten'
+};
+var LERNFELDER = {
+  m17:1, m18:1, m20:1,
+  m19:2, m21:2, m22:2, m23:2, m24:2,
+  m31:3, m11:3, m12:3, m13:3, m14:3,
+  m15:4, m16:4, m32:4, m33:4,
+  m1:5, m2:5, m3:5, m4:5, m5:5, m6:5, m7:5,
+  m34:5, m35:5, m8:5, m9:5, m10:5,
+  m25:6, m26:6, m27:6,
+  m28:0, m29:0, m30:0
+};
+var lfFilter = 0;
+function lfVon(mid){ return LERNFELDER[mid] || 0; }
+function lfBadge(mid){
+  var n = lfVon(mid);
+  return '<span class="lf-tag'+(n ? '' : ' quer')+'" title="'+(n ? esc(LF_TITEL[n]) : 'Kein Lernfeld der Ordnung von 2020')+'">'+
+         (n ? 'LF ' + n : 'übergreifend')+'</span>';
+}
+function setzeLf(n){
+  lfFilter = (lfFilter === n) ? 0 : n;
+  renderContent();
+}
+function lfFilterZeile(){
+  var h = '<div class="lf-leiste"><span class="lf-frage">Nach Lernfeld der Berufsschule:</span><div class="filter-row" style="margin:0;">';
+  h += '<button class="filter-btn'+(lfFilter === 0 ? ' active' : '')+'" onclick="setzeLf(0)">Alle</button>';
+  [1,2,3,4,5,6].forEach(function(n){
+    var anz = MODULES.filter(function(m){ return lfVon(m.id) === n; }).length;
+    h += '<button class="filter-btn'+(lfFilter === n ? ' active' : '')+'" onclick="setzeLf('+n+')" '+
+         'title="'+esc(LF_TITEL[n])+'">LF '+n+' <span class="lf-anz">'+anz+'</span></button>';
+  });
+  h += '</div></div>';
+  if(lfFilter){
+    h += '<div class="lf-info"><strong>Lernfeld '+lfFilter+':</strong> '+esc(LF_TITEL[lfFilter])+'. '+
+         'Lernfeld 1 bis 6 werden laut Rahmenlehrplan vor der AP1 unterrichtet.</div>';
+  }
+  return h;
+}
+var rechtTab = 'impressum';
+function setzeRecht(t){ rechtTab = t; renderContent(); }
+function luecke(was){
+  return '<mark class="luecke">' + esc(was) + '</mark>';
+}
+function renderRecht(){
+  var h = '<div class="breadcrumb">Rechtliches</div><h1>Impressum, Datenschutz &amp; Nutzung</h1>';
+  h += '<div class="recht-warnung"><strong>Ger&uuml;st, kein fertiger Rechtstext.</strong> '+
+       'Alle gelb markierten Stellen musst du ausf&uuml;llen. Vor einer Ver&ouml;ffentlichung '+
+       'oder einem Verkauf geh&ouml;rt das Ergebnis einmal juristisch gepr&uuml;ft &mdash; '+
+       'besonders die Widerrufsbelehrung f&uuml;r digitale Inhalte.</div>';
+
+  h += '<div class="filter-row">';
+  [['impressum','Impressum'],['datenschutz','Datenschutz'],['nutzung','Nutzungsbedingungen'],['ueber','&Uuml;ber']]
+    .forEach(function(t){
+      h += '<button class="filter-btn'+(rechtTab === t[0] ? ' active' : '')+'" type="button" '+
+           'onclick="setzeRecht(\''+t[0]+'\')">'+t[1]+'</button>';
+    });
+  h += '</div>';
+
+  if(rechtTab === 'impressum'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Angaben gem&auml;&szlig; &sect; 5 DDG</h2>';
+    h += '<p>Dennis Bilstein<br>'+
+         luecke('Stra&szlig;e und Hausnummer')+'<br>'+
+         luecke('PLZ und Ort')+'<br>'+luecke('Land')+'</p>';
+    h += '<h2 class="sec-h">Kontakt</h2>';
+    h += '<p>E-Mail: '+luecke('adresse@deine-domain.de')+'<br>'+
+         'Telefon: '+luecke('optional, aber f&uuml;r schnellen Kontakt empfohlen')+'</p>';
+    h += '<h2 class="sec-h">Weitere Pflichtangaben</h2>';
+    h += '<ul><li>Umsatzsteuer-Identifikationsnummer: '+luecke('falls vorhanden')+' &mdash; '+
+         'als Kleinunternehmer nach &sect; 19 UStG stattdessen den entsprechenden Hinweis</li>'+
+         '<li>Registereintrag: '+luecke('nur bei eingetragenen Unternehmen')+'</li>'+
+         '<li>Verantwortlich f&uuml;r den Inhalt: Dennis Bilstein, Anschrift wie oben</li></ul>';
+    h += '<h2 class="sec-h">Streitbeilegung</h2>';
+    h += '<p>Zur Teilnahme an einem Streitbeilegungsverfahren vor einer '+
+         'Verbraucherschlichtungsstelle '+luecke('bereit / nicht bereit')+'.</p>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'datenschutz'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Verantwortlicher</h2>';
+    h += '<p>'+luecke('Name und vollst&auml;ndige Anschrift, E-Mail')+'</p>';
+    h += '<h2 class="sec-h">Was diese Anwendung speichert</h2>';
+    h += '<p>Das ist der ehrliche Teil &mdash; er stimmt bereits und beschreibt, '+
+         'was der Kurs tats&auml;chlich tut:</p>';
+    h += '<table class="lesson-table"><tr><th>Daten</th><th>Wo</th><th>Zweck</th><th>Dauer</th></tr>'+
+      '<tr><td>Lernfortschritt, Notizen, Pr&uuml;fungsergebnisse</td><td>ausschlie&szlig;lich im '+
+      '<strong>localStorage deines Browsers</strong></td><td>Fortschritt &uuml;ber Sitzungen hinweg halten'+
+      '</td><td>bis du ihn l&ouml;schst</td></tr>'+
+      '<tr><td>dieselben Daten</td><td>optional im Konto-Speicher der Plattform, wenn der '+
+      'Ger&auml;teabgleich aktiv ist</td><td>Abgleich zwischen deinen Ger&auml;ten</td><td>bis zur '+
+      'L&ouml;schung</td></tr>'+
+      '<tr><td>Fragen an den Tutor</td><td>werden an den konfigurierten KI-Dienst &uuml;bertragen'+
+      '</td><td>Beantwortung deiner Frage</td><td>nach den Regeln des Anbieters</td></tr>'+
+      '<tr><td>Schriftarten</td><td>werden vom eigenen Server ausgeliefert (selbst gehostet, keine Anfrage an Dritte)</td><td>Darstellung</td>'+
+      '<td>&mdash;</td></tr>'+
+      '<tr><td>Fehlerprotokoll</td><td>auf dem Server der Plattform</td><td>Fehler erkennen und beheben: Fehlertext und Skriptstelle, nach H&auml;ufigkeit zusammengefasst; keine Konto-, IP- oder Browserdaten</td>'+
+      '<td>30 Tage</td></tr>'+
+      '<tr><td>Eingebettete Videos</td><td>erst nach deinem Klick auf &bdquo;Video laden&ldquo; von '+
+      '<strong>youtube-nocookie.com</strong> (YouTube/Google) geladen; dabei wird u.&nbsp;a. deine IP-Adresse '+
+      '&uuml;bertragen</td><td>Video in der Lektion abspielen</td><td>nach den Regeln des Anbieters</td></tr></table>';
+    h += '<p><strong>Kein Tracking, keine Werbung, keine Analysewerkzeuge.</strong> '+
+         'Es werden keine Cookies zu Werbezwecken gesetzt.</p>';
+    h += '<h2 class="sec-h">Noch auszuf&uuml;llen</h2>';
+    h += '<ul>'+
+      '<li>Rechtsgrundlage je Verarbeitung nach Art. 6 DSGVO: '+luecke('in der Regel Vertragserf&uuml;llung bzw. berechtigtes Interesse')+'</li>'+
+      '<li>Eingesetzter KI-Dienstleister mit Sitz und Auftragsverarbeitungsvertrag: '+luecke('Anbieter benennen')+'</li>'+
+      '<li>Hoster und dessen Serverstandort: '+luecke('Anbieter benennen')+'</li>'+
+      '<li>&Uuml;bermittlung in Drittl&auml;nder und deren Grundlage: '+luecke('falls zutreffend')+'</li>'+
+      '<li>Eingebettete YouTube-Videos: Einwilligung durch den Klick (Art. 6 Abs. 1 lit. a DSGVO, &sect; 25 TDDDG), Anbieter und Drittlandbezug (Google) benennen. '+luecke('rechtlich pr&uuml;fen lassen')+'</li>'+
+      '<li>Kontakt der Datenschutzaufsicht deines Bundeslandes: '+luecke('Beh&ouml;rde nennen')+'</li>'+
+      '</ul>';
+    h += '<h2 class="sec-h">Deine Rechte</h2>';
+    h += '<p>Auskunft (Art. 15), Berichtigung (16), L&ouml;schung (17), Einschr&auml;nkung (18), '+
+         'Daten&uuml;bertragbarkeit (20), Widerspruch (21) sowie Beschwerde bei einer Aufsichtsbeh&ouml;rde.</p>';
+    h += '<p>Deinen lokal gespeicherten Stand kannst du jederzeit selbst ausgeben lassen oder '+
+         'l&ouml;schen &mdash; beides findest du im Profil.</p>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'nutzung'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Gegenstand</h2>';
+    h += '<p>&Uuml;berlassen wird ein digitaler Lernkurs zur Vorbereitung auf die '+
+         'Abschlusspr&uuml;fung Teil 1 der IT-Berufe. '+luecke('Lizenzumfang festlegen: eine Person, ein Haushalt, Firmenlizenz?')+'</p>';
+    h += '<h2 class="sec-h">Was ausdr&uuml;cklich nicht zugesichert wird</h2>';
+    h += '<ul><li>Der Kurs bereitet auf die Pr&uuml;fung vor, <strong>garantiert aber kein Bestehen</strong>.</li>'+
+         '<li>Es besteht keine Verbindung zur IHK oder einer anderen Pr&uuml;fungsorganisation und '+
+         'keine Zusammenarbeit mit ihr.</li>'+
+         '<li>Inhalte bilden den Stand von '+luecke('Datum')+' ab; Pr&uuml;fungsordnungen k&ouml;nnen sich &auml;ndern.</li></ul>';
+    h += '<h2 class="sec-h">Widerrufsrecht bei digitalen Inhalten</h2>';
+    h += '<p>Der wichtigste und am h&auml;ufigsten falsch gemachte Punkt beim Verkauf digitaler Inhalte '+
+         'an Verbraucher: Das Widerrufsrecht erlischt nur, wenn der K&auml;ufer <em>vor</em> Beginn der '+
+         'Ausf&uuml;hrung ausdr&uuml;cklich zugestimmt <em>und</em> seine Kenntnis vom Erl&ouml;schen '+
+         'best&auml;tigt hat und du ihm das best&auml;tigst (&sect; 356 Abs. 5 BGB). Ohne diese doppelte '+
+         'Zustimmung bleibt das vierzehnt&auml;gige Widerrufsrecht bestehen.</p>';
+    h += '<p>'+luecke('Vollst&auml;ndige Widerrufsbelehrung und Muster-Widerrufsformular einf&uuml;gen')+'</p>';
+    h += '<h2 class="sec-h">Preis, Zahlung, Nutzungsrechte</h2>';
+    h += '<ul><li>Preis und Umsatzsteuerausweis: '+luecke('Betrag, brutto, ggf. Hinweis nach &sect; 19 UStG')+'</li>'+
+         '<li>Zahlungsdienstleister: '+luecke('Anbieter benennen')+'</li>'+
+         '<li>Weitergabe, Vervielf&auml;ltigung und &ouml;ffentliche Zug&auml;nglichmachung sind '+
+         'nicht gestattet.</li>'+
+         '<li>Gerichtsstand und anwendbares Recht: '+luecke('festlegen')+'</li></ul>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'ueber'){
+    var lekt = TOTAL, mod = MODULES.length;
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">&Uuml;ber diese Ausgabe</h2>';
+    h += '<table class="lesson-table">'+
+      '<tr><td>Version</td><td><strong>'+VERSION+'</strong> vom '+VERSION_DATUM+'</td></tr>'+
+      '<tr><td>Umfang</td><td>'+mod+' Module, '+lekt+' Lektionen, '+EXERCISES.length+' &Uuml;bungsaufgaben</td></tr>'+
+      '<tr><td>Abfragen</td><td>'+CARDS.length+' Karteikarten, '+TRACES.length+' Trockendurchl&auml;ufe</td></tr>'+
+      '<tr><td>Referenz</td><td>'+DIAGRAMME+' Diagramme, Formelblatt mit vielen Abschnitten</td></tr>'+
+      '<tr><td>Tutor</td><td>'+esc(kiHerkunftText())+'</td></tr>'+
+      '</table>';
+    h += '<h2 class="sec-h">Wo deine Daten liegen</h2>';
+    h += '<p>Der gesamte Lernstand liegt im Browser dieses Ger&auml;ts. Es gibt keinen Zwang zu einem '+
+         'Konto. Im Profil kannst du deinen Stand als Text ausgeben, auf ein anderes Ger&auml;t '+
+         '&uuml;bertragen oder vollst&auml;ndig l&ouml;schen.</p>';
+    h += '<h2 class="sec-h">Betrieb auf eigenem Server</h2>';
+    h += '<p>Die Seite ist eine einzelne HTML-Datei ohne Installationsbedarf. Sie l&auml;uft von jedem '+
+         'Webserver und auch direkt von der Festplatte. Lediglich der Tutor braucht einen Dienst &mdash; '+
+         'dessen Adresse tr&auml;gst du im Profil unter <em>Tutor-Verbindung</em> ein.</p>';
+    h += '</div>';
+  }
+  return h;
+}
+function startHinweisWeg(){
+  try{ localStorage.setItem('rootpfad-start', '1'); }catch(e){}
+  renderContent();
+}
+function zeigeStartHinweis(){
+  if(state.completed.size > 0) return false;
+  try{ return localStorage.getItem('rootpfad-start') !== '1'; }catch(e){ return true; }
+}
+function renderStartHinweis(){
+  if(!zeigeStartHinweis()) return '';
+  var h = '<div class="start-box">';
+  h += '<div class="start-kopf"><strong>Erste Schritte</strong>'+
+       '<button class="ex-btn" type="button" onclick="startHinweisWeg()">Verstanden</button></div>';
+  h += '<p class="start-text">Vier Dinge, und du bist eingerichtet:</p>';
+  h += '<ol class="start-liste">'+
+    '<li><strong>Pr&uuml;fungstermin eintragen.</strong> Dann rechnet dir der Lernplan aus, '+
+    'welches Modul bis wann sitzen muss. Steht im Profil.</li>'+
+    '<li><strong>Mit dem ersten Modul beginnen.</strong> Die Reihenfolge ist als Weg gedacht &mdash; '+
+    'jede Lektion dauert acht bis elf Minuten.</li>'+
+    '<li><strong>T&auml;glich wiederholen.</strong> Jede beantwortete Quizfrage wird zur Karteikarte '+
+    'und kommt im richtigen Abstand zur&uuml;ck. Das ist der Teil, der wirklich wirkt.</li>'+
+    '<li><strong>Vor der Pr&uuml;fung simulieren.</strong> Vierzig Fragen in neunzig Minuten, '+
+    'danach die Mitschreib-Pr&uuml;fung mit offenen Aufgaben.</li>'+
+    '</ol>';
+  h += '<p class="start-fuss"><kbd>Strg</kbd>+<kbd>K</kbd> &ouml;ffnet die Befehlssuche, '+
+       '<kbd>?</kbd> zeigt alle K&uuml;rzel.</p>';
+  h += '</div>';
+  return h;
+}
+function renderHeute(){
+  var ziel     = state.tagesziel || 3;
+  var geschafft= heuteGeschafft();
+  var quote    = Math.min(1, geschafft / ziel);
+  var U        = 2 * Math.PI * 44;
+  var voll     = geschafft >= ziel;
+
+  var faellig  = dueCards().length;
+  var offen    = MODULES.filter(function(m){ return m.part < 10; }).reduce(function(a, m){ return a + m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length; }, 0);   /* nur AP1-Teile */
+  var naechste = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+  var nMod     = moduleOfLesson(naechste.id);
+  var tage     = typeof rpAP1Context === 'function' && !rpAP1Context() ? null : pruefungsTage();
+  var schwach  = weakModules();
+
+  var std = new Date().getHours();
+  var gruss = std < 5 ? 'Noch wach?' : std < 11 ? 'Guten Morgen.' : std < 14 ? 'Mahlzeit.' :
+              std < 18 ? 'Guten Nachmittag.' : std < 22 ? 'Guten Abend.' : 'Späte Runde.';
+  var wt = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][new Date().getDay()];
+  var dstr = wt + ', ' + new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+
+  var h = '<div class="heute-kopf">'+
+    '<div><h1 class="heute-gruss">'+gruss+'</h1>'+
+    '<div class="heute-datum">'+esc(dstr)+'</div></div>'+
+    '<div class="ring-wrap">'+
+      '<div class="ziel-ring"><svg viewBox="0 0 100 100" aria-hidden="true">'+
+        '<circle class="bahn" cx="50" cy="50" r="44"/>'+
+        '<circle class="fort'+(voll?' voll':'')+'" cx="50" cy="50" r="44" '+
+          'stroke-dasharray="'+U.toFixed(1)+'" stroke-dashoffset="'+(U*(1-quote)).toFixed(1)+'"/>'+
+        '</svg>'+
+        '<div class="ring-mitte"><span class="ring-zahl">'+geschafft+'/'+ziel+'</span>'+
+        '<span class="ring-unter">heute</span></div></div>'+
+      '<div class="ring-text"><strong>'+(voll ? 'Tagesziel geschafft.' : 'Tagesziel')+'</strong>'+
+      '<span>'+(voll
+        ? 'Alles Weitere ist Zugabe. Die Wiederholung lohnt trotzdem.'
+        : 'Noch ' + (ziel - geschafft) + ' ' + (ziel - geschafft === 1 ? 'Lektion' : 'Lektionen') +
+          '. Kleine Portionen täglich schlagen lange Sitzungen.')+'</span></div>'+
+    '</div></div>';
+
+  if(tage !== null){
+    var proTag = tage > 0 ? Math.ceil(offen / tage) : offen;
+    var lage = tage < 0
+      ? 'Der Termin liegt hinter dir. Setz im Profil einen neuen, falls du weiterlernst.'
+      : tage === 0
+        ? '<b>Heute ist es so weit.</b> Geh das Formelblatt durch und sonst nichts mehr.'
+        : offen === 0
+          ? '<b>Du bist durch.</b> Jetzt zählen Wiederholung und Prüfungssimulationen.'
+          : 'Noch <b>'+offen+'</b> offene Lektionen. Das sind <b>'+proTag+'</b> pro Tag — '+
+            (proTag <= (state.tagesziel||3) ? 'dein Tagesziel reicht dafür aus.'
+                                            : 'etwas mehr als dein aktuelles Tagesziel.');
+    h += '<div class="pruef-leiste"><span class="tage">'+(tage < 0 ? '—' : tage)+'</span>'+
+         '<span class="txt">'+(tage < 0 ? '' : '<b>Tage bis zur AP1.</b> ')+lage+'</span></div>';
+  }
+
+  h += '<div class="heute-raster">';
+
+  h += '<button class="hk" onclick="selectLesson(\''+esc(naechste.id)+'\')">'+
+    '<span class="hk-oben">Weiterlernen</span>'+
+    '<span class="hk-titel">'+esc(naechste.title)+'</span>'+
+    '<span class="hk-text">'+esc(nMod ? nMod.title : '')+' · ca. '+naechste.minutes+' Min.</span>'+
+    '</button>';
+
+  h += '<button class="hk" onclick="selectLesson(\'review\')">'+
+    '<span class="hk-oben">Wiederholung</span>'+
+    '<span class="hk-zahl'+(faellig > 0 ? ' warn' : ' gut')+'">'+faellig+'</span>'+
+    '<span class="hk-text">'+(faellig > 0
+      ? 'Karten sind heute fällig. Genau jetzt sitzt die Wiederholung am besten.'
+      : 'Nichts fällig. Dein Gedächtnis hat gerade frei.')+'</span></button>';
+
+  var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+  var proz = Math.round(completed / TOTAL * 100);
+  h += '<div class="hk still"><span class="hk-oben">Kursfortschritt</span>'+
+    '<span class="hk-zahl">'+proz+'%</span>'+
+    '<div class="hk-balken"><i style="width:'+proz+'%"></i></div>'+
+    '<span class="hk-text">'+completed+' von '+TOTAL+' Lektionen abgeschlossen.</span></div>';
+
+  if(schwach && schwach.length){
+    var w = schwach[0];
+    h += '<button class="hk" onclick="selectLesson(\'profile\')">'+
+      '<span class="hk-oben">Schwachstelle</span>'+
+      '<span class="hk-titel">'+esc(w.title)+'</span>'+
+      '<span class="hk-text">'+Math.round(w.rate * 100)+' % Trefferquote. Dort lohnt sich die nächste halbe Stunde am meisten.</span>'+
+      '</button>';
+  } else {
+    h += '<button class="hk" onclick="selectLesson(\'subnet\')">'+
+      '<span class="hk-oben">Trainieren</span>'+
+      '<span class="hk-titel">Subnetting-Trainer</span>'+
+      '<span class="hk-text">Unbegrenzt viele Aufgaben. Kein Thema der AP1 belohnt Wiederholung so zuverlässig.</span>'+
+      '</button>';
+  }
+
+  h += '</div>';
+
+  h += renderStartHinweis();
+  h += renderLernplan();
+
+  h += '<h2 class="sec-h">Schnellzugriff</h2>';
+  h += '<div class="heute-raster">'+
+    '<button class="hk" onclick="selectLesson(\'exam\')"><span class="hk-oben">Prüfung</span>'+
+      '<span class="hk-titel">Simulator starten</span>'+
+      '<span class="hk-text">40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'klausur\')"><span class="hk-oben">Klausur</span>'+
+      '<span class="hk-titel">Frei schreiben statt ankreuzen</span>'+
+      '<span class="hk-text">Offene Aufgaben mit Zeit, danach eine Bewertung mit Punkten.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'tutor\')"><span class="hk-oben">Tutor</span>'+
+      '<span class="hk-titel">Etwas nicht verstanden?</span>'+
+      '<span class="hk-text">Frag nach. Der Tutor kennt jede Lektion dieses Kurses.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'cheatsheet\')"><span class="hk-oben">Formelblatt</span>'+
+      '<span class="hk-titel">Alle Formeln auf einen Blick</span>'+
+      '<span class="hk-text">Netzplan, Subnetting, Kalkulation, Einheiten, Prüfungstaktik.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'intro\')"><span class="hk-oben">Übersicht</span>'+
+      '<span class="hk-titel">'+MODULES.length+' Module</span>'+
+      '<span class="hk-text">Der ganze Kurs nach Teilen sortiert, mit Prüfungsrelevanz.</span></button>'+
+    '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:22px;"><strong>Tastatur:</strong> '+
+       '<kbd>Strg</kbd>+<kbd>K</kbd> öffnet die Befehlssuche, <kbd>F</kbd> den Lesemodus, '+
+       '<kbd>?</kbd> zeigt alle Kürzel. Die Befehlssuche findet Lektionen, Aufgaben <em>und</em> Aktionen.</div>';
+
+  return h;
+}
+var kp = { offen:false, treffer:[], aktiv:0 };
+var KP_AKTIONEN = [
+  { t:'Heute', s:'Startseite', a:function(){ selectLesson('heute'); }, k:'heute start dashboard uebersicht' },
+  { t:'Wiederholung starten', s:'Karteikarten', a:function(){ selectLesson('review'); }, k:'wiederholung karten srs lernen' },
+  { t:'Prüfung simulieren', s:'40 Fragen, 90 Min.', a:function(){ selectLesson('exam'); }, k:'pruefung simulator test klausur' },
+  { t:'Subnetting-Trainer', s:'Zufallsaufgaben', a:function(){ selectLesson('subnet'); }, k:'subnetting subnetz ip maske trainer rechnen' },
+  { t:'AP1-Tutor fragen', s:'Chat', a:function(){ selectLesson('tutor'); }, k:'tutor chat frage hilfe erklaeren' },
+  { t:'Algorithmus-Trainer', s:'Trockendurchläufe', a:function(){ selectLesson('tracer'); }, k:'trockenlauf algorithmus tracer wertetabelle' },
+  { t:'Übungsaufgaben', s:EXERCISES.length+' Aufgaben', a:function(){ selectLesson('exercises'); }, k:'uebung aufgaben praxis loesung' },
+  { t:'Formelblatt', s:'Alle Formeln', a:function(){ selectLesson('cheatsheet'); }, k:'formelblatt spickzettel formeln referenz' },
+  { t:'Syntax-Glossar', s:'Befehle nachschlagen', a:function(){ selectLesson('glossar'); }, k:'syntax glossar befehle nachschlagen referenz let const array join git sql java php abap' },
+  { t:'Modulübersicht', s:'Alle Teile', a:function(){ selectLesson('intro'); }, k:'module uebersicht inhalt kapitel' },
+  { t:'Profil und Abzeichen', s:'Fortschritt', a:function(){ selectLesson('profile'); }, k:'profil abzeichen xp fortschritt statistik einstellungen' },
+  { t:'Mitschreib-Prüfung', s:'Offene Aufgaben', a:function(){ selectLesson('klausur'); }, k:'klausur mitschreiben schreiben offen freitext korrektur bewerten' },
+  { t:'Fehlerheft', s:'Verhauene Fragen', a:function(){ selectLesson('fehler'); }, k:'fehler fehlerheft falsch verhauen schwach' },
+  { t:'Merkzettel', s:'Markiert und notiert', a:function(){ selectLesson('merk'); }, k:'merkzettel notizen markiert lesezeichen stern' },
+  { t:'Lesemodus umschalten', s:'Taste F', a:function(){ fokusUmschalten(); }, k:'lesemodus fokus konzentration ablenkung' },
+  { t:'Tastaturkürzel anzeigen', s:'Taste ?', a:function(){ selectLesson('tasten'); }, k:'tastatur kuerzel shortcuts hilfe' },
+  { t:'Impressum & Datenschutz', s:'Rechtliches', a:function(){ selectLesson('recht'); }, k:'impressum datenschutz recht agb widerruf lizenz version ueber' }
+];
+function kpOeffnen(){
+  if(kp.offen) return;
+  if(!indexFertig) buildIndex();   /* Volltextindex erst bauen, wenn er gebraucht wird */
+  kp.offen = true; kp.aktiv = 0;
+  kp.vorher = document.activeElement;   /* Fokus spaeter zurueckgeben */
+  var g = document.createElement('div');
+  g.className = 'kp-grund';
+  g.id = 'kpGrund';
+  g.innerHTML =
+    '<div class="kp" role="dialog" aria-modal="true" aria-label="Befehlssuche">'+
+      '<div class="kp-kopf">'+
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
+        '<input class="kp-feld" id="kpFeld" placeholder="Lektion, Aufgabe oder Befehl …" autocomplete="off" spellcheck="false">'+
+        '<span class="kp-esc">Esc</span>'+
+      '</div>'+
+      '<div class="kp-liste" id="kpListe"></div>'+
+      '<div class="kp-fuss"><span><kbd>↑</kbd><kbd>↓</kbd> wählen</span>'+
+      '<span><kbd>Enter</kbd> öffnen</span><span><kbd>Esc</kbd> schließen</span></div>'+
+    '</div>';
+  g.onclick = function(ev){ if(ev.target === g) kpSchliessen(); };
+  /* Tab bleibt im Dialog; Escape schliesst auch, wenn der Fokus die Liste erreicht hat. */
+  g.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){ ev.preventDefault(); kpSchliessen(); return; }
+    fokusFalle(g, ev);
+  });
+  document.body.appendChild(g);
+  var f = document.getElementById('kpFeld');
+  f.oninput = function(){ kpSuchen(f.value); };
+  f.onkeydown = kpTaste;
+  kpSuchen('');
+  f.focus();
+}
+function kpSchliessen(){
+  var g = document.getElementById('kpGrund');
+  if(g) g.remove();
+  kp.offen = false;
+  try{ if(kp.vorher && kp.vorher.focus) kp.vorher.focus(); }catch(e){}
+  kp.vorher = null;
+}
+function kpSuchen(q){
+  var n = (q || '').trim().toLowerCase();
+  var res = [];
+
+  KP_AKTIONEN.forEach(function(a){
+    if(!n || a.t.toLowerCase().indexOf(n) >= 0 || a.k.indexOf(n) >= 0)
+      res.push({ art:'Aktion', t:a.t, s:a.s, run:a.a });
+  });
+
+  if(n.length >= 2){
+    SEARCH_INDEX.forEach(function(e){
+      if(res.length > 40) return;
+      if((e.hay || (e.title + ' ' + (e.sub || '')).toLowerCase()).indexOf(n) >= 0){
+        res.push({ art: e.kind === 'lesson' ? 'Lektion' : e.kind === 'exercise' ? 'Aufgabe' : 'Inhalt',
+                   t:e.title, s:e.sub || '', run:(function(id){ return function(){ selectLesson(id); }; })(e.id) });
+      }
+    });
+  }
+
+  kp.treffer = res.slice(0, 40);
+  kp.aktiv = 0;
+  kpZeichnen();
+}
+function kpZeichnen(){
+  var l = document.getElementById('kpListe');
+  if(!l) return;
+  if(!kp.treffer.length){
+    l.innerHTML = '<div class="kp-leer">Nichts gefunden. Versuch einen anderen Begriff.</div>';
+    return;
+  }
+  var h = '', letzte = '';
+  kp.treffer.forEach(function(r, i){
+    if(r.art !== letzte){ h += '<div class="kp-gruppe">'+esc(r.art)+'</div>'; letzte = r.art; }
+    h += '<button class="kp-eintrag'+(i === kp.aktiv ? ' aktiv' : '')+'" data-i="'+i+'">'+
+         '<span class="kp-marke">'+(r.art === 'Aktion' ? '›' : '·')+'</span>'+
+         '<span>'+esc(r.t)+'</span>'+
+         (r.s ? '<span class="kp-sub">'+esc(r.s)+'</span>' : '')+
+         '</button>';
+  });
+  l.innerHTML = h;
+  Array.prototype.forEach.call(l.querySelectorAll('.kp-eintrag'), function(b){
+    b.onclick = function(){ kpAusfuehren(parseInt(b.getAttribute('data-i'), 10)); };
+  });
+  var a = l.querySelector('.kp-eintrag.aktiv');
+  if(a) a.scrollIntoView({ block:'nearest' });
+}
+function kpAusfuehren(i){
+  var r = kp.treffer[i];
+  if(!r) return;
+  kpSchliessen();
+  r.run();
+}
+function kpTaste(ev){
+  if(ev.key === 'Escape'){ ev.preventDefault(); kpSchliessen(); return; }
+  if(ev.key === 'ArrowDown'){ ev.preventDefault(); kp.aktiv = Math.min(kp.aktiv + 1, kp.treffer.length - 1); kpZeichnen(); return; }
+  if(ev.key === 'ArrowUp'){ ev.preventDefault(); kp.aktiv = Math.max(kp.aktiv - 1, 0); kpZeichnen(); return; }
+  if(ev.key === 'Enter'){ ev.preventDefault(); kpAusfuehren(kp.aktiv); return; }
+}
+function renderTasten(){
+  var paare = [
+    ['Strg + K', 'Befehlssuche öffnen'],
+    ['F', 'Lesemodus ein und aus'],
+    ['?', 'Diese Übersicht'],
+    ['G dann H', 'Zur Heute-Ansicht'],
+    ['G dann W', 'Zur Wiederholung'],
+    ['G dann P', 'Zur Prüfungssimulation'],
+    ['G dann T', 'Zum Tutor'],
+    ['G dann S', 'Zum Subnetting-Trainer'],
+    ['→ / ←', 'Nächste / vorige Lektion'],
+    ['1 – 4', 'Karte bewerten: nochmal, schwer, gut, leicht'],
+    ['Leertaste', 'Karte als gewusst bewerten'],
+    ['Esc', 'Dialog schließen']
+  ];
+  var h = '<div class="breadcrumb">Bedienung</div><h1>Tastatur</h1>'+
+    '<p class="intro-sub">Der Kurs lässt sich vollständig über die Tastatur bedienen. '+
+    'Wer viel lernt, spart damit spürbar Zeit — vor allem die Befehlssuche ersetzt fast jede Mausbewegung.</p>'+
+    '<div class="kb-grid">';
+  paare.forEach(function(p){
+    h += '<div class="kb-zeile"><kbd>'+esc(p[0])+'</kbd><span>'+esc(p[1])+'</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="ex-panel" style="margin-top:22px;"><strong>Zwei Griffe, die sich lohnen:</strong> '+
+       '<kbd>Strg</kbd>+<kbd>K</kbd> und dann die ersten Buchstaben — du landest in jeder Lektion, '+
+       'jeder Aufgabe und jedem Trainer, ohne durch die Seitenleiste zu scrollen. Und <kbd>F</kbd>, '+
+       'wenn ein Kapitel länger wird: Die Navigation verschwindet, die Zeilen werden breiter und ruhiger.</div>';
+  return h;
+}
+var gTaste = 0;
+document.addEventListener('keydown', function(ev){
+  var imFeld = /^(INPUT|TEXTAREA|SELECT)$/.test((ev.target && ev.target.tagName) || '');
+  if((ev.ctrlKey || ev.metaKey) && (ev.key === 'k' || ev.key === 'K')){
+    ev.preventDefault(); kp.offen ? kpSchliessen() : kpOeffnen(); return;
+  }
+  if(imFeld || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if(kp.offen) return;
+
+  if(ev.key === '?'){ ev.preventDefault(); selectLesson('tasten'); return; }
+  if(ev.key === 'f' || ev.key === 'F'){ ev.preventDefault(); fokusUmschalten(); return; }
+
+  if(ev.key === 'g' || ev.key === 'G'){ gTaste = Date.now(); return; }
+  if(Date.now() - gTaste < 1200){
+    var zu = { h:'heute', w:'review', p:'exam', t:'tutor', s:'subnet', u:'intro', a:'exercises' }[ev.key.toLowerCase()];
+    if(zu){ ev.preventDefault(); gTaste = 0; selectLesson(zu); return; }
+  }
+}, true);
+function renderMobilbar(){
+  var el = document.getElementById('mobilbar');
+  if(!el) return;
+  var faellig = dueCards().length;
+  var eintraege = [
+    ['heute',  'Heute',   'M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z'],
+    ['review', 'Karten',  'M4 6h16v10H4zM8 20h8'],
+    ['subnet', 'Subnetz', 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z'],
+    ['tutor',  'Tutor',   'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'],
+    ['intro',  'Kurs',    'M4 5h16M4 12h16M4 19h10']
+  ];
+  el.innerHTML = eintraege.map(function(e){
+    var aktiv = state.currentId === e[0];
+    return '<button class="mb'+(aktiv ? ' aktiv' : '')+'" onclick="selectLesson(\''+e[0]+'\')" aria-label="'+e[1]+'">'+
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+e[2]+'"/></svg>'+
+      (e[0] === 'review' && faellig ? '<span class="punkt"></span>' : '')+
+      '<span>'+e[1]+'</span></button>';
+  }).join('');
+}
+var azFilter = 'alle';
+function setzeAzFilter(w){ azFilter = w; renderContent(); }
+function renderRangkarte(){
+  var xp  = state.xp || 0;
+  var lp  = levelProgress();
+  var von = lp.cur.xp;
+  var bis = lp.nxt ? lp.nxt.xp : lp.cur.xp;
+  var anteil = lp.nxt ? Math.max(0, Math.min(100, (xp - von) / (bis - von) * 100)) : 100;
+
+  var h = '<div class="rangkarte">'+
+    '<div class="rk-emblem" data-lvl="LV '+lp.cur.lvl+'" aria-hidden="true">'+lp.cur.icon+'</div>'+
+    '<div class="rk-haupt">'+
+      '<div class="rk-eyebrow">Aktueller Rang</div>'+
+      '<h1 class="rk-name">'+esc(lp.cur.name)+'</h1>'+
+      '<div class="rk-spanne">'+
+        '<div class="rk-bahn" role="img" aria-label="'+Math.round(anteil)+' Prozent bis zum nächsten Rang">'+
+        '<i style="width:'+anteil.toFixed(1)+'%"></i></div>'+
+      '</div>'+
+      '<div class="rk-marken"><span>'+von.toLocaleString('de-DE')+' XP</span>'+
+        '<span>'+(lp.nxt ? bis.toLocaleString('de-DE') + ' XP' : '—')+'</span></div>'+
+      '<div class="rk-rest">'+
+        (lp.nxt
+          ? '<b>'+xp.toLocaleString('de-DE')+' XP</b> gesammelt · noch <b>'+
+            lp.need.toLocaleString('de-DE')+' XP</b> bis „'+esc(lp.nxt.name)+'“'
+          : '<b>'+xp.toLocaleString('de-DE')+' XP</b> · höchster Rang erreicht. Mehr geht nicht.')+
+      '</div>'+
+    '</div></div>';
+  return h;
+}
+function renderLeiter(){
+  var xp = state.xp || 0;
+  var lp = levelProgress();
+  var erreichte = RANKS.filter(function(r){ return xp >= r.xp; }).length;
+  var anteil = RANKS.length > 1 ? (erreichte - 1) / (RANKS.length - 1) * 100 : 0;
+
+  var h = '<div class="leiter" data-fortschritt style="--erreicht:'+Math.max(0, anteil).toFixed(1)+'%">';
+  RANKS.forEach(function(r){
+    var erreicht = xp >= r.xp;
+    var aktuell  = r.lvl === lp.cur.lvl;
+    var fehlt    = r.xp - xp;
+    h += '<div class="lr'+(erreicht ? ' erreicht' : '')+(aktuell ? ' aktuell' : '')+'">'+
+      '<span class="lr-knoten" aria-hidden="true">'+r.icon+'</span>'+
+      '<span class="lr-text">'+
+        '<span class="lr-name">'+esc(r.name)+'</span>'+
+        '<span class="lr-meta">Level '+r.lvl+' · ab '+r.xp.toLocaleString('de-DE')+' XP</span>'+
+      '</span>'+
+      '<span class="lr-rechts">'+
+        (aktuell ? '<span class="lr-jetzt">hier</span>'
+                 : erreicht ? '✓ erreicht'
+                            : 'in '+fehlt.toLocaleString('de-DE')+' XP')+
+      '</span></div>';
+  });
+  h += '</div>';
+  return h;
+}
+function renderAbzeichen(){
+  var hat = BADGES.filter(function(b){ return state.badges[b.id]; });
+  var quote = BADGES.length ? hat.length / BADGES.length * 100 : 0;
+
+  var liste = BADGES.slice().sort(function(a, b){
+    var ga = !!state.badges[a.id], gb = !!state.badges[b.id];
+    if(ga !== gb) return ga ? -1 : 1;
+    return ga ? state.badges[b.id] - state.badges[a.id] : 0;
+  });
+  if(azFilter === 'hat')  liste = liste.filter(function(b){ return state.badges[b.id]; });
+  if(azFilter === 'offen')liste = liste.filter(function(b){ return !state.badges[b.id]; });
+
+  var h = '<div class="az-kopf">'+
+    '<div class="az-bahn" role="img" aria-label="'+hat.length+' von '+BADGES.length+' Abzeichen">'+
+      '<i style="width:'+quote.toFixed(1)+'%"></i></div>'+
+    '<div class="az-filter">'+
+      ['alle','hat','offen'].map(function(w){
+        var t = w === 'alle' ? 'Alle ' + BADGES.length
+              : w === 'hat'  ? 'Erreicht ' + hat.length
+                             : 'Offen ' + (BADGES.length - hat.length);
+        return '<button class="'+(azFilter === w ? 'an' : '')+'" onclick="setzeAzFilter(\''+w+'\')">'+t+'</button>';
+      }).join('')+
+    '</div></div>';
+
+  if(!liste.length){
+    h += '<p class="intro-sub">Hier ist gerade nichts. Wechsle den Filter.</p>';
+    return h;
+  }
+
+  h += '<div class="az-raster">';
+  liste.forEach(function(b){
+    var got = !!state.badges[b.id];
+    h += '<div class="az '+(got ? 'hat' : 'offen')+'">'+
+      '<span class="az-icon" aria-hidden="true">'+b.icon+'</span>'+
+      '<span class="az-name">'+esc(b.name)+'</span>'+
+      '<span class="az-desc">'+esc(b.desc)+'</span>'+
+      '<span class="az-datum">'+(got
+        ? new Date(state.badges[b.id]).toLocaleDateString('de-DE', { day:'2-digit', month:'short', year:'numeric' })
+        : 'noch offen')+'</span>'+
+      '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+function renderKennzahlen(){
+  var mastered = Object.keys(state.srs).filter(function(k){ return (state.srs[k].iv || 0) >= 21; }).length;
+  var bestExam = state.exams.reduce(function(a, e){ return Math.max(a, e.score / e.total); }, 0);
+  var hat = BADGES.filter(function(b){ return state.badges[b.id]; }).length;
+  var richtig = 0;
+  Object.keys(state.stats || {}).forEach(function(k){ richtig += (state.stats[k].right || 0); });
+
+  var z = [
+    [(state.streak.count || 0), 'Tage in Folge', (state.streak.count || 0) >= 3],
+    [state.completed.size + '/' + TOTAL, 'Lektionen', false],
+    [hat + '/' + BADGES.length, 'Abzeichen', false],
+    [richtig, 'Fragen richtig', false],
+    [mastered, 'Karten gefestigt', false],
+    [Object.keys(state.solved).length, 'Übungen gelöst', false],
+    [state.tracesDone.length + '/' + TRACES.length, 'Durchläufe', false],
+    [(state.subnetSolved || 0), 'Subnetze gerechnet', false],
+    [(bestExam ? Math.round(bestExam * 100) + '%' : '—'), 'Beste Prüfung', bestExam >= 0.7]
+  ];
+  return '<div class="kz-reihe">' + z.map(function(t){
+    return '<div class="kz'+(t[2] ? ' betont' : '')+'"><span class="w">'+t[0]+'</span><span class="b">'+t[1]+'</span></div>';
+  }).join('') + '</div>';
+}
+function fehlerKarten(){
+  return CARDS.filter(function(c){
+    var st = state.stats[c.id];
+    return st && st.wrong > 0;
+  }).map(function(c){
+    var st = state.stats[c.id];
+    var ges = st.right + st.wrong;
+    return { c:c, wrong:st.wrong, right:st.right, quote: ges ? st.right / ges : 0 };
+  }).sort(function(a, b){
+    if(a.quote !== b.quote) return a.quote - b.quote;
+    return b.wrong - a.wrong;
+  });
+}
+var fhOffen = {};
+function fhZeigen(id){ fhOffen[id] = !fhOffen[id]; renderContent(); }
+function renderFehlerheft(){
+  var liste = fehlerKarten();
+  var h = '<div class="breadcrumb">Training</div><h1>Fehlerheft</h1>';
+
+  if(!liste.length){
+    h += '<p class="intro-sub">Noch keine falsch beantwortete Frage. Sobald du im Quiz, in der Wiederholung '+
+         'oder in einer Prüfung danebenliegst, sammelt sich die Frage hier — mit Antwort, Erklärung '+
+         'und dem Weg zur passenden Lektion.</p>'+
+         '<div class="ex-panel"><strong>Warum ein Fehlerheft?</strong> Wer nur wiederholt, was er kann, '+
+         'lernt wenig dazu. Die Fragen, die du verhauen hast, sind die einzigen, bei denen sich '+
+         'eine zweite Runde wirklich lohnt.</div>';
+    return h;
+  }
+
+  var ungeloest = liste.filter(function(e){ return e.quote < 0.5; }).length;
+  h += '<p class="intro-sub">'+liste.length+' Fragen sind dir schon einmal danebengegangen. '+
+       'Sortiert nach Trefferquote — die schlimmsten stehen oben. '+
+       (ungeloest ? '<strong>'+ungeloest+'</strong> davon sitzen noch gar nicht.' : 'Keine davon ist mehr kritisch.')+'</p>';
+
+  h += '<div class="ex-actions" style="margin-bottom:18px;">'+
+       '<button class="ex-btn primary" onclick="startExam(\'fehler\')">Nur diese Fragen prüfen</button>'+
+       '<button class="ex-btn" onclick="selectLesson(\'review\')">Zur normalen Wiederholung</button></div>';
+
+  h += '<div class="fh-liste">';
+  liste.slice(0, 60).forEach(function(e){
+    var c = e.c, auf = !!fhOffen[c.id];
+    var proz = Math.round(e.quote * 100);
+    h += '<div class="fh">'+
+      '<button class="fh-kopf" onclick="fhZeigen(\''+c.id+'\')" aria-expanded="'+auf+'">'+
+        '<span class="fh-quote'+(proz < 50 ? ' schlecht' : proz < 80 ? ' mittel' : '')+'">'+proz+'%</span>'+
+        '<span class="fh-frage">'+esc(c.q)+'</span>'+
+        '<span class="fh-zaehler">'+e.right+'✓ '+e.wrong+'✗</span>'+
+        '<span class="fh-pfeil">'+(auf ? '−' : '+')+'</span>'+
+      '</button>';
+    if(auf){
+      h += '<div class="fh-koerper">'+
+        '<div class="fh-antwort"><span class="fh-label">Richtig</span>'+esc(c.options[c.correct])+'</div>'+
+        '<p class="fh-erklaerung">'+esc(c.explain)+'</p>'+
+        '<button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">'+
+        'Zur Lektion: '+esc(c.lessonTitle)+'</button>'+
+        '</div>';
+    }
+    h += '</div>';
+  });
+  h += '</div>';
+  if(liste.length > 60){
+    h += '<p class="intro-sub" style="margin-top:14px;">Es werden die 60 schwächsten angezeigt.</p>';
+  }
+  return h;
+}
+function notizUmschalten(id){
+  var el = document.getElementById('notizBox');
+  if(!el) return;
+  el.hidden = !el.hidden;
+  if(!el.hidden){ var t = document.getElementById('notizFeld'); if(t) t.focus(); }
+}
+function notizSpeichern(id, wert){
+  state.notizen = state.notizen || {};
+  var w = (wert || '').trim();
+  if(w) state.notizen[id] = w; else delete state.notizen[id];
+  saveProgress();
+  var m = document.getElementById('notizMarke');
+  if(m) m.hidden = !w;
+}
+function merkenUmschalten(id){
+  state.merkzettel = state.merkzettel || {};
+  if(state.merkzettel[id]) delete state.merkzettel[id];
+  else state.merkzettel[id] = Date.now();
+  saveProgress();
+  renderContent();
+  renderSidebar();
+}
+function jsonAusText(roh){
+  var t = String(roh || '').trim();
+  if(!t) return null;
+
+  /* Codezaun entfernen, mit und ohne Sprachangabe. */
+  t = t.replace(/^`{3}[a-z]*\s*/i, '').replace(/`{3}\s*$/, '').trim();
+
+  try{ return JSON.parse(t); }catch(e){}
+
+  /* Sonst das erste vollstaendige Objekt oder Array herausschneiden. */
+  var paare = [['{', '}'], ['[', ']']];
+  for(var i = 0; i < paare.length; i++){
+    var a = t.indexOf(paare[i][0]);
+    var b = t.lastIndexOf(paare[i][1]);
+    if(a >= 0 && b > a){
+      try{ return JSON.parse(t.slice(a, b + 1)); }catch(e){}
+    }
+  }
+  return null;
+}
+var KI_STUFEN = { 'default':1, 'complex':1 };
+async function kiJson(anweisung, stufe){
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn) throw { code:'not_granted', message:'kein Tutor verfuegbar' };
+
+  var opt = { cache:false, modelTier: KI_STUFEN[stufe] ? stufe : 'default' };
+
+  /* Weg 1: die eingebaute Abkuerzung. */
+  try{
+    var direkt = await tutor.fn.json(anweisung, opt);
+    if(direkt !== null && typeof direkt === 'object') return direkt;
+  }catch(e){
+    /* Bei diesen Codes hilft kein zweiter Versuch. */
+    if(e && (e.code === 'aborted' || e.code === 'cancelled' ||
+             e.code === 'not_granted' || e.code === 'sampling_disabled' ||
+             e.code === 'not_declared' || e.code === 'capability_disabled' ||
+             e.code === 'rate_limited' || e.code === 'session_expired')) throw e;
+  }
+
+  /* Weg 2: als Text holen und selbst herausschneiden. */
+  var res = await tutor.fn([{ role:'user', content: String(anweisung) }], opt);
+  var geparst = jsonAusText(res && res.text);
+  if(geparst === null) throw { code:'invalid_json', message:'Antwort war kein JSON' };
+  return geparst;
+}
+function erkUmschalten(id){
+  var el = document.getElementById('erkBox');
+  if(!el) return;
+  el.hidden = !el.hidden;
+  if(!el.hidden){ var t = document.getElementById('erkFeld'); if(t) t.focus(); }
+}
+function erkErgebnisHtml(e){
+  if(!e) return '';
+  if(e.fehler) return '<div class="erk-erg warn">'+esc(e.fehler)+'</div>';
+  var stufe = e.punkte >= 3 ? 'ok' : (e.punkte >= 2 ? '' : 'warn');
+  var wort = e.punkte >= 3 ? 'Sitzt' : (e.punkte >= 2 ? 'Im Kern richtig' : 'Noch lückenhaft');
+  return '<div class="erk-erg '+stufe+'">'+
+    '<div class="erk-note">'+wort+' · '+e.punkte+' von 3</div>'+
+    (e.treffer ? '<p><strong>Richtig:</strong> '+esc(e.treffer)+'</p>' : '')+
+    (e.fehlt ? '<p><strong>Fehlt:</strong> '+esc(e.fehlt)+'</p>' : '')+
+    (e.tipp ? '<p><strong>Merke:</strong> '+esc(e.tipp)+'</p>' : '')+
+    '</div>';
+}
+async function erkPruefen(lessonId){
+  var feld = document.getElementById('erkFeld');
+  var ziel = document.getElementById('erkErg');
+  if(!feld || !ziel) return;
+  var text = (feld.value || '').trim();
+  if(text.length < 10){
+    ziel.innerHTML = '<div class="erk-erg warn">Schreib erst ein oder zwei ganze Sätze — dann lohnt sich die Rückmeldung.</div>';
+    return;
+  }
+  var lektion = lessonById(lessonId);
+  if(!lektion) return;
+  ziel.innerHTML = '<div class="erk-erg">Der Tutor liest mit …</div>';
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    ziel.innerHTML = erkErgebnisHtml({ fehler:'Die Bewertung ist in dieser Ansicht nicht verfügbar. '+
+      'Vergleiche deinen Satz selbst mit dem Lektionstext — schon das Aufschreiben hat gewirkt.' });
+    return;
+  }
+
+  var anweisung = [
+    'Du bist Pruefer in der IHK-Abschlusspruefung Teil 1, Fachinformatiker Anwendungsentwicklung.',
+    'Ein Auszubildender soll den Kern einer Lektion in eigenen Worten wiedergeben.',
+    '',
+    'LEKTION: ' + lektion.title,
+    'LEKTIONSINHALT:',
+    klText(lektion.body || '').slice(0, 2600),
+    '',
+    'ANTWORT DES AUSZUBILDENDEN:',
+    text.slice(0, 900),
+    '',
+    'Bewerte mit 0 bis 3 Punkten: 3 = Kern richtig und vollstaendig, 2 = im Kern richtig,',
+    'aber etwas Wesentliches fehlt, 1 = nur Bruchstuecke, 0 = falsch oder am Thema vorbei.',
+    'Fachlich richtige eigene Formulierungen sind voll zu werten; es geht NICHT um Wortgleichheit.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in dieser Form:',
+    '{"punkte": 2, "treffer": "ein Satz, was richtig war",',
+    ' "fehlt": "ein Satz, was fehlt (leer lassen wenn nichts fehlt)",',
+    ' "tipp": "ein kurzer Merksatz fuer die Pruefung"}',
+    'Schreibe auf Deutsch mit Du-Anrede. Kein Text vor oder nach dem JSON.'
+  ].join(String.fromCharCode(10));
+
+  try{
+    var r = await kiJson(anweisung, 'default');
+    var e = {
+      text: text,
+      punkte: Math.max(0, Math.min(3, Number(r && r.punkte) || 0)),
+      treffer: String((r && r.treffer) || ''),
+      fehlt: String((r && r.fehlt) || ''),
+      tipp: String((r && r.tipp) || ''),
+      ts: Date.now()
+    };
+    state.erklaerungen = state.erklaerungen || {};
+    state.erklaerungen[lessonId] = e;
+    if(e.punkte >= 2) awardXp(8, 'In eigenen Worten erklärt', 'erk_' + lessonId);
+    saveProgress();
+    ziel.innerHTML = erkErgebnisHtml(e);
+  }catch(err){
+    var txt = tutorFehlertext(err && err.code);
+    if(!txt) return;   /* bewusst abgebrochen */
+    ziel.innerHTML = erkErgebnisHtml({ fehler: txt }) +
+      '<div class="ex-actions"><button class="ex-btn" type="button" '+
+      'onclick="erkPruefen(' + String.fromCharCode(39) + lessonId + String.fromCharCode(39) + ')">'+
+      'Noch einmal versuchen</button></div>';
+  }
+}
+function renderLektionWerkzeuge(lessonId){
+  var notiz = (state.notizen || {})[lessonId] || '';
+  var gemerkt = !!(state.merkzettel || {})[lessonId];
+  var erkFrueher = (state.erklaerungen || {})[lessonId] || null;
+  var erkAlt = erkFrueher ? (erkFrueher.text || '') : '';
+  return '<div class="lw">'+
+    '<button class="ex-btn'+(gemerkt ? ' primary' : '')+'" onclick="merkenUmschalten(\''+lessonId+'\')">'+
+      (gemerkt ? '★ Gemerkt' : '☆ Merken')+'</button>'+
+    '<button class="ex-btn" onclick="notizUmschalten(\''+lessonId+'\')">'+
+      '✎ Notiz'+(notiz ? '' : '')+'<span id="notizMarke" class="lw-punkt"'+(notiz ? '' : ' hidden')+'></span></button>'+
+    '<button class="ex-btn" onclick="tutorZuLektion(\''+lessonId+'\')">&#128172; Tutor fragen</button>'+
+    '<button class="ex-btn" onclick="erkUmschalten(\''+lessonId+'\')">&#9997; In einem Satz erklären</button>'+
+    '<div class="erk-box" id="erkBox" hidden>'+
+      '<label class="notiz-label" for="erkFeld">Ohne nachzusehen: Was ist der Kern dieser Lektion? Ein bis zwei Sätze.</label>'+
+      '<textarea class="notiz-feld" id="erkFeld" rows="3" spellcheck="false" '+
+      'placeholder="Zum Beispiel: Die Subnetzmaske trennt Netz- von Hostanteil, indem …">'+esc(erkAlt)+'</textarea>'+
+      '<div class="erk-fuss"><button class="ex-btn primary" type="button" onclick="erkPruefen(\''+lessonId+'\')">Prüfen lassen</button>'+
+      '<span class="erk-hinweis">Der Tutor vergleicht deinen Satz mit der Lektion.</span></div>'+
+      '<div id="erkErg">'+erkErgebnisHtml(erkFrueher)+'</div>'+
+    '</div>'+
+    '<div class="notiz-box" id="notizBox"'+(notiz ? '' : ' hidden')+'>'+
+      '<label class="notiz-label" for="notizFeld">Deine Notiz zu dieser Lektion — sie wandert mit deinem Fortschritt mit.</label>'+
+      '<textarea class="notiz-feld" id="notizFeld" rows="3" spellcheck="false" '+
+      'placeholder="Was verwechselst du hier immer? Was ist die Eselsbrücke?" '+
+      'oninput="notizSpeichern(\''+lessonId+'\', this.value)">'+esc(notiz)+'</textarea>'+
+    '</div></div>';
+}
+function renderMerkzettel(){
+  var ids = Object.keys(state.merkzettel || {});
+  var notizIds = Object.keys(state.notizen || {});
+  var h = '<div class="breadcrumb">Deine Ablage</div><h1>Merkzettel</h1>';
+  if(!ids.length && !notizIds.length){
+    h += '<p class="intro-sub">Hier sammeln sich die Lektionen, die du mit ☆ markierst, und alle Notizen, '+
+         'die du dir unterwegs machst. Beides findest du unter jeder Lektion.</p>';
+    return h;
+  }
+  h += '<p class="intro-sub">'+ids.length+' markierte Lektionen und '+notizIds.length+' Notizen. '+
+       'Kurz vor der Prüfung ist das die Liste, die du noch einmal durchgehst.</p>';
+
+  if(ids.length){
+    h += '<h2 class="sec-h">Markiert</h2><div class="heute-raster">';
+    ids.sort(function(a,b){ return state.merkzettel[b] - state.merkzettel[a]; }).forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      var m = moduleOfLesson(id);
+      h += '<button class="hk" onclick="selectLesson(\''+id+'\')">'+
+        '<span class="hk-oben">'+esc(m ? m.title : '')+'</span>'+
+        '<span class="hk-titel">'+esc(l.title)+'</span>'+
+        '<span class="hk-text">markiert am '+new Date(state.merkzettel[id]).toLocaleDateString('de-DE')+'</span>'+
+        '</button>';
+    });
+    h += '</div>';
+  }
+  if(notizIds.length){
+    h += '<h2 class="sec-h">Notizen</h2>';
+    notizIds.forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      h += '<div class="nz"><button class="nz-titel" onclick="selectLesson(\''+id+'\')">'+esc(l.title)+'</button>'+
+           '<p class="nz-text">'+esc(state.notizen[id])+'</p></div>';
+    });
+  }
+  return h;
+}
+function renderPruefungsverlauf(){
+  var ex = (state.exams || []).slice(-12);
+  if(ex.length < 2) return '';
+  var w = 520, hgt = 96, pad = 8;
+  var werte = ex.map(function(e){ return e.score / e.total; });
+  var dx = (w - pad * 2) / Math.max(1, werte.length - 1);
+  var punkte = werte.map(function(v, i){
+    return [pad + i * dx, pad + (1 - v) * (hgt - pad * 2)];
+  });
+  var linie = punkte.map(function(p, i){ return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  var flaeche = linie + ' L' + punkte[punkte.length-1][0].toFixed(1) + ' ' + (hgt-pad) + ' L' + pad + ' ' + (hgt-pad) + ' Z';
+  var letzte = werte[werte.length-1], erste = werte[0];
+  var trend = letzte - erste;
+
+  var h = '<h2 class="sec-h">Prüfungsverlauf</h2>'+
+    '<div class="verlauf"><svg viewBox="0 0 '+w+' '+hgt+'" role="img" '+
+    'aria-label="Ergebnisse der letzten '+werte.length+' Prüfungen">'+
+    '<line class="v-grid" x1="'+pad+'" y1="'+(pad + 0.3*(hgt-pad*2)).toFixed(1)+'" x2="'+(w-pad)+'" y2="'+(pad + 0.3*(hgt-pad*2)).toFixed(1)+'"/>'+
+    '<path class="v-flaeche" d="'+flaeche+'"/>'+
+    '<path class="v-linie" d="'+linie+'"/>';
+  punkte.forEach(function(p, i){
+    var letzt = i === punkte.length - 1;
+    h += '<circle class="v-punkt'+(letzt ? ' letzt' : '')+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(letzt ? 5 : 3)+'"/>';
+  });
+  h += '</svg>'+
+    '<div class="v-text">'+
+      '<span class="v-wert">'+Math.round(letzte * 100)+'%</span>'+
+      '<span class="v-lbl">letzte Prüfung</span>'+
+      '<span class="v-trend'+(trend >= 0 ? ' hoch' : ' runter')+'">'+
+        (trend >= 0 ? '↑ +' : '↓ ')+Math.round(Math.abs(trend) * 100)+' Punkte seit der ersten</span>'+
+      '<span class="v-lbl">Die gestrichelte Linie markiert 70 Prozent — die Bestehensgrenze.</span>'+
+    '</div></div>';
+  return h;
+}
+var klausur = {
+  phase:'start',      /* start | laufend | bewertung | ergebnis */
+  aufgaben:[],
+  antworten:[],
+  endetUm:0,
+  uhr:null,
+  ergebnis:null,
+  fehler:''
+};
+var KL_PUNKTE = { 1:5, 2:8, 3:12 };
+var KL_VARIANTEN = {
+  kurz:   { label:'Kurzklausur',  n:3, min:45, stufen:[1,2],   text:'Drei Aufgaben in 45 Minuten. Einstieg und Fortgeschritten.' },
+  voll:   { label:'Vollklausur',  n:5, min:90, stufen:[1,2,3], text:'Fünf Aufgaben in 90 Minuten — Umfang und Zeitdruck der echten AP1.' },
+  experte:{ label:'Expertenrunde',n:3, min:60, stufen:[3],     text:'Drei Expertenaufgaben in 60 Minuten. Mehrteilig, mit Begründung.' }
+};
+function klStarten(variante){
+  var v = KL_VARIANTEN[variante];
+  var pool = EXERCISES.filter(function(e){ return v.stufen.indexOf(e.level) !== -1; });
+  if(pool.length < v.n){
+    showToast('<span class="t-xp">Zu wenig</span><span class="t-reason">Nicht genug Aufgaben für diese Variante</span>');
+    return;
+  }
+  var gezogen = shuffled(pool).slice(0, v.n);
+  klausur = {
+    phase:'laufend', variante:variante,
+    aufgaben:gezogen,
+    antworten:gezogen.map(function(){ return ''; }),
+    endetUm: Date.now() + v.min * 60000,
+    uhr:null, ergebnis:null, fehler:''
+  };
+  klUhrStoppen();
+  klausur.uhr = setInterval(klTicken, 1000);
+  state.currentId = 'klausur';
+  render();
+}
+function klUhrStoppen(){ if(klausur.uhr){ clearInterval(klausur.uhr); klausur.uhr = null; } }
+function klTicken(){
+  var el = document.getElementById('klUhr');
+  var rest = klausur.endetUm - Date.now();
+  if(rest <= 0){ klUhrStoppen(); klAbgeben(true); return; }
+  if(!el) return;
+  var sek = Math.floor(rest / 1000);
+  var m = Math.floor(sek / 60), sc = sek % 60;
+  el.textContent = m + ':' + (sc < 10 ? '0' : '') + sc;
+  el.className = 'kl-uhr' + (rest < 300000 ? ' knapp' : '');
+}
+function klSchreiben(i, wert){ klausur.antworten[i] = wert; }
+function klAbbrechen(){
+  if(!window.confirm('Die Klausur wird verworfen. Fortfahren?')) return;
+  klUhrStoppen();
+  klausur.phase = 'start';
+  renderContent();
+}
+function klText(html){
+  return String(html).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|li|div|tr)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n').trim();
+}
+async function klAbgeben(automatisch){
+  if(klausur.phase !== 'laufend') return;
+  if(!automatisch){
+    var leer = klausur.antworten.filter(function(a){ return !a.trim(); }).length;
+    var frage = leer
+      ? leer + ' von ' + klausur.aufgaben.length + ' Aufgaben sind noch leer. Trotzdem abgeben?'
+      : 'Klausur abgeben und bewerten lassen?';
+    if(!window.confirm(frage)) return;
+  }
+  klUhrStoppen();
+  klausur.phase = 'bewertung';
+  klausur.fehler = '';
+  renderContent();
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    klausur.phase = 'ergebnis';
+    klausur.ergebnis = null;
+    klausur.fehler = 'Die Bewertung durch den Tutor ist in dieser Ansicht nicht verfügbar. '+
+      'Deine Antworten stehen unten neben den Musterlösungen — vergleiche selbst.';
+    renderContent();
+    return;
+  }
+
+  var teile = klausur.aufgaben.map(function(a, i){
+    return [
+      'AUFGABE ' + (i+1) + ' (' + (KL_PUNKTE[a.level] || 8) + ' Punkte, Thema: ' + a.topic + ')',
+      a.title,
+      klText(a.task).slice(0, 1400),
+      '',
+      'MUSTERLOESUNG ' + (i+1) + ':',
+      String(a.solution).slice(0, 2200),
+      '',
+      'ANTWORT DES PRUEFLINGS ' + (i+1) + ':',
+      (klausur.antworten[i].trim() || '(nichts geschrieben)').slice(0, 2200),
+      '', '---', ''
+    ].join('\n');
+  }).join('\n');
+
+  var anweisung = [
+    'Du bist Korrektor der IHK-Abschlusspruefung Teil 1 im Beruf Fachinformatiker fuer',
+    'Anwendungsentwicklung. Bewerte die folgenden handschriftlich beantworteten Aufgaben.',
+    '',
+    'BEWERTUNGSREGELN:',
+    '- Bewerte streng, aber fair, so wie ein echter Korrektor.',
+    '- Der RECHENWEG zaehlt: Teilpunkte gibt es fuer richtige Ansaetze, auch wenn das',
+    '  Endergebnis falsch ist. Ein richtiges Ergebnis ohne Weg bekommt nicht die volle Punktzahl.',
+    '- Bei Begruendungsaufgaben zaehlt das ausgeschriebene Warum.',
+    '- Einheiten und Rundungen gehoeren dazu.',
+    '- Eine leere Antwort bekommt 0 Punkte.',
+    '- Die Musterloesung ist nicht der einzige Weg: Ein anderer, fachlich richtiger',
+    '  Loesungsweg ist voll zu werten.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Array, ein Objekt je Aufgabe, in dieser Form:',
+    '[{"punkte": 6, "max": 8, "staerken": "ein bis zwei Saetze, was richtig war",',
+    '  "luecken": "ein bis drei Saetze, was fehlt oder falsch ist",',
+    '  "tipp": "ein Satz, worauf der Prueflング beim naechsten Mal achten soll"}]',
+    'Schreibe auf Deutsch, mit Du-Anrede in tipp und luecken. Kein Text vor oder nach dem JSON.',
+    '',
+    teile
+  ].join('\n');
+
+  try{
+    var res = await kiJson(anweisung, 'complex');
+    if(!Array.isArray(res)) throw { code:'invalid_json', message:'kein Array' };
+    klausur.ergebnis = res.map(function(r, i){
+      var max = KL_PUNKTE[klausur.aufgaben[i] ? klausur.aufgaben[i].level : 2] || 8;
+      return {
+        punkte: Math.max(0, Math.min(max, Number(r.punkte) || 0)),
+        max: max,
+        staerken: String(r.staerken || ''),
+        luecken: String(r.luecken || ''),
+        tipp: String(r.tipp || '')
+      };
+    });
+    var erreicht = klausur.ergebnis.reduce(function(a, r){ return a + r.punkte; }, 0);
+    var moeglich = klausur.ergebnis.reduce(function(a, r){ return a + r.max; }, 0);
+    state.klausuren = (state.klausuren || []).concat([{
+      ts: Date.now(), erreicht: erreicht, moeglich: moeglich, variante: klausur.variante
+    }]).slice(-20);
+    awardXp(Math.round(erreicht * 2), 'Klausur: ' + erreicht + '/' + moeglich + ' Punkte');
+    if(moeglich && erreicht / moeglich >= 0.5) grantBadge('klausur_bestanden');
+    if(moeglich && erreicht / moeglich >= 0.9) grantBadge('klausur_glanz');
+    saveProgress();
+  }catch(e){
+    klausur.ergebnis = null;
+    klausur.fehler = (e && e.code === 'not_granted')
+      ? 'Die Bewertung wurde nicht freigegeben. Vergleiche deine Antworten unten selbst mit den Musterlösungen.'
+      : (e && e.code === 'rate_limited')
+        ? 'Gerade zu viele Anfragen. Versuche die Bewertung in einigen Minuten erneut — deine Antworten bleiben erhalten.'
+        : 'Die Bewertung hat nicht geklappt. Deine Antworten stehen unten neben den Musterlösungen.';
+  }
+  klausur.phase = 'ergebnis';
+  renderContent();
+}
+function klNochmal(){ klausur.phase = 'start'; klausur.ergebnis = null; renderContent(); }
+function renderKlausur(){
+  var h = '<div class="breadcrumb">Training</div><h1>Mitschreib-Prüfung</h1>';
+
+  /* ---------- Startbildschirm ---------- */
+  if(klausur.phase === 'start'){
+    h += '<p class="intro-sub">Der Prüfungssimulator fragt Multiple Choice ab. Die echte AP1 verlangt '+
+         'daneben <strong>offene Aufgaben</strong>: rechnen, begründen, entwerfen. Hier schreibst du frei — '+
+         'und der Tutor bewertet anschließend wie ein Korrektor: mit Punkten, mit dem, was gut war, '+
+         'und mit dem, was gefehlt hätte.</p>';
+
+    var frueher = state.klausuren || [];
+    if(frueher.length){
+      var l = frueher[frueher.length - 1];
+      h += '<div class="pruef-leiste"><span class="tage">'+Math.round(l.erreicht / l.moeglich * 100)+'%</span>'+
+        '<span class="txt"><b>Letzte Klausur:</b> '+l.erreicht+' von '+l.moeglich+' Punkten am '+
+        new Date(l.ts).toLocaleDateString('de-DE')+'. '+
+        (frueher.length > 1 ? 'Insgesamt '+frueher.length+' Klausuren geschrieben.' : '')+'</span></div>';
+    }
+
+    h += '<div class="heute-raster">';
+    Object.keys(KL_VARIANTEN).forEach(function(k){
+      var v = KL_VARIANTEN[k];
+      var punkte = v.n * (v.stufen.length === 1 ? KL_PUNKTE[v.stufen[0]] : 8);
+      h += '<button class="hk" onclick="klStarten(\''+k+'\')">'+
+        '<span class="hk-oben">'+v.n+' Aufgaben · '+v.min+' Min.</span>'+
+        '<span class="hk-titel">'+esc(v.label)+'</span>'+
+        '<span class="hk-text">'+esc(v.text)+' Etwa '+punkte+' Punkte.</span></button>';
+    });
+    h += '</div>';
+
+    h += '<div class="ex-panel" style="margin-top:20px;"><strong>So läuft es ab:</strong> '+
+         'Du bekommst die Aufgaben untereinander mit je einem Schreibfeld und einer laufenden Uhr. '+
+         'Schreib so, wie du es auf Papier tätest — Rechenweg mit Einheiten, Begründungen ausformuliert. '+
+         'Beim Abgeben gehen alle Antworten zusammen an den Tutor; die Bewertung dauert etwa eine halbe Minute. '+
+         'Sie läuft über dein Claude-Konto und ist eine Einschätzung, kein amtliches Ergebnis.</div>';
+    return h;
+  }
+
+  /* ---------- Laufende Klausur ---------- */
+  if(klausur.phase === 'laufend'){
+    h = '<div class="kl-kopf"><div><div class="breadcrumb">Mitschreib-Prüfung</div>'+
+        '<h1 style="margin:0;">'+esc(KL_VARIANTEN[klausur.variante].label)+'</h1></div>'+
+        '<div class="kl-uhr-box"><span class="kl-uhr" id="klUhr">––:––</span>'+
+        '<span class="kl-uhr-lbl">verbleibend</span></div></div>';
+
+    klausur.aufgaben.forEach(function(a, i){
+      var max = KL_PUNKTE[a.level] || 8;
+      h += '<div class="kl-aufgabe">'+
+        '<div class="kl-nr">Aufgabe '+(i+1)+' <span class="kl-max">'+max+' Punkte</span>'+
+        '<span class="badge topic">'+esc(a.topic)+'</span></div>'+
+        '<h2 class="kl-titel">'+esc(a.title)+'</h2>'+
+        '<div class="kl-text">'+a.task+'</div>'+
+        '<textarea class="kl-feld" id="klFeld'+i+'" rows="9" spellcheck="false" '+
+        'placeholder="Deine Lösung — Rechenweg mit Einheiten, Begründungen ausformuliert." '+
+        'oninput="klSchreiben('+i+', this.value)">'+esc(klausur.antworten[i])+'</textarea>'+
+        '</div>';
+    });
+
+    h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
+      '<button class="ex-btn primary" onclick="klAbgeben(false)">Abgeben und bewerten lassen</button>'+
+      '<button class="ex-btn" onclick="klAbbrechen()">Verwerfen</button></div>';
+    return h;
+  }
+
+  /* ---------- Bewertung läuft ---------- */
+  if(klausur.phase === 'bewertung'){
+    h += '<div class="kl-warten"><span class="kl-spinner" aria-hidden="true"></span>'+
+         '<div><strong>Der Tutor korrigiert.</strong>'+
+         '<p>Das dauert meist eine halbe bis eine Minute — er liest jede Antwort gegen die '+
+         'Musterlösung und vergibt Teilpunkte auf den Rechenweg.</p></div></div>';
+    return h;
+  }
+
+  /* ---------- Ergebnis ---------- */
+  var erg = klausur.ergebnis;
+  if(erg){
+    var erreicht = erg.reduce(function(a, r){ return a + r.punkte; }, 0);
+    var moeglich = erg.reduce(function(a, r){ return a + r.max; }, 0);
+    var proz = moeglich ? Math.round(erreicht / moeglich * 100) : 0;
+    var note = proz >= 92 ? ['1', 'sehr gut'] : proz >= 81 ? ['2', 'gut'] : proz >= 67 ? ['3', 'befriedigend']
+             : proz >= 50 ? ['4', 'ausreichend'] : proz >= 30 ? ['5', 'mangelhaft'] : ['6', 'ungenügend'];
+
+    h += '<div class="kl-ergebnis">'+
+      '<div class="kl-note'+(proz >= 50 ? ' gut' : ' schwach')+'">'+note[0]+'</div>'+
+      '<div><div class="kl-note-txt">'+note[1]+'</div>'+
+      '<div class="kl-punkte">'+erreicht+' von '+moeglich+' Punkten · '+proz+' %</div>'+
+      '<div class="kl-hinweis">Richtwert nach dem IHK-Schlüssel. Eine Einschätzung des Tutors, '+
+      'kein amtliches Ergebnis — aber nah genug, um zu wissen, wo du stehst.</div></div></div>';
+  }
+  if(klausur.fehler){
+    h += '<div class="tutor-hinweis" style="border-radius:var(--r-md); margin-bottom:18px;">'+esc(klausur.fehler)+'</div>';
+  }
+
+  klausur.aufgaben.forEach(function(a, i){
+    var r = erg ? erg[i] : null;
+    var max = KL_PUNKTE[a.level] || 8;
+    h += '<div class="kl-aufgabe">'+
+      '<div class="kl-nr">Aufgabe '+(i+1)+
+        (r ? '<span class="kl-erg'+(r.punkte >= r.max * 0.5 ? ' gut' : ' schwach')+'">'+
+             r.punkte+' / '+r.max+' Punkte</span>'
+           : '<span class="kl-max">'+max+' Punkte</span>')+
+        '<span class="badge topic">'+esc(a.topic)+'</span></div>'+
+      '<h2 class="kl-titel">'+esc(a.title)+'</h2>';
+
+    if(r){
+      if(r.staerken) h += '<div class="kl-rueck gut"><span class="kl-rueck-lbl">Das war richtig</span>'+esc(r.staerken)+'</div>';
+      if(r.luecken)  h += '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Das hat gefehlt</span>'+esc(r.luecken)+'</div>';
+      if(r.tipp)     h += '<div class="kl-rueck tipp"><span class="kl-rueck-lbl">Fürs nächste Mal</span>'+esc(r.tipp)+'</div>';
+    }
+
+    h += '<details class="kl-details"><summary>Deine Antwort und die Musterlösung</summary>'+
+      '<div class="kl-vergleich">'+
+        '<div><div class="kl-sp-titel">Deine Antwort</div>'+
+        '<pre class="kl-pre">'+esc(klausur.antworten[i].trim() || '(nichts geschrieben)')+'</pre></div>'+
+        '<div><div class="kl-sp-titel">Musterlösung</div>'+
+        '<pre class="kl-pre muster">'+esc(a.solution)+'</pre></div>'+
+      '</div>'+
+      '<div class="ex-panel" style="margin-top:12px;"><strong>Hinweis zur Lösung:</strong> '+a.solutionNote+'</div>'+
+      '</details></div>';
+  });
+
+  h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
+    '<button class="ex-btn primary" onclick="klNochmal()">Neue Klausur</button>'+
+    '<button class="ex-btn" onclick="selectLesson(\'exercises\')">Zu den Übungsaufgaben</button>'+
+    '<button class="ex-btn" onclick="selectLesson(\'fehler\')">Zum Fehlerheft</button></div>';
+  return h;
+}
+function appFehlerZu(){
+  var h = document.getElementById('fehlerHost');
+  if(h) h.remove();
+}
+function zeigeBanner(titel, text, detail){
+  try{
+    var host = document.getElementById('fehlerHost');
+    if(!host){
+      host = document.createElement('div');
+      host.id = 'fehlerHost';
+      host.className = 'app-fehler';
+      host.setAttribute('role', 'alert');
+      document.body.appendChild(host);
+    }
+    host.innerHTML =
+      '<div class="af-kopf">'+esc(titel)+'</div>'+
+      '<p class="af-text">'+esc(text)+'</p>'+
+      '<div class="af-knoepfe">'+
+        '<button class="ex-btn primary" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" onclick="location.reload()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+      '</div>'+
+      (detail ? '<code class="af-detail">'+esc(String(detail)).slice(0, 240)+'</code>' : '');
+  }catch(e){}
+}
+function appFehler(quelle, f){
+  try{
+    var host = document.getElementById('fehlerHost');
+    if(!host){
+      host = document.createElement('div');
+      host.id = 'fehlerHost';
+      host.className = 'app-fehler';
+      host.setAttribute('role', 'alert');
+      document.body.appendChild(host);
+    }
+    var txt = (f && (f.message || f.reason || f.type)) || String(f || 'unbekannt');
+    host.innerHTML =
+      '<div class="af-kopf">Da ist etwas schiefgelaufen.</div>'+
+      '<p class="af-text">Dein Fortschritt ist gespeichert. Du kannst weiterarbeiten oder die '+
+      'Seite neu laden. Sichere vorher zur Sicherheit deinen Stand.</p>'+
+      '<div class="af-knoepfe">'+
+        '<button class="ex-btn primary" type="button" onclick="location.reload()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+      '</div>'+
+      '<code class="af-detail">'+esc(String(quelle) + ': ' + String(txt)).slice(0, 240)+'</code>';
+  }catch(e){}
+}
+var railBegriffe = [];
+var railDeko = null;
+function railText(roh){
+  if(!railDeko) railDeko = document.createElement('div');
+  railDeko.innerHTML = (roh === null || roh === undefined) ? '' : String(roh);
+  return (railDeko.textContent || '').replace(/\s+/g, ' ').trim();
+}
+function railNorm(t){
+  return String(t || '').replace(/\s+/g, ' ').trim()
+    .replace(/[:.,;!?]+$/, '').toLowerCase();
+}
+function railBegriffeSammeln(body){
+  var roh = String(body || '').match(/<strong[^>]*>[\s\S]*?<\/strong>/gi) || [];
+  var gesehen = {}, raus = [];
+  roh.forEach(function(stueck){
+    var wort = railText(stueck).replace(/[:.,;]+$/, '');
+    if(wort.length < 3 || wort.length > 34) return;
+    if(wort.split(' ').length > 4) return;
+    var k = wort.toLowerCase();
+    if(gesehen[k]) return;
+    gesehen[k] = 1;
+    raus.push(wort);
+  });
+  return raus.slice(0, 14);
+}
+function railSanft(){
+  try{ return !window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  catch(e){ return true; }
+}
+function railZeigen(el){
+  if(!el) return;
+  try{ el.scrollIntoView({ block:'center', behavior: railSanft() ? 'smooth' : 'auto' }); }
+  catch(e){ el.scrollIntoView(); }
+}
+function railSpringe(i){
+  var wort = railBegriffe[i];
+  if(!wort) return;
+  var ziel = null, alle = document.querySelectorAll('#content strong');
+  for(var n = 0; n < alle.length; n++){
+    if(railNorm(alle[n].textContent) === railNorm(wort)){ ziel = alle[n]; break; }
+  }
+  if(!ziel) return;
+  var block = (ziel.closest && ziel.closest('p, li, td, th, figcaption')) || ziel;
+  railZeigen(block);
+  var vorher = document.querySelector('.rail-treffer');
+  if(vorher) vorher.classList.remove('rail-treffer');
+  ziel.classList.add('rail-treffer');
+  setTimeout(function(){ ziel.classList.remove('rail-treffer'); }, 2200);
+}
+function railMerksatz(){
+  var box = document.getElementById('railTipp');
+  var knopf = document.getElementById('railDeck');
+  if(box) box.hidden = false;
+  if(knopf) knopf.hidden = true;
+}
+function railZumCheck(id){
+  railZeigen(document.getElementById('q_' + id + '_0'));
+}
+function railKarten(lessonId){
+  var grenze = today0() + DAY - 1, gesamt = 0, faellig = 0, neu = 0;
+  CARDS.forEach(function(c){
+    if(c.lessonId !== lessonId) return;
+    gesamt++;
+    var srs = state.srs[c.id];
+    if(!srs) neu++;
+    else if(srs.due <= grenze) faellig++;
+  });
+  return { gesamt: gesamt, neu: neu, faellig: faellig, sitzt: gesamt - neu };
+}
+function railLektion(lesson){
+  var mod = moduleOfLesson(lesson.id);
+  var fertig = mod.lessons.filter(function(l){ return state.completed.has(l.id); }).length;
+  var pct = Math.round(fertig / mod.lessons.length * 100);
+  var idx = FLAT.findIndex(function(l){ return l.id === lesson.id; });
+  var next = FLAT[idx + 1];
+  var k = railKarten(lesson.id);
+  railBegriffe = railBegriffeSammeln(lesson.body);
+
+  var h = '';
+
+  /* 1 - Wo stehe ich in diesem Modul */
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Modul ' + (MODULES.indexOf(mod) + 1) +
+       ' · Teil ' + mod.part + '</span>' +
+       '<div class="ring" style="--pct:' + pct + '"><span>' + pct + '%</span></div></div>' +
+       '<h2 class="rail-titel">' + esc(mod.title) + '</h2>' +
+       '<ol class="rail-schritte">';
+  mod.lessons.forEach(function(l, i){
+    var zustand = state.completed.has(l.id) ? 'fertig'
+                : (l.id === lesson.id ? 'aktiv' : 'offen');
+    h += '<li class="rail-schritt ' + zustand + '">' +
+         '<button type="button" onclick="selectLesson(\'' + l.id + '\')"' +
+         (zustand === 'aktiv' ? ' aria-current="true"' : '') + '>' +
+         '<span class="rs-punkt" aria-hidden="true">' +
+         (zustand === 'fertig' ? '✓' : (i + 1)) + '</span>' +
+         '<span class="rs-titel">' + esc(l.title) + '</span>' +
+         '<span class="rs-min">' + l.minutes + ' min</span></button></li>';
+  });
+  h += '</ol><p class="rail-zahl zeile">' + fertig + ' von ' + mod.lessons.length +
+       ' Lektionen abgeschlossen</p></section>';
+
+  /* 2 - Die Begriffe, die diese Lektion traegt */
+  if(railBegriffe.length >= 3){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Schlüsselbegriffe</span>' +
+         '<span class="rail-zahl">' + railBegriffe.length + '</span></div>' +
+         '<div class="rail-begriffe">';
+    railBegriffe.forEach(function(w, i){
+      h += '<button type="button" class="rail-begriff" onclick="railSpringe(' + i + ')">' +
+           esc(w) + '</button>';
+    });
+    h += '</div><p class="rail-fuss" style="margin-top:9px;">' +
+         'Erklär jeden Begriff laut in einem Satz. Ein Klick springt zur Stelle ' +
+         'im Text.</p></section>';
+  }
+
+  /* 3 - Merksatz, aber erst nach dem eigenen Versuch */
+  if(lesson.tip){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Merksatz</span></div>' +
+         '<button type="button" class="rail-deck" id="railDeck" onclick="railMerksatz()">' +
+         'Erst selbst sagen — dann aufdecken</button>' +
+         '<p class="rail-tipp" id="railTipp" hidden>' + lesson.tip + '</p></section>';
+  }
+
+  /* 4 - Stand der Karten aus genau dieser Lektion */
+  if(k.gesamt){
+    var quote = Math.round(k.sitzt / k.gesamt * 100);
+    h += '<section class="rail-karte' + (k.faellig ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">Selbstcheck</span>' +
+         '<span class="rail-zahl">' + k.gesamt + ' Karten</span></div>' +
+         '<div class="rail-balken"><i style="width:' + quote + '%"></i></div>' +
+         '<p class="rail-text">' + k.sitzt + ' schon beantwortet' +
+         (k.faellig ? ' · ' + k.faellig + ' heute fällig' : '') +
+         (k.neu ? ' · ' + k.neu + ' noch offen' : '') + '</p>' +
+         '<button type="button" class="rail-knopf' + (k.neu ? ' primaer' : '') +
+         '" onclick="railZumCheck(\'' + lesson.id + '\')">Zum Kurz-Check</button>';
+    if(k.faellig){
+      h += '<button type="button" class="rail-knopf" onclick="selectLesson(\'review\')">' +
+           k.faellig + ' Karten wiederholen</button>';
+    }
+    h += '</section>';
+  }
+
+  /* 5 - Was danach kommt */
+  if(next){
+    var nm = moduleOfLesson(next.id);
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Danach</span></div>' +
+         '<h2 class="rail-titel">' + esc(next.title) + '</h2>' +
+         '<p class="rail-text">' + esc(nm.title) + ' · ca. ' + next.minutes +
+         ' Min.</p><button type="button" class="rail-knopf" ' +
+         'onclick="selectLesson(\'' + next.id + '\')">Weiter →</button></section>';
+  }
+
+  return h;
+}
+function railStand(){
+  var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+  var pct = Math.round(completed / TOTAL * 100);
+  var faellig = dueCards().length;
+  var naechste = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+  var nm = moduleOfLesson(naechste.id);
+  var ziel = state.tagesziel || 3;
+  var heute = (state.dayCount && state.dayCount.day === todayKey()) ? state.dayCount.n : 0;
+  var zielPct = Math.min(100, Math.round(heute / ziel * 100));
+  var tage = pruefungsTage();
+  var serie = (state.streak && state.streak.count) || 0;
+  var offen = ziel - heute;
+
+  var h = '<section class="rail-karte"><div class="rail-kopf">' +
+    '<span class="rail-augenbraue">Heute</span>' +
+    '<div class="ring" style="--pct:' + zielPct + '"><span>' + heute + '/' + ziel +
+    '</span></div></div><p class="rail-text">' +
+    (offen <= 0 ? 'Tagesziel erreicht. Alles Weitere ist Vorsprung.'
+                : 'Noch ' + offen + ' Lektion' + (offen === 1 ? '' : 'en') +
+                  ' bis zum Tagesziel.') + '</p>';
+  if(serie > 0){
+    h += '<p class="rail-zahl zeile">' + serie + ' Tag' +
+         (serie === 1 ? '' : 'e') + ' in Folge · Bestwert ' +
+         ((state.streak && state.streak.best) || serie) + '</p>';
+  }
+  h += '</section>';
+
+  if(tage !== null){
+    var proTag = Math.ceil((MODULES.filter(function(m){ return m.part < 10; }).reduce(function(a, m){ return a + m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length; }, 0)) / Math.max(1, tage));   /* nur AP1-Teile */
+    h += '<section class="rail-karte' + (tage >= 0 && tage <= 21 ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">AP1</span>' +
+         '<span class="rail-zahl">' + (tage < 0 ? 'vorbei' : tage + ' Tage') +
+         '</span></div><p class="rail-text">' +
+         (tage < 0 ? 'Der Termin liegt hinter dir.'
+          : tage === 0 ? 'Heute ist es so weit. Ruhig bleiben, Zeit einteilen.'
+          : (completed >= TOTAL
+             ? 'Der Kurs ist durch. Jetzt zählen Wiederholung und Prüfungssimulator.'
+             : 'Bei ' + proTag + ' Lektion' + (proTag === 1 ? '' : 'en') +
+               ' pro Tag bist du rechtzeitig durch.')) +
+         '</p></section>';
+  }
+
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Kurs</span>' +
+       '<span class="rail-zahl">' + pct + '%</span></div>' +
+       '<div class="rail-balken"><i style="width:' + pct + '%"></i></div>' +
+       '<p class="rail-text">' + completed + ' von ' + TOTAL +
+       ' Lektionen</p><button type="button" class="rail-knopf primaer" ' +
+       'onclick="selectLesson(\'' + naechste.id + '\')">Weiterlernen</button>' +
+       '<p class="rail-fuss" style="margin-top:9px;">' + esc(naechste.title) +
+       '<br>' + esc(nm.title) + '</p></section>';
+
+  if(faellig){
+    h += '<section class="rail-karte ruf"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Wiederholen</span>' +
+         '<span class="rail-zahl">' + faellig + '</span></div>' +
+         '<p class="rail-text">Karten sind heute fällig. Wer sie liegen lässt, ' +
+         'lernt sie später noch einmal von vorn.</p>' +
+         '<button type="button" class="rail-knopf primaer" ' +
+         'onclick="selectLesson(\'review\')">Jetzt wiederholen</button></section>';
+  }
+
+  return h;
+}
+function railAblage(){
+  var h = '';
+  var tage = pruefungsTage();
+  if(tage !== null && tage >= 0){
+    h += '<section class="rail-karte' + (tage <= 21 ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">Bis zur AP1</span>' +
+         '<span class="rail-zahl">' + tage + ' Tage</span></div>' +
+         '<p class="rail-text">' +
+         (tage === 0 ? 'Heute ist es so weit. Ruhig bleiben, Zeit einteilen.'
+          : 'Das sind ' + Math.floor(tage / 7) + ' volle Wochen und ' +
+            (tage % 7) + ' Tage.') + '</p></section>';
+  }
+
+  var schwach = weakModules().slice(0, 3);
+  if(schwach.length){
+    h += '<section class="rail-karte ruf"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Wackelt noch</span></div>';
+    schwach.forEach(function(w){
+      var q = Math.round(w.rate * 100);
+      h += '<div style="margin-bottom:10px;">' +
+           '<p class="rail-text" style="font-weight:650;color:var(--text);">' +
+           esc(w.title) + '</p>' +
+           '<div class="rail-balken"><i style="width:' + q + '%"></i></div>' +
+           '<p class="rail-fuss">' + q + ' % richtig aus ' + w.total +
+           ' Antworten</p></div>';
+    });
+    h += '<button type="button" class="rail-knopf primaer" onclick="selectLesson(\'' +
+         schwach[0].lessonId + '\')">Schwächste Stelle öffnen</button></section>';
+  }
+
+  var ids = Object.keys(state.merkzettel || {});
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Gemerkt</span>' +
+       '<span class="rail-zahl">' + ids.length + '</span></div>';
+  if(ids.length){
+    ids.sort(function(a, b){ return state.merkzettel[b] - state.merkzettel[a]; })
+       .slice(0, 5).forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      h += '<button type="button" class="rail-knopf" style="text-align:left;' +
+           'margin-top:6px;font-weight:500;" onclick="selectLesson(\'' + id + '\')">' +
+           esc(l.title) + '</button>';
+    });
+    if(ids.length > 5){
+      h += '<p class="rail-fuss" style="margin-top:9px;">und ' + (ids.length - 5) +
+           ' weitere — alle im Merkzettel.</p>';
+    }
+  } else {
+    h += '<p class="rail-text">Mit dem ☆ unter jeder Lektion sammelst du hier, ' +
+         'was du kurz vor der Prüfung noch einmal sehen willst.</p>';
+  }
+  h += '</section>';
+
+  var notizen = Object.keys(state.notizen || {}).length;
+  if(notizen){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Notizen</span>' +
+         '<span class="rail-zahl">' + notizen + '</span></div>' +
+         '<p class="rail-text">Deine eigenen Worte schlagen jede Zusammenfassung.</p>' +
+         '<button type="button" class="rail-knopf" onclick="selectLesson(\'merk\')">' +
+         'Zum Merkzettel</button></section>';
+  }
+
+  return h;
+}
+function renderRail(){
+  var host = document.getElementById('rail');
+  if(!host) return;
+  var id = state.currentId;
+  /* Pruefung und Klausur laufen auf Zeit - da stoert jede Nebenspalte. */
+  if(id === 'exam' || id === 'klausur'){
+    host.className = 'rail leer';
+    host.innerHTML = '';
+    return;
+  }
+  var lesson = lessonById(id);
+  var uebersicht = (id === 'intro' || id === 'heute' || id === 'profile');
+  host.className = 'rail';
+  host.innerHTML = '<div class="rail-innen">' +
+    (lesson ? railLektion(lesson) : (uebersicht ? railAblage() : railStand())) +
+    '</div>';
+}
+function renderContent(){
+  try{
+    renderContentIntern();
+  }catch(e){
+    appFehler('Ansicht ' + state.currentId, e);
+  }
+  /* Die Randspalte darf eine Lektion nie blockieren. */
+  try{
+    renderRail();
+  }catch(e){
+    if(window.console && console.warn) console.warn('Lernbegleiter:', e);
+  }
+}
+function renderContentIntern(){
+  var el = document.getElementById('content');
+
+  if(state.currentId === 'heute'){ el.innerHTML = renderHeute(); return; }
+  if(state.currentId === 'tasten'){ el.innerHTML = renderTasten(); return; }
+  if(state.currentId === 'recht'){ el.innerHTML = renderRecht(); return; }
+  if(state.currentId === 'klausur'){ el.innerHTML = renderKlausur(); if(klausur.phase === 'laufend') klTicken(); return; }
+  if(state.currentId === 'fehler'){ el.innerHTML = renderFehlerheft(); return; }
+  if(state.currentId === 'merk'){ el.innerHTML = renderMerkzettel(); return; }
+  if(state.currentId === 'glossar' && typeof rpGlossaryRender === 'function'){ el.innerHTML = rpGlossaryRender(); rpGlossaryWire(el); return; }
+  if(state.currentId === 'profile'){ el.innerHTML = renderProfile(); updateSyncHint(); return; }
+  if(state.currentId === 'tracer'){ el.innerHTML = renderTracer(); return; }
+  if(state.currentId === 'subnet'){ el.innerHTML = renderSubnet(); return; }
+  if(state.currentId === 'tutor'){ el.innerHTML = renderTutor(); wireTutor(); return; }
+  if(state.currentId === 'exam'){ el.innerHTML = renderExam(); if(exam.active && !exam.finished) tickExam(); return; }
+  if(state.currentId === 'review'){ el.innerHTML = renderReview(); return; }
+
+  if(state.currentId === 'exercises'){
+    el.innerHTML = renderExercises();
+    return;
+  }
+
+  if(state.currentId === 'intro'){
+    var partsHtml = lfFilterZeile() + PARTS.map(function(p){
+      var mods = MODULES.filter(function(m){
+        return m.part === p && (!lfFilter || lfVon(m.id) === lfFilter);
+      });
+      if(!mods.length) return '';
+      var cards = mods.map(function(m){
+        var gi = MODULES.indexOf(m)+1;
+        return '<div class="module-card" onclick="selectLesson(\''+m.lessons[0].id+'\')">'+
+          '<div class="mnum">MODUL '+gi+'</div><h3>'+esc(m.title)+'</h3>'+
+          '<p>'+m.lessons.length+' Lektionen · '+m.lessons.reduce(function(a,l){return a+l.minutes;},0)+' Min.</p>'+
+          relBadge(m.relevanz)+lfBadge(m.id)+'</div>';
+      }).join('');
+      return '<div class="part-heading">Teil '+p+' · '+esc(mods[0].partTitle)+'</div><div class="module-grid">'+cards+'</div>';
+    }).join('');
+
+    var nextLesson = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+    var nextMod = moduleOfLesson(nextLesson.id);
+    var due = dueCards().length;
+    var weak = weakModules();
+    var lastExam = state.exams.length ? state.exams[state.exams.length - 1] : null;
+    var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+    var pct = Math.round((completed / TOTAL) * 100);
+    var lpIntro = levelProgress();
+
+    var today = '<div class="today-panel"><div class="today-head"><h2>Heute</h2>'+
+      '<div style="display:flex;align-items:center;gap:10px;"><div class="ring" style="--pct:'+pct+'"><span>'+pct+'%</span></div>'+
+      '<span style="font-size:.82rem;color:var(--text-dim);">'+completed+' von '+TOTAL+' Lektionen</span></div></div>';
+    today += '<div class="today-grid">';
+    today += '<div class="today-item accent" onclick="selectLesson(\''+nextLesson.id+'\')"><span class="ti-label">Weiterlernen</span>'+
+             '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(nextLesson.title)+'</span>'+
+             '<span class="ti-sub">Teil '+nextMod.part+' · '+esc(nextMod.title)+'</span></div>';
+    today += '<div class="today-item '+(due?'due':'')+'" onclick="selectLesson(\'review\')"><span class="ti-label">Karten fällig</span>'+
+             '<span class="ti-value">'+due+'</span><span class="ti-sub">'+(due ? 'Wiederholung startet sofort' : 'Nichts offen — gut so')+'</span></div>';
+    today += '<div class="today-item" onclick="selectLesson(\'exam\')"><span class="ti-label">Letzte Prüfung</span>'+
+             '<span class="ti-value">'+(lastExam ? Math.round(lastExam.score/lastExam.total*100)+'%' : '—')+'</span>'+
+             '<span class="ti-sub">'+(lastExam ? lastExam.score+'/'+lastExam.total+' · erneut antreten' : 'Noch kein Durchlauf')+'</span></div>';
+    if(weak.length){
+      today += '<div class="today-item weak" onclick="selectLesson(\''+weak[0].lessonId+'\')"><span class="ti-label">Schwachstelle</span>'+
+               '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(weak[0].title)+'</span>'+
+               '<span class="ti-sub">'+Math.round(weak[0].rate*100)+'% Trefferquote · nacharbeiten</span></div>';
+    } else {
+      today += '<div class="today-item" onclick="selectLesson(\'tracer\')"><span class="ti-label">Trockendurchlauf</span>'+
+               '<span class="ti-value">'+TRACES.length+'</span><span class="ti-sub">AP1-Kernkompetenz üben</span></div>';
+    }
+    today += '</div></div>';
+
+    el.innerHTML =
+      '<div class="intro-hero">'+
+      '<h1>Root Road</h1>'+
+      '<p class="intro-claim">Von der Wurzel bis zur Pr\u00fcfung \u2014 der Weg durch die AP1 '+
+      'im Beruf Fachinformatiker f\u00fcr Anwendungsentwicklung.</p>'+
+      '<p class="rb-trainiert"><span>Trainiert gezielt</span>'+
+      '<span class="rb-rotate" aria-hidden="true"></span>'+
+      '<span class="rb-sr">Pseudocode, SQL, UML, Subnetting, IPv6, Netzplantechnik, IT-Sicherheit, Datenschutz, KI sowie PHP, Laravel und Git</span></p>'+
+      '<p class="intro-sub">'+MODULES.length+' Module mit '+TOTAL+' Lektionen in '+PARTS.length+' Teilen: Algorithmen und Pseudocode, Datenbanken und ER-Modellierung, UML und Softwareentwicklung, Netzwerktechnik mit Subnetting und IPv6, IT-Sicherheit und Datenschutz, Projektmanagement mit Netzplantechnik, Hardware und Arbeitsplatz, Service und Kommunikation sowie Künstliche Intelligenz, dazu als Zusatzteile PHP &amp; Laravel vom Einsteiger bis zum Experten sowie Git und Zusammenarbeit im Team. Dazu '+EXERCISES.length+' Prüfungsaufgaben in drei Schwierigkeitsstufen, '+TRACES.length+' Trockendurchläufe, '+BADGES.length+' Auszeichnungen, ein Subnetting-Trainer mit unbegrenzt vielen Aufgaben, '+DIAGRAMME+' Diagramme in den Lektionen, ein Formelblatt und sechs Trainingsmodi, die auf aktivem Abrufen statt Wiederlesen beruhen. Jedes Modul trägt einen Marker, wie häufig sein Thema in der AP1 vorkommt.</p>'+
+      '</div>'+
+      today+
+      '<div class="stat-row">'+
+        '<div class="stat-tile" style="cursor:pointer;border-color:var(--accent);" onclick="selectLesson(\'profile\')">'+
+          '<div class="num">'+lpIntro.cur.icon+' '+(state.xp||0)+'</div><div class="lbl">XP · '+esc(lpIntro.cur.name)+'</div></div>'+
+        '<div class="stat-tile"><div class="num">'+TOTAL+'</div><div class="lbl">Lektionen</div></div>'+
+        '<div class="stat-tile"><div class="num">'+CARDS.length+'</div><div class="lbl">Abfragekarten</div></div>'+
+        '<div class="stat-tile"><div class="num">'+EXERCISES.length+'</div><div class="lbl">Übungsaufgaben</div></div>'+
+        '<div class="stat-tile"><div class="num">'+TRACES.length+'</div><div class="lbl">Trockendurchläufe</div></div>'+
+        '<div class="stat-tile"><div class="num">~'+TOTAL_MIN+'</div><div class="lbl">Minuten Lesestoff</div></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
+        '<button class="start-btn rb-star" onclick="selectLesson(\''+nextLesson.id+'\')">'+(state.completed.size ? 'Weiterlernen' : 'Los geht’s')+'</button>'+
+        '<button class="start-btn ghost" onclick="selectLesson(\'exam\')">Prüfung simulieren</button>'+
+        '<button class="start-btn ghost" onclick="selectLesson(\'tracer\')">Algorithmus durchspielen</button>'+
+      '</div>'+
+      '<div class="part-grid">'+partsHtml+'</div>';
+    return;
+  }
+
+  if(state.currentId === 'cheatsheet'){
+    el.innerHTML = '<div class="breadcrumb">Referenz</div><h1>Spickzettel</h1>'+
+      '<p class="intro-sub">Kompakte Referenz über alle '+MODULES.length+' Module — Netzplanformeln, Subnetztabelle, OSI-Schichten, UML-Pfeile, SQL-Muster, Bezugskalkulation, Einheitenumrechnung, KI-Grundbegriffe mit den AI-Act-Risikoklassen und Prüfungstaktik auf einen Blick.</p>'+
+      '<p class="druck-hinweis">Mit <kbd>Strg</kbd>+<kbd>P</kbd> lässt sich dieses Formelblatt sauber ausdrucken — ohne Navigation, auf weißem Grund, Abschnitte ohne Seitenumbruch.</p>'+
+      CHEATSHEET_HTML;
+    return;
+  }
+
+  var lesson = lessonById(state.currentId);
+  if(!lesson){ state.currentId = 'intro'; return renderContent(); }
+  var mod = moduleOfLesson(lesson.id);
+  var idx = FLAT.findIndex(function(l){ return l.id===lesson.id; });
+  var prev = FLAT[idx-1];
+  var next = FLAT[idx+1];
+  var done = state.completed.has(lesson.id);
+
+  var html = '';
+  html += '<div class="breadcrumb">Teil '+mod.part+' · '+esc(mod.title)+' · Lektion '+(mod.lessons.findIndex(function(l){return l.id===lesson.id;})+1)+'/'+mod.lessons.length+'</div>';
+  html += '<div class="lesson-head"><div><h1>'+esc(lesson.title)+'</h1><div class="meta-row"><span>⏱ ca. '+lesson.minutes+' Min.</span> '+relBadge(mod.relevanz)+'</div></div>';
+  html += '<label class="complete-toggle'+(done?' on':'')+'"><input type="checkbox" '+(done?'checked':'')+' onchange="toggleComplete(\''+lesson.id+'\', this.checked)"> '+(done?'Abgeschlossen':'Als abgeschlossen markieren')+'</label></div>';
+  html += renderLessonBlocks(lesson);
+  html += typeof rpPuzzleSection === 'function' ? rpPuzzleSection(lesson.id) : '';
+  html += typeof rpVideoSection === 'function' ? rpVideoSection(lesson.id) : '';
+  html += renderLektionWerkzeuge(lesson.id);
+  if(lesson.tip){ html += '<div class="callout callout-tip"><div class="callout-label">★ Experten-Tipp</div><p>'+lesson.tip+'</p></div>'; }
+  html += renderQuiz(lesson);
+
+  html += '<div class="nav-buttons">';
+  if(prev){
+    html += '<button class="nav-btn" onclick="selectLesson(\''+prev.id+'\')"><span class="lbl">← Zurück</span><span>'+esc(prev.title)+'</span></button>';
+  } else { html += '<span></span>'; }
+  if(next){
+    html += '<button class="nav-btn next" onclick="selectLesson(\''+next.id+'\')"><span class="lbl">Weiter →</span><span>'+esc(next.title)+'</span></button>';
+  } else {
+    html += '<button class="nav-btn next" onclick="selectLesson(\'cheatsheet\')"><span class="lbl">Weiter →</span><span>Zum Spickzettel</span></button>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+function openDrawer(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
+function closeDrawer(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+document.getElementById('hamburger').onclick = openDrawer;
+document.getElementById('rechtBtn').onclick = function(){ selectLesson('recht'); };
+document.getElementById('scrim').onclick = closeDrawer;
+document.getElementById('navIntro').onclick = function(){ selectLesson('intro'); };
+document.getElementById('navProfile').onclick = function(){ selectLesson('profile'); };
+document.getElementById('lvlChip').onclick = function(){ selectLesson('profile'); };
+document.getElementById('navReview').onclick = function(){ selectLesson('review'); };
+document.getElementById('navHeute').onclick = function(){ selectLesson('heute'); };
+document.getElementById('navExam').onclick = function(){ selectLesson('exam'); };
+document.getElementById('navTracer').onclick = function(){ tracer.id = null; selectLesson('tracer'); };
+document.getElementById('navKlausur').onclick = function(){ selectLesson('klausur'); };
+document.getElementById('navSubnet').onclick = function(){ selectLesson('subnet'); };
+document.getElementById('navTutor').onclick = function(){ selectLesson('tutor'); };
+document.getElementById('navExercises').onclick = function(){ selectLesson('exercises'); };
+document.getElementById('navFehler').onclick = function(){ selectLesson('fehler'); };
+document.getElementById('navMerk').onclick = function(){ selectLesson('merk'); };
+document.getElementById('navSheet').onclick = function(){ selectLesson('cheatsheet'); };
+document.getElementById('navGlossar').onclick = function(){ selectLesson('glossar'); };
+document.getElementById('searchTrigger').onclick = kpOeffnen;
+document.getElementById('resetBtn').onclick = function(){
+  if(window.confirm('Setzt Lektionsfortschritt, Karteikarten, Statistik, Prüfungshistorie, XP, Level und Abzeichen zurück. Das lässt sich nicht rückgängig machen. Wirklich?')){
+    state.completed = new Set();
+    state.srs = {}; state.stats = {}; state.exams = [];
+    state.xp = 0; state.xpLog = {}; state.badges = {}; state.solved = {};
+    state.tracesDone = []; state.streak = { last:null, count:0, best:0 };
+    state.cardsToday = { day:null, n:0 };
+    saveProgress();
+    render();
+  }
+};
+document.addEventListener('keydown', function(e){
+  /* Strg+K uebernimmt die neue Befehlssuche (Capture-Handler weiter oben). */
+  var tag = (e.target && e.target.tagName) || '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+  /* Karteikarten: 1-4 bewerten, Ziffern für Antwortauswahl */
+  if(state.currentId === 'review' && review.queue.length && review.idx < review.queue.length){
+    var card = review.queue[review.idx];
+    if(review.picked === -1){
+      var n = parseInt(e.key, 10);
+      if(n >= 1 && n <= card.options.length){ e.preventDefault(); pickReview(n - 1); }
+    } else {
+      if(e.key === '1'){ e.preventDefault(); rateAndNext(0); }
+      else if(e.key === '2'){ e.preventDefault(); rateAndNext(1); }
+      else if(e.key === '3' || e.key === ' '){ e.preventDefault(); rateAndNext(2); }
+      else if(e.key === '4'){ e.preventDefault(); rateAndNext(3); }
+    }
+    return;
+  }
+  /* Lektionen: Pfeiltasten blättern */
+  var cur = lessonById(state.currentId);
+  if(cur){
+    var i = FLAT.findIndex(function(l){ return l.id === cur.id; });
+    if(e.key === 'ArrowRight' && FLAT[i+1]){ selectLesson(FLAT[i+1].id); }
+    else if(e.key === 'ArrowLeft' && FLAT[i-1]){ selectLesson(FLAT[i-1].id); }
+  }
+});
+window.addEventListener('beforeunload', function(e){
+  if(exam.active && !exam.finished){ e.preventDefault(); e.returnValue = ''; }
+});
+var dock = { offen:false };
+function dockAnsichtName(){
+  var l = lessonById(state.currentId);
+  if(l){
+    var m = moduleOfLesson(l.id);
+    return m ? (m.title + ' \u00b7 ' + l.title) : l.title;
+  }
+  var namen = {
+    heute:'Tagesplan', intro:'Kurs\u00fcbersicht', review:'Wiederholen',
+    exam:'Pr\u00fcfungssimulator', klausur:'Mitschreib-Pr\u00fcfung',
+    tracer:'Algorithmus-Trainer', subnet:'Subnetting-Trainer',
+    exercises:'\u00dcbungsaufgaben', fehler:'Fehlerheft', merk:'Merkzettel',
+    cheatsheet:'Spickzettel', profile:'Profil', tutor:'Tutor-Seite',
+    tasten:'Tastaturhilfe'
+  };
+  return namen[state.currentId] || 'Root Road';
+}
+function dockKontext(){
+  var l = lessonById(state.currentId);
+  if(l){
+    var m = moduleOfLesson(l.id);
+    var auszug = '';
+    try{ auszug = klText(renderLessonBlocks(l)).slice(0, 1600); }catch(e){}
+    return 'KONTEXT (nur fuer dich, nicht von dir aus erwaehnen): Die lernende Person liest gerade ' +
+      'die Lektion "' + l.title + '"' +
+      (m ? ' aus dem Modul "' + m.title + '", Teil ' + m.part : '') + '.' +
+      (auszug ? '\nAuszug aus dieser Lektion:\n' + auszug : '') +
+      '\nBeziehe dich darauf, wenn die Frage dazu passt.';
+  }
+  return 'KONTEXT (nur fuer dich, nicht von dir aus erwaehnen): Die lernende Person ist gerade ' +
+    'in der Ansicht "' + dockAnsichtName() + '" dieses Kurses.';
+}
+function dockVorschlaege(){
+  if(lessonById(state.currentId)){
+    return ['Erkl\u00e4r mir den Kern dieser Lektion in drei S\u00e4tzen.',
+            'Welche Pr\u00fcfungsfalle steckt in diesem Thema?',
+            'Stell mir eine AP1-Aufgabe dazu.'];
+  }
+  return ['Erkl\u00e4re mir Subnetting an einem Beispiel mit /26.',
+          'Unterschied zwischen Datenschutz und Datensicherheit?',
+          'Stell mir eine Netzplan-Aufgabe im AP1-Stil.'];
+}
+function dockOeffnen(){
+  var f = document.getElementById('dockFenster');
+  var k = document.getElementById('dockKnopf');
+  if(!f || !k) return;
+  dock.offen = true;
+  f.hidden = false;
+  k.hidden = true;
+  var p = document.getElementById('dockPunkt');
+  if(p) p.hidden = true;
+  k.setAttribute('aria-expanded', 'true');
+  dockZeichnen();
+  var feld = document.getElementById('dockFeld');
+  if(feld && !tutor.busy) feld.focus();
+}
+function dockSchliessen(){
+  var f = document.getElementById('dockFenster');
+  var k = document.getElementById('dockKnopf');
+  dock.offen = false;
+  if(f) f.hidden = true;
+  if(k && !tutor.off){ k.hidden = false; k.setAttribute('aria-expanded', 'false'); }
+}
+function dockUmschalten(){ if(dock.offen){ dockSchliessen(); } else { dockOeffnen(); } }
+function dockWachsen(feld){
+  if(!feld) return;
+  feld.style.height = 'auto';
+  feld.style.height = Math.min(feld.scrollHeight, 132) + 'px';
+}
+function dockZeichnen(){
+  if(!dock.offen) return;
+
+  var k = document.getElementById('dockKontext');
+  if(k) k.textContent = dockAnsichtName();
+
+  var v = document.getElementById('dockVerlauf');
+  if(v){
+    if(!tutor.turns.length){
+      v.innerHTML = '<div class="dock-leer">Frag alles zum Pr\u00fcfungsstoff. Der Tutor wei\u00df, ' +
+        'wo du gerade bist, und verweist auf die passende Lektion. Jede Frage bringt ' + xpAnzeige(5) + ' XP.</div>';
+    } else {
+      var h = '';
+      tutor.turns.forEach(function(t, i){
+        var letzte = (i === tutor.turns.length - 1);
+        if(t.role === 'user'){
+          h += '<div class="dock-msg du"><span class="dock-rolle">Du</span>' +
+               '<div class="dock-text">' + esc(t.content) + '</div></div>';
+        } else {
+          h += '<div class="dock-msg"><span class="dock-rolle">Tutor</span>' +
+               '<div class="dock-text"' + (letzte ? ' id="dockLive"' : '') + '>' +
+               (t.pending ? '<span class="dock-denkt">denkt nach \u2026</span>' : esc(t.content)) +
+               '</div></div>';
+        }
+      });
+      v.innerHTML = h;
+      v.scrollTop = v.scrollHeight;
+    }
+  }
+
+  var hw = document.getElementById('dockHinweis');
+  if(hw){ hw.textContent = tutor.hinweis || ''; hw.hidden = !tutor.hinweis; }
+
+  var chips = document.getElementById('dockChips');
+  if(chips){
+    if(tutor.turns.length || tutor.busy){
+      chips.innerHTML = '';
+      chips.hidden = true;
+    } else {
+      chips.hidden = false;
+      chips.innerHTML = dockVorschlaege().map(function(t){
+        return '<button type="button" class="dock-chip">' + esc(t) + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(chips.children, function(b){
+        b.onclick = function(){ dockFrage(b.textContent); };
+      });
+    }
+  }
+
+  var feld = document.getElementById('dockFeld');
+  if(feld) feld.disabled = tutor.busy;
+  var senden = document.getElementById('dockSende');
+  if(senden) senden.disabled = tutor.busy;
+  var stopp = document.getElementById('dockStopp');
+  if(stopp) stopp.hidden = !tutor.busy;
+}
+function dockStart(){
+  var knopf = document.getElementById('dockKnopf');
+  var form = document.getElementById('dockForm');
+  var feld = document.getElementById('dockFeld');
+  if(!knopf || !form || !feld) return;
+
+  knopf.onclick = dockUmschalten;
+  document.getElementById('dockZu').onclick = dockSchliessen;
+  document.getElementById('dockNeu').onclick = tutorNeu;
+  document.getElementById('dockGross').onclick = function(){
+    dockSchliessen();
+    selectLesson('tutor');
+  };
+  document.getElementById('dockStopp').onclick = tutorAbbrechen;
+
+  form.onsubmit = function(ev){ ev.preventDefault(); dockFrage(); };
+  feld.oninput = function(){ dockWachsen(feld); };
+  feld.onkeydown = function(ev){
+    if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); dockFrage(); }
+  };
+
+  document.addEventListener('keydown', function(ev){
+    if(ev.key !== 'Escape' || !dock.offen) return;
+    var host = document.getElementById('paletteHost');
+    if(host && host.firstChild) return;   /* die Suche schliesst sich selbst */
+    dockSchliessen();
+  });
+
+  tutorInit().then(function(){
+    if(tutor.fn && !tutor.off) knopf.hidden = false;
+  });
+}
+function updateReadBar(){
+  var bar = document.getElementById('readBar');
+  if(!bar) return;
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = h > 40 ? Math.min(100, (window.scrollY / h) * 100) : 0;
+  bar.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateReadBar, { passive:true });
+window.addEventListener('resize', updateReadBar);
+document.documentElement.lang = 'de';
+window.addEventListener('error', function(ev){
+  appFehler('Skript', ev && (ev.message || ev.error));
+});
+window.addEventListener('unhandledrejection', function(ev){
+  var r = ev && ev.reason;
+  /* Abgebrochene Tutor-Anfragen sind kein Fehler. */
+  if(r && (r.code === 'aborted' || r.name === 'AbortError')) return;
+  appFehler('Hintergrund', r);
+});
+try{ if(localStorage.getItem('ap1-fokus') === '1') document.documentElement.setAttribute('data-fokus','1'); }catch(e){}
+loadProgress();
+render();
+dockStart();

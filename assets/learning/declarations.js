@@ -2533,6 +2533,8 @@ function renderRecht(){
       '</td><td>Beantwortung deiner Frage</td><td>nach den Regeln des Anbieters</td></tr>'+
       '<tr><td>Schriftarten</td><td>werden vom eigenen Server ausgeliefert (selbst gehostet, keine Anfrage an Dritte)</td><td>Darstellung</td>'+
       '<td>&mdash;</td></tr>'+
+      '<tr><td>Fehlerprotokoll</td><td>auf dem Server der Plattform</td><td>Fehler erkennen und beheben: Fehlertext und Skriptstelle, nach H&auml;ufigkeit zusammengefasst; keine Konto-, IP- oder Browserdaten</td>'+
+      '<td>30 Tage</td></tr>'+
       '<tr><td>Eingebettete Videos</td><td>erst nach deinem Klick auf &bdquo;Video laden&ldquo; von '+
       '<strong>youtube-nocookie.com</strong> (YouTube/Google) geladen; dabei wird u.&nbsp;a. deine IP-Adresse '+
       '&uuml;bertragen</td><td>Video in der Lektion abspielen</td><td>nach den Regeln des Anbieters</td></tr></table>';
@@ -4030,7 +4032,7 @@ function renderContentIntern(){
 
     el.innerHTML =
       '<div class="intro-hero">'+
-      '<h1>ROOTPFAD</h1>'+
+      '<h1>Root Road</h1>'+
       '<p class="intro-claim">Von der Wurzel bis zur Pr\u00fcfung \u2014 der Weg durch die AP1 '+
       'im Beruf Fachinformatiker f\u00fcr Anwendungsentwicklung.</p>'+
       '<p class="rb-trainiert"><span>Trainiert gezielt</span>'+
@@ -4113,7 +4115,7 @@ function dockAnsichtName(){
     cheatsheet:'Spickzettel', profile:'Profil', tutor:'Tutor-Seite',
     tasten:'Tastaturhilfe'
   };
-  return namen[state.currentId] || 'ROOTPFAD';
+  return namen[state.currentId] || 'Root Road';
 }
 function dockKontext(){
   var l = lessonById(state.currentId);

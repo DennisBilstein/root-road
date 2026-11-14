@@ -1,4 +1,4 @@
-/* Original ROOTPFAD exercises. No Codecademy course text/code is reproduced. */
+/* Original Root Road exercises. No Codecademy course text/code is reproduced. */
 var RP_PRACTICE_TRACKS = [
   {id:'mariadb',title:'MariaDB',path:'mariadb',lesson:'mariadb-m1-l2',intro:'Ergänze konservative SQL-Grundlagen. Keine Verbindung zu einer Datenbank; dies prüft Codeverständnis, nicht MariaDB-Laufzeitverhalten.',source:'https://mariadb.com/docs/server',tasks:[
     {title:'Datenintegrität',text:'Minuten dürfen nicht kleiner als eins sein. Ergänze den Constrainttyp.',code:'minutes INT NOT NULL,\n[[0]] (minutes >= 1)',answers:[['CHECK','check']],hint:'Die Bedingung gilt auf Datenbankebene.',why:'Appvalidierung allein schützt nicht gegen andere schreibende Clients. Constraints und Zielversion prüfen.'},

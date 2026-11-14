@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kaskade, Ebenen und moderne Selektoren</title>
+  <link rel="stylesheet" href="cascade.css">
+</head>
+<body>
+  <main id="inhalt">
+    <h1>Kaskade</h1>
+    <p><a href="#inhalt">Zum Inhalt</a></p>
+    <p><a class="button gross" id="ebene" href="#inhalt">Gewinnt die Ebene oder die Spezifität?</a></p>
+    <p><a class="button gross achtung" id="ohne-ebene" href="#inhalt">Unlayerter Code</a></p>
+    <article class="card" id="mit-bild">
+      <img src="bilder/lernkarte-quadrat.svg" alt="Lernkarte mit blauem Rahmen" width="400" height="400">
+      <div><h2>Karte mit Bild</h2><p>Das Layout entsteht allein durch <code>:has(img)</code>.</p></div>
+    </article>
+    <article class="card" id="ohne-bild"><div><h2>Karte ohne Bild</h2><p>Bleibt einspaltig.</p></div></article>
+    <form class="card" id="formular">
+      <label for="mail">E-Mail</label>
+      <input id="mail" name="mail" type="email" required>
+    </form>
+  </main>
+</body>
+</html>

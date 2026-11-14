@@ -1,4 +1,4 @@
-# ROOTPFAD JavaScript-/Vue-Lernlabor
+# Root Road JavaScript-/Vue-Lernlabor
 
 Eigenes zusammenhängendes Beispiel für `js-m1-l6` bis `js-m1-l16`. Seit 12.11.2026 zusätzlich
 die Belege für `js-m2` (Komponenten-Architektur, `src/lessons/components`, `src/lessons/injection`,

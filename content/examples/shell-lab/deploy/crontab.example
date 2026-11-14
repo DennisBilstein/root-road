@@ -1,0 +1,5 @@
+# Beispiel für crontab -e (als Benutzer rootpfad). In diesem Lab NICHT ausgeführt.
+# Felder: Minute Stunde Tag-im-Monat Monat Wochentag Befehl
+# cron startet mit sehr kleinem PATH: volle Pfade verwenden. Ein % im Befehl ist Sonderzeichen und braucht \%.
+MAILTO=""
+15 3 * * * /opt/rootpfad/backup.sh /srv/daten /srv/sicherung 14 >> /var/log/rootpfad-backup.log 2>&1

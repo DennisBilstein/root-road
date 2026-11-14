@@ -517,7 +517,7 @@ function rbLinkZu(ansicht){
 }
 function rbTeilenText(){
   var lp = levelProgress();
-  return 'Ich lerne mit ROOTPFAD für die AP1: Rang „' + lp.cur.name + '“, ' + (state.xp || 0) + ' XP, ' +
+  return 'Ich lerne mit Root Road für die AP1: Rang „' + lp.cur.name + '“, ' + (state.xp || 0) + ' XP, ' +
          state.completed.size + '/' + TOTAL + ' Lektionen, ' + labAnzahlGeloest() + ' Laboraufgaben gelöst.';
 }
 function rbKopieren(text, knopf){
@@ -566,7 +566,7 @@ function rbErfolgskarte(){
 function rbTeilenOeffnen(){
   rbTeilenSchliessen();
   var ansicht = state.currentId, lokal = location.protocol === 'file:';
-  var titel = (lessonById(ansicht) || {}).title || ({ intro:'Kursübersicht', heute:'Heute', labor:'Code-Labor', profile:'Profil' })[ansicht] || 'ROOTPFAD';
+  var titel = (lessonById(ansicht) || {}).title || ({ intro:'Kursübersicht', heute:'Heute', labor:'Code-Labor', profile:'Profil' })[ansicht] || 'Root Road';
   var link = rbLinkZu(ansicht);
   var d = document.createElement('div');
   d.className = 'rb-dialog-abdeckung';
@@ -578,10 +578,10 @@ function rbTeilenOeffnen(){
     '<h3>Link zu dieser Ansicht</h3>' +
     '<div class="rb-zeile"><input readonly value="' + esc(link) + '" onfocus="this.select()">' +
     '<button class="ex-btn" type="button" onclick="rbKopieren(\'' + link.replace(/'/g, "\\'") + '\', this)">Kopieren</button>' +
-    (navigator.share && !lokal ? '<button class="ex-btn primary" type="button" onclick="navigator.share({title:\'ROOTPFAD\',url:\'' + link.replace(/'/g, "\\'") + '\'}).catch(function(){})">Teilen …</button>' : '') +
+    (navigator.share && !lokal ? '<button class="ex-btn primary" type="button" onclick="navigator.share({title:\'Root Road\',url:\'' + link.replace(/'/g, "\\'") + '\'}).catch(function(){})">Teilen …</button>' : '') +
     '</div>' +
     (lokal ? '<div class="rb-hinweis"><strong>Diese Seite liegt nur auf deinem Rechner.</strong> Ein file://-Link funktioniert bei anderen nicht. ' +
-      'So machst du ROOTPFAD für andere erreichbar:<ol>' +
+      'So machst du Root Road für andere erreichbar:<ol>' +
       '<li><strong>claude.ai:</strong> Datei als Artifact hochladen und dort „Veröffentlichen“ – der Tutor läuft dann über das Konto der Betrachter.</li>' +
       '<li><strong>Netlify Drop</strong> (app.netlify.com/drop): die HTML-Datei hineinziehen, du bekommst sofort eine https-Adresse.</li>' +
       '<li><strong>GitHub Pages</strong> oder dein eigener Webspace: Datei als index.html hochladen.</li></ol>' +

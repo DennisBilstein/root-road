@@ -1,14 +1,16 @@
-# ROOTPFAD
+# Root Road
+
+> Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab` und der Repository-Name `rootpfad`.
 
 ## Qualität: Start, Header, Caching · 13.11.2026
 
 - `index.html` hat einen gültigen `<head>` (Titel, Meta-Description, `utf-8`), die Startseite eine `h1` und einen Footer mit Link zu Impressum und Datenschutz (`#/recht`).
 - `assets/bootstrap.js` lädt alle Skripte parallel und führt sie in fester Reihenfolge aus; `RP_APP_READY` gilt erst nach dem Konto-Abgleich (`RP_ACCOUNT_READY` in `accounts.js`). Bis dahin sind die dynamischen Bereiche per CSS (`html:not(.rp-bereit)`) unsichtbar, damit nichts springt (CLS 0,00 statt 0,08/0,20).
-- Große Datensätze laden erst beim Öffnen ihrer Ansicht über `rpLoadScriptOnce()` (`bootstrap.js`): Glossar, Quellenliste (`source-review-data.js`), Modulabnahmen (`module-assessments-data.js`). Die Lektionsdaten (`assets/learning/part-*.js`, rund 9 MB roh) laden weiterhin beim Start.
+- Große Datensätze laden erst beim Öffnen ihrer Ansicht über `rpLoadScriptOnce()` (`bootstrap.js`): Glossar, Quellenliste (`source-review-data.js`), Modulabnahmen (`module-assessments-data.js`). Abruf-/Bewertungskriterien der Quizfragen (`assets/quiz-contracts-data.js`, 2,5 MB) laden nach dem Start im Leerlauf (`window.RP_QUIZ_CONTRACTS_READY`). Die Lektionsdaten laden weiterhin beim Start, jetzt als 9 Skripte (`assets/learning/`, 2 MB) plus 5 rohe JSON-Datensätze (`assets/learning-data/`, 4 MB). `bootstrap.js` holt Manifest, Konto und Datensätze gleichzeitig, lädt die Skripte per `preload` vor und führt sie erst danach in Reihenfolge aus.
 - Start-Renderläufe: Solange `window.RP_BOOTING` gilt, überspringen die Startaufrufe von `render()` (`learning-paths.js`, `guided-practice.js`, `learning-missions.js`, `competencies.js`, `accounts.js`); `bootstrap.js` rendert danach einmal. Der Spickzettel wird je Lernpfad nur einmal gefiltert (`rpSheetHtml`).
-- Lighthouse (mobil, lokal, einmaliger `npx lighthouse@12`-Lauf): Barrierefreiheit 100, Best Practices 100, SEO 100, Leistung 33 → 42 (TBT 12 s → 4,3 s). Der Rest steckt in der Datenmenge: `assets/learning/` ist 8,2 MB roh, großteils als `RP_LITERAL_n_text`-Strings. Das zu verkleinern oder nachzuladen braucht einen Umbau der Build-Pipeline.
+- Lighthouse (mobil, lokal, einmaliger `npx lighthouse@12`-Lauf): Barrierefreiheit 100, Best Practices 100, SEO 100, Leistung 33 → 49 (simuliertes 4G, kalter Start; LCP 19 s → 12,4 s, TBT 17,6 s → 1,4 s). Der Rest ist Netzwerk: rund 2,1 MB Übertragung müssen vor der ersten Anzeige da sein, weil die Oberfläche bis dahin versteckt bleibt. Weiter käme man nur, wenn Lektionstexte (`body`, `body2`, `code*`, `tip`, ca. 2,5 MB) je Modul nachgeladen würden; das berührt `FLAT[].body`, Suchindex, Karten und viele Tests.
 - Der Tutor prüft `localhost:8787` nicht mehr beim Start, sondern nur auf der Tutor-Seite (Knopf „Verbinden“) oder wenn eine Frage gestellt wird.
-- `server.mjs` sendet zusätzlich Permissions-Policy, COOP und CORP (HSTS nur in Produktion über HTTPS). Skripte, Styles und HTML: `no-cache` (ETag-Revalidierung); Schriften: 30 Tage.
+- `server.mjs` sendet zusätzlich Permissions-Policy, COOP und CORP (HSTS nur in Produktion über HTTPS). HTML und Manifest: `no-cache`. Skripte, Styles und Lern-JSON tragen einen Inhalts-Hash (`?v=`, zur Laufzeit aus dem Dateiinhalt gebildet) und gelten dann als unveränderlich (1 Jahr); ohne passenden Hash wird revalidiert. Schriften: 30 Tage. Komprimierung: Brotli Stufe 9.
 - Tests: `tests/page-quality.spec.mjs`.
 
 ## Lernfunktionen: Videos, Denkaufgaben, Wiederholplan · 13.11.2026
@@ -32,6 +34,26 @@
   nicht ausgeführt. Keine unabhängige Fachprüfung.
 - **Secret-Scan** (`npm run scan:secrets`): prüft alle von Git verfolgten Textdateien auf typische Schlüssel, Tokens, Zugangsdaten in URLs und lokale Home-Pfade; gibt nie den gefundenen Wert aus. Prüft nicht die Git-Historie (Stand 13.11.2026: Verlauf manuell mit denselben Mustern gescannt, keine Funde).
 - `npm run build` erzeugt `assets/lesson-videos-data.js`, `assets/syntax-glossary-data.js` und `assets/practice-puzzles-data.js`.
+
+## TypeScript, Node.js, Linux & Shell und Web-Sicherheit · 14.11.2026
+
+33 neue Lektionen in acht Modulen, jede mit „In einfachen Worten“, Schritt-für-Schritt-Ablauf, Hintergrund, Code aus einem
+getesteten Lab, Beleg (Ausgabe), typischen Fehlern, drei Übungen, drei Quizfragen mit Begründungen und Quellen. Neue Lernpfade:
+`typescript` (ts-m1, ts-m2; 8 Lektionen), `node` (node-m1, node-m2; 8), `linux` (lx-m1, lx-m2; 8), `websec` (ws-m1, ws-m2; 9).
+Je Modul eine eigene Abnahme in `content/assessments-tech-tracks.json`.
+
+- Quellen der Inhalte: `content/tech-tracks/*.mjs` (eigene Texte); Generator `node scripts/prepare-tech-tracks.mjs`
+  (gemeinsamer Baukasten `scripts/lib/lesson-builder.mjs`) schreibt in `content/learning-refinements.json`; danach `npm run build`.
+- Labs (Stand 14.11.2026): `content/examples/ts-lab` (27 Tests), `node-lab` (49 Tests, 48 bestanden, 1 übersprungen; Node 22.23 und 24.22, Docker-Image getestet),
+  `websec-lab` (38 Tests; Node 22.23: 37 bestanden, 1 übersprungen (Argon2id braucht Node ≥ 24.7), Node 24.22 im Container: alle bestanden),
+  `shell-lab` (Bash-Tests in einem Debian-Container; `./run-in-container.sh`, 216 Prüfungen ohne Fehler; braucht Docker und läuft nicht in `npm run test:labs`),
+  `sql-lab` (acht MariaDB-Fälle in einem Wegwerf-Container; `node content/examples/sql-lab/run.mjs`; braucht Docker und läuft nicht in `npm run test:labs`).
+  `npm run test:labs` führt ts-, node- und websec-Tests mit aus.
+- Nicht geprüft: Browser-Verhalten von CSP, SameSite und CORS, TLS, echte Netzwerk-Abrufe (SSRF-Beispiele mit ersetztem DNS), systemd, cron,
+  logrotate, sudo, macOS und Windows. Die Sicherheitsbeispiele greifen nur eigene Lehrfunktionen und lokale Test-Server an.
+  Rechtshinweise (DSGVO Art. 32 bis 34, StGB) sind Orientierung und gehören juristisch geprüft.
+- `npm run build` bettet Lektionscode jetzt mit einer Ersatzfunktion in `assets/script-01.js` ein (`scripts/build-learning-content.mjs`);
+  zuvor zerstörten `$'`-Muster in Shell-Beispielen die Datei.
 
 ## Java 21–27, Spring Boot 4, Vue-Komponenten und Serverdaten · 12.11.2026
 
@@ -96,8 +118,8 @@ kompatibel. Registrierung/Setup prüfen nach der Berechnung erneut Einmalrechte,
 damit parallele Requests keinen Einladungs-/Setup-Token mehrfach verbrauchen.
 Öffentliche Assets werden bei Clientunterstützung komprimiert. Authentifizierte
 API-Antworten sind davon ausgeschlossen. Das reduziert Übertragungsgröße, ersetzt
-aber kein Lasttestkonzept. Der Browser lädt jetzt 35 geordnete Skripte unter
-300 KB über `assets/learning-manifest.json`, nicht mehr das große Quellaggregat.
+aber kein Lasttestkonzept. Der Browser lädt jetzt 9 geordnete Skripte unter
+300 KB und 5 JSON-Datensätze über `assets/learning-manifest.json`, nicht mehr das große Quellaggregat.
 Das ist keine Lazy-Loading-Lösung: alle Teile werden weiterhin beim Start geladen.
 `assets/script-01.js` bleibt Build-/Prüfaggregat; nach Inhaltsänderungen `npm run build`.
 
@@ -200,6 +222,32 @@ ohne Build geöffnet werden. Kein echtes Formularbackend. Generator:
 `node scripts/prepare-html-css.mjs`, anschließend `npm run build`.
 Die Werkstatt umfasst damit insgesamt 12 Spuren und 36 Aufgaben.
 
+### HTML und CSS: Vertiefung (9 weitere Lektionen)
+
+Zwei zusätzliche Module `html-m2` (responsive Bilder, Kopfbereich und strukturierte Daten, native Interaktion mit
+dialog/popover/details, Barrierefreiheit prüfen) und `css-m2` (Designtokens und Dunkelmodus, `@layer`/`:where`/`:is`/`:has`,
+Container Queries und `clamp()`, Bewegung mit `prefers-reduced-motion`, Abschlussprojekt Lernkarten-Galerie). Der Pfad hat
+damit 21 Lektionen und 63 Selbsttestfragen. Quellen: `content/tech-tracks/html-vertiefung.mjs` und `css-vertiefung.mjs` →
+`node scripts/prepare-html-css-vertiefung.mjs` → `npm run build`. Das Lab liegt in
+`content/examples/html-css-lab/vertiefung/` (ohne Build im Browser zu öffnen, Prüfskripte `check-head.js` und `check-a11y.js`);
+`tests/html-css-vertiefung.spec.mjs` (30 Tests, Playwright 1.65.0 mit Chromium 158) belegt Dateiauswahl bei `srcset`, Kontraste in
+beiden Farbmodi, Kaskadenreihenfolge, Container-Spalten, Bewegungsregeln, Dialog per Tastatur und das Abschlussprojekt.
+Nur Chromium getestet; Firefox, Safari, Screenreader und Kontrastmodus sind offen und in den Lektionen so benannt. Aufgaben zur
+Modulabnahme: `content/assessments-html-css.json`.
+
+### MariaDB: Vertiefung (8 weitere Lektionen)
+
+Modul `mariadb-m2` (Fensterfunktionen und CTEs, Normalisierung und Integrität, JSON und generierte Spalten, Sperren und Deadlocks,
+Blättern mit OFFSET gegen Keyset, Schema-Migration mit Expand/Contract, Zeichensätze/Zahlen/Zeit, Abschlussprojekt mit Bestellung,
+Bericht und Sicherung). Der Pfad `mariadb` hat damit 14 Lektionen. Quellen: `content/tech-tracks/mariadb-vertiefung.mjs` →
+`node scripts/prepare-platform-tracks.mjs` → `npm run build` (der Generator nimmt künftige Plattform-Module wie APIs, Docker, CI/CD
+und Python mit auf). Das Lab liegt in `content/examples/sql-lab/` (`node content/examples/sql-lab/run.mjs [NN] [--update]`):
+ein Wegwerf-Container aus dem lokal vorhandenen Image `mariadb:11` (Server 11.8.9, ohne Download, ohne veröffentlichte Ports,
+zufälliges Passwort, wird immer entfernt), erfundene Daten, acht Fälle mit erwarteter Ausgabe. Die Lektionstexte lesen ihre
+Ausgaben aus diesen Dateien. Das Lab braucht Docker und läuft deshalb nicht in `npm test`, `npm run test:labs` oder der CI; die
+Playwright-Suite prüft nur Umfang, Darstellung und Überlauf. Nicht geprüft: MySQL und andere MariaDB-Versionen, Lastverhalten,
+Zeitzonen mit Sommerzeit. Abnahmeaufgabe: `content/assessments-platform-tracks.json`.
+
 ## Geführte Codewerkstatt
 
 30 eigene interaktive Aufgaben für JavaScript, TypeScript, Vue, PHP, Laravel,
@@ -230,7 +278,7 @@ Ausführbare Labore (separat von der Node-Lernplattform):
 und nicht integrierte Projektfragmente. Die Überarbeitung ist kein Beweis für
 Produktionsreife sämtlicher Codebeispiele. Setup/Prüfbefehle stehen in den
 Lab-READMEs. Lokale vendor/node_modules, DBs, Secrets und Buildartefakte bleiben
-außerhalb von Git. Keine neue ROOTPFAD-UI oder technische Vue-Migration der
+außerhalb von Git. Keine neue Root-Road-UI oder technische Vue-Migration der
 Lernplattform: Vue ist hier Lerninhalt und separates Übungsprojekt.
 
 Übernahme aus `ROOTPFAD_pro.html` mit Node-Server, Anmeldung und SQLite-Datenbank.
@@ -279,6 +327,38 @@ Konten, Passwort-Hashes, Sessions und Lernstände liegen in `.data/rootpfad.sqli
 Dieses Verzeichnis ist von Git ausgeschlossen und darf niemals öffentlich
 ausgeliefert werden. Backups der Datenbank sicher und zugriffsbeschränkt halten.
 Der Server liefert nur die freigegebenen Seiten und `assets/` aus.
+
+### Datenbank sichern und wiederherstellen
+
+```bash
+npm run db:backup                      # Online-Sicherung nach .data/backups/rootpfad-JJJJMMTT-HHMMSS.sqlite (Server darf laufen)
+npm run db:backup -- --keep 30         # letzte 30 Sicherungen behalten (Standard: 14)
+npm run db:restore -- <datei> --force  # Datenbank ersetzen; Server vorher stoppen
+```
+
+Die Sicherung nutzt die SQLite-Backup-API (konsistent auch im WAL-Betrieb), wird mit `integrity_check` und Tabellenprüfung
+verifiziert und ist nur für den Besitzer lesbar (0600). `ROOTPFAD_BACKUP_DIR` legt einen anderen Zielordner fest; für echten
+Schutz vor Datenverlust gehören Sicherungen zusätzlich auf einen anderen Datenträger oder Rechner. Die Wiederherstellung prüft die
+Sicherung vorab, bewahrt den bisherigen Stand als `rootpfad.sqlite.vor-wiederherstellung-<Zeitstempel>` auf und entfernt dabei
+keine Begleitdateien (`-wal`, `-shm`), sondern verschiebt sie mit. Zeitplan (z. B. täglich per cron) ist nicht eingerichtet.
+Tests: `tests/db-backup.spec.mjs`.
+
+### Fehlerprotokoll
+
+Unbehandelte Skriptfehler im Browser (`assets/error-report.js`, höchstens 5 verschiedene Meldungen je Seitenaufruf) und
+unerwartete Serverfehler (HTTP 500) landen zusammengefasst in der Tabelle `error_log` (Fehlertext, Stelle, Anzahl, erstes und
+letztes Auftreten). Nicht gespeichert werden Konto, IP-Adresse, Browserkennung oder Seitenadresse mit Parametern; URL-Parameter,
+E-Mail-Adressen und token-artige Zeichenfolgen werden aus den Texten entfernt. Einträge verfallen nach 30 Tagen, höchstens 500
+Zeilen. Die Meldeschnittstelle `POST /api/client-errors` ist ohne Anmeldung nutzbar (Ratenlimit 60 je 15 Minuten) und
+akzeptiert nur JSON vom eigenen Ursprung. Administratoren sehen und leeren das Protokoll unter `/admin`. Die
+Datenschutzerklärung (Rechtstexte-Gerüst) nennt das Protokoll; sie bleibt eine Vorlage zur rechtlichen Prüfung.
+Tests: `tests/error-log.spec.mjs`.
+
+### Continuous Integration
+
+`.github/workflows/ci.yml` baut (`npm run build`), prüft, dass generierte Dateien (ohne `content/quality` wegen Zeitstempeln)
+zum Quellstand passen, und führt Secret-Scan, Lernaudit und alle Playwright-Tests aus. Der Workflow ist lokal nicht ausgeführt
+worden und läuft erstmals nach dem nächsten Push; Lab-Tests (`npm run test:labs`, brauchen PHP, Java, Docker) laufen dort nicht.
 
 ### Gemeinsamer Betrieb
 
@@ -425,7 +505,7 @@ Dabei werden `index.html` und die aus dem Export erzeugten Assets überschrieben
 
 - **Code** (Skripte, Server, Oberfläche, Tests, Beispielcode): [MIT](LICENSE), © 2026 Dennis Bilstein.
 - **Lerninhalte** (Lektionstexte, Quizfragen, Glossartexte, Erklärungen): [CC BY 4.0](LICENSE-CONTENT). Bei Weiterverwendung bitte
-  „Dennis Bilstein, ROOTPFAD“ nennen und auf die Lizenz verweisen.
+  „Dennis Bilstein, Root Road“ nennen und auf die Lizenz verweisen.
 - **Ausnahmen:** Die Schriften unter `assets/fonts/` stehen unter der SIL Open Font License 1.1 (siehe `assets/fonts/LICENSE.md`).
   Inhalte Dritter behalten ihre Lizenz (zum Beispiel Vue-Dokumentation CC BY 4.0, Zod und TanStack Query MIT). `research_notes/` enthält
   Arbeitsnotizen mit Verweisen auf Fremdquellen; die Rechte an dort zitierten Fremdtexten liegen bei deren Urhebern.

@@ -1,6 +1,6 @@
 
 /* ============================================================
-   ROOTPFAD — Designsystem
+   Root Road — Designsystem
    Haltung: technische Werkbank. Präzise, ruhig, lesbar.
 
    Farblogik (jede Farbe trägt genau eine Bedeutung):
@@ -1404,7 +1404,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 
 
 /* ============================================================
-   ROOTPFAD — Marke, Wortmarke, Tutor-Dock
+   Root Road — Marke, Wortmarke, Tutor-Dock
    Steht am Ende und gewinnt die Kaskade bewusst.
    ============================================================ */
 
@@ -1416,6 +1416,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .brand-name{display:flex; align-items:center; gap:8px; white-space:nowrap;
   font-family:var(--sans); font-weight:700; font-size:1rem;
   letter-spacing:.115em; color:var(--text);}
+/* "ROOT ROAD" ist ein Zeichen länger als die frühere Wortmarke: auf sehr schmalen Bildschirmen enger setzen, damit die Kopfzeile nicht überläuft. */
+@media (max-width:360px){ .brand-name{font-size:.9rem; letter-spacing:.06em;} }
 .brand-tag{font-family:var(--mono); font-size:.56rem; font-weight:600; letter-spacing:.1em;
   color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent);
   border-radius:var(--r-full); padding:2px 6px; letter-spacing:.09em;}

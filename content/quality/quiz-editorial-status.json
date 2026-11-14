@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-13T12:45:11.523Z",
-  "revised": 1367,
-  "total": 1367,
+  "updatedAt": "2026-11-14T21:58:06.658Z",
+  "revised": 1517,
+  "total": 1517,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -9068,6 +9068,195 @@
       "question": "Bei 320 CSS-Pixeln läuft eine lange Kurskennung horizontal aus einer Karte. Welche Untersuchung ist fachlich zielgerichtet?"
     },
     {
+      "lesson": "html-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wozu dient das Attribut sizes zusammen mit srcset?"
+    },
+    {
+      "lesson": "html-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wann ist picture mit source media die richtige Wahl gegenüber reinem srcset?"
+    },
+    {
+      "lesson": "html-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum gehören width und height auch dann ins img, wenn CSS die Größe bestimmt?"
+    },
+    {
+      "lesson": "html-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum ist user-scalable=no im viewport-Meta problematisch?"
+    },
+    {
+      "lesson": "html-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Was gehört in strukturierte Daten (JSON-LD) einer Seite?"
+    },
+    {
+      "lesson": "html-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wozu dient der canonical-Link?"
+    },
+    {
+      "lesson": "html-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Was passiert beim Öffnen eines dialog-Elements mit showModal()?"
+    },
+    {
+      "lesson": "html-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Woran erkennt JavaScript, welcher Button einen Dialog mit method=\"dialog\" geschlossen hat?"
+    },
+    {
+      "lesson": "html-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Worin unterscheidet sich ein Popover von einem modalen Dialog?"
+    },
+    {
+      "lesson": "html-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Welches Kontrastverhältnis verlangt WCAG 2.2 AA mindestens für normalen Text?"
+    },
+    {
+      "lesson": "html-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum reicht ein grünes Ergebnis eines automatischen Prüfwerkzeugs nicht als Nachweis?"
+    },
+    {
+      "lesson": "html-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wie groß sollen Bedienelemente nach WCAG 2.2 (2.5.8, AA) mindestens sein, sofern keine Ausnahme greift?"
+    },
+    {
+      "lesson": "css-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wozu dient color-scheme: light dark am Wurzelelement?"
+    },
+    {
+      "lesson": "css-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum sollten Komponenten nur Rollen (--text, --accent) und keine Rohwerte (--blue-700) benutzen?"
+    },
+    {
+      "lesson": "css-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Welches Kontrastverhältnis soll ein Kartenrand gegen den Seitenhintergrund nach WCAG 1.4.11 mindestens haben, wenn er das Element erkennbar macht?"
+    },
+    {
+      "lesson": "css-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Welche Regel gewinnt: ein ID-Selektor in einer frühen Ebene oder ein Klassenselektor in einer späteren Ebene (jeweils ohne !important)?"
+    },
+    {
+      "lesson": "css-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Welche Spezifität hat ein Selektor, der in :where() steht?"
+    },
+    {
+      "lesson": "css-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Was passiert bei zwei !important-Deklarationen in verschiedenen Ebenen?"
+    },
+    {
+      "lesson": "css-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Worauf reagiert eine @container-Regel?"
+    },
+    {
+      "lesson": "css-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum gehört bei clamp() für Schrift ein rem-Anteil in den bevorzugten Wert?"
+    },
+    {
+      "lesson": "css-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wann ist eine Media Query statt einer Container Query die bessere Wahl?"
+    },
+    {
+      "lesson": "css-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wie schaltest du Bewegung am sichersten nur für Personen ein, die sie nicht abgewählt haben?"
+    },
+    {
+      "lesson": "css-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum werden bevorzugt transform und opacity animiert?"
+    },
+    {
+      "lesson": "css-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Was fordert WCAG 2.2.2 (Pause, Stop, Hide) im Kern?"
+    },
+    {
+      "lesson": "css-m2-l5",
+      "index": 0,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Warum automatisierst du Teile der Abnahme als Tests?"
+    },
+    {
+      "lesson": "css-m2-l5",
+      "index": 1,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wo gehört die Bewegung der Karten im Abschlussprojekt hin?"
+    },
+    {
+      "lesson": "css-m2-l5",
+      "index": 2,
+      "revision": "2026-11-14-html-css-vertiefung-v1",
+      "scenario": true,
+      "question": "Wie lautet die richtige Aussage nach grünen Projekttests?"
+    },
+    {
       "lesson": "mariadb-m1-l1",
       "index": 0,
       "revision": "2026-11-07-full-v3",
@@ -9199,6 +9388,174 @@
       "revision": "2026-11-07-full-v3",
       "scenario": true,
       "question": "Ein Backupjob meldet Exitcode 0. Das Team kennt weder Restorezeit noch Datenvollständigkeit. Welche nächste Prüfung liefert den fehlenden Nachweis?"
+    },
+    {
+      "lesson": "mariadb-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was unterscheidet eine Fensterfunktion von GROUP BY?"
+    },
+    {
+      "lesson": "mariadb-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Zwei Kurse stehen mit gleichem Preis auf Platz 1. Welchen Platz vergibt RANK dem nächsten Kurs?"
+    },
+    {
+      "lesson": "mariadb-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum gehört der Filter auf eine Fensterfunktion in eine äußere Abfrage oder CTE?"
+    },
+    {
+      "lesson": "mariadb-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Anomalie zeigt sich, wenn eine Stadt nur in einer von mehreren Zeilen desselben Kunden geändert wird?"
+    },
+    {
+      "lesson": "mariadb-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welchen Fehler liefert MariaDB, wenn du ein Produkt löschst, das noch in Bestellpositionen vorkommt?"
+    },
+    {
+      "lesson": "mariadb-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wann ist eine bewusste Denormalisierung vertretbar?"
+    },
+    {
+      "lesson": "mariadb-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was ist der Typ JSON in MariaDB?"
+    },
+    {
+      "lesson": "mariadb-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie machst du den Pfad $.layout eines JSON-Felds schnell durchsuchbar?"
+    },
+    {
+      "lesson": "mariadb-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wofür nutzt du JSON_TABLE?"
+    },
+    {
+      "lesson": "mariadb-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet Fehler 1205 „Lock wait timeout exceeded“?"
+    },
+    {
+      "lesson": "mariadb-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie verringerst du das Risiko von Deadlocks bei Überweisungen am wirksamsten?"
+    },
+    {
+      "lesson": "mariadb-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was sollte die Anwendung nach Fehler 1213 tun?"
+    },
+    {
+      "lesson": "mariadb-m2-l5",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum wird LIMIT 20 OFFSET 7980 langsamer als LIMIT 20 OFFSET 0?"
+    },
+    {
+      "lesson": "mariadb-m2-l5",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was braucht Keyset-Paginierung unbedingt?"
+    },
+    {
+      "lesson": "mariadb-m2-l5",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was zeigte der Lab-Fall für den Zeilenvergleich (created_at, id) > (…) in diesem Server?"
+    },
+    {
+      "lesson": "mariadb-m2-l6",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum werden bei Expand/Contract neue Spalten zuerst NULL-fähig angelegt?"
+    },
+    {
+      "lesson": "mariadb-m2-l6",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bringt IF NOT EXISTS bei ADD COLUMN?"
+    },
+    {
+      "lesson": "mariadb-m2-l6",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum wird die Datenübertragung in kleinen Stapeln gemacht?"
+    },
+    {
+      "lesson": "mariadb-m2-l7",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was liefert LENGTH('😀') bei utf8mb4?"
+    },
+    {
+      "lesson": "mariadb-m2-l7",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum sollten Geldbeträge in DECIMAL statt DOUBLE stehen?"
+    },
+    {
+      "lesson": "mariadb-m2-l7",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Dieselbe Zeile wird mit zwei verschiedenen Sitzungszeitzonen gelesen. Was ändert sich?"
+    },
+    {
+      "lesson": "mariadb-m2-l8",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient FOR UPDATE in der Bestelltransaktion?"
+    },
+    {
+      "lesson": "mariadb-m2-l8",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was beweist die gleiche Prüfsumme nach der Wiederherstellung?"
+    },
+    {
+      "lesson": "mariadb-m2-l8",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt --single-transaction bei mariadb-dump?"
     },
     {
       "lesson": "api-m1-l1",
@@ -9577,6 +9934,699 @@
       "revision": "2026-11-07-full-v3",
       "scenario": true,
       "question": "Eine abgerufene Webseite fordert einen neuen, ungeplanten Toolaufruf an eine fremde Upload-URL. Der Agent fasst die Seite für einen lokalen Bericht zusammen. Welche Reaktion wahrt den Auftrag?"
+    },
+    {
+      "lesson": "ts-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert mit den Typangaben, wenn ein TypeScript-Programm ausgeführt wird?"
+    },
+    {
+      "lesson": "ts-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welchen Typ hat values[0] bei number[] mit noUncheckedIndexedAccess?"
+    },
+    {
+      "lesson": "ts-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt // @ts-expect-error über einer Zeile?"
+    },
+    {
+      "lesson": "ts-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist type Priority = \"niedrig\" | \"mittel\" | \"hoch\" besser als type Priority = string?"
+    },
+    {
+      "lesson": "ts-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bleibt im else-Zweig von if (typeof id === \"string\") für id übrig, wenn id: number | string war?"
+    },
+    {
+      "lesson": "ts-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was fängt die Prüfung value == null ab?"
+    },
+    {
+      "lesson": "ts-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt readonly bei einer Eigenschaft?"
+    },
+    {
+      "lesson": "ts-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient der Excess Property Check bei Objektliteralen?"
+    },
+    {
+      "lesson": "ts-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet exactOptionalPropertyTypes für dueDate?: string?"
+    },
+    {
+      "lesson": "ts-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wo liegt der wichtigste Unterschied zwischen any und unknown?"
+    },
+    {
+      "lesson": "ts-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wann ist const user = JSON.parse(text) as User gefährlich?"
+    },
+    {
+      "lesson": "ts-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient assertNever(value: never) im default-Zweig einer switch-Anweisung?"
+    },
+    {
+      "lesson": "ts-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient die Einschränkung T extends { id: number }?"
+    },
+    {
+      "lesson": "ts-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wann ist ein Generic überflüssig?"
+    },
+    {
+      "lesson": "ts-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet class Stack<T = string>?"
+    },
+    {
+      "lesson": "ts-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient das kind-Feld in einer diskriminierten Union?"
+    },
+    {
+      "lesson": "ts-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert, wenn in einem switch mit assertNever im default ein Fall vergessen wurde?"
+    },
+    {
+      "lesson": "ts-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wann ist ein Result sinnvoller als eine Exception?"
+    },
+    {
+      "lesson": "ts-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wofür steht keyof typeof STATUS bei const STATUS = { open: \"offen\", done: \"erledigt\" } as const?"
+    },
+    {
+      "lesson": "ts-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was unterscheidet const labels: Labels = {…} von {…} satisfies Labels?"
+    },
+    {
+      "lesson": "ts-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was liefert Omit<Task, \"done\">?"
+    },
+    {
+      "lesson": "ts-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum passt enum schlecht zu Node.js im Type-Stripping-Modus?"
+    },
+    {
+      "lesson": "ts-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient ein Branded Type wie Cents = number & { readonly [brand]: \"Cents\" }?"
+    },
+    {
+      "lesson": "ts-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was verlangt verbatimModuleSyntax bei Typ-Importen?"
+    },
+    {
+      "lesson": "node-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Ein ES-Modul enthält synchronen Code, ein Promise.then, process.nextTick, setTimeout(…, 0) und setImmediate. In welcher Reihenfolge laufen diese Teile im Hauptmodul auf Node.js (in diesem Lab geprüft)?"
+    },
+    {
+      "lesson": "node-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum verzögert eine lange Schleife im Anfrage-Handler alle anderen Anfragen?"
+    },
+    {
+      "lesson": "node-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum setzt cli.js process.exitCode, statt process.exit() aufzurufen?"
+    },
+    {
+      "lesson": "node-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Woran erkennt Node.js, ob eine Datei mit der Endung .js ein ES-Modul oder CommonJS ist?"
+    },
+    {
+      "lesson": "node-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt das Feld \"exports\" in package.json?"
+    },
+    {
+      "lesson": "node-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wofür verwendest du in einer CI-Pipeline npm ci statt npm install?"
+    },
+    {
+      "lesson": "node-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist Promise.race([arbeit, zeitlimit]) kein vollwertiges Zeitlimit?"
+    },
+    {
+      "lesson": "node-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was geschieht, wenn ein abgelehntes Promise in Node.js (ab Version 15) von niemandem abgefangen wird?"
+    },
+    {
+      "lesson": "node-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wofür nutzt man Promise.allSettled statt Promise.all?"
+    },
+    {
+      "lesson": "node-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wofür ist safeJoin(root, userPath) gedacht?"
+    },
+    {
+      "lesson": "node-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum schreibt writeJsonAtomic erst in eine Nebendatei und benennt sie danach um?"
+    },
+    {
+      "lesson": "node-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Ein Text hat 8 Zeichen, aber Buffer.byteLength liefert 12. Was ist die wahrscheinlichste Ursache?"
+    },
+    {
+      "lesson": "node-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Ein Client schickt gültiges JSON, aber ohne Feld title. Welcher Statuscode passt am besten?"
+    },
+    {
+      "lesson": "node-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum zählt readBody die Bytes mit und bricht ab, statt den Body einfach zu sammeln?"
+    },
+    {
+      "lesson": "node-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was sollte ein Client bei einem unerwarteten Serverfehler (500) in der Antwort sehen?"
+    },
+    {
+      "lesson": "node-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum schützt ein Platzhalter (?) vor SQL-Injection, String-Verkettung aber nicht?"
+    },
+    {
+      "lesson": "node-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient PRAGMA user_version im Lab?"
+    },
+    {
+      "lesson": "node-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum nennt die Fehlermeldung bei zu kurzem SESSION_SECRET nur den Namen der Variable, nicht ihren Wert?"
+    },
+    {
+      "lesson": "node-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wie testet man einen Cache, der nach 60 Sekunden abläuft, ohne 60 Sekunden zu warten?"
+    },
+    {
+      "lesson": "node-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu reicht getRate das fetch als Parameter herein?"
+    },
+    {
+      "lesson": "node-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche Testfälle prüfen einen Wert wie ttl = 100 ms am besten?"
+    },
+    {
+      "lesson": "node-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum startet das Dockerfile mit CMD [\"node\", \"src/ops/main.js\"] statt CMD node src/ops/main.js?"
+    },
+    {
+      "lesson": "node-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche Schritte gehören zu einem sauberen Beenden auf SIGTERM?"
+    },
+    {
+      "lesson": "node-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wann lohnt sich ein Worker Thread?"
+    },
+    {
+      "lesson": "lx-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist cd ein eingebauter Befehl und kein eigenes Programm?"
+    },
+    {
+      "lesson": "lx-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet der Exit-Code 127?"
+    },
+    {
+      "lesson": "lx-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was ergibt count \"$name\" bei name=\"Ada Lovelace\", wenn count die Zahl der Argumente ausgibt?"
+    },
+    {
+      "lesson": "lx-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert mit einer Datei, wenn du ihren Namen löschst, aber ein harter Link auf sie existiert?"
+    },
+    {
+      "lesson": "lx-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wer ersetzt das Muster *.txt in dem Befehl ls *.txt?"
+    },
+    {
+      "lesson": "lx-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wie verarbeitest du Treffer mit Leerzeichen im Namen sicher mit xargs?"
+    },
+    {
+      "lesson": "lx-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche Rechte entsprechen der Zahl 640?"
+    },
+    {
+      "lesson": "lx-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt das x-Recht bei einem Verzeichnis?"
+    },
+    {
+      "lesson": "lx-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche umask führt dazu, dass neue Dateien 600 und neue Verzeichnisse 700 bekommen?"
+    },
+    {
+      "lesson": "lx-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum muss vor uniq -c normalerweise sort stehen?"
+    },
+    {
+      "lesson": "lx-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt 2>&1 hinter einer Umleitung > datei?"
+    },
+    {
+      "lesson": "lx-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welchen Exit-Code liefert grep -q Muster datei, wenn das Muster nicht gefunden wird?"
+    },
+    {
+      "lesson": "lx-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt set -u in einem Skript?"
+    },
+    {
+      "lesson": "lx-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum nutzt logreport.sh awk statt head, um die ersten n Adressen auszugeben?"
+    },
+    {
+      "lesson": "lx-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welchen Zweck hat trap … EXIT in einem Skript, das mit mktemp eine temporäre Datei anlegt?"
+    },
+    {
+      "lesson": "lx-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Ein Prozess endet mit Exit-Code 143. Was ist passiert?"
+    },
+    {
+      "lesson": "lx-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum startet worker.sh seinen Schlaf im Hintergrund und wartet mit wait?"
+    },
+    {
+      "lesson": "lx-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert bei SIGKILL mit dem EXIT-Trap eines Skripts?"
+    },
+    {
+      "lesson": "lx-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Ein Dienst zeigt in ss -ltn die Adresse 127.0.0.1:8099. Wer kann ihn erreichen?"
+    },
+    {
+      "lesson": "lx-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was liefert curl -f bei einem Server, der 404 antwortet?"
+    },
+    {
+      "lesson": "lx-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Worauf musst du bei rsync quelle/ ziel/ gegenüber rsync quelle ziel/ achten?"
+    },
+    {
+      "lesson": "lx-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient rsync --link-dest=ALTER_SCHNAPPSCHUSS?"
+    },
+    {
+      "lesson": "lx-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist eval \"echo $eingabe\" bei Eingaben von außen gefährlich?"
+    },
+    {
+      "lesson": "lx-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum prüft das Backup-Skript die Prüfsummen jeder Seite einzeln und mit Exit-Code, statt sie direkt in [[ ]] zu vergleichen?"
+    },
+    {
+      "lesson": "ws-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was ist eine Vertrauensgrenze?"
+    },
+    {
+      "lesson": "ws-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche Kategorie führt die OWASP Top 10:2025 auf Platz 1?"
+    },
+    {
+      "lesson": "ws-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum reicht eine einzelne Schutzmaßnahme nicht aus?"
+    },
+    {
+      "lesson": "ws-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum schützt ein Platzhalter (?) vor SQL-Injection?"
+    },
+    {
+      "lesson": "ws-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wie wählst du eine Sortierspalte sicher aus Eingaben aus?"
+    },
+    {
+      "lesson": "ws-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient -- in execFile(\"grep\", [\"-c\", \"-F\", \"--\", muster, datei])?"
+    },
+    {
+      "lesson": "ws-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was ist die wichtigste Abwehr gegen XSS?"
+    },
+    {
+      "lesson": "ws-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist <a href=\"javascript:…\"> trotz HTML-Kodierung gefährlich?"
+    },
+    {
+      "lesson": "ws-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt ein Nonce in der CSP?"
+    },
+    {
+      "lesson": "ws-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum funktioniert CSRF überhaupt?"
+    },
+    {
+      "lesson": "ws-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was regelt CORS?"
+    },
+    {
+      "lesson": "ws-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Welche Schicht erkennt eine CSRF-Anfrage ohne gespeicherten Zustand, indem sie einen an die Sitzung gebundenen Wert prüft?"
+    },
+    {
+      "lesson": "ws-m1-l5",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wie verhinderst du IDOR zuverlässig?"
+    },
+    {
+      "lesson": "ws-m1-l5",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum reicht eine reine Textprüfung auf \"..\" bei Dateipfaden nicht?"
+    },
+    {
+      "lesson": "ws-m1-l5",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was verhindert die Prüfung der Adresse nach dem DNS-Abruf bei SSRF?"
+    },
+    {
+      "lesson": "ws-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist SHA-256 allein zum Speichern von Passwörtern ungeeignet?"
+    },
+    {
+      "lesson": "ws-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient das Salz?"
+    },
+    {
+      "lesson": "ws-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu wird die Sitzungskennung nach der Anmeldung rotiert?"
+    },
+    {
+      "lesson": "ws-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist Dekodieren eines JWT nicht dasselbe wie Prüfen?"
+    },
+    {
+      "lesson": "ws-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum kommt der Algorithmus nicht aus dem Token-Kopf?"
+    },
+    {
+      "lesson": "ws-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was verhindert PKCE?"
+    },
+    {
+      "lesson": "ws-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist ein fehlender HSTS-Header bei http://localhost kein Fehler?"
+    },
+    {
+      "lesson": "ws-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet es, wenn eine CSP kein script-src und kein default-src enthält?"
+    },
+    {
+      "lesson": "ws-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was gehört zu einer guten Fehlerbehandlung für Nutzer?"
+    },
+    {
+      "lesson": "ws-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient npm ci in einer Pipeline?"
+    },
+    {
+      "lesson": "ws-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was ist nach einem versehentlich eingecheckten API-Schlüssel nötig?"
+    },
+    {
+      "lesson": "ws-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-tech-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt Log Forging?"
     }
   ]
 }

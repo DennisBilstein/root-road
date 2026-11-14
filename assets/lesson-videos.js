@@ -12,7 +12,7 @@
     if(!videos || !videos.length) return '';
     var html = '<section class="rp-videos" aria-labelledby="rpVideosHeading">' +
       '<h2 id="rpVideosHeading">Zum Weiterlernen: ' + (videos.length > 1 ? 'Videos' : 'Video') + '</h2>' +
-      '<p class="rp-video-hint">Freie Videos Dritter, zusätzlich zur Lektion. Sie wurden nicht von ROOTPFAD inhaltlich geprüft und können vom Stand der Lektion abweichen.</p>';
+      '<p class="rp-video-hint">Freie Videos Dritter, zusätzlich zur Lektion. Sie wurden nicht von Root Road inhaltlich geprüft und können vom Stand der Lektion abweichen.</p>';
     videos.forEach(function(video, index){
       var watchUrl = 'https://www.youtube.com/watch?v=' + encodeURIComponent(video.id);
       var noteId = 'rpVideoNote_' + lessonId + '_' + index;

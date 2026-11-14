@@ -3,7 +3,7 @@ import {loadQuizBatches} from '../scripts/load-quiz-batches.mjs';
 
 test('Vollständige Redaktionspakete sind korrekt integriert, Teilpakete nicht',async({page})=>{
   const batches=loadQuizBatches();
-  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
+  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY&&window.RP_QUIZ_CONTRACTS_READY);
   const result=await page.evaluate(({lessons,extras})=>{
     const failures=[];
     for(const item of lessons){

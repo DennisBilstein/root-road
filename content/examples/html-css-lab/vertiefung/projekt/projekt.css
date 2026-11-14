@@ -1,0 +1,35 @@
+/* Abschlussprojekt: nutzt Tokens (../tokens.css), Ebenen, Container Queries, Bewegungsregeln und natives HTML. */
+@layer reset, base, components, utilities;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  img { max-width: 100%; height: auto; display: block; }
+}
+
+@layer base {
+  :where(h1, h2, h3) { line-height: 1.25; margin-block: 0 var(--space-1); }
+  h1 { font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3rem); }
+  main { max-width: 70rem; margin-inline: auto; }
+}
+
+@layer components {
+  .kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); }
+  .skip { position: absolute; inset-block-start: -10rem; padding: var(--space-1) var(--space-2); background: var(--surface); }
+  .skip:focus { inset-block-start: var(--space-2); }
+  .galerie { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--space-2); }
+  .slot { container: karte / inline-size; }
+  .karte { display: grid; gap: var(--space-2); height: 100%; }
+  .karte h2 { font-size: clamp(1.1rem, 5cqi, 1.5rem); overflow-wrap: anywhere; }
+  .karte img { aspect-ratio: 3 / 2; object-fit: cover; width: 100%; }
+  @container karte (min-width: 28rem) { .karte { grid-template-columns: 10rem 1fr; align-items: start; } }
+  summary { min-height: var(--target); padding-block: var(--space-1); cursor: pointer; }
+  dialog { max-width: min(28rem, calc(100vw - 2rem)); background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); }
+  dialog::backdrop { background: rgb(15 24 38 / 0.6); }
+}
+
+@layer utilities {
+  @media (prefers-reduced-motion: no-preference) {
+    .karte { transition: transform 150ms ease-out; }
+    .karte:hover { transform: translateY(-2px); }
+  }
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsive Bilder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 60rem; padding: 1rem; font: 1rem/1.6 system-ui, sans-serif; }
+    /* width/height im HTML liefern das Seitenverhältnis; max-width + height:auto lassen das Bild schrumpfen, ohne zu verzerren. */
+    img { max-width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Bilder</h1>
+
+    <!-- Auflösungswechsel: gleiche Szene, der Browser wählt die passende Datei anhand von sizes und Pixeldichte. -->
+    <img id="held"
+         src="bilder/lernkarte-960.svg"
+         srcset="bilder/lernkarte-480.svg 480w, bilder/lernkarte-960.svg 960w, bilder/lernkarte-1440.svg 1440w"
+         sizes="(min-width: 60rem) 30rem, 100vw"
+         width="960" height="640"
+         alt="Lernkarte mit blauem Rahmen und Aufschrift"
+         fetchpriority="high">
+
+    <!-- Art Direction: auf schmalen Anzeigen ein quadratischer Ausschnitt statt der verkleinerten Breitversion. -->
+    <picture>
+      <source media="(max-width: 30rem)" srcset="bilder/lernkarte-quadrat.svg">
+      <img id="ausschnitt" src="bilder/lernkarte-960.svg" width="960" height="640" alt="Lernkarte" loading="lazy" decoding="async">
+    </picture>
+
+    <!-- Dekoratives Bild: leeres alt, damit Screenreader es überspringen. -->
+    <img id="deko" src="bilder/lernkarte-480.svg" width="480" height="320" alt="" loading="lazy">
+  </main>
+</body>
+</html>

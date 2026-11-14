@@ -1,0 +1,36 @@
+Bestellung 2 Stück Monitor 27 Zoll (Bestand 5):
++-----------------------+
+| result                |
++-----------------------+
+| Bestellung 11 gebucht |
++-----------------------+
+
+Bestellung 4 Stück Monitor 27 Zoll (Bestand jetzt 3):
++---------------------------------+
+| result                          |
++---------------------------------+
+| abgelehnt: Bestand reicht nicht |
++---------------------------------+
+
++---------+-------+
+| sku     | stock |
++---------+-------+
+| MN-0002 |     3 |
++---------+-------+
+
++----------------+---------+
+| category       | revenue |
++----------------+---------+
+| Monitore       |  975.00 |
+| Lernkurse      |  393.00 |
+| Tastaturen     |  297.60 |
+| Eingabegeräte  |  117.00 |
++----------------+---------+
+
+Sicherung geschrieben: ja
+Prüfsumme nach Wiederherstellung gleich: ja
++-------------+--------------+
+| orders_crc  | orders_count |
++-------------+--------------+
+| 25931752310 |           11 |
++-------------+--------------+

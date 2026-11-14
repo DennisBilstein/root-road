@@ -69,7 +69,7 @@ var RB_AURORA_FRAG = [
   '}'
 ].join('\n');
 
-/* Nur Fokusblau: Gruen und Bernstein tragen in ROOTPFAD eigene Bedeutungen. */
+/* Nur Fokusblau: Gruen und Bernstein tragen in Root Road eigene Bedeutungen. */
 var RB_STOPS_DUNKEL = ['#2f6fe8', '#8fbcff', '#3a5bd9'];
 var RB_STOPS_HELL   = ['#1a55c0', '#5b93f0', '#2c47b8'];
 

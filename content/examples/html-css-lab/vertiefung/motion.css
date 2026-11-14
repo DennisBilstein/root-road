@@ -1,0 +1,18 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 1.5rem; font: 1rem/1.6 system-ui, sans-serif; color: #172438; background: #f4f6fa; }
+
+.panel { padding: 1rem; background: #fff; border: 1px solid #66758d; border-radius: 0.5rem; }
+.knopf { min-height: 2.75rem; padding: 0 1rem; font: inherit; }
+
+/* Ruhiger Standard: kein Übergang, kein Ruckeln. Bewegung gibt es nur, wenn die Person sie nicht abgewählt hat. */
+@media (prefers-reduced-motion: no-preference) {
+  .panel { transition: transform 200ms ease-out, opacity 200ms ease-out; }
+  .panel[data-aus] { opacity: 0; transform: translateY(0.5rem); }
+  .lade { animation: drehen 1s linear infinite; }
+}
+
+/* Nur transform und opacity werden animiert: Sie laufen ohne neues Layout auf der Grafikkarte. */
+@keyframes drehen { to { transform: rotate(360deg); } }
+
+.lade { width: 1.5rem; height: 1.5rem; border: 3px solid #174d9e; border-right-color: transparent; border-radius: 50%; display: inline-block; }
+/* Auch ohne Bewegung muss der Zustand erkennbar bleiben: Der Text neben dem Kreis nennt ihn. */

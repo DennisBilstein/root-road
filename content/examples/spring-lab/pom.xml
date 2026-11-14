@@ -12,7 +12,7 @@
 	<artifactId>spring-lab</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-lab</name>
-	<description>ROOTPFAD Spring-Boot-Lernlabor</description>
+	<description>Root Road Spring-Boot-Lernlabor</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

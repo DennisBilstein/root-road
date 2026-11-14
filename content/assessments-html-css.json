@@ -1,0 +1,63 @@
+[
+  {
+    "moduleId": "html-m2",
+    "title": "Eine Artikelseite mit responsivem Bild, vollständigem Kopf und geprüfter Barrierefreiheit",
+    "brief": "Baue eine einzelne Artikelseite (Thema frei wählbar, erfundene Inhalte). Sie braucht einen vollständigen head (lang, title, description, canonical, viewport ohne Zoomsperre), ein Bild mit srcset, sizes, width, height und beschreibendem alt, einen Abschnitt mit details name und einen Button, der einen modalen dialog mit zwei Antworten öffnet. Schreibe mit Playwright oder einem anderen Browsertest eine Prüfung für Kopf (checkHead aus dem Lab oder eine eigene Funktion), Bildauswahl bei zwei Fensterbreiten und den Dialog per Tastatur. Dokumentiere in einem Prüfprotokoll, was automatisiert, manuell und nicht geprüft wurde.",
+    "normal": {
+      "input": "Seite bei 400 px und 1280 px Fensterbreite öffnen, Dialog per Tastatur öffnen und mit Escape schließen",
+      "expected": "checkHead() meldet nichts; das Bild wählt je Breite eine andere Datei (im Test belegt); der Dialog öffnet, der Fokus steht auf der sicheren Wahl, Escape schließt ihn und der Fokus kehrt zum Auslöser zurück."
+    },
+    "boundary": {
+      "input": "Bilddateien blockieren, title mit 66 Zeichen und die Seite bei 320 px mit 200 % Zoom",
+      "expected": "Das Seitenverhältnis des Bildes ist vor dem Laden reserviert (gemessen); die Prüfung meldet die Länge des title als Befund und erklärt, dass die Grenze eine Faustregel ist; bei 320 px und 200 % Zoom ist der Text ohne horizontales Scrollen lesbar."
+    },
+    "failure": {
+      "input": "viewport mit user-scalable=no, ein Bild ohne alt und ein Eingabefeld nur mit placeholder",
+      "expected": "Die Prüfung findet alle drei Fehler einzeln; du erklärst jeweils die betroffene Gruppe von Menschen und beziehst dich auf das passende WCAG-Kriterium (1.4.4, 1.1.1, 1.3.1/4.1.2) und behebst sie."
+    },
+    "rubric": [
+      "Der head ist vollständig und die Seite erlaubt das Zoomen; die Prüfung dafür läuft automatisiert.",
+      "Das Bild nutzt srcset, sizes, width und height; ein Test belegt die Dateiauswahl bei mindestens zwei Breiten und die Platzreservierung.",
+      "Der Dialog ist per Tastatur vollständig bedienbar (Startfokus, Escape, Rückgabe des Fokus) und hat einen zugänglichen Namen.",
+      "Das Prüfprotokoll trennt sauber zwischen automatisiert geprüft, manuell geprüft und nicht geprüft und behauptet keine vollständige Barrierefreiheit."
+    ],
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+      "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html"
+    ],
+    "execution": "manual-review-required",
+    "revision": "assessment-html-css-v1"
+  },
+  {
+    "moduleId": "css-m2",
+    "title": "Ein Komponentenstylesheet mit Tokens, Ebenen, Container Queries und ruhiger Bewegung",
+    "brief": "Gestalte eine wiederverwendbare Profilkarte (Bild, Name, Kurztext, Button) als CSS-Komponente. Verwende Designtokens in drei Stufen (Rohwerte, Rollen, Komponenten) mit light-dark() und color-scheme, ordne deine Regeln in @layer reset, base, components, utilities, lasse die Karte per Container Query ab einer selbst gewählten Containerbreite zweispaltig werden und füge einen Übergang für den Button-Hover nur unter prefers-reduced-motion: no-preference hinzu. Schreibe Browsertests für Kontraste in beiden Farbmodi, die Spaltenzahl der Karte in zwei Containerbreiten und die Bewegungsregel unter beiden Emulationseinstellungen.",
+    "normal": {
+      "input": "Die Karte in einem 20-rem-Container und in einem 40-rem-Container bei gleichem Fenster rendern; Systemmodus hell und dunkel",
+      "expected": "Im schmalen Container ist die Karte einspaltig, im breiten zweispaltig; Text und Buttontext erreichen in beiden Modi mindestens 4,5:1, der Kartenrand gegen den Hintergrund mindestens 3:1; der Hover-Übergang hat nur ohne Reduktionswunsch eine Dauer."
+    },
+    "boundary": {
+      "input": "Containerbreite exakt auf den Schwellenwert und 0,01 rem darunter; data-theme=dark bei hellem Systemmodus",
+      "expected": "Am Schwellenwert greift die Regel (bei min-width eingeschlossen), knapp darunter nicht; das Attribut überschreibt die Systemeinstellung, und eine Rückkehr zur Systemeinstellung funktioniert, ohne dass der Test Farbwerte in Komponenten findet."
+    },
+    "failure": {
+      "input": "color-scheme entfernen, container-type auf ein Element ohne eigene Breite setzen und transition: all verwenden",
+      "expected": "Ohne color-scheme liefert light-dark() immer den hellen Wert (Test belegt das); der Container ohne Breite fällt zusammen; transition: all löst Layout-Animation aus; du erklärst jede Ursache, belegst sie am Test und behebst sie."
+    },
+    "rubric": [
+      "Farben stehen nur im Rohwert-Block; Komponenten nutzen ausschließlich Rollen, und ein Test prüft das.",
+      "Alle eigenen Regeln liegen in benannten Ebenen; die Reihenfolge ist in einer @layer-Zeile festgelegt und im Test oder in der Doku begründet.",
+      "Die Container Query ist mit zwei Breiten getestet, und die Einheit cqi oder clamp() wird begründet eingesetzt (mit rem-Anteil).",
+      "Bewegung gibt es nur bei no-preference und nur für transform oder opacity; der Zustand bleibt auch ohne Bewegung erkennbar."
+    ],
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/@layer",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    ],
+    "execution": "manual-review-required",
+    "revision": "assessment-html-css-v1"
+  }
+]

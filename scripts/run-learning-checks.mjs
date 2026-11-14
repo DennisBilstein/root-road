@@ -6,6 +6,12 @@ const checks=[
   {name:'vue-tests',command:'npm',args:['test'],cwd:'content/examples/vue-lab'},
   {name:'vue-build',command:'npm',args:['run','build'],cwd:'content/examples/vue-lab'},
   {name:'vue-audit',command:'npm',args:['audit','--json'],cwd:'content/examples/vue-lab'},
+  {name:'ts-tests',command:'npm',args:['test'],cwd:'content/examples/ts-lab'},
+  {name:'node-tests',command:'npm',args:['test'],cwd:'content/examples/node-lab'},
+  {name:'websec-tests',command:'npm',args:['test'],cwd:'content/examples/websec-lab'},
+  {name:'api-tests',command:'npm',args:['test'],cwd:'content/examples/api-lab'},
+  // content/examples/shell-lab braucht Docker (run-in-container.sh) und läuft deshalb nicht in dieser Liste.
+  // content/examples/sql-lab braucht Docker und ein lokales mariadb-Image (node run.mjs) und läuft deshalb ebenfalls nicht in dieser Liste.
   // Mit laufendem Docker startet der Testcontainers-Test einen PostgreSQL-Container (Image-Download beim ersten Mal): mehr Zeit.
   {name:'spring-tests',command:'./mvnw',args:['-B','-q','test'],cwd:'content/examples/spring-lab',timeout:600000},
 ];

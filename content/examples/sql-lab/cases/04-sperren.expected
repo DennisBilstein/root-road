@@ -1,0 +1,17 @@
+Teil A: zweite Sitzung wartet auf gesperrte Zeile
+ERROR 1205 (HY000) at line 1: Lock wait timeout exceeded; try restarting transaction
++----+---------+
+| id | balance |
++----+---------+
+|  1 |  100.00 |
+|  2 |  100.00 |
++----+---------+
+
+Teil B: umgekehrte Sperrreihenfolge
+Sitzungen mit ERROR 1213 (Deadlock): 1
+Meldung: Deadlock found when trying to get lock; try restarting transaction
++--------+
+| total  |
++--------+
+| 200.00 |
++--------+

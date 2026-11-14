@@ -1,0 +1,13 @@
+{
+  "name": "rootpfad-typescript-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Geprüfter Code für die TypeScript-Lektionen (ts-m1, ts-m2). Keine eigenen Abhängigkeiten: tsc und @types/node kommen aus ../vue-lab.",
+  "scripts": {
+    "check": "../vue-lab/node_modules/.bin/tsc -p .",
+    "test": "node --test \"tests/*.test.ts\"",
+    "errors": "node tools/show-errors.mjs",
+    "verify": "npm run check && npm test"
+  }
+}

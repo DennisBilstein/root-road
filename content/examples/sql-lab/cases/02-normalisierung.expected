@@ -1,0 +1,35 @@
++---------------+---------------+
+| customer_name | customer_city |
++---------------+---------------+
+| Ada Beispiel  | Berlin        |
+| Ada Beispiel  | Hamburg       |
++---------------+---------------+
++--------------+---------+----------+---------+-----+
+| name         | city    | order_no | sku     | qty |
++--------------+---------+----------+---------+-----+
+| Ada Beispiel | Hamburg |        1 | KB-0001 |   1 |
+| Ada Beispiel | Hamburg |        1 | MS-0001 |   2 |
+| Ada Beispiel | Hamburg |        2 | KB-0001 |   3 |
+| Ben Muster   | Berlin  |        3 | MS-0001 |   1 |
++--------------+---------+----------+---------+-----+
+--------------
+DELETE FROM n_products WHERE sku = 'KB-0001'
+--------------
+
+ERROR 1451 (23000) at line 33: Cannot delete or update a parent row: a foreign key constraint fails (`lab`.`n_items`, CONSTRAINT `n_items_ibfk_2` FOREIGN KEY (`sku`) REFERENCES `n_products` (`sku`))
+--------------
+INSERT INTO n_items VALUES (3, 'MS-0001', 0)
+--------------
+
+ERROR 4025 (23000) at line 34: CONSTRAINT `n_items.qty` failed for `lab`.`n_items`
+--------------
+INSERT INTO n_items VALUES (3, 'XX-9999', 1)
+--------------
+
+ERROR 1452 (23000) at line 35: Cannot add or update a child row: a foreign key constraint fails (`lab`.`n_items`, CONSTRAINT `n_items_ibfk_2` FOREIGN KEY (`sku`) REFERENCES `n_products` (`sku`))
++--------------+--------+
+| name         | city   |
++--------------+--------+
+| Ada Beispiel | Berlin |
+| Ben Muster   | Berlin |
++--------------+--------+

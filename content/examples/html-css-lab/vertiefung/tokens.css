@@ -1,0 +1,47 @@
+/* Designtokens in drei Stufen: Rohwerte -> Rollen -> Komponenten. Hell/Dunkel entscheidet allein color-scheme. */
+:root {
+  color-scheme: light dark;
+
+  /* 1. Rohwerte: nur hier stehen Farbcodes. */
+  --blue-700: #174d9e;
+  --blue-300: #9cc0ff;
+  --ink-900: #172438;
+  --ink-100: #e8edf6;
+  --paper-0: #ffffff;
+  --paper-900: #1d2a3f;
+  --page-50: #f4f6fa;
+  --page-950: #0f1826;
+  --line-500: #66758d;
+  --line-400: #8d9bb3;
+
+  /* 2. Rollen: light-dark(hell, dunkel) wählt je nach color-scheme. */
+  --text: light-dark(var(--ink-900), var(--ink-100));
+  --page: light-dark(var(--page-50), var(--page-950));
+  --surface: light-dark(var(--paper-0), var(--paper-900));
+  --accent: light-dark(var(--blue-700), var(--blue-300));
+  --border: light-dark(var(--line-500), var(--line-400));
+
+  /* Abstände und Radien sind ebenfalls Tokens, damit Komponenten keine Zahlen erfinden. */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --radius: 0.5rem;
+  --target: 2.75rem;
+}
+
+/* Manuelle Wahl: ein Attribut am Wurzelelement überschreibt die Systemeinstellung. */
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+
+/* 3. Komponenten benutzen nur Rollen und Abstände. */
+body { margin: 0; padding: var(--space-3); background: var(--page); color: var(--text); font: 1rem/1.6 system-ui, sans-serif; }
+a { color: var(--accent); text-underline-offset: 0.2em; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-2); }
+.button { min-height: var(--target); padding: 0 var(--space-2); border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); color: var(--surface); font: inherit; font-weight: 600; }
+.button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* Erzwungene Farben (Windows-Kontrastmodus): Systemfarben statt eigener Werte. */
+@media (forced-colors: active) {
+  .button { border-color: ButtonText; }
+  .card { border-color: CanvasText; }
+}

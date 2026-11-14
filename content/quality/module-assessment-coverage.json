@@ -1,7 +1,7 @@
 {
-  "modules": 121,
-  "manualAssignments": 121,
-  "individuallyAuthored": 121,
+  "modules": 132,
+  "manualAssignments": 132,
+  "individuallyAuthored": 132,
   "fullyIndependentRubrics": 0,
   "drafts": 0,
   "execution": "not-executed-manual-review-required",
@@ -4525,6 +4525,87 @@
       ]
     },
     {
+      "id": "html-m2@assessment-html-css-v1",
+      "moduleId": "html-m2",
+      "title": "Eine Artikelseite mit responsivem Bild, vollständigem Kopf und geprüfter Barrierefreiheit",
+      "lessonId": "html-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Baue eine einzelne Artikelseite (Thema frei wählbar, erfundene Inhalte). Sie braucht einen vollständigen head (lang, title, description, canonical, viewport ohne Zoomsperre), ein Bild mit srcset, sizes, width, height und beschreibendem alt, einen Abschnitt mit details name und einen Button, der einen modalen dialog mit zwei Antworten öffnet. Schreibe mit Playwright oder einem anderen Browsertest eine Prüfung für Kopf (checkHead aus dem Lab oder eine eigene Funktion), Bildauswahl bei zwei Fensterbreiten und den Dialog per Tastatur. Dokumentiere in einem Prüfprotokoll, was automatisiert, manuell und nicht geprüft wurde.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Seite bei 400 px und 1280 px Fensterbreite öffnen, Dialog per Tastatur öffnen und mit Escape schließen",
+          "expected": "checkHead() meldet nichts; das Bild wählt je Breite eine andere Datei (im Test belegt); der Dialog öffnet, der Fokus steht auf der sicheren Wahl, Escape schließt ihn und der Fokus kehrt zum Auslöser zurück."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Bilddateien blockieren, title mit 66 Zeichen und die Seite bei 320 px mit 200 % Zoom",
+          "expected": "Das Seitenverhältnis des Bildes ist vor dem Laden reserviert (gemessen); die Prüfung meldet die Länge des title als Befund und erklärt, dass die Grenze eine Faustregel ist; bei 320 px und 200 % Zoom ist der Text ohne horizontales Scrollen lesbar."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "viewport mit user-scalable=no, ein Bild ohne alt und ein Eingabefeld nur mit placeholder",
+          "expected": "Die Prüfung findet alle drei Fehler einzeln; du erklärst jeweils die betroffene Gruppe von Menschen und beziehst dich auf das passende WCAG-Kriterium (1.4.4, 1.1.1, 1.3.1/4.1.2) und behebst sie."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Der head ist vollständig und die Seite erlaubt das Zoomen; die Prüfung dafür läuft automatisiert.",
+        "Das Bild nutzt srcset, sizes, width und height; ein Test belegt die Dateiauswahl bei mindestens zwei Breiten und die Platzreservierung.",
+        "Der Dialog ist per Tastatur vollständig bedienbar (Startfokus, Escape, Rückgabe des Fokus) und hat einen zugänglichen Namen.",
+        "Das Prüfprotokoll trennt sauber zwischen automatisiert geprüft, manuell geprüft und nicht geprüft und behauptet keine vollständige Barrierefreiheit."
+      ],
+      "revision": "assessment-html-css-v1",
+      "sources": [
+        "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images",
+        "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+        "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html"
+      ]
+    },
+    {
+      "id": "css-m2@assessment-html-css-v1",
+      "moduleId": "css-m2",
+      "title": "Ein Komponentenstylesheet mit Tokens, Ebenen, Container Queries und ruhiger Bewegung",
+      "lessonId": "css-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Gestalte eine wiederverwendbare Profilkarte (Bild, Name, Kurztext, Button) als CSS-Komponente. Verwende Designtokens in drei Stufen (Rohwerte, Rollen, Komponenten) mit light-dark() und color-scheme, ordne deine Regeln in @layer reset, base, components, utilities, lasse die Karte per Container Query ab einer selbst gewählten Containerbreite zweispaltig werden und füge einen Übergang für den Button-Hover nur unter prefers-reduced-motion: no-preference hinzu. Schreibe Browsertests für Kontraste in beiden Farbmodi, die Spaltenzahl der Karte in zwei Containerbreiten und die Bewegungsregel unter beiden Emulationseinstellungen.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Die Karte in einem 20-rem-Container und in einem 40-rem-Container bei gleichem Fenster rendern; Systemmodus hell und dunkel",
+          "expected": "Im schmalen Container ist die Karte einspaltig, im breiten zweispaltig; Text und Buttontext erreichen in beiden Modi mindestens 4,5:1, der Kartenrand gegen den Hintergrund mindestens 3:1; der Hover-Übergang hat nur ohne Reduktionswunsch eine Dauer."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Containerbreite exakt auf den Schwellenwert und 0,01 rem darunter; data-theme=dark bei hellem Systemmodus",
+          "expected": "Am Schwellenwert greift die Regel (bei min-width eingeschlossen), knapp darunter nicht; das Attribut überschreibt die Systemeinstellung, und eine Rückkehr zur Systemeinstellung funktioniert, ohne dass der Test Farbwerte in Komponenten findet."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "color-scheme entfernen, container-type auf ein Element ohne eigene Breite setzen und transition: all verwenden",
+          "expected": "Ohne color-scheme liefert light-dark() immer den hellen Wert (Test belegt das); der Container ohne Breite fällt zusammen; transition: all löst Layout-Animation aus; du erklärst jede Ursache, belegst sie am Test und behebst sie."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Farben stehen nur im Rohwert-Block; Komponenten nutzen ausschließlich Rollen, und ein Test prüft das.",
+        "Alle eigenen Regeln liegen in benannten Ebenen; die Reihenfolge ist in einer @layer-Zeile festgelegt und im Test oder in der Doku begründet.",
+        "Die Container Query ist mit zwei Breiten getestet, und die Einheit cqi oder clamp() wird begründet eingesetzt (mit rem-Anteil).",
+        "Bewegung gibt es nur bei no-preference und nur für transform oder opacity; der Zustand bleibt auch ohne Bewegung erkennbar."
+      ],
+      "revision": "assessment-html-css-v1",
+      "sources": [
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/@layer",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+      ]
+    },
+    {
       "id": "mariadb-m1@assessment-v2",
       "moduleId": "mariadb-m1",
       "title": "Letzten Kursplatz unter Konkurrenz genau einmal vergeben",
@@ -4561,6 +4642,46 @@
       "sources": [
         "https://mariadb.com/docs/server/reference/sql-statements/data-definition/constraint",
         "https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/Connection.html"
+      ]
+    },
+    {
+      "id": "mariadb-m2@assessment-platform-tracks-v1",
+      "moduleId": "mariadb-m2",
+      "title": "Eine Bestellverwaltung mit Fenster-Auswertung, Sperren, Migration und getesteter Sicherung",
+      "lessonId": "mariadb-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Baue im SQL-Lab (oder in einem eigenen Wegwerf-Container) ein kleines Schema mit Kunden, Produkten, Bestellungen und Positionen samt Fremdschlüsseln und CHECK-Regeln. Schreibe drei Fälle als Dateien mit erwarteter Ausgabe: (1) eine Auswertung mit CTE und Fensterfunktion (zum Beispiel Umsatz je Monat mit laufender Summe), (2) eine Bestellung als Transaktion mit Bestandssperre, die bei zu wenig Bestand nichts schreibt, (3) eine idempotente Expand/Contract-Migration mit Backfill in Stapeln. Ergänze eine Sicherung mit mariadb-dump und eine Wiederherstellung in eine zweite Datenbank mit Prüfsumme. Dokumentiere in einem Protokoll, was geprüft wurde, was nicht, und welche Serverversion du benutzt hast.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Alle Fälle gegen eine frische Datenbank ausführen und mit den erwarteten Ausgaben vergleichen",
+          "expected": "Jeder Fall stimmt mit seiner erwarteten Ausgabe überein; die Auswertung liefert die handgerechneten Werte für mindestens zwei Monate; die Bestellung bucht den Bestand genau einmal ab; die Wiederherstellung hat dieselbe Prüfsumme wie das Original."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Zwei parallele Bestellungen auf das letzte Stück, die Migration zweimal ausführen und eine Gleichstand-Konstellation in der Rangfolge",
+          "expected": "Genau eine der beiden Bestellungen wird gebucht und die andere sauber abgelehnt; der zweite Migrationslauf ändert nichts und meldet keinen Fehler; die Rangfolge nutzt ein eindeutiges Zweitkriterium und ist bei zwei Läufen identisch."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Menge 0 einfügen, ein Produkt mit Positionen löschen, NOT NULL vor dem Backfill setzen und den Dump absichtlich verändern",
+          "expected": "Der Server lehnt die ersten drei Fälle mit den passenden Fehlern ab (CHECK, Fremdschlüssel, Migration schlägt fehl); die veränderte Sicherung zeigt in der Prüfsumme eine Abweichung; du erklärst jede Meldung und behebst die Ursache."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Das Schema setzt Regeln selbst durch (Schlüssel, Fremdschlüssel, CHECK, NOT NULL), und mindestens drei Regelverletzungen sind mit Fehlernummer getestet.",
+        "Die Bestellung ist eine Transaktion mit Sperre; ein Test mit zwei Sitzungen belegt, dass der Bestand nie negativ wird, und der Umgang mit Deadlocks (Reihenfolge, Wiederholung) ist beschrieben.",
+        "Die Migration folgt Expand, Backfill und Contract, ist idempotent und prüft vor dem Contract, dass keine Zeile offen ist.",
+        "Das Protokoll trennt geprüft, nicht geprüft und Annahmen (Serverversion, Datenmenge) und behauptet keine Aussage über Last oder andere Versionen, die nicht gemessen wurde."
+      ],
+      "revision": "assessment-platform-tracks-v1",
+      "sources": [
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
+        "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump"
       ]
     },
     {
@@ -4676,6 +4797,332 @@
       "revision": "assessment-v2",
       "sources": [
         "https://platform.openai.com/docs/guides/agent-builder-safety"
+      ]
+    },
+    {
+      "id": "ts-m1@assessment-tech-tracks-v1",
+      "moduleId": "ts-m1",
+      "title": "Einen Nutzer aus JSON sicher in einen TypeScript-Typ überführen",
+      "lessonId": "ts-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Lege ein kleines Projekt mit strikter tsconfig.json an (strict, noUncheckedIndexedAccess, exactOptionalPropertyTypes). Definiere den Typ Contact mit name (Text), email (Text mit @) und optional phone. Schreibe eine Funktion parseContact(json: string): Contact, die das Ergebnis von JSON.parse als unknown behandelt und mit einem Typwächter prüft. Schreibe zu jeder Prüfung einen Test mit node:test. Nutze weder any noch as für die Daten.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "parseContact('{\"name\":\"Ada\",\"email\":\"ada@example.org\"}')",
+          "expected": "Ein Contact ohne phone-Feld (das Feld fehlt, es ist nicht undefined); tsc --noEmit meldet keinen Fehler."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "parseContact mit email ohne @, mit leerem name und mit phone als Zahl statt Text",
+          "expected": "Jede der drei Eingaben wirft einen TypeError; die Tests benennen die Grenzfälle einzeln und prüfen, dass das Original-JSON nicht verändert wird."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "parseContact('{kaputt') und parseContact('null')",
+          "expected": "'{kaputt' löst einen SyntaxError aus JSON.parse aus, 'null' einen TypeError aus dem Typwächter; beide Fehlerarten sind im Test getrennt belegt und tsc meldet bei dem Versuch, JSON.parse(text).name ohne Prüfung zu lesen, keinen Fehler (any) – du erklärst, warum das gefährlich ist."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "tsconfig.json enthält strict, noUncheckedIndexedAccess und exactOptionalPropertyTypes; tsc --noEmit läuft ohne Fehler.",
+        "Der Typwächter prüft Typ und Wertebereich jedes Feldes und nutzt unknown statt any.",
+        "Normal-, Grenz- und Fehlerfälle stehen als Tests mit konkreten Ein- und Ausgaben.",
+        "Die Abgabe erklärt in eigenen Worten, warum Typen zur Laufzeit nicht prüfen und wo die Prüfung steht."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+        "https://www.typescriptlang.org/tsconfig/",
+        "https://nodejs.org/api/typescript.html"
+      ]
+    },
+    {
+      "id": "ts-m2@assessment-tech-tracks-v1",
+      "moduleId": "ts-m2",
+      "title": "Ein Ereignis-System mit Generics, diskriminierter Union und Result typisieren",
+      "lessonId": "ts-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Modelliere Ereignisse einer Aufgabenliste als diskriminierte Union (kind: 'created' | 'completed' | 'deleted' mit jeweils passenden Feldern). Schreibe eine generische Funktion groupEvents<K extends PropertyKey>(events, keyOf), eine Funktion describe(event) mit assertNever im default-Zweig und eine Funktion parseEventKind(text): Result<Event['kind']>. Belege jede Eigenschaft mit Tests und mindestens zwei @ts-expect-error-Zeilen.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "describe({ kind: 'created', id: 1, title: 'Milch' }) und groupEvents([...], e => e.kind)",
+          "expected": "Eine lesbare Beschreibung und ein Objekt, dessen Schlüssel genau die vorkommenden kind-Werte sind; tsc leitet K ohne Typargument ab."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "groupEvents([]) und parseEventKind('')",
+          "expected": "groupEvents([]) liefert {}; parseEventKind('') liefert { ok: false, error: … } mit verständlicher Meldung und wirft nicht."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Füge der Union den Fall 'archived' hinzu, ohne describe zu ändern.",
+          "expected": "tsc meldet im default-Zweig einen Fehler (Argument nicht zuweisbar zu never); nach Ergänzung des case kompiliert der Code wieder. Ein default mit return '' würde den Fehler verdecken."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Die Union nutzt ein Literalfeld und sinnvolle Felder pro Fall; es gibt keine optionalen Pflichtfelder.",
+        "groupEvents nutzt Generics mit Einschränkung und kommt ohne as-Behauptungen aus oder begründet jede einzelne im Kommentar.",
+        "describe ist vollständig und nutzt assertNever; der Fehlerfall ist belegt.",
+        "Result wird für erwartbare Fehler verwendet, Exceptions nur für Programmierfehler, mit eigener Begründung."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+        "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+        "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html"
+      ]
+    },
+    {
+      "id": "node-m1@assessment-tech-tracks-v1",
+      "moduleId": "node-m1",
+      "title": "Ein Werkzeug zum Prüfen und Packen von Textdateien als Node.js-Kommandozeilenprogramm",
+      "lessonId": "node-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Schreibe als ES-Modul (\"type\": \"module\", ohne Abhängigkeiten) ein Programm 'dateiwerkzeug', das mit parseArgs die Optionen --zeilen (Zeilen einer Datei zählen) und --packen (Datei als .gz komprimieren) kennt. Die Logik steht in einer Funktion run(argv) ohne direkte Ausgabe, die Ergebnis, Fehlertext und Exit-Code zurückgibt. Dateipfade werden gegen ein Basisverzeichnis geprüft (kein Verlassen mit ..). Gelesen wird als Stream, Fehler (Datei fehlt, kein Zugriff) werden mit klarer Meldung ohne vollen Pfad behandelt. Schreibe Tests mit node:test.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "run(['--zeilen', 'daten/notizen.txt']) mit einer Datei aus drei Zeilen",
+          "expected": "Exit-Code 0 und die Ausgabe 3; die Datei wird nicht komplett in den Speicher gelesen (Stream)."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Leere Datei, Datei ohne abschließenden Zeilenumbruch, Datei mit nur einem Zeilenumbruch, Aufruf ohne Optionen",
+          "expected": "0, Anzahl der Zeilen inklusive der letzten, 1; ohne Option Exit-Code 64 mit Hinweis auf die Verwendung. Jeder Grenzfall hat einen eigenen Test."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "run(['--zeilen', '../geheim.txt']), eine nicht vorhandene Datei und eine unbekannte Option --farbe",
+          "expected": "Der Pfad mit .. wird abgelehnt (Exit-Code 2), die fehlende Datei erzeugt eine Meldung mit Dateinamen statt Stacktrace, die unbekannte Option den Fehler von parseArgs; nirgends erscheint ein vollständiger Pfad auf stdout."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "run ist eine reine Funktion mit Ergebnis und Exit-Code; nur ein Startblock schreibt auf stdout, stderr und process.exitCode (kein process.exit).",
+        "Pfade werden mit path.resolve/path.relative gegen das Basisverzeichnis geprüft; Path Traversal ist durch einen Test belegt.",
+        "Große Dateien werden mit Streams und pipeline verarbeitet; Fehlercodes (ENOENT, EACCES) werden in verständliche Meldungen übersetzt.",
+        "Normal-, Grenz- und Fehlerfälle sind als node:test-Tests mit konkreten Eingaben und Erwartungen vorhanden und laufen grün."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://nodejs.org/api/util.html#utilparseargsconfig",
+        "https://nodejs.org/api/stream.html",
+        "https://nodejs.org/api/process.html#processexitcode"
+      ]
+    },
+    {
+      "id": "node-m2@assessment-tech-tracks-v1",
+      "moduleId": "node-m2",
+      "title": "Einen kleinen JSON-Dienst mit Datenbank, Konfigurationsprüfung und sauberem Beenden bauen und testen",
+      "lessonId": "node-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Baue mit node:http und node:sqlite (oder einer begründet gewählten Alternative) einen Dienst für Notizen: POST /notes, GET /notes, GET /notes/:id, DELETE /notes/:id. Prüfe Content-Type, Body-Größe (Limit) und Felder, nutze nur Platzhalter in SQL und lege das Schema per Migration an. Lies Port, Datenbankdatei und Geheimnis aus Umgebungsvariablen mit Validierung. Der Dienst schreibt strukturierte Logs ohne Geheimnisse und beendet sich auf SIGTERM mit Exit-Code 0. Schreibe Tests mit node:test gegen einen Server auf einem freien Port; die Zeit wird nicht echt abgewartet.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "POST /notes mit {\"text\":\"Milch kaufen\"}, danach GET /notes/1 und DELETE /notes/1",
+          "expected": "201 mit Location-Header, 200 mit der Notiz, 204; danach GET /notes/1 liefert 404."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "text mit 0, 1, Maximallänge und Maximallänge + 1 Zeichen; Body genau am Limit und ein Byte darüber; PORT 0, 1, 65535 und 65536",
+          "expected": "Ungültige Längen ergeben 422, ein zu großer Body 413, ungültige Ports einen Startabbruch mit Exit-Code 78 und einer Meldung, die den Namen der Variable nennt."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Body mit kaputtem JSON, falscher Content-Type, text = \"'; DROP TABLE notes; --\", PUT auf /notes und ein Handler, der einen unerwarteten Fehler wirft",
+          "expected": "400, 415, die Zeichenfolge wird gespeichert und bleibt wirkungslos (Platzhalter), 405 mit Allow-Header, 500 mit allgemeiner Meldung ohne Stacktrace; das Log enthält den Fehler, aber weder Geheimnis noch Body."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Statuscodes und Meldungen sind konsistent und unterscheiden Aufruferfehler (4xx) von Serverfehlern (5xx); Details stehen nur im Log.",
+        "SQL nutzt ausschließlich Platzhalter, das Schema entsteht per nummerierter Migration, zusammengehörige Änderungen laufen in einer Transaktion.",
+        "Konfiguration wird beim Start geprüft; Fehler nennen Variablennamen, nie Werte von Geheimnissen; strukturierte Logs schwärzen verdächtige Felder.",
+        "SIGTERM wird mit Zeitlimit behandelt (Exit-Code 0), und die Tests decken Normal-, Grenz- und Fehlerfälle ab, ohne echte Wartezeiten."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://nodejs.org/api/http.html",
+        "https://nodejs.org/api/sqlite.html",
+        "https://nodejs.org/api/test.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "lx-m1@assessment-tech-tracks-v1",
+      "moduleId": "lx-m1",
+      "title": "Ein Auswertungswerkzeug für Zugriffsprotokolle mit Pipes und sicherer Rechtevergabe",
+      "lessonId": "lx-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Arbeite in einem Wegwerf-Verzeichnis oder Container. Lege eine Protokolldatei mit mindestens 20 selbst erzeugten Zeilen im Format 'ADRESSE - - [ZEIT] \"METHODE PFAD HTTP/1.1\" STATUS BYTES' an (Adressen aus 192.0.2.0/24 oder 203.0.113.0/24). Schreibe eine Befehlsfolge (Datei kommandos.md), die ermittelt: die drei häufigsten Adressen, die Zahl der Anfragen je Statuscode, die Adressen mit mehr als zwei Fehlerzeilen und die Summe der übertragenen Bytes. Lege Datei und Ergebnisordner so an, dass nur der Besitzer schreiben und nur Besitzer und Gruppe lesen dürfen, und weise die Rechte mit stat nach.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Auswertung des Protokolls mit sort | uniq -c | sort -rn und awk",
+          "expected": "Ausgaben mit den drei häufigsten Adressen, einer Tabelle der Statuscodes und der Bytesumme; jeder Schritt ist mit einem erklärenden Satz belegt; die Rechte der Ergebnisdatei sind 640 (stat -c %a)."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Leere Protokolldatei, Datei ohne abschließenden Zeilenumbruch, Zeile mit Leerzeichen im Pfad, Gleichstand bei den Häufigkeiten",
+          "expected": "Du erklärst, was jeder Befehl in den vier Fällen ausgibt (zum Beispiel 0 Zeilen, letzte Zeile mitgezählt) und wie du die Reihenfolge bei Gleichstand festlegst (sort -k, LC_ALL=C)."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Auswertung einer nicht vorhandenen Datei und einer Datei ohne Leseberechtigung (chmod 000); Befehlsfolge mit set -o pipefail",
+          "expected": "Du zeigst die Fehlermeldungen und Exit-Codes (2 bei grep, Permission denied), und dass die Pipeline mit pipefail den ersten Fehler meldet; du erklärst, warum 2>/dev/null Fehler verstecken würde."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Die Befehlsfolge nutzt Pipes und die richtigen Werkzeuge (sort vor uniq, awk für Spalten) und liefert die geforderten Kennzahlen.",
+        "Rechte werden numerisch und symbolisch gesetzt und mit stat belegt; Verzeichnisse und Dateien bekommen sinnvolle Rechte (700/600 bzw. 750/640).",
+        "Normal-, Grenz- und Fehlerfälle sind mit konkreten Eingaben, Ausgaben und Exit-Codes dokumentiert.",
+        "Alle Pfade und Variablen stehen in Anführungszeichen; es wird keine riskante Löschung ohne Probelauf verwendet."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://www.gnu.org/software/bash/manual/bash.html",
+        "https://www.gnu.org/software/coreutils/manual/coreutils.html",
+        "https://www.gnu.org/software/gawk/manual/gawk.html"
+      ]
+    },
+    {
+      "id": "lx-m2@assessment-tech-tracks-v1",
+      "moduleId": "lx-m2",
+      "title": "Ein geprüftes Backup- und Überwachungsskript für ein Verzeichnis schreiben",
+      "lessonId": "lx-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Schreibe ein Bash-Skript 'sichern.sh QUELLE ZIEL [ANZAHL]', das mit rsync --link-dest Schnappschüsse anlegt, vor dem Umbenennen Prüfsummen vergleicht (Fehler einzeln auswerten), parallele Läufe mit einer Sperre verhindert, über ANZAHL hinaus alte Schnappschüsse löscht und bei Fehlern aufräumt. Es hat getopts-Optionen (mindestens -n für Trockenlauf), prüft alle Eingaben, nutzt dokumentierte Exit-Codes und trap für das Aufräumen. Schreibe Tests (Bash) für Normal-, Grenz- und Fehlerfälle samt Rücksicherungstest; ShellCheck muss ohne Meldung durchlaufen. Beschreibe als Anhang eine systemd-Timer- oder cron-Zeile, ohne sie auszuführen, und kennzeichne sie als nicht ausgeführt.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Zwei Läufe mit einer zwischenzeitlich geänderten Datei",
+          "expected": "Zwei Schnappschüsse; die unveränderte Datei hat in beiden dieselbe Inode, die geänderte zwei verschiedene; diff -r zwischen Quelle und Rücksicherung ist leer."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Leere Quelle, Datei mit Leerzeichen und Umlauten im Namen, ANZAHL=1, zwei Läufe in derselben Sekunde",
+          "expected": "Alle Fälle ergeben einen gültigen Schnappschuss oder einen dokumentierten Abbruch (Namenskollision, Exit-Code 73); bei ANZAHL=1 bleibt genau der neueste Schnappschuss übrig."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Quelldatei mit chmod 000, belegte Sperre, Abbruch durch SIGTERM während des Laufs, fehlende Quelle",
+          "expected": "Die Exit-Codes sind unterscheidbar (z. B. 70, 75, 66); nach jedem Fehler bleiben weder .partial-Verzeichnis noch Sperre zurück, und der latest-Link zeigt weiter auf den letzten guten Stand."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "rsync --link-dest, Zwischenverzeichnis, atomares Umbenennen und der latest-Link arbeiten korrekt zusammen; alte Schnappschüsse werden nur innerhalb des Zielverzeichnisses gelöscht.",
+        "Prüfsummen jeder Seite werden einzeln eingelesen und ihr Exit-Code ausgewertet; ein Test belegt den Fall einer unlesbaren Datei.",
+        "Optionen, Eingabeprüfung, Exit-Codes und trap-Aufräumen sind umgesetzt und dokumentiert; ShellCheck läuft ohne Meldung.",
+        "Die Abgabe nennt ehrlich, was nicht ausgeführt wurde (systemd/cron, Offsite-Kopie, Verschlüsselung) und was nicht getestet ist (zum Beispiel macOS)."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://download.samba.org/pub/rsync/rsync.1",
+        "https://www.shellcheck.net/wiki/",
+        "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html",
+        "https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html"
+      ]
+    },
+    {
+      "id": "ws-m1@assessment-tech-tracks-v1",
+      "moduleId": "ws-m1",
+      "title": "Eine kleine Notiz-Anwendung gegen Injection, XSS, CSRF und fremde Zugriffe absichern",
+      "lessonId": "ws-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Gegeben ist eine kleine Notiz-Anwendung mit Anmeldung (Node.js, node:sqlite, ohne Frameworks), die Notizen anlegt, anzeigt und teilt. Dokumentiere zuerst ein Bedrohungsmodell mit mindestens acht bewerteten Risiken. Behebe danach mindestens vier Schwachstellen aus verschiedenen Klassen: Suche und Sortierung ohne SQL-Verkettung, Ausgabe-Kodierung im HTML samt Link-Prüfung, CSRF-Schutz für alle ändernden Routen (Herkunftsprüfung und Token), Besitzprüfung für Notizen mit einheitlichem 404. Schreibe zu jeder Behebung einen Test, der zuerst die unsichere Variante zeigt und mit dem Angriff fehlschlägt, und danach die sichere Variante. Ordne jede Maßnahme der passenden OWASP-Top-10:2025-Kategorie zu. Die Angriffe dürfen nur gegen deine eigene Anwendung und lokale Test-Server laufen.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Person A legt eine Notiz mit dem Titel <img src=x onerror=alert(1)> an, Person B ruft Notizen und die Suche mit x' OR '1'='1 auf",
+          "expected": "Der Titel erscheint kodiert als Text; die Suche liefert keine fremden Notizen; Person B sieht nur eigene Einträge."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Notiz-Nummer einer anderen Person, Link mit javascript:-Schema, Sortierwert name; DROP TABLE notes, Anfrage ohne Sec-Fetch-Site und Origin",
+          "expected": "Fremde und fehlende Notiz liefern identisch 404; der Link wird zu #; die Sortierung lehnt den Wert ab; die Anfrage ohne Herkunftsangabe wird bei ändernden Methoden mit 403 abgelehnt."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Anfrage mit Cookie, aber fremdem Origin und ohne CSRF-Token; Token einer anderen Sitzung; ein Symlink im Upload-Ordner, der nach außen zeigt",
+          "expected": "Beide CSRF-Fälle ergeben 403 und ändern nichts; der Symlink wird abgelehnt; es erscheinen keine Interna in Fehlermeldungen."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Das Bedrohungsmodell nennt Werte, Vertrauensgrenzen und bewertete Risiken mit nachvollziehbarer Reihenfolge und Zuordnung zu A01 und A05.",
+        "Jede Behebung trennt Befehl und Daten bzw. kodiert nach Kontext (Platzhalter, Allowlist, escapeHtml, Schema-Prüfung) statt zu filtern; ein Test zeigt jeweils die Lücke vorher.",
+        "CSRF-Schutz nutzt mehrere Schichten (SameSite-Cookie mit __Host-, Herkunftsprüfung, Token) und CORS wird nicht als Schutz missverstanden.",
+        "Besitzprüfung sitzt zentral auf dem Server, Fehlermeldungen verraten nichts, und Pfade werden mit realpath geprüft; die Abgabe nennt ehrlich, was nicht geprüft wurde (Browser-Verhalten von CSP und SameSite, Sanitizer für Rich Text, echte Netzwerk-Abrufe)."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://top10.owasp.org/2025/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "ws-m2@assessment-tech-tracks-v1",
+      "moduleId": "ws-m2",
+      "title": "Anmeldung, Sitzungen und Betrieb einer Anwendung härten und prüfbar machen",
+      "lessonId": "ws-m2-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Baue für eine kleine Node.js-Anwendung die Anmeldung sicher aus: Passwörter mit scrypt (OWASP-Mindestkosten) oder Argon2id mit Salz, konstantem Vergleich und Neu-Hashen; serverseitige Sitzungen mit gehashter Kennung, Rotation nach der Anmeldung und zwei Zeitlimits; Begrenzung von Anmeldeversuchen mit neutraler Fehlermeldung. Ergänze einen Header-Test, der die Antworten der Anwendung gegen eine Checkliste prüft (CSP mit script-src, nosniff, Referrer-Policy, frame-ancestors, Permissions-Policy, bei HTTPS HSTS), und ein Suchwerkzeug für Geheimnisse mit Platzhalter-Ausnahmen. Schreibe außerdem Log-Einträge mit Bereinigung von Steuerzeichen und eine einseitige Beschreibung des Vorfall-Ablaufs inklusive des Hinweises auf Art. 33 DSGVO (juristisch zu prüfen). Falls Token genutzt werden, prüfe sie vollständig (Algorithmus aus der Konfiguration, exp, iss, aud).",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Registrierung, Anmeldung mit richtigem Passwort, Abmeldung, danach Zugriff mit der alten Sitzungskennung",
+          "expected": "Anmeldung klappt mit neuer Kennung; nach Abmeldung ist die alte Kennung ungültig; im Speicher steht nur der Hash der Kennung."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Passwort mit 1024 und 1025 Zeichen, Passwort mit Umlauten in zwei Unicode-Formen, Sitzung genau am Zeitlimit, Token 30 und 31 Sekunden nach exp",
+          "expected": "Die Längen- und Zeitgrenzen verhalten sich wie dokumentiert; beide Unicode-Formen führen zum selben Ergebnis; die Grenzen sind getestet."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Manipulierter Hash mit riesigem N in der Datenbank, zehn falsche Anmeldungen hintereinander, Log-Eingabe mit Zeilenumbruch, Token mit alg none",
+          "expected": "Der manipulierte Hash wird ohne Berechnung abgelehnt; weitere Versuche werden verzögert oder abgelehnt, ohne Konten dauerhaft zu sperren; im Log entsteht nur eine Zeile; das Token wird abgelehnt."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Passwortspeicherung nutzt ein langsames, gesalzenes Verfahren mit gespeicherten Kosten, konstantem Vergleich und Neu-Hashen; die Mindestwerte sind mit einer aktuellen Quelle belegt.",
+        "Sitzungen speichern nur Hashes, rotieren bei Anmeldung und Rechteänderung, haben Leerlauf- und absolute Frist und werden beim Passwortwechsel beendet.",
+        "Die Header-Prüfung unterscheidet ok, fehlt und schwach (zum Beispiel CSP ohne script-src) und behandelt HSTS über HTTP korrekt.",
+        "Geheimnis-Suche und Log-Bereinigung geben keine Geheimnisse aus und sind mit erfundenen Werten getestet; ein Rotationsablauf nach einem Leck ist beschrieben; die Abgabe nennt ehrlich, was nicht ausgeführt wurde (Mehr-Faktor-Anmeldung, Passkeys, TLS-Konfiguration, Alarmierung) und kennzeichnet Rechtshinweise als prüfpflichtig."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+        "https://www.rfc-editor.org/rfc/rfc9700"
       ]
     }
   ]

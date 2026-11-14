@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lernkarten-Galerie | Abschlussprojekt HTML und CSS</title>
+  <meta name="description" content="Galerie aus Lernkarten mit Designtokens, Dunkelmodus, Container Queries, responsiven Bildern und nativem Dialog.">
+  <link rel="canonical" href="https://example.test/projekt/lernkarten">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="projekt.css">
+</head>
+<body>
+  <a class="skip" href="#inhalt">Zum Inhalt</a>
+  <header class="kopf">
+    <p><strong>Lernkarten</strong></p>
+    <nav aria-label="Hauptnavigation"><a href="#galerie">Galerie</a> · <a href="#faq">Fragen</a></nav>
+    <button class="button" type="button" id="thema" aria-pressed="false">Dunkles Design</button>
+  </header>
+  <main id="inhalt">
+    <h1>Lernkarten-Galerie</h1>
+    <section id="galerie" aria-labelledby="galerie-titel">
+      <h2 id="galerie-titel">Deine Karten</h2>
+      <div class="galerie">
+        <div class="slot">
+          <article class="card karte">
+            <picture>
+              <source media="(max-width: 30rem)" srcset="../bilder/lernkarte-quadrat.svg">
+              <img src="../bilder/lernkarte-960.svg" srcset="../bilder/lernkarte-480.svg 480w, ../bilder/lernkarte-960.svg 960w" sizes="(min-width: 60rem) 20rem, 100vw" width="960" height="640" alt="Lernkarte „Boxmodell“ mit blauem Rahmen">
+            </picture>
+            <div><h2>Boxmodell</h2><p>Content, Padding, Border und Margin.</p><button class="button" type="button" data-dialog="boxmodell">Details</button></div>
+          </article>
+        </div>
+        <div class="slot">
+          <article class="card karte">
+            <picture>
+              <source media="(max-width: 30rem)" srcset="../bilder/lernkarte-quadrat.svg">
+              <img src="../bilder/lernkarte-960.svg" srcset="../bilder/lernkarte-480.svg 480w, ../bilder/lernkarte-960.svg 960w" sizes="(min-width: 60rem) 20rem, 100vw" width="960" height="640" alt="Lernkarte „Flexbox“ mit blauem Rahmen" loading="lazy">
+            </picture>
+            <div><h2>Flexbox</h2><p>Eine Achse, flexible Reihen.</p><button class="button" type="button" data-dialog="flexbox">Details</button></div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section id="faq" aria-labelledby="faq-titel">
+      <h2 id="faq-titel">Häufige Fragen</h2>
+      <details name="faq" open><summary>Warum Tokens?</summary><p>Farben stehen an einer Stelle; Dunkelmodus und Kontrast lassen sich dort prüfen.</p></details>
+      <details name="faq"><summary>Warum Container Queries?</summary><p>Die Karte reagiert auf den Platz, den sie bekommt, nicht auf das Fenster.</p></details>
+    </section>
+  </main>
+  <dialog id="dialog" aria-labelledby="dialog-titel">
+    <h2 id="dialog-titel">Details</h2>
+    <p id="dialog-text"></p>
+    <form method="dialog"><button class="button" autofocus>Schließen</button></form>
+  </dialog>
+  <script>
+    const texte = { boxmodell: 'Jedes Element ist eine Box aus Inhalt, Innenabstand, Rand und Außenabstand.', flexbox: 'Flexbox ordnet Elemente entlang einer Hauptachse an.' };
+    const dialog = document.getElementById('dialog');
+    document.querySelectorAll('[data-dialog]').forEach((knopf) => knopf.addEventListener('click', () => {
+      document.getElementById('dialog-text').textContent = texte[knopf.dataset.dialog];
+      dialog.showModal();
+    }));
+    const thema = document.getElementById('thema');
+    thema.addEventListener('click', () => {
+      const dunkel = thema.getAttribute('aria-pressed') !== 'true';
+      document.documentElement.dataset.theme = dunkel ? 'dark' : 'light';
+      thema.setAttribute('aria-pressed', String(dunkel));
+    });
+  </script>
+</body>
+</html>

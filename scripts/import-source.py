@@ -1,4 +1,4 @@
-"""Import the standalone ROOTPFAD export without changing execution order."""
+"""Import the standalone Root Road export without changing execution order."""
 
 from pathlib import Path
 import re

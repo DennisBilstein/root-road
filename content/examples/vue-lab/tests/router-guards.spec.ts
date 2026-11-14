@@ -84,6 +84,6 @@ describe('Navigation Guards', () => {
   it('setzt den Dokumenttitel nach jeder Navigation', async () => {
     const router = createAppRouter(fakeAuth({ loggedIn: true, roles: ['user'] }));
     await router.push('/account');
-    expect(document.title).toBe('Mein Konto · ROOTPFAD Lab');
+    expect(document.title).toBe('Mein Konto · Root Road Lab');
   });
 });

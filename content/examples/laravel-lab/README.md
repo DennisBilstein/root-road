@@ -1,7 +1,7 @@
-# ROOTPFAD Laravel 13 Lernlabor
+# Root Road Laravel 13 Lernlabor
 
 Isoliertes lokales Übungsprojekt, nicht die technische Implementierung der
-ROOTPFAD-Plattform. Basis ist das offizielle MIT-lizenzierte Laravel-Skelett;
+Root-Road-Plattform. Basis ist das offizielle MIT-lizenzierte Laravel-Skelett;
 Original-Copyright und Lizenz sind über Composer/Upstream dokumentiert:
 https://github.com/laravel/laravel und https://github.com/laravel/framework/blob/13.x/LICENSE.md.
 Eigene Lab-Tests stehen unter `tests/Feature/LearningContractsTest.php`.

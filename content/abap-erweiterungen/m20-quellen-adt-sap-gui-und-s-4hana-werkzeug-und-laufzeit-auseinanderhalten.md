@@ -4,7 +4,7 @@ Modul: abap-m20 · 23 Minuten
 
 Eclipse mit ABAP Development Tools ist ein Entwicklungswerkzeug; SAP GUI ist eine Oberfläche zum Zugriff auf SAP-Systeme. SAP HANA ist eine Datenbank, SAP S/4HANA eine darauf basierende ERP-Lösung. Diese Begriffe bezeichnen unterschiedliche Ebenen. Ein ABAP-Quelltext wird mit ADT bearbeitet, liegt aber als Entwicklungsobjekt im verbundenen ABAP-System. Die lokale Eclipse-Installation ist noch keine lokale ABAP-Laufzeit. Dieser Abschnitt vertieft zugleich die Laufzeit-Grundlagen aus abap-m17.
 
-Ein greifbares Beispiel ist die Konsolenausgabe 'Hallo ROOTPFAD'. Du erstellst im freigegebenen Übungspaket eine globale Klasse mit if_oo_adt_classrun, aktivierst sie und startest sie als ADT-Konsolenanwendung. Die main-Methode läuft im verbundenen ABAP-System; das Ergebnis erscheint in Eclipse. Bleibt die Verbindung oder die Berechtigung aus, kann eine korrekt installierte Entwicklungsoberfläche den fehlenden Systemzugang nicht ersetzen.
+Ein greifbares Beispiel ist die Konsolenausgabe 'Hallo Root Road'. Du erstellst im freigegebenen Übungspaket eine globale Klasse mit if_oo_adt_classrun, aktivierst sie und startest sie als ADT-Konsolenanwendung. Die main-Methode läuft im verbundenen ABAP-System; das Ergebnis erscheint in Eclipse. Bleibt die Verbindung oder die Berechtigung aus, kann eine korrekt installierte Entwicklungsoberfläche den fehlenden Systemzugang nicht ersetzen.
 
 Für die Installation erläutert SAP das Hinzufügen des ADT-Plugins über Help > Install New Software mit der Update-Site https://tools.hana.ondemand.com/latest. Prüfe die aktuellen Plattformvoraussetzungen statt Versionsnummern dauerhaft in die Lektion einzubauen. In klassischen Systemen bietet SAP GUI unter anderem Transaktionen für Workbench und Transport Organizer; diese Wege sind nicht unverändert auf ABAP-Cloud-Umgebungen übertragbar. Auch ABAP-Sprachversion und freigegebene APIs bestimmen, welche Entwicklung erlaubt ist. S/4HANA bedeutet nicht, dass aller vorhandener ABAP-Code automatisch cloudkonform ist.
 
@@ -19,7 +19,7 @@ ENDCLASS.
 
 CLASS zcl_rootpfad_hello IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    out->write( `Hallo ROOTPFAD` ).
+    out->write( `Hallo Root Road` ).
   ENDMETHOD.
 ENDCLASS.
 ```

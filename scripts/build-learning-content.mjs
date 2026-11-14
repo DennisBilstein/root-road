@@ -6,6 +6,7 @@ const target = path.join(root,'assets/script-01.js');
 let script = fs.readFileSync(target,'utf8').replace(/\n\/\* LESSON-REFINEMENTS:START \*\/[\s\S]*?\/\* LESSON-REFINEMENTS:END \*\/\n/g,'');
 const data = JSON.parse(fs.readFileSync(path.join(root,'content/learning-refinements.json'),'utf8'));
 const code = `\n/* LESSON-REFINEMENTS:START */\nvar RP_REFINEMENTS = ${JSON.stringify(data)};\nRP_REFINEMENTS.updates.forEach(function(update){\n  var lesson = MODULES.flatMap(function(m){return m.lessons;}).find(function(l){return l.id === update.id;});\n  if(!lesson) throw new Error('Lektion fehlt: '+update.id);\n  Object.assign(lesson,update);\n});\nRP_REFINEMENTS.modules.forEach(function(module){ if(!MODULES.some(function(m){return m.id === module.id;})) MODULES.push(module); });\n/* LESSON-REFINEMENTS:END */\n`;
-script = script.replace('MODULES.sort(function(a, b)',code+'MODULES.sort(function(a, b)');
+// Replacer function: a string replacement would interpret "$'", "$&" and "$`" inside lesson code (e.g. Bash quoting) as special patterns.
+script = script.replace('MODULES.sort(function(a, b)', () => code + 'MODULES.sort(function(a, b)');
 fs.writeFileSync(target,script);
 console.log(`${data.updates.length} überarbeitete Lektionen und ${data.modules.length} neues Einstiegsmodul integriert.`);

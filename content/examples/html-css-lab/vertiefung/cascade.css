@@ -1,0 +1,33 @@
+/* Reihenfolge der Ebenen festlegen: später genannte Ebenen gewinnen, unabhängig von der Spezifität. */
+@layer reset, base, components, utilities;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+}
+
+@layer base {
+  /* :where() hat die Spezifität 0 und lässt sich jederzeit überschreiben. */
+  :where(h1, h2, h3) { line-height: 1.25; margin-block: 0 0.5rem; }
+  :where(a) { color: #174d9e; }
+  /* Absichtlich hohe Spezifität in einer frühen Ebene: Sie verliert trotzdem gegen components. */
+  #inhalt .button.gross { background: crimson; color: #fff; }
+}
+
+@layer components {
+  .button { display: inline-block; padding: 0.75rem 1rem; background: #174d9e; color: #fff; border-radius: 0.5rem; }
+  /* :is() fasst Selektoren zusammen; die Spezifität ist die des spezifischsten Arguments. */
+  .card :is(h2, h3) { color: #172438; }
+  /* :has() wählt ein Element nach seinen Nachfahren: eine Karte mit Bild bekommt ein zweispaltiges Layout. */
+  .card:has(img) { display: grid; grid-template-columns: 8rem 1fr; gap: 1rem; }
+  /* Eine Karte mit ungültigem Feld bekommt einen Rand, ohne dass JavaScript eine Klasse setzt. */
+  .card:has(:user-invalid) { outline: 2px solid #b3261e; }
+}
+
+@layer utilities {
+  .zentriert { text-align: center; }
+  .nur-lesegeraet { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+
+/* Unlayerter Code schlägt jede Ebene. Deshalb gehört Fremd-CSS in eine Ebene, eigenes Feintuning darf außerhalb stehen. */
+.button.achtung { background: #8a1c14; }

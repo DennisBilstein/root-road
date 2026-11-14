@@ -56,7 +56,7 @@ export function createAppRouter(auth: AuthState, history: RouterHistory = create
   });
 
   router.afterEach((to) => {
-    document.title = to.meta.title ? `${to.meta.title} · ROOTPFAD Lab` : 'ROOTPFAD Lab';
+    document.title = to.meta.title ? `${to.meta.title} · Root Road Lab` : 'Root Road Lab';
   });
   return router;
 }

@@ -1,0 +1,21 @@
+{
+  "name": "rootpfad-node-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Geprüfter Code für die Node.js-Lektionen (node-m1, node-m2). Keine Abhängigkeiten, nur eingebaute Module.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "test:node24": "docker run --rm -v \"$PWD\":/lab -w /lab node:24-slim node --test \"tests/*.test.js\""
+  },
+  "exports": {
+    "./text": "./src/modules/text.js",
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#format": "./src/modules/format.js"
+  }
+}

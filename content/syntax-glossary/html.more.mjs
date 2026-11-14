@@ -36,7 +36,7 @@ export default {
       pitfall: 'In data-Attribute gehören keine Geheimnisse und keine großen Datenmengen. Sie sind für jeden im Quelltext lesbar.', lesson: 'js-m1-l5' },
     { id: 'html-meta-seo', cat: 'Dokument', term: 'Meta-Angaben für Suchmaschinen und Teilen', syntax: '<meta name="description" content="…">    <link rel="canonical" href="…">',
       text: 'Titel und Beschreibung erscheinen in Suchergebnissen. canonical nennt die bevorzugte Adresse einer Seite, robots steuert die Indexierung. Open-Graph-Angaben bestimmen die Vorschau beim Teilen.',
-      code: '<title>Syntax-Glossar – ROOTPFAD</title>\n<meta name="description" content="Befehle von HTML bis ABAP nachschlagen: Syntax, Beispiel und typische Fehler.">\n<link rel="canonical" href="https://example.org/glossar">\n<meta property="og:title" content="Syntax-Glossar">\n<meta name="robots" content="index, follow">',
+      code: '<title>Syntax-Glossar – Root Road</title>\n<meta name="description" content="Befehle von HTML bis ABAP nachschlagen: Syntax, Beispiel und typische Fehler.">\n<link rel="canonical" href="https://example.org/glossar">\n<meta property="og:title" content="Syntax-Glossar">\n<meta name="robots" content="index, follow">',
       pitfall: 'Jede Seite braucht einen eigenen Titel und eine eigene Beschreibung. Doppelte Texte schwächen die Auffindbarkeit.', lesson: 'html-m1-l1' },
     { id: 'html-skiplink', cat: 'Barrierefreiheit', term: 'Skip-Link und lang-Wechsel', syntax: '<a href="#inhalt" class="skip">Zum Inhalt</a>    <span lang="en">…</span>',
       text: 'Ein Skip-Link am Seitenanfang lässt Tastaturnutzer die Navigation überspringen. lang an einem Element markiert Fremdsprache, damit Screenreader richtig aussprechen.',

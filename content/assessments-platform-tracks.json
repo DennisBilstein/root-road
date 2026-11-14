@@ -1,0 +1,32 @@
+[
+  {
+    "moduleId": "mariadb-m2",
+    "title": "Eine Bestellverwaltung mit Fenster-Auswertung, Sperren, Migration und getesteter Sicherung",
+    "brief": "Baue im SQL-Lab (oder in einem eigenen Wegwerf-Container) ein kleines Schema mit Kunden, Produkten, Bestellungen und Positionen samt Fremdschlüsseln und CHECK-Regeln. Schreibe drei Fälle als Dateien mit erwarteter Ausgabe: (1) eine Auswertung mit CTE und Fensterfunktion (zum Beispiel Umsatz je Monat mit laufender Summe), (2) eine Bestellung als Transaktion mit Bestandssperre, die bei zu wenig Bestand nichts schreibt, (3) eine idempotente Expand/Contract-Migration mit Backfill in Stapeln. Ergänze eine Sicherung mit mariadb-dump und eine Wiederherstellung in eine zweite Datenbank mit Prüfsumme. Dokumentiere in einem Protokoll, was geprüft wurde, was nicht, und welche Serverversion du benutzt hast.",
+    "normal": {
+      "input": "Alle Fälle gegen eine frische Datenbank ausführen und mit den erwarteten Ausgaben vergleichen",
+      "expected": "Jeder Fall stimmt mit seiner erwarteten Ausgabe überein; die Auswertung liefert die handgerechneten Werte für mindestens zwei Monate; die Bestellung bucht den Bestand genau einmal ab; die Wiederherstellung hat dieselbe Prüfsumme wie das Original."
+    },
+    "boundary": {
+      "input": "Zwei parallele Bestellungen auf das letzte Stück, die Migration zweimal ausführen und eine Gleichstand-Konstellation in der Rangfolge",
+      "expected": "Genau eine der beiden Bestellungen wird gebucht und die andere sauber abgelehnt; der zweite Migrationslauf ändert nichts und meldet keinen Fehler; die Rangfolge nutzt ein eindeutiges Zweitkriterium und ist bei zwei Läufen identisch."
+    },
+    "failure": {
+      "input": "Menge 0 einfügen, ein Produkt mit Positionen löschen, NOT NULL vor dem Backfill setzen und den Dump absichtlich verändern",
+      "expected": "Der Server lehnt die ersten drei Fälle mit den passenden Fehlern ab (CHECK, Fremdschlüssel, Migration schlägt fehl); die veränderte Sicherung zeigt in der Prüfsumme eine Abweichung; du erklärst jede Meldung und behebst die Ursache."
+    },
+    "rubric": [
+      "Das Schema setzt Regeln selbst durch (Schlüssel, Fremdschlüssel, CHECK, NOT NULL), und mindestens drei Regelverletzungen sind mit Fehlernummer getestet.",
+      "Die Bestellung ist eine Transaktion mit Sperre; ein Test mit zwei Sitzungen belegt, dass der Bestand nie negativ wird, und der Umgang mit Deadlocks (Reihenfolge, Wiederholung) ist beschrieben.",
+      "Die Migration folgt Expand, Backfill und Contract, ist idempotent und prüft vor dem Contract, dass keine Zeile offen ist.",
+      "Das Protokoll trennt geprüft, nicht geprüft und Annahmen (Serverversion, Datenmenge) und behauptet keine Aussage über Last oder andere Versionen, die nicht gemessen wurde."
+    ],
+    "sources": [
+      "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
+      "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
+      "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump"
+    ],
+    "execution": "manual-review-required",
+    "revision": "assessment-platform-tracks-v1"
+  }
+]

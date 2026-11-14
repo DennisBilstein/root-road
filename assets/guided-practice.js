@@ -80,7 +80,7 @@ async function rpPracticeRun(task){
 }
 function rpRenderPractice(){
   var tracks=RP_PRACTICE_TRACKS.filter(rpPracticeAllowed),track=tracks.find(function(t){return t.id===rpPractice.track;});
-  var h='<div class="breadcrumb">Aktiv programmieren · eigene ROOTPFAD-Aufgaben</div><h1>Geführte Codewerkstatt</h1>';
+  var h='<div class="breadcrumb">Aktiv programmieren · eigene Root-Road-Aufgaben</div><h1>Geführte Codewerkstatt</h1>';
   h+='<p>Erklären → selbst ergänzen → Feedback lesen → Variante lösen. Nur die JavaScript-Funktionsaufgaben führen Code aus. Andere Sprachen prüfen begrenzte Ergänzungen, keine vollständige fachliche Korrektheit. Keine fremden Kurstexte oder Aufgaben kopiert.</p>';
   h+='<div class="gp-tracks">'+tracks.map(function(t){return '<button class="ex-btn" aria-pressed="'+(track?.id===t.id)+'" onclick="rpPracticeStart(\''+t.id+'\')">'+esc(t.title)+'</button>';}).join('')+'</div>';
   if(!track)return h+'<p>Wähle eine Sprache. Die Auswahl folgt deinem Lernpfad.</p>';

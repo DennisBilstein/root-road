@@ -7,12 +7,12 @@ abgerufen: https://www.codecademy.com/learn/introduction-to-javascript.
 Sie zeigt einen Anfängerkurs mit kurzen Sprachthemen, Aufgaben und Projekten.
 Die Seite unterscheidet zugleich kostenlose Inhalte von kostenpflichtigen
 Zusatzfunktionen (unter anderem Zertifikat/Assessments). Die vollständigen
-angemeldeten Kursabläufe wurden nicht getestet. ROOTPFAD behauptet weder eine
+angemeldeten Kursabläufe wurden nicht getestet. Root Road behauptet weder eine
 Kooperation noch eine vollständige Kopie oder Funktionsgleichheit.
 
 Übernommen wurde nur das allgemeine Lernprinzip: erklären, selbst bearbeiten,
 unmittelbar rückmelden und mit verändertem Auftrag erneut anwenden. Texte,
-Code, Aufgaben und Gestaltung sind eigene ROOTPFAD-Inhalte.
+Code, Aufgaben und Gestaltung sind eigene Root-Road-Inhalte.
 
 ## Implementierter Umfang
 
@@ -39,7 +39,7 @@ einer vollständigen allgemeinen Code-Sandbox für beliebige feindliche Programm
 
 Andere Spuren prüfen fest begrenzte Codeergänzungen, ohne PHP/Java/ABAP/SQL/Git
 auszuführen. Das steht bei jeder Aufgabe ausdrücklich dabei. Kein beliebiger
-Code wird durch child_process auf dem ROOTPFAD-Server ausgeführt. Die vorher
+Code wird durch child_process auf dem Root-Road-Server ausgeführt. Die vorher
 angelegten Laravel-/Vue-Labore bleiben für vollständige Frameworkübungen nötig.
 
 ## Lernstand und Hilfe

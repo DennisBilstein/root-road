@@ -1,0 +1,22 @@
+# Beispiel für eine systemd-Einheit (nach /etc/systemd/system/ kopieren). In diesem Lab NICHT ausgeführt.
+[Unit]
+Description=Root Road Beispiel-Worker
+After=network.target
+
+[Service]
+Type=simple
+User=rootpfad
+ExecStart=/opt/rootpfad/worker.sh /run/rootpfad/worker.pid
+# systemd legt /run/rootpfad an und räumt es auf; der Dienst darf dort schreiben.
+RuntimeDirectory=rootpfad
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+# Härtung: weniger Rechte als nötig
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

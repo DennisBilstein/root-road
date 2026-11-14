@@ -21,8 +21,11 @@ const contracts=ctx.CARDS.map(card=>{
     editorialStatus:card.id.includes('@2026-11')?'individually-revised':'original-factual-core-not-independently-revalidated'
   };
 });
-const block=`\n/* QUIZ-CONTRACTS:START */\nvar RP_QUIZ_CONTRACTS=${JSON.stringify(contracts)};\nvar RP_QUIZ_CONTRACT_BY_ID={};RP_QUIZ_CONTRACTS.forEach(function(c){RP_QUIZ_CONTRACT_BY_ID[c.id]=c;});\n/* QUIZ-CONTRACTS:END */\n`;
-script=script.replace('var VERSION =',block+'var VERSION =');fs.writeFileSync(file,script);
+// Die Kriterien (ca. 2,4 MB) werden nur beim Beantworten einer Frage gebraucht: Sie stehen in einer eigenen Datei,
+// die nach dem Start im Leerlauf geladen wird (bootstrap.js). Im Aggregat bleiben nur leere Platzhalter.
+const block=`\n/* QUIZ-CONTRACTS:START */\nvar RP_QUIZ_CONTRACTS=[];\nvar RP_QUIZ_CONTRACT_BY_ID={};\n/* QUIZ-CONTRACTS:END */\n`;
+script=script.replace('var VERSION =',()=>block+'var VERSION =');fs.writeFileSync(file,script);
+fs.writeFileSync('assets/quiz-contracts-data.js',`/* Erzeugt von scripts/build-quiz-learning-contracts.mjs; nicht von Hand ändern. */\n(function(list){\n  list.forEach(function(c){RP_QUIZ_CONTRACT_BY_ID[c.id]=c;});\n  RP_QUIZ_CONTRACTS=list;window.RP_QUIZ_CONTRACTS_READY=true;\n})(${JSON.stringify(contracts)});\n`);
 fs.mkdirSync('content/quality',{recursive:true});
 fs.writeFileSync('content/quality/quiz-contract-coverage.json',JSON.stringify({updatedAt:new Date().toISOString(),cards:contracts.length,learningContracts:contracts.length,individuallyRevised:contracts.filter(c=>c.editorialStatus==='individually-revised').length,independentFactualReviewComplete:false,contracts},null,2)+'\n');
 console.log(`${contracts.length} aufgabenspezifische Abruf-/Bewertungsverträge erstellt; keine vollständige Fachprüfung behauptet.`);

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Native Interaktion: Dialog, Popover, Details</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 40rem; padding: 1rem; font: 1rem/1.6 system-ui, sans-serif; }
+    button, summary { min-height: 2.75rem; padding: 0.5rem 1rem; font: inherit; }
+    :focus-visible { outline: 3px solid #174d9e; outline-offset: 3px; }
+    dialog { max-width: min(28rem, calc(100vw - 2rem)); border: 1px solid #66758d; border-radius: 0.5rem; }
+    dialog::backdrop { background: rgb(15 24 38 / 0.6); }
+    [popover] { padding: 1rem; border: 1px solid #66758d; border-radius: 0.5rem; max-width: 20rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Native Interaktion</h1>
+
+    <!-- Modaler Dialog: showModal() macht den Rest der Seite inert, Escape schließt, der Fokus kehrt zum Auslöser zurück. -->
+    <button type="button" id="dialog-auf">Fortschritt zurücksetzen …</button>
+    <dialog id="bestaetigung" aria-labelledby="dialog-titel">
+      <h2 id="dialog-titel">Fortschritt wirklich zurücksetzen?</h2>
+      <p>Alle Karten und Lektionsstände dieses Browsers werden gelöscht. Das lässt sich nicht rückgängig machen.</p>
+      <form method="dialog">
+        <button value="abbrechen" autofocus>Abbrechen</button>
+        <button value="loeschen">Zurücksetzen</button>
+      </form>
+    </dialog>
+    <p id="ergebnis" role="status"></p>
+
+    <!-- Popover: Auf- und Zuklappen, Escape und Klick daneben sind eingebaut, kein JavaScript nötig. -->
+    <button type="button" id="hinweis-auf" popovertarget="hinweis">Was ist ein Hash?</button>
+    <div id="hinweis" popover><p>Ein Hash ist ein fester Fingerabdruck eines Werts.</p></div>
+
+    <!-- Exklusive Aufklappliste: Gleicher name = es ist immer nur eine Antwort offen. -->
+    <details name="faq" open><summary>Wofür ist <code>label</code> da?</summary><p>Es verbindet Beschriftung und Feld.</p></details>
+    <details name="faq"><summary>Wofür ist <code>alt</code> da?</summary><p>Es ersetzt das Bild für Menschen, die es nicht sehen.</p></details>
+  </main>
+  <script>
+    const dialog = document.getElementById('bestaetigung');
+    const ergebnis = document.getElementById('ergebnis');
+    document.getElementById('dialog-auf').addEventListener('click', () => dialog.showModal());
+    // returnValue enthält den value des gedrückten Buttons; bei Escape bleibt er leer.
+    dialog.addEventListener('close', () => { ergebnis.textContent = dialog.returnValue === 'loeschen' ? 'Zurückgesetzt (Demo).' : 'Abgebrochen.'; });
+  </script>
+</body>
+</html>

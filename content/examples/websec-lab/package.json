@@ -1,0 +1,12 @@
+{
+  "name": "rootpfad-websec-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Geprüfter Code für die Lektionen ws-m1 und ws-m2 (Web-Sicherheit). Keine Abhängigkeiten, nur eingebaute Node-Module. Nur zu Lernzwecken: nicht für Produktivsysteme gedacht.",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "test:node24": "docker run --rm -v \"$PWD\":/lab -w /lab node:24-slim node --test \"tests/*.test.js\""
+  }
+}
