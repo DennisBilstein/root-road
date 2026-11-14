@@ -5,10 +5,12 @@ import { randomBytes, createHash } from 'node:crypto';
 import compression from 'compression';
 import fs from 'node:fs';
 import path from 'node:path';
+import { constants as zlibConstants } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import {validateProgress,mergeLatestMap} from './server/progress-validation.mjs';
 import {hashPassword as hash,verifyPassword as verify} from './server/passwords.mjs';
 import {installAccountLifecycle} from './server/account-lifecycle.mjs';
+import {installErrorLog} from './server/error-log.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dir = process.env.ROOTPFAD_DATA_DIR || path.join(root, '.data');
@@ -31,7 +33,8 @@ if(process.env.TRUST_PROXY === '1') app.set('trust proxy',1);
 app.disable('x-powered-by');
 // Compress public learning content, never authenticated API responses containing
 // private text/tokens. Avoids adding a compression side channel to account data.
-app.use(compression({threshold:1024,filter:(req,res)=>!req.path.startsWith('/api/')&&compression.filter(req,res)}));
+// Brotli Stufe 9: ~10 % kleiner als die Voreinstellung bei ~36 ms je 250-KB-Datei; versionierte Dateien werden danach lange gecacht.
+app.use(compression({threshold:1024,brotli:{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:9}},filter:(req,res)=>!req.path.startsWith('/api/')&&compression.filter(req,res)}));
 app.use((req,res,next) => {
   res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':'DENY',
     // Teil-CSP: erlaubt Frames nur für die eigene Seite und die Zwei-Klick-Videos; verbietet Plugins und fremde base-URLs.
@@ -133,6 +136,7 @@ app.post('/api/account/password',auth,loginLimit,async(req,res)=>{
  session(res,req.user);res.json({ok:true,message:'Passwort geändert. Andere Sitzungen wurden abgemeldet.'});
 });
 installAccountLifecycle({app,db,auth,limit:loginLimit,dataDirectory:dir});
+const errorLog=installErrorLog({app,db,auth,admin});
 
 // The server computes progress from known course IDs; client summaries are not trusted.
 const source = fs.readFileSync(path.join(root,'assets/script-01.js'),'utf8');
@@ -244,18 +248,49 @@ app.get('/api/admin/participants',auth,admin,(req,res) => {
     return {...u,summary,light,reason};
   })});
 });
-// Skripte, Styles und Daten haben keine Hash-Dateinamen: Sie werden bei jedem Aufruf per ETag revalidiert (304),
-// damit nach einer Änderung nie alte und neue Dateien gemischt laufen. Nur Schriften ändern sich praktisch nie
-// und bekommen deshalb eine lange Laufzeit.
+// Skripte und Styles werden mit einem Inhalts-Hash als Abfrageparameter ausgeliefert (index.html und Lernmanifest bekommen
+// ihn hier zur Laufzeit eingesetzt, abhängig von der Dateiänderungszeit). Mit passendem ?v= gelten sie als unveränderlich und werden
+// ein Jahr gecacht; ohne ?v= (nachgeladene Daten) wird per ETag revalidiert. Weil der Hash beim Ausliefern entsteht, kann nach einer
+// Änderung ohne Build nie eine alte, "unveränderliche" Datei hängen bleiben. Schriften ändern sich praktisch nie (30 Tage).
 const revalidate = 'no-cache';
-app.use('/assets',express.static(path.join(root,'assets'),{dotfiles:'deny',setHeaders:(res,file) => {
-  res.setHeader('Cache-Control',/\.woff2?$/.test(file) ? 'public, max-age=2592000' : revalidate);
+const assetsDir = path.join(root,'assets');
+const hashCache = new Map();
+function assetVersion(rel){
+  if(!/^assets\/[A-Za-z0-9._\/-]+$/.test(rel) || rel.includes('..')) throw new Error('Ungültiger Asset-Pfad');
+  const file = path.join(root,rel), st = fs.statSync(file), hit = hashCache.get(file);
+  if(hit && hit.mtimeMs === st.mtimeMs && hit.size === st.size) return hit.hash;
+  const hash = createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0,10);
+  hashCache.set(file,{mtimeMs:st.mtimeMs,size:st.size,hash});
+  return hash;
+}
+const htmlCache = new Map();
+function versionedHtml(name){
+  const file = path.join(root,name), st = fs.statSync(file);
+  let entry = htmlCache.get(file);
+  if(!entry || entry.mtimeMs !== st.mtimeMs){ entry = {mtimeMs:st.mtimeMs,text:fs.readFileSync(file,'utf8')}; htmlCache.set(file,entry); }
+  return entry.text.replace(/(data-rp-src|href)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g,(match,attr,rel) => {
+    try { return `${attr}="${rel}?v=${assetVersion(rel)}"`; } catch { return match; }
+  });
+}
+app.get('/assets/learning-manifest.json',(req,res,next) => {
+  try {
+    const manifest = JSON.parse(fs.readFileSync(path.join(assetsDir,'learning-manifest.json'),'utf8'));
+    manifest.versions = Object.fromEntries([...manifest.files,...(manifest.data||[])].map(file => [file,assetVersion(file)]));
+    res.set('Cache-Control',revalidate).json(manifest);
+  } catch(error){ next(error); }
+});
+app.use('/assets',express.static(assetsDir,{dotfiles:'deny',setHeaders:(res,file) => {
+  const versioned = /[?&]v=[0-9a-f]{10}(?:&|$)/.test(res.req.url) && /\.(?:js|css)$|learning-data[\\/]literal-\d+\.json$/.test(file);
+  res.setHeader('Cache-Control',/\.woff2?$/.test(file) ? 'public, max-age=2592000' : versioned ? 'public, max-age=31536000, immutable' : revalidate);
 }}));
-app.get(['/', '/index.html'],(req,res) => res.set('Cache-Control',revalidate).sendFile(path.join(root,'index.html')));
+app.get(['/', '/index.html'],(req,res) => res.set('Cache-Control',revalidate).type('html').send(versionedHtml('index.html')));
 app.get('/admin',(req,res) => res.set('Cache-Control',revalidate).sendFile(path.join(root,'admin.html')));
-app.use((err,req,res,next) => { console.error(err.message); const status=err.status===413?413:err instanceof SyntaxError&&err.status===400?400:500;res.status(status).json({error:status===400?'Ungültiges JSON.':'Anfrage konnte nicht verarbeitet werden.'}); });
+app.use((err,req,res,next) => { console.error(err.message); const status=err.status===413?413:err instanceof SyntaxError&&err.status===400?400:500;
+  /* Nur unerwartete Serverfehler werden protokolliert (mit Routenmuster statt konkreter Adresse). */
+  if(status===500) try{errorLog.recordServerError(err,`${req.method} ${req.route?.path||'(ohne Route)'}`);}catch(logError){console.error('Fehlerprotokoll nicht schreibbar:',logError.message);}
+ res.status(status).json({error:status===400?'Ungültiges JSON.':'Anfrage konnte nicht verarbeitet werden.'}); });
 const port = Number(process.env.PORT || 5173), host = process.env.HOST || '127.0.0.1';
 app.listen(port,host,() => {
-  console.log(`ROOTPFAD: http://${host}:${port}`);
+  console.log(`Root Road: http://${host}:${port}`);
   if(setup) console.log(`Einmalige Admin-Einrichtung (lokal geheim halten): http://localhost:${port}/#setup=${setup}`);
 });

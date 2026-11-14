@@ -31,7 +31,7 @@ export function installAccountLifecycle({app,db,auth,limit,dataDirectory}){
     const url=new URL('/#reset='+token,base).href;
     try{
      if(development){const out=path.join(dataDirectory,'mail-preview');fs.mkdirSync(out,{recursive:true,mode:0o700});fs.writeFileSync(path.join(out,Date.now()+'-'+randomBytes(4).toString('hex')+'.json'),JSON.stringify({to:email,resetURL:url,expires,warning:'Nur lokale Mailvorschau, kein Versand.'}),{mode:0o600});}
-     else await transport.sendMail({from:process.env.MAIL_FROM,to:email,subject:'ROOTPFAD: Passwort zurücksetzen',text:'Für dein ROOTPFAD-Konto wurde eine Passwortänderung angefordert. Der Link ist 15 Minuten und einmalig gültig:\n\n'+url+'\n\nFalls du dies nicht angefordert hast, ignoriere diese Nachricht. Dein Passwort wurde nicht geändert.'});
+     else await transport.sendMail({from:process.env.MAIL_FROM,to:email,subject:'Root Road: Passwort zurücksetzen',text:'Für dein Root-Road-Konto wurde eine Passwortänderung angefordert. Der Link ist 15 Minuten und einmalig gültig:\n\n'+url+'\n\nFalls du dies nicht angefordert hast, ignoriere diese Nachricht. Dein Passwort wurde nicht geändert.'});
     }catch(error){db.prepare('DELETE FROM password_resets WHERE token=?').run(digest(token));console.error('Passwortmail konnte nicht zugestellt werden.');}
    }
   }
