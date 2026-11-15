@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-15T12:12:05.135Z",
-  "cards": 1883,
-  "learningContracts": 1883,
-  "individuallyRevised": 1883,
+  "updatedAt": "2026-11-15T12:20:22.696Z",
+  "cards": 1901,
+  "learningContracts": 1901,
+  "individuallyRevised": 1901,
   "independentFactualReviewComplete": false,
   "contracts": [
     {
@@ -52033,6 +52033,654 @@
         "Tests bleiben nötig.",
         "Die Anmeldung braucht eine Verbindung.",
         "Es gibt kein dauerhaftes Passwort, das abfließen kann."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l1#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l1",
+      "recall": "Beantworte „Warum ergibt 0.1 + 0.2 in Python nicht genau 0.3?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Kommazahlen werden binär gespeichert und sind nicht immer exakt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Für exakte Dezimalrechnung, etwa mit Geld, verwendest du Decimal, das aus Text gebildet wird."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/controlflow.html",
+        "https://docs.python.org/3/library/decimal.html",
+        "https://docs.python.org/3/library/stdtypes.html",
+        "https://docs.python.org/3/faq/programming.html"
+      ],
+      "rationales": [
+        "Der Wert 0.1 hat im Binärsystem keine endliche Darstellung.",
+        "Das Verhalten liegt an der Zahlendarstellung, nicht an einer Absicht.",
+        "Es ist das übliche Verhalten von float in fast allen Sprachen.",
+        "Es wird nicht gerundet; die Abweichung entsteht beim Speichern."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l1#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l1",
+      "recall": "Beantworte „Was passiert bei def f(x, bag=[]) und mehreren Aufrufen ohne zweites Argument?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Alle Aufrufe teilen dieselbe Liste."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Verwende None als Standardwert und lege die Liste in der Funktion an."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/controlflow.html",
+        "https://docs.python.org/3/library/decimal.html",
+        "https://docs.python.org/3/library/stdtypes.html",
+        "https://docs.python.org/3/faq/programming.html"
+      ],
+      "rationales": [
+        "Das wäre bei None und Anlegen in der Funktion der Fall.",
+        "Der Standardwert wird einmal beim Definieren erzeugt.",
+        "Die Schreibweise ist erlaubt, nur riskant.",
+        "Es gibt kein automatisches Leeren."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l1#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l1",
+      "recall": "Beantworte „Welcher Ausdruck prüft, ob zwei Listen denselben Inhalt haben?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "a == b"
+        },
+        {
+          "label": "Begründung",
+          "reference": "Zwei Listen mit gleichem Inhalt sind gleich (==), aber nicht unbedingt dasselbe Objekt (is)."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/controlflow.html",
+        "https://docs.python.org/3/library/decimal.html",
+        "https://docs.python.org/3/library/stdtypes.html",
+        "https://docs.python.org/3/faq/programming.html"
+      ],
+      "rationales": [
+        "is prüft, ob es dasselbe Objekt ist.",
+        "in prüft, ob ein Element enthalten ist.",
+        "== vergleicht die Inhalte.",
+        "Das prüft nur, ob a nicht None ist."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l2#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l2",
+      "recall": "Beantworte „Wie sortierst du ein Wörterbuch nach seinen Werten, größte zuerst?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "sorted(d.items(), key=lambda item: item[1], reverse=True)"
+        },
+        {
+          "label": "Begründung",
+          "reference": "sorted liefert eine neue Liste und bekommt über key das Sortierkriterium."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/datastructures.html",
+        "https://docs.python.org/3/library/collections.html",
+        "https://docs.python.org/3/library/copy.html"
+      ],
+      "rationales": [
+        "key bestimmt das Kriterium, reverse kehrt die Reihenfolge um.",
+        "sorted(d) sortiert nur die Schlüssel und gibt eine Liste zurück.",
+        "Wörterbücher haben keine Methode sort.",
+        "Das erzeugt eine ungeordnete Menge."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l2#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l2",
+      "recall": "Beantworte „Was liefert der zweite sum(squares), wenn squares ein Generatorausdruck ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "0, weil der Generator verbraucht ist."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Wer die Werte mehrfach braucht, macht eine Liste daraus."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/datastructures.html",
+        "https://docs.python.org/3/library/collections.html",
+        "https://docs.python.org/3/library/copy.html"
+      ],
+      "rationales": [
+        "Der Generator liefert seine Werte nur einmal.",
+        "Python meldet hier keinen Fehler.",
+        "Es wird nichts verdoppelt.",
+        "Ein verbrauchter Generator liefert keine Werte mehr."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l2#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l2",
+      "recall": "Beantworte „Warum ändert sich bei [[0]*2]*2 eine Zelle in beiden Zeilen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Beide Zeilen sind dasselbe Listenobjekt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Lege jede Zeile mit einer Comprehension einzeln an."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/datastructures.html",
+        "https://docs.python.org/3/library/collections.html",
+        "https://docs.python.org/3/library/copy.html"
+      ],
+      "rationales": [
+        "Es wird nichts kopiert.",
+        "Die Multiplikation wiederholt die Referenz, nicht das Objekt.",
+        "Es entstehen Listen, keine Tupel.",
+        "Das Gitter lässt sich beschreiben, nur mit geteilter Wirkung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l3",
+      "recall": "Beantworte „Wie sieht „Käse“ aus, wenn UTF-8-Bytes als Latin-1 gelesen werden?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Als „KÃ¤se“, ohne Fehler."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Deshalb gibst du die Kodierung an und prüfst Eingaben, statt Fehler zu verdecken."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/pathlib.html",
+        "https://docs.python.org/3/library/csv.html",
+        "https://docs.python.org/3/library/json.html",
+        "https://docs.python.org/3/howto/unicode.html",
+        "https://docs.python.org/3/library/functions.html#open"
+      ],
+      "rationales": [
+        "Dann wäre die Kodierung richtig gewählt.",
+        "Latin-1 kann jedes Byte darstellen und meldet keinen Fehler.",
+        "Das zweite Byte des „ä“ wird als eigenes Zeichen gelesen.",
+        "Der Inhalt bleibt erhalten, nur falsch dargestellt."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l3",
+      "recall": "Beantworte „Wozu dient newline=\"\" beim Öffnen einer CSV-Datei?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es erlaubt dem csv-Modul, Zeilenumbrüche in Feldern selbst zu behandeln."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ohne newline=\"\" kann es bei Feldern mit Zeilenumbruch oder unter Windows zu falschen Zeilen kommen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/pathlib.html",
+        "https://docs.python.org/3/library/csv.html",
+        "https://docs.python.org/3/library/json.html",
+        "https://docs.python.org/3/howto/unicode.html",
+        "https://docs.python.org/3/library/functions.html#open"
+      ],
+      "rationales": [
+        "Leerzeilen bleiben erhalten.",
+        "Die Dokumentation von csv verlangt diese Einstellung.",
+        "Die Kodierung steht in encoding.",
+        "Das ist der Modus, nicht der Zeilenumbruch."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l3#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l3",
+      "recall": "Beantworte „Warum ist encoding=\"utf-8\" auch dann sinnvoll, wenn UTF-8 der Standard ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Code verhält sich auf allen Versionen und Systemen gleich."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Laut Dokumentation ist UTF-8 erst ab 3.15 Standard; ältere Versionen nutzen die Spracheinstellung des Systems."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dateien, Kodierung, CSV und JSON: sauber mit Umlauten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/pathlib.html",
+        "https://docs.python.org/3/library/csv.html",
+        "https://docs.python.org/3/library/json.html",
+        "https://docs.python.org/3/howto/unicode.html",
+        "https://docs.python.org/3/library/functions.html#open"
+      ],
+      "rationales": [
+        "Bis Python 3.14 hing der Standard vom System ab.",
+        "Das Lesen ist ohne Angabe erlaubt.",
+        "Die Geschwindigkeit ändert sich nicht.",
+        "Die Absicht ist sichtbar und unabhängig von der Version."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l4#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l4",
+      "recall": "Beantworte „Wann läuft der else-Block eines try-Statements?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler und Ausnahmen: abfangen, verketten und aufräumen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Nur, wenn im try-Block keine Ausnahme auftrat."
+        },
+        {
+          "label": "Begründung",
+          "reference": "else enthält, was nur bei Erfolg passieren soll; Ausnahmen darin werden nicht von diesem try gefangen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler und Ausnahmen: abfangen, verketten und aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/errors.html",
+        "https://docs.python.org/3/library/exceptions.html",
+        "https://docs.python.org/3/library/contextlib.html"
+      ],
+      "rationales": [
+        "Das ist die Aufgabe von finally.",
+        "So trennst du den Erfolgsfall von dem Code, der fehlschlagen kann.",
+        "Dafür gibt es den except-Block.",
+        "Auch try kennt else."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l4#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l4",
+      "recall": "Beantworte „Was bewirkt raise ConfigError(...) from error?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler und Ausnahmen: abfangen, verketten und aufräumen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es hängt den ursprünglichen Fehler als Ursache an."
+        },
+        {
+          "label": "Begründung",
+          "reference": "So bleibt erkennbar, welche tiefere Ausnahme den fachlichen Fehler ausgelöst hat."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler und Ausnahmen: abfangen, verketten und aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/errors.html",
+        "https://docs.python.org/3/library/exceptions.html",
+        "https://docs.python.org/3/library/contextlib.html"
+      ],
+      "rationales": [
+        "Der Traceback wird sogar länger.",
+        "Wiederholungen müsstest du selbst schreiben.",
+        "Der Ursprung bleibt erhalten.",
+        "Die Ursache steht in __cause__ und im Traceback."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l4#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l4",
+      "recall": "Beantworte „Warum ist except Exception: pass meist schlecht?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler und Ausnahmen: abfangen, verketten und aufräumen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es verdeckt auch Programmierfehler, ohne eine Spur zu hinterlassen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Fange spezifische Ausnahmen, die du behandeln kannst; sonst protokollieren oder weiterreichen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler und Ausnahmen: abfangen, verketten und aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/tutorial/errors.html",
+        "https://docs.python.org/3/library/exceptions.html",
+        "https://docs.python.org/3/library/contextlib.html"
+      ],
+      "rationales": [
+        "Die Schreibweise ist erlaubt.",
+        "Die Geschwindigkeit ist nicht das Problem.",
+        "Du erfährst nie, dass etwas schiefging.",
+        "Es funktioniert überall."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l5#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l5",
+      "recall": "Beantworte „Was bewirkt frozen=True bei einer dataclass?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Felder bleiben nach dem Anlegen fest, das Objekt ist hashbar."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Das ist nützlich für Werte, die sich nicht ändern sollen, und für Schlüssel in Mengen und Wörterbüchern."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/dataclasses.html",
+        "https://docs.python.org/3/library/typing.html",
+        "https://docs.python.org/3/tutorial/classes.html",
+        "https://docs.python.org/3/reference/datamodel.html"
+      ],
+      "rationales": [
+        "Vererbung bleibt möglich.",
+        "Zuweisungen lösen FrozenInstanceError aus; der Hashwert ergibt sich aus den Feldern.",
+        "Typen werden nie geprüft.",
+        "Es hat nichts mit Speicherung zu tun."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l5#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l5",
+      "recall": "Beantworte „Was passiert bei Port(\"kein int\"), wenn value: int deklariert ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Objekt wird ohne Prüfung angelegt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Für Prüfungen zur Laufzeit schreibst du Code oder setzt einen Typprüfer in der Entwicklung ein."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/dataclasses.html",
+        "https://docs.python.org/3/library/typing.html",
+        "https://docs.python.org/3/tutorial/classes.html",
+        "https://docs.python.org/3/reference/datamodel.html"
+      ],
+      "rationales": [
+        "Python prüft Typhinweise nicht.",
+        "Es findet keine Umwandlung statt.",
+        "Typhinweise gelten für Leser und Werkzeuge, nicht zur Laufzeit.",
+        "Das Programm läuft normal."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l5#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l5",
+      "recall": "Beantworte „Wozu dient field(default_factory=list)?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es legt für jedes Objekt eine eigene neue Liste an."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Das ist die richtige Form für veränderliche Standardwerte in dataclasses."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/dataclasses.html",
+        "https://docs.python.org/3/library/typing.html",
+        "https://docs.python.org/3/tutorial/classes.html",
+        "https://docs.python.org/3/reference/datamodel.html"
+      ],
+      "rationales": [
+        "Sortieren ist nicht Aufgabe der Option.",
+        "Die Liste bleibt veränderlich.",
+        "Es wird nichts kopiert, sondern neu erzeugt.",
+        "So teilen sich Objekte keinen veränderlichen Standardwert."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l6",
+      "recall": "Beantworte „Wofür steht der Exit-Code 0 eines Programms?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Lauf war erfolgreich."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Skripte und CI-Systeme entscheiden anhand des Exit-Codes, ob ein Schritt gelungen ist."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/library/argparse.html",
+        "https://docs.python.org/3/tutorial/venv.html",
+        "https://docs.python.org/3/tutorial/modules.html",
+        "https://docs.python.org/3/library/sys.html#sys.exit"
+      ],
+      "rationales": [
+        "Das ist die Konvention für Erfolg.",
+        "Fehler haben Codes ungleich 0.",
+        "Ein Abbruch liefert einen anderen Code.",
+        "Das ist eine fachliche Aussage, kein Prozessstatus."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l6",
+      "recall": "Beantworte „Warum übergibt main(argv) die Argumente als Parameter?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Damit Tests das Programm ohne neuen Prozess aufrufen können."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Funktionen mit Parametern sind leichter zu testen als solche, die globalen Zustand lesen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/library/argparse.html",
+        "https://docs.python.org/3/tutorial/venv.html",
+        "https://docs.python.org/3/tutorial/modules.html",
+        "https://docs.python.org/3/library/sys.html#sys.exit"
+      ],
+      "rationales": [
+        "argparse liest sonst sys.argv selbst.",
+        "So lässt sich das Verhalten direkt prüfen und die Ausgabe einfangen.",
+        "Die Startzeit ändert sich nicht.",
+        "Fehlermeldungen erscheinen weiterhin."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "py-m1-l6#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "py-m1-l6",
+      "recall": "Beantworte „Wozu dient eine virtuelle Umgebung (venv)?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie hält die Pakete eines Projekts getrennt von anderen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Pro Projekt eine Umgebung verhindert Versionskonflikte und macht Installationen reproduzierbar."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/library/argparse.html",
+        "https://docs.python.org/3/tutorial/venv.html",
+        "https://docs.python.org/3/tutorial/modules.html",
+        "https://docs.python.org/3/library/sys.html#sys.exit"
+      ],
+      "rationales": [
+        "Die Geschwindigkeit ändert sich nicht.",
+        "Python bleibt interpretiert.",
+        "Verschlüsselung ist nicht ihre Aufgabe.",
+        "So haben Projekte ihre eigenen Paketversionen."
       ],
       "editorialStatus": "individually-revised"
     },

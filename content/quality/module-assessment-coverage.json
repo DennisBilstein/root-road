@@ -1,7 +1,7 @@
 {
-  "modules": 135,
-  "manualAssignments": 135,
-  "individuallyAuthored": 135,
+  "modules": 136,
+  "manualAssignments": 136,
+  "individuallyAuthored": 136,
   "fullyIndependentRubrics": 0,
   "drafts": 0,
   "execution": "not-executed-manual-review-required",
@@ -5244,6 +5244,46 @@
         "https://docs.github.com/en/actions/reference/security/secure-use",
         "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
         "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments"
+      ]
+    },
+    {
+      "id": "py-m1@assessment-platform-tracks-v1",
+      "moduleId": "py-m1",
+      "title": "Eine getestete Kommandozeilen-Auswertung für Ausgabedaten mit Fehlerbericht und Exit-Codes",
+      "lessonId": "py-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Schreibe ein kleines Python-Programm ohne Fremdpakete, das eine CSV-Datei mit erfundenen Ausgabedaten (UTF-8, Semikolon, Dezimalkomma, Umlaute) einliest und die Summe je Kategorie ausgibt. Beträge rechnest du mit Decimal, Daten und Beträge validierst du je Zeile, und alle fehlerhaften Zeilen werden mit Zeilennummer gesammelt, statt beim ersten Fehler abzubrechen. Trenne Modell, Einlesen, Auswertung und Kommandozeile in Module, nutze eine unveränderliche dataclass, gib die Kodierung ausdrücklich an und liefere Exit-Code 0 (alles gültig), 1 (ungültige Zeilen, gültige werden trotzdem ausgewertet) und 2 (Datei nicht lesbar). Fehlermeldungen gehören auf stderr. Schreibe unittest-Tests für Normal-, Grenz- und Fehlerfälle und belege sie mit mindestens drei Mutationsproben. Dokumentiere, was geprüft wurde und was nicht (Python-Versionen, Betriebssysteme).",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Eine gültige CSV-Datei mit mehreren Kategorien und Umlauten auswerten",
+          "expected": "Die Summen je Kategorie stehen größte zuerst (bei Gleichstand alphabetisch) mit deutschem Zahlenformat; der Exit-Code ist 0; stderr bleibt leer."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Eine Datei mit Byte-Order-Mark, mit Leerzeilen, mit einem Feld mit Semikolon in Anführungszeichen und mit einem Betrag ohne Komma („1.249“) auswerten",
+          "expected": "Das BOM stört nicht, Leerzeilen werden übersprungen, das Feld bleibt ganz, und „1.249“ wird als drei Nachkommastellen abgelehnt; der Grenzfall ist dokumentiert und getestet."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Zeilen mit ungültigem Datum, fehlender Kategorie, nicht numerischem, negativem und zu genauem Betrag sowie eine Latin-1-Datei und eine fehlende Datei übergeben",
+          "expected": "Jede ungültige Zeile erscheint mit Zeilennummer auf stderr, gültige Zeilen werden ausgewertet, Exit-Code 1; Latin-1 und fehlende Datei liefern eine verständliche Meldung und Exit-Code 2."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Beträge sind exakt (Decimal aus Text, keine float-Rechnung), die Validierung ist vollständig und jede Fehlermeldung nennt Zeile und Grund.",
+        "Das Programm ist in Module getrennt, Kodierung und Dateiformat sind ausdrücklich festgelegt, und Ausnahmen werden dort behandelt, wo man etwas tun kann (kein except mit pass).",
+        "Die Tests decken Normal-, Grenz- und Fehlerfälle ab, nutzen temporäre Dateien und subTest, und mindestens drei Mutationsproben belegen, dass sie Fehler finden.",
+        "Das Protokoll trennt geprüft von nicht geprüft (Python-Versionen, Betriebssysteme, große Dateien, venv und pip) und enthält keine echten Daten."
+      ],
+      "revision": "assessment-platform-tracks-v1",
+      "sources": [
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.python.org/3/library/decimal.html",
+        "https://docs.python.org/3/library/csv.html"
       ]
     }
   ]

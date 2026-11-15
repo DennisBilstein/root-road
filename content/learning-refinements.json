@@ -24200,6 +24200,867 @@
           "code3Lang": "JavaScript"
         }
       ]
+    },
+    {
+      "id": "py-m1",
+      "course": "python",
+      "part": 34,
+      "partTitle": "Python",
+      "title": "Python · Grundlagen, Datenstrukturen, Dateien, Fehler, Klassen und ein getestetes Projekt",
+      "lessons": [
+        {
+          "id": "py-m1-l1",
+          "title": "Grundlagen: Werte, Zahlen, Texte und die Falle der Standardwerte",
+          "minutes": 35,
+          "objectives": [
+            "Typen und Wahrheitswerte von Python-Werten einschätzen (None, 0, leere Texte und Listen)",
+            "Erklären, warum float für Geldbeträge ungeeignet ist und wann Decimal die richtige Wahl ist",
+            "Den Unterschied zwischen == (gleicher Inhalt) und is (dasselbe Objekt) nennen",
+            "Die Falle mit veränderlichen Standardwerten in Funktionen erkennen und vermeiden"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Typen und Wahrheitswerte von Python-Werten einschätzen (None, 0, leere Texte und Listen)</li><li>Erklären, warum float für Geldbeträge ungeeignet ist und wann Decimal die richtige Wahl ist</li><li>Den Unterschied zwischen == (gleicher Inhalt) und is (dasselbe Objekt) nennen</li><li>Die Falle mit veränderlichen Standardwerten in Funktionen erkennen und vermeiden</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>In Python hat jeder Wert einen Typ (int, float, str, bool, list, dict, None …), aber Namen sind nicht an einen Typ gebunden: Ein Name zeigt auf ein Objekt, und derselbe Name kann später auf ein anderes zeigen. Einrückung gehört zur Syntax: Sie bestimmt, welche Zeilen zu einem Block gehören.</p><p>Drei Dinge überraschen Einsteiger regelmäßig. Erstens: Kommazahlen (float) werden binär gespeichert, deshalb ist 0.1 + 0.2 nicht genau 0.3. Für Geld und alles, was auf den Cent stimmen muss, nimmst du Decimal. Zweitens: Ein Text (str) besteht aus Unicode-Zeichen, nicht aus Bytes; „Käse“ hat vier Zeichen, aber in UTF-8 fünf Bytes. Drittens: Der Standardwert einer Funktion wird einmal beim Definieren erzeugt. Steht dort eine Liste, teilen sich alle Aufrufe dieselbe Liste.</p><p>Außerdem zählt die „Wahrheit“ von Werten: Leere Dinge (0, \"\", [], None) gelten als falsch, alles andere als wahr. Der Text \"0\" ist wahr, weil er nicht leer ist.</p><h2>Schritt für Schritt</h2><ol><li>Wechsle in content/examples/python-lab und starte „python3 demos/01_grundlagen.py“. Das Skript braucht nur Python, keine Installation.</li><li>Lies die ersten beiden Ausgabezeilen: Mit Standardwert [] enthalten beide Aufrufe [„a“, „b“], weil sie dieselbe Liste teilen. Mit None und einer Liste, die in der Funktion neu angelegt wird, bekommt jeder Aufruf seine eigene.</li><li>Öffne demos/01_grundlagen.py und suche collect_bad und collect_ok. Das Muster „bag=None, dann in der Funktion anlegen“ gehört zu jeder Funktion, die eine Liste, ein Wörterbuch oder eine Menge als Standard bräuchte.</li><li>Vergleiche 0.1 + 0.2 mit der Decimal-Version. Merke: Decimal wird aus Text gebildet (Decimal(\"0.1\")), nicht aus einer Kommazahl; Decimal(0.1) übernimmt den bereits ungenauen float-Wert.</li><li>Schau dir parse_amount in expenses/model.py an: Der Betrag wird als Decimal gelesen, nicht als float, und höchstens zwei Nachkommastellen werden akzeptiert.</li><li>Beachte round(2.5) = 2 und round(3.5) = 4: Python rundet bei genau halben Werten zur geraden Zahl. Für kaufmännisches Runden gibt es bei Decimal die Methode quantize mit einem Rundungsmodus.</li><li>Beachte -7 // 2 = -4 und -7 % 3 = 2: Die Ganzzahldivision rundet zur kleineren Zahl, und der Rest hat das Vorzeichen des Teilers.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Warum ist das Verhalten bei Standardwerten so? Funktionen sind Objekte, und ihre Standardwerte werden ausgewertet, wenn die Funktion definiert wird, nicht bei jedem Aufruf. Bei unveränderlichen Werten (Zahlen, Texte, None) fällt das nie auf; bei veränderlichen (Listen, Wörterbücher) sammelt sich Zustand über Aufrufe hinweg. Das ist kein Fehler der Sprache, sondern eine bekannte Eigenheit, die die offizielle Dokumentation ausdrücklich beschreibt.</p><p>Was gilt für == und is? == fragt, ob zwei Werte gleich sind; is fragt, ob es dasselbe Objekt ist. Für Vergleiche von Inhalten nimmst du ==. is gehört fast nur zu None (x is None).</p><p>Zum Stand: Das Lab wurde mit Python 3.12, 3.13 und 3.14 geprüft; die Ausgaben der Lektionen stammen aus 3.14.6. Laut python.org war am 15.11.2026 Python 3.15 die aktuelle Version, die hier nicht lief. Sprachkern und die genutzten Teile der Standardbibliothek sind stabil; Fehlermeldungen und Standardverhalten (zum Beispiel die Kodierung bei open, Lektion 3) können sich zwischen Versionen unterscheiden. Prüfe bei Zweifeln die Dokumentation deiner Version.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Objekt</dt><dd>Alles in Python ist ein Objekt mit Typ und Wert; Namen verweisen auf Objekte.</dd><dt>veränderlich (mutable)</dt><dd>Ein Objekt, das sich nach dem Anlegen ändern lässt, zum Beispiel Liste, Wörterbuch, Menge.</dd><dt>Decimal</dt><dd>Dezimalzahl mit exakter Dezimaldarstellung; geeignet für Geldbeträge.</dd><dt>None</dt><dd>Der Wert „nichts“; wird mit is verglichen und gilt als falsch.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>01_grundlagen.py</code> (Ausschnitt ab „def collect_bad“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>model.py</code> (Ausschnitt ab „def parse_amount“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>01_grundlagen.py</code> (Ausschnitt ab „print(\"0.1 + 0.2“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehl: cd content/examples/python-lab/ &amp;&amp; python3 demos/01_grundlagen.py\nStandardwert [] : ['a', 'b'] ['a', 'b']\nStandardwert None: ['a'] ['b']\n0.1 + 0.2        : 0.30000000000000004 | gleich 0.3? False\nDecimal          : 0.3 | gleich 0.3? True\nround(2.5), round(3.5): 2 4 (rundet zur geraden Zahl)\n7 // 2, -7 // 2, 7 % 3, -7 % 3: 3 -4 1 2\nbool('')/bool('0')/bool([])/bool([0]): False True False True\nlen('Käse'), len(text.encode('utf-8')): 4 5\n== vs is : True False (gleicher Inhalt, aber zwei Objekte)</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Eine Liste oder ein Wörterbuch als Standardwert eines Parameters zu schreiben (bag=[]).<br><strong>Warum:</strong> Der Standardwert entsteht einmal; alle Aufrufe teilen ihn und sammeln Daten.<br><strong>Besser:</strong> bag=None verwenden und in der Funktion eine neue Liste anlegen.</li><li><strong>Falsch:</strong> Geldbeträge als float zu rechnen.<br><strong>Warum:</strong> Kommazahlen sind binär gespeichert; Summen weichen um Bruchteile ab und Vergleiche schlagen fehl.<br><strong>Besser:</strong> Decimal aus Text bilden, oder in ganzen Cent rechnen.</li><li><strong>Falsch:</strong> Decimal(0.1) statt Decimal(\"0.1\") zu schreiben.<br><strong>Warum:</strong> Der float-Wert ist schon ungenau und wird mit allen Nachkommastellen übernommen.<br><strong>Besser:</strong> Betrag als Text übergeben.</li><li><strong>Falsch:</strong> Zwei Werte mit is statt == zu vergleichen.<br><strong>Warum:</strong> is prüft die Objektidentität; gleiche Inhalte können zwei Objekte sein.<br><strong>Besser:</strong> == für Inhalte, is nur für None.</li></ul><h2>Praxis</h2><p>Schreibe eine Funktion add_tag(tag, tags=None), die eine Liste zurückgibt. Rufe sie dreimal ohne zweites Argument auf und zeige, dass die Ergebnisse unabhängig sind. Schreibe zum Vergleich die fehlerhafte Fassung mit [] und notiere die Ausgabe.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Berechne in der Python-Konsole die Summe von zehnmal 0.1 als float und als Decimal.<br><em>Abnahme:</em> Du zeigst, dass die float-Summe nicht genau 1.0 ist, die Decimal-Summe aber schon, und erklärst, warum.</li><li><strong>Grenzfall:</strong> Prüfe bool-Werte von \"\", \"0\", [], [0], None und 0.0.<br><em>Abnahme:</em> Du sagst für jeden Wert das Ergebnis vorher an und bestätigst es; du erklärst, warum \"0\" wahr ist.</li><li><strong>Fehlerfall:</strong> Schreibe eine Funktion mit dem Standardwert {} und rufe sie zweimal auf.<br><em>Abnahme:</em> Du beobachtest geteilten Zustand und behebst ihn mit None.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/tutorial/controlflow.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Funktionen und Standardwerte (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/decimal.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Decimal</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/stdtypes.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Eingebaute Typen</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/faq/programming.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Programmier-FAQ</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Standardwert-Falle, float gegen Decimal, Rundung, Ganzzahldivision, Wahrheitswerte und Unicode-Länge in einem Demo-Skript, das ohne Warnungen läuft. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: andere Python-Implementierungen, Windows und Linux sowie das Verhalten bei Zahlen außerhalb des Beispielbereichs. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Schreibe eine Funktion add_tag(tag, tags=None), die eine Liste zurückgibt. Rufe sie dreimal ohne zweites Argument auf und zeige, dass die Ergebnisse unabhängig sind. Schreibe zum Vergleich die fehlerhafte Fassung mit [] und notiere die Ausgabe.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Berechne in der Python-Konsole die Summe von zehnmal 0.1 als float und als Decimal.",
+              "acceptance": "Du zeigst, dass die float-Summe nicht genau 1.0 ist, die Decimal-Summe aber schon, und erklärst, warum."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Prüfe bool-Werte von \"\", \"0\", [], [0], None und 0.0.",
+              "acceptance": "Du sagst für jeden Wert das Ergebnis vorher an und bestätigst es; du erklärst, warum \"0\" wahr ist."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Schreibe eine Funktion mit dem Standardwert {} und rufe sie zweimal auf.",
+              "acceptance": "Du beobachtest geteilten Zustand und behebst ihn mit None."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/tutorial/controlflow.html",
+              "title": "Python-Dokumentation: Funktionen und Standardwerte (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/library/decimal.html",
+              "title": "Python-Dokumentation: Decimal"
+            },
+            {
+              "url": "https://docs.python.org/3/library/stdtypes.html",
+              "title": "Python-Dokumentation: Eingebaute Typen"
+            },
+            {
+              "url": "https://docs.python.org/3/faq/programming.html",
+              "title": "Python-Dokumentation: Programmier-FAQ"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Standardwert-Falle, float gegen Decimal, Rundung, Ganzzahldivision, Wahrheitswerte und Unicode-Länge in einem Demo-Skript, das ohne Warnungen läuft. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: andere Python-Implementierungen, Windows und Linux sowie das Verhalten bei Zahlen außerhalb des Beispielbereichs. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Warum ergibt 0.1 + 0.2 in Python nicht genau 0.3?",
+              "options": [
+                "Kommazahlen werden binär gespeichert und sind nicht immer exakt.",
+                "Python rechnet bewusst ungenau.",
+                "Die Rechnung ist ein bekannter Fehler im Interpreter.",
+                "Die Zahlen werden vor dem Addieren gerundet."
+              ],
+              "correct": 0,
+              "explain": "Für exakte Dezimalrechnung, etwa mit Geld, verwendest du Decimal, das aus Text gebildet wird.",
+              "rationales": [
+                "Der Wert 0.1 hat im Binärsystem keine endliche Darstellung.",
+                "Das Verhalten liegt an der Zahlendarstellung, nicht an einer Absicht.",
+                "Es ist das übliche Verhalten von float in fast allen Sprachen.",
+                "Es wird nicht gerundet; die Abweichung entsteht beim Speichern."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/controlflow.html",
+                "https://docs.python.org/3/library/decimal.html",
+                "https://docs.python.org/3/library/stdtypes.html",
+                "https://docs.python.org/3/faq/programming.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was passiert bei def f(x, bag=[]) und mehreren Aufrufen ohne zweites Argument?",
+              "options": [
+                "Jeder Aufruf erhält eine frische leere Liste.",
+                "Alle Aufrufe teilen dieselbe Liste.",
+                "Python meldet einen Syntaxfehler.",
+                "Die Liste wird nach jedem Aufruf geleert."
+              ],
+              "correct": 1,
+              "explain": "Verwende None als Standardwert und lege die Liste in der Funktion an.",
+              "rationales": [
+                "Das wäre bei None und Anlegen in der Funktion der Fall.",
+                "Der Standardwert wird einmal beim Definieren erzeugt.",
+                "Die Schreibweise ist erlaubt, nur riskant.",
+                "Es gibt kein automatisches Leeren."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/controlflow.html",
+                "https://docs.python.org/3/library/decimal.html",
+                "https://docs.python.org/3/library/stdtypes.html",
+                "https://docs.python.org/3/faq/programming.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Welcher Ausdruck prüft, ob zwei Listen denselben Inhalt haben?",
+              "options": [
+                "a is b",
+                "a in b",
+                "a == b",
+                "a != None"
+              ],
+              "correct": 2,
+              "explain": "Zwei Listen mit gleichem Inhalt sind gleich (==), aber nicht unbedingt dasselbe Objekt (is).",
+              "rationales": [
+                "is prüft, ob es dasselbe Objekt ist.",
+                "in prüft, ob ein Element enthalten ist.",
+                "== vergleicht die Inhalte.",
+                "Das prüft nur, ob a nicht None ist."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/controlflow.html",
+                "https://docs.python.org/3/library/decimal.html",
+                "https://docs.python.org/3/library/stdtypes.html",
+                "https://docs.python.org/3/faq/programming.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "def collect_bad(item, bag=[]):  # der Standardwert wird einmal beim Definieren erzeugt und dann geteilt\n    bag.append(item)\n    return bag\n\n\ndef collect_ok(item, bag=None):\n    if bag is None:\n        bag = []\n    bag.append(item)\n    return bag\n\n\nprint(\"Standardwert [] :\", collect_bad(\"a\"), collect_bad(\"b\"))\nprint(\"Standardwert None:\", collect_ok(\"a\"), collect_ok(\"b\"))",
+          "codeLang": "Python",
+          "code2": "def parse_amount(text: str, line: int) -> Decimal:\n    \"\"\"Wandelt „12,50“ in Decimal('12.50') um. Verlangt einen positiven Betrag mit höchstens zwei Nachkommastellen.\"\"\"\n    cleaned = text.strip().replace(\".\", \"\").replace(\",\", \".\") if \",\" in text else text.strip()\n    try:\n        value = Decimal(cleaned)\n    except InvalidOperation:\n        raise RowError(line, f\"Betrag „{text}“ ist keine Zahl\") from None\n    if not value.is_finite():\n        raise RowError(line, f\"Betrag „{text}“ ist keine endliche Zahl\")\n    if value <= 0:\n        raise RowError(line, f\"Betrag „{text}“ muss größer als 0 sein\")\n    if value.as_tuple().exponent < -2:\n        raise RowError(line, f\"Betrag „{text}“ hat mehr als zwei Nachkommastellen\")\n    return value",
+          "code2Lang": "Python",
+          "code3": "print(\"0.1 + 0.2        :\", 0.1 + 0.2, \"| gleich 0.3?\", 0.1 + 0.2 == 0.3)\nprint(\"Decimal          :\", Decimal(\"0.1\") + Decimal(\"0.2\"), \"| gleich 0.3?\", Decimal(\"0.1\") + Decimal(\"0.2\") == Decimal(\"0.3\"))\nprint(\"round(2.5), round(3.5):\", round(2.5), round(3.5), \"(rundet zur geraden Zahl)\")\nprint(\"7 // 2, -7 // 2, 7 % 3, -7 % 3:\", 7 // 2, -7 // 2, 7 % 3, -7 % 3)\nprint(\"bool('')/bool('0')/bool([])/bool([0]):\", bool(\"\"), bool(\"0\"), bool([]), bool([0]))\ntext = \"Käse\"\nprint(\"len('Käse'), len(text.encode('utf-8')):\", len(text), len(text.encode(\"utf-8\")))",
+          "code3Lang": "Python"
+        },
+        {
+          "id": "py-m1-l2",
+          "title": "Datenstrukturen: Listen, Wörterbücher, Mengen, Comprehensions und Kopien",
+          "minutes": 35,
+          "objectives": [
+            "Liste, Tupel, Wörterbuch und Menge nach Aufgabe auswählen",
+            "Mit sorted und key sowie mit Comprehensions Daten ordnen und umformen",
+            "Einen Generator von einer Liste unterscheiden und seine einmalige Nutzbarkeit erklären",
+            "Flache und tiefe Kopien unterscheiden und die Falle [[0]*2]*2 erkennen"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Liste, Tupel, Wörterbuch und Menge nach Aufgabe auswählen</li><li>Mit sorted und key sowie mit Comprehensions Daten ordnen und umformen</li><li>Einen Generator von einer Liste unterscheiden und seine einmalige Nutzbarkeit erklären</li><li>Flache und tiefe Kopien unterscheiden und die Falle [[0]*2]*2 erkennen</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>Listen speichern Werte in Reihenfolge und lassen sich ändern. Tupel sind unveränderliche Listen. Wörterbücher (dict) ordnen Schlüsseln Werte zu und behalten die Einfügereihenfolge. Mengen (set) speichern jedes Element nur einmal und beantworten Fragen wie „ist das enthalten?“ schnell; sie bieten Schnitt, Vereinigung und Differenz.</p><p>Mit sorted bringst du Daten in Reihenfolge; der Parameter key sagt, wonach. Eine Comprehension baut eine Liste, ein Wörterbuch oder eine Menge in einer Zeile aus einer Schleife und einer optionalen Bedingung. Ein Generatorausdruck sieht ähnlich aus (runde Klammern), berechnet aber erst beim Durchlaufen und kann nur einmal verbraucht werden.</p><p>Beim Kopieren gilt: list.copy(), dict.copy() und Slicing erzeugen flache Kopien. Die Elemente selbst werden nicht kopiert; enthalten sie veränderliche Objekte, sehen beide Kopien dieselben. copy.deepcopy kopiert rekursiv.</p><h2>Schritt für Schritt</h2><ol><li>Starte „python3 demos/02_datenstrukturen.py“ im Lab-Ordner und lies die Ausgabe Zeile für Zeile neben dem Code.</li><li>Counter zählt Elemente und liefert mit most_common die häufigsten zuerst. In expenses/report.py zeigt defaultdict(Decimal) dasselbe Muster für Summen: Ein fehlender Schlüssel beginnt bei Decimal(), also 0.</li><li>Sortiere nach mehreren Kriterien mit einem Tupel als key: key=lambda item: (-item[1], item[0]) sortiert nach Summe absteigend und bei Gleichstand nach Name. Dadurch bleibt die Ausgabe stabil.</li><li>Übe die Comprehension mit Bedingung: {name: preis * 1.19 for name, preis in prices.items() if preis &gt; 1}. Lies sie als „für jedes Paar, falls …, bilde …“.</li><li>Beobachte den Generator: Der erste sum liefert 30, der zweite 0, weil der Generator verbraucht ist. Wer ihn mehrmals braucht, macht eine Liste daraus.</li><li>Beobachte das Gitter: [[0]*2]*2 enthält zweimal dieselbe Zeilenliste, daher ändert sich beim Setzen einer Zelle beide Zeilen. Die Comprehension mit for _ in range(2) legt zwei Listen an.</li><li>Beachte die flache Kopie des Wörterbuchs: Die innere Liste ist dieselbe; deepcopy macht sie unabhängig.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Wann welche Struktur? Brauchst du Reihenfolge und Duplikate, nimm eine Liste. Brauchst du Nachschlagen nach einem Schlüssel, ein Wörterbuch. Brauchst du nur „enthalten oder nicht“ oder Duplikate entfernen, eine Menge. Ein Tupel ist die Wahl für kleine feste Gruppen, etwa (x, y) oder einen Schlüssel aus zwei Teilen. Elemente einer Menge und Schlüssel eines Wörterbuchs müssen hashbar sein, also unveränderlich: Listen sind es nicht, Tupel mit unveränderlichem Inhalt schon.</p><p>Was sagt die Reihenfolge von Mengen? Nichts: Eine Menge hat keine garantierte Reihenfolge. Das Lab sortiert deshalb vor der Ausgabe. Wörterbücher dagegen behalten die Einfügereihenfolge; das ist seit Python 3.7 Teil der Sprache.</p><p>Wann ist eine Comprehension zu viel? Wenn sie mehrere verschachtelte Schleifen oder Bedingungen hat und nicht mehr in einem Atemzug lesbar ist. Dann ist eine normale Schleife klarer. Lesbarkeit geht vor Kürze.</p><h2>Begriffe auf einen Blick</h2><dl><dt>hashbar</dt><dd>Ein unveränderliches Objekt mit festem Hashwert; nur solche Objekte dürfen Mengenelemente oder Wörterbuchschlüssel sein.</dd><dt>Comprehension</dt><dd>Kurzform, die aus einer Schleife eine Liste, ein Wörterbuch oder eine Menge baut.</dd><dt>Generator</dt><dd>Liefert Werte erst beim Durchlaufen und kann nur einmal verbraucht werden.</dd><dt>flache Kopie</dt><dd>Kopiert nur die äußere Struktur; die Elemente sind dieselben Objekte.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>02_datenstrukturen.py</code> (Ausschnitt ab „words =“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>report.py</code> (Ausschnitt ab „def totals_by_category“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>02_datenstrukturen.py</code> (Ausschnitt ab „grid_bad“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehl: cd content/examples/python-lab/ &amp;&amp; python3 demos/02_datenstrukturen.py\nCounter            : {'Miete': 1, 'Kultur': 2, 'Lebensmittel': 3}\nhäufigste zuerst   : [('Lebensmittel', 3), ('Kultur', 2)]\nsortiert nach Preis: ['Apfel', 'Käse', 'Brot']\nsortiert, absteigend: [('Brot', 3.2), ('Käse', 2.5), ('Apfel', 0.4)]\nComprehension      : {'Brot': 3.81, 'Käse': 2.97}\nMengen             : ['y', 'z'] ['w', 'x', 'y', 'z'] ['x'] ['w', 'x']\nGenerator, 1. Lauf : 30 | 2. Lauf: 0 (bereits verbraucht)\n[[0]*2]*2          : [[1, 0], [1, 0]] | korrekt: [[1, 0], [0, 0]]\nflache Kopie sieht : ['a', 'b'] | tiefe Kopie: ['a']\nDict behält Einfügereihenfolge: ['z', 'a', 'm']</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Ein Gitter mit [[0]*n]*m anzulegen.<br><strong>Warum:</strong> Alle Zeilen sind dasselbe Objekt; eine Änderung wirkt auf jede.<br><strong>Besser:</strong> [[0]*n for _ in range(m)] verwenden.</li><li><strong>Falsch:</strong> Einen Generator mehrfach zu durchlaufen.<br><strong>Warum:</strong> Nach dem ersten Durchlauf ist er leer; weitere Auswertungen liefern nichts, ohne Fehlermeldung.<br><strong>Besser:</strong> Das Ergebnis mit list(...) speichern, wenn es mehrfach gebraucht wird.</li><li><strong>Falsch:</strong> Sich auf die Reihenfolge einer Menge zu verlassen.<br><strong>Warum:</strong> Mengen garantieren keine Reihenfolge; die Ausgabe kann sich ändern.<br><strong>Besser:</strong> Vor der Ausgabe sortieren (sorted(menge)).</li><li><strong>Falsch:</strong> Eine verschachtelte Struktur mit copy() zu duplizieren und dann innen zu ändern.<br><strong>Warum:</strong> Die inneren Objekte sind geteilt, die „Kopie“ ändert sich mit.<br><strong>Besser:</strong> copy.deepcopy verwenden oder die inneren Objekte neu aufbauen.</li></ul><h2>Praxis</h2><p>Lies eine Wortliste (zum Beispiel aus einem eigenen Text), zähle mit Counter und gib die zehn häufigsten Wörter sortiert aus; bei gleicher Anzahl alphabetisch. Notiere, welche Struktur du an welcher Stelle gewählt hast.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Entferne mit einer Menge Duplikate aus einer Liste von Kategorien und gib sie sortiert aus.<br><em>Abnahme:</em> Das Ergebnis enthält jede Kategorie einmal in alphabetischer Reihenfolge; du erklärst, warum erst sortiert werden muss.</li><li><strong>Grenzfall:</strong> Versuche, eine Liste als Wörterbuchschlüssel zu verwenden, danach ein Tupel.<br><em>Abnahme:</em> Die Liste löst einen TypeError aus, das Tupel funktioniert; du erklärst den Begriff hashbar.</li><li><strong>Fehlerfall:</strong> Lege mit [[0]*3]*3 ein Gitter an, setze ein Feld und beobachte das Ergebnis.<br><em>Abnahme:</em> Du erklärst die geteilten Zeilen und behebst sie mit einer Comprehension.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/tutorial/datastructures.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Datenstrukturen (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/collections.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: collections (Counter, defaultdict)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/copy.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: copy (flache und tiefe Kopien)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Zählen, Sortieren mit key, Comprehensions, Mengenoperationen, Generator-Verbrauch und die Kopierfallen mit Ausgaben aus dem Demo-Skript sowie die Summierung je Kategorie im Projekt. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Leistungsmessungen großer Datenmengen und andere Sammlungstypen wie deque oder heapq. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Lies eine Wortliste (zum Beispiel aus einem eigenen Text), zähle mit Counter und gib die zehn häufigsten Wörter sortiert aus; bei gleicher Anzahl alphabetisch. Notiere, welche Struktur du an welcher Stelle gewählt hast.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Entferne mit einer Menge Duplikate aus einer Liste von Kategorien und gib sie sortiert aus.",
+              "acceptance": "Das Ergebnis enthält jede Kategorie einmal in alphabetischer Reihenfolge; du erklärst, warum erst sortiert werden muss."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Versuche, eine Liste als Wörterbuchschlüssel zu verwenden, danach ein Tupel.",
+              "acceptance": "Die Liste löst einen TypeError aus, das Tupel funktioniert; du erklärst den Begriff hashbar."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Lege mit [[0]*3]*3 ein Gitter an, setze ein Feld und beobachte das Ergebnis.",
+              "acceptance": "Du erklärst die geteilten Zeilen und behebst sie mit einer Comprehension."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/tutorial/datastructures.html",
+              "title": "Python-Dokumentation: Datenstrukturen (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/library/collections.html",
+              "title": "Python-Dokumentation: collections (Counter, defaultdict)"
+            },
+            {
+              "url": "https://docs.python.org/3/library/copy.html",
+              "title": "Python-Dokumentation: copy (flache und tiefe Kopien)"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Zählen, Sortieren mit key, Comprehensions, Mengenoperationen, Generator-Verbrauch und die Kopierfallen mit Ausgaben aus dem Demo-Skript sowie die Summierung je Kategorie im Projekt. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Leistungsmessungen großer Datenmengen und andere Sammlungstypen wie deque oder heapq. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Wie sortierst du ein Wörterbuch nach seinen Werten, größte zuerst?",
+              "options": [
+                "sorted(d.items(), key=lambda item: item[1], reverse=True)",
+                "sorted(d).reverse()",
+                "d.sort(reverse=True)",
+                "set(d.values())"
+              ],
+              "correct": 0,
+              "explain": "sorted liefert eine neue Liste und bekommt über key das Sortierkriterium.",
+              "rationales": [
+                "key bestimmt das Kriterium, reverse kehrt die Reihenfolge um.",
+                "sorted(d) sortiert nur die Schlüssel und gibt eine Liste zurück.",
+                "Wörterbücher haben keine Methode sort.",
+                "Das erzeugt eine ungeordnete Menge."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/datastructures.html",
+                "https://docs.python.org/3/library/collections.html",
+                "https://docs.python.org/3/library/copy.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was liefert der zweite sum(squares), wenn squares ein Generatorausdruck ist?",
+              "options": [
+                "Dieselbe Summe wie beim ersten Mal.",
+                "Einen Fehler.",
+                "Die doppelte Summe.",
+                "0, weil der Generator verbraucht ist."
+              ],
+              "correct": 3,
+              "explain": "Wer die Werte mehrfach braucht, macht eine Liste daraus.",
+              "rationales": [
+                "Der Generator liefert seine Werte nur einmal.",
+                "Python meldet hier keinen Fehler.",
+                "Es wird nichts verdoppelt.",
+                "Ein verbrauchter Generator liefert keine Werte mehr."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/datastructures.html",
+                "https://docs.python.org/3/library/collections.html",
+                "https://docs.python.org/3/library/copy.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum ändert sich bei [[0]*2]*2 eine Zelle in beiden Zeilen?",
+              "options": [
+                "Python kopiert die Zeilen fehlerhaft.",
+                "Beide Zeilen sind dasselbe Listenobjekt.",
+                "Die Multiplikation erzeugt Tupel.",
+                "Das Gitter ist nicht schreibbar."
+              ],
+              "correct": 1,
+              "explain": "Lege jede Zeile mit einer Comprehension einzeln an.",
+              "rationales": [
+                "Es wird nichts kopiert.",
+                "Die Multiplikation wiederholt die Referenz, nicht das Objekt.",
+                "Es entstehen Listen, keine Tupel.",
+                "Das Gitter lässt sich beschreiben, nur mit geteilter Wirkung."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/datastructures.html",
+                "https://docs.python.org/3/library/collections.html",
+                "https://docs.python.org/3/library/copy.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "words = [\"Miete\", \"Kultur\", \"Lebensmittel\", \"Kultur\", \"Lebensmittel\", \"Lebensmittel\"]\nprint(\"Counter            :\", dict(Counter(words)))\nprint(\"häufigste zuerst   :\", Counter(words).most_common(2))\n\nprices = {\"Brot\": 3.2, \"Käse\": 2.5, \"Apfel\": 0.4}\nprint(\"sortiert nach Preis:\", sorted(prices, key=prices.get))\nprint(\"sortiert, absteigend:\", sorted(prices.items(), key=lambda item: item[1], reverse=True))\nprint(\"Comprehension      :\", {name: round(price * 1.19, 2) for name, price in prices.items() if price > 1})",
+          "codeLang": "Python",
+          "code2": "def totals_by_category(expenses: list[Expense]) -> dict[str, Decimal]:\n    sums: defaultdict[str, Decimal] = defaultdict(Decimal)\n    for expense in expenses:\n        sums[expense.category] += expense.amount\n    # größte Summe zuerst; bei Gleichstand alphabetisch, damit die Ausgabe stabil ist\n    return dict(sorted(sums.items(), key=lambda item: (-item[1], item[0])))",
+          "code2Lang": "Python",
+          "code3": "grid_bad = [[0] * 2] * 2  # beide Zeilen sind dasselbe Objekt\ngrid_bad[0][0] = 1\ngrid_ok = [[0] * 2 for _ in range(2)]\ngrid_ok[0][0] = 1\nprint(\"[[0]*2]*2          :\", grid_bad, \"| korrekt:\", grid_ok)\n\noriginal = {\"tags\": [\"a\"]}\nshallow, deep = original.copy(), copy.deepcopy(original)\noriginal[\"tags\"].append(\"b\")\nprint(\"flache Kopie sieht :\", shallow[\"tags\"], \"| tiefe Kopie:\", deep[\"tags\"])",
+          "code3Lang": "Python"
+        },
+        {
+          "id": "py-m1-l3",
+          "title": "Dateien, Kodierung, CSV und JSON: sauber mit Umlauten",
+          "minutes": 35,
+          "objectives": [
+            "Pfade mit pathlib bilden und zerlegen",
+            "Dateien mit with und ausdrücklicher Kodierung lesen und schreiben",
+            "CSV mit Semikolon, Anführungszeichen und Umlauten korrekt verarbeiten",
+            "Falsche Kodierung als Fehler erkennen und JSON mit und ohne ensure_ascii ausgeben"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Pfade mit pathlib bilden und zerlegen</li><li>Dateien mit with und ausdrücklicher Kodierung lesen und schreiben</li><li>CSV mit Semikolon, Anführungszeichen und Umlauten korrekt verarbeiten</li><li>Falsche Kodierung als Fehler erkennen und JSON mit und ohne ensure_ascii ausgeben</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>Mit pathlib.Path baust du Pfade betriebssystemunabhängig: Path(\"daten\") / \"a.csv\". Du bekommst Name, Endung und Elternordner als Eigenschaften und kannst Dateien mit read_text, write_text und open lesen und schreiben.</p><p>Der wichtigste Punkt beim Lesen von Text ist die Kodierung. Eine Datei besteht aus Bytes; wie sie zu Zeichen werden, sagt die Kodierung. UTF-8 kann alle Zeichen darstellen, ein Umlaut belegt zwei Bytes. Liest du Latin-1-Bytes als UTF-8, gibt es meist einen Fehler; liest du UTF-8-Bytes als Latin-1, gibt es keinen Fehler, aber Müll wie „KÃ¤se“. Gib deshalb immer encoding=\"utf-8\" an.</p><p>Das Modul csv zerlegt Zeilen; es versteht Trennzeichen (bei uns das Semikolon), Anführungszeichen und Trennzeichen im Feld. Öffne die Datei mit newline=\"\". Das Modul json wandelt Wörterbücher und Listen in Text und zurück.</p><h2>Schritt für Schritt</h2><ol><li>Starte „python3 demos/03_dateien.py“. Es schreibt in einen temporären Ordner, der am Ende gelöscht wird.</li><li>Beobachte die Pfadteile: name, stem, suffix und parent.name. PurePosixPath wird verwendet, damit die Ausgabe auf jedem System gleich ist; im Alltag nimmst du Path.</li><li>Lies die CSV-Zeile mit dem Anführungszeichen und dem Semikolon im Feld: csv.reader trennt trotzdem richtig, weil das Feld in Anführungszeichen steht.</li><li>Beobachte die Kodierungsfälle: „ä“ belegt in UTF-8 zwei Bytes. Mit ascii-Lesen kommt ein UnicodeDecodeError. Mit Latin-1 gelesenes UTF-8 liefert still „Ã¤“ statt „ä“.</li><li>Öffne expenses/reader.py: Die Datei wird mit encoding=\"utf-8-sig\" geöffnet. Das liest UTF-8 mit und ohne Byte-Order-Mark, wie ihn Excel oft schreibt. newline=\"\" gehört zu csv.</li><li>Vergleiche json.dumps ohne und mit ensure_ascii=False: Standardmäßig steht „ü“ als \\u00fc im Text; mit False bleibt es lesbar. Beide Schreibweisen sind gültiges JSON und werden gleich zurückgelesen.</li><li>Beachte das Verhalten bei ungültigem JSON: json.loads löst JSONDecodeError mit Zeile und Spalte aus; fange ihn dort ab, wo du Eingaben liest.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Warum nicht einfach den Standard nehmen? Ohne encoding hängt das Ergebnis vom Computer ab. Bis Python 3.14 richtet sich open bei ausgeschaltetem UTF-8-Modus nach der Spracheinstellung des Systems; ein Skript, das auf dem Mac läuft, kann unter Windows Umlaute zerstören. Laut Dokumentation ist UTF-8 ab Python 3.15 der Standard (PEP 686). Die Dokumentation von 3.15 ist am 15.11.2026 die aktuelle; das Lab lief hier nicht mit 3.15, sondern mit 3.12 bis 3.14. Gib die Kodierung trotzdem immer an: Der Code läuft dann auf allen Versionen gleich und zeigt die Absicht.</p><p>Was tun mit unbekannten Dateien? Lies sie als Bytes, probiere bekannte Kodierungen und melde einen Fehler, wenn keine passt. Ersetzen mit errors=\"replace\" verbirgt Probleme und gehört in Anzeigen, nicht in Datenverarbeitung.</p><p>CSV ist weniger einheitlich, als es scheint: Trennzeichen (Komma oder Semikolon), Dezimalzeichen und Kodierung variieren je nach Programm und Sprache. Dokumentiere das Format, das dein Programm erwartet, und prüfe jede Zeile (Lektion 4).</p><h2>Begriffe auf einen Blick</h2><dl><dt>Kodierung</dt><dd>Vorschrift, wie Zeichen in Bytes umgewandelt werden (zum Beispiel UTF-8).</dd><dt>pathlib.Path</dt><dd>Objekt für Dateipfade mit Eigenschaften wie name, suffix und parent.</dd><dt>with-Block</dt><dd>Schließt die Datei zuverlässig am Ende, auch bei einem Fehler.</dd><dt>ensure_ascii</dt><dd>Option von json.dumps; True schreibt Nicht-ASCII-Zeichen als Escape-Folge.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>reader.py</code> (Ausschnitt ab „def read_expenses“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>03_dateien.py</code> (Ausschnitt ab „with tempfile“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>03_dateien.py</code> (Ausschnitt ab „data = {“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehl: cd content/examples/python-lab/ &amp;&amp; python3 demos/03_dateien.py\nPfadteile      : ausgaben.final.csv | ausgaben.final | .csv | 2026 | ausgaben.final.json\nPfade verbinden: daten/2026/a.csv\nBytes (UTF-8)  : 82 | 'ä' belegt 2 Bytes, in Latin-1 1\nzurückgelesen  : ['Käse', '3,50', 'enthält \"Anführungszeichen\"; und Semikolon']\nfalsche Kodierung: UnicodeDecodeError -&gt; ordinal not in range(128)\nfalsch, aber still: 'KÃ¤se;'\nJSON ASCII     : {\"name\": \"M\\u00fcller\", \"betrag\": \"12.50\"}\nJSON mit Umlaut: {\"name\": \"Müller\", \"betrag\": \"12.50\"}\nzurück         : True\nungültiges JSON: Expecting property name enclosed in double quotes (Zeile 1 Spalte 2 )</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> open ohne encoding zu verwenden.<br><strong>Warum:</strong> Das Ergebnis hängt von System und Version ab; Umlaute können kaputtgehen.<br><strong>Besser:</strong> Immer encoding=\"utf-8\" (oder die bekannte Kodierung) angeben.</li><li><strong>Falsch:</strong> Pfade mit + und Schrägstrichen zusammenzusetzen.<br><strong>Warum:</strong> Trennzeichen unterscheiden sich je nach Betriebssystem, Fehler bleiben unbemerkt.<br><strong>Besser:</strong> pathlib.Path mit dem Operator / verwenden.</li><li><strong>Falsch:</strong> CSV mit split(\";\") zu zerlegen.<br><strong>Warum:</strong> Felder mit Anführungszeichen oder Trennzeichen im Text werden falsch geteilt.<br><strong>Besser:</strong> Das Modul csv nutzen und die Datei mit newline=\"\" öffnen.</li><li><strong>Falsch:</strong> Dateien ohne with zu öffnen und das Schließen zu vergessen.<br><strong>Warum:</strong> Bei einem Fehler bleibt die Datei offen; Daten werden womöglich nicht geschrieben.<br><strong>Besser:</strong> with path.open(...) as handle verwenden.</li></ul><h2>Praxis</h2><p>Schreibe eine kleine CSV mit Umlauten in UTF-8, lies sie zurück und gib sie als JSON mit ensure_ascii=False aus. Öffne die Datei zum Test absichtlich mit Latin-1 und beschreibe, was du siehst.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Lies data/ausgaben.csv mit csv.reader und gib jede Zeile als Liste aus.<br><em>Abnahme:</em> Die Zeilen enthalten Datum, Kategorie, Betrag und Notiz; Umlaute erscheinen korrekt; du erklärst newline=\"\".</li><li><strong>Grenzfall:</strong> Speichere die Datei mit einem Texteditor in UTF-8 mit BOM und lies sie mit encoding=\"utf-8\" und mit \"utf-8-sig\".<br><em>Abnahme:</em> Du beschreibst, wie das BOM im ersten Feld erscheint, wenn du utf-8 verwendest, und wie utf-8-sig es entfernt.</li><li><strong>Fehlerfall:</strong> Lies eine Latin-1-Datei mit encoding=\"utf-8\".<br><em>Abnahme:</em> Python meldet einen UnicodeDecodeError; du fängst ihn ab und gibst eine verständliche Meldung aus.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/library/pathlib.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: pathlib</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/csv.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: csv</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/json.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: json</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/howto/unicode.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Unicode-HOWTO</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/functions.html#open\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: open (Kodierung)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Pfadzerlegung, Schreiben und Lesen mit Umlauten, CSV mit Semikolon im Feld, falsche Kodierung (Fehler und stilles Fehlverhalten), JSON mit und ohne ensure_ascii und das Einlesen mit und ohne BOM durch die Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Windows-Pfade und -Zeilenenden, sehr große Dateien und andere Kodierungen als UTF-8 und Latin-1; Python 3.15 mit UTF-8 als Standard. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Schreibe eine kleine CSV mit Umlauten in UTF-8, lies sie zurück und gib sie als JSON mit ensure_ascii=False aus. Öffne die Datei zum Test absichtlich mit Latin-1 und beschreibe, was du siehst.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Lies data/ausgaben.csv mit csv.reader und gib jede Zeile als Liste aus.",
+              "acceptance": "Die Zeilen enthalten Datum, Kategorie, Betrag und Notiz; Umlaute erscheinen korrekt; du erklärst newline=\"\"."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Speichere die Datei mit einem Texteditor in UTF-8 mit BOM und lies sie mit encoding=\"utf-8\" und mit \"utf-8-sig\".",
+              "acceptance": "Du beschreibst, wie das BOM im ersten Feld erscheint, wenn du utf-8 verwendest, und wie utf-8-sig es entfernt."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Lies eine Latin-1-Datei mit encoding=\"utf-8\".",
+              "acceptance": "Python meldet einen UnicodeDecodeError; du fängst ihn ab und gibst eine verständliche Meldung aus."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/library/pathlib.html",
+              "title": "Python-Dokumentation: pathlib"
+            },
+            {
+              "url": "https://docs.python.org/3/library/csv.html",
+              "title": "Python-Dokumentation: csv"
+            },
+            {
+              "url": "https://docs.python.org/3/library/json.html",
+              "title": "Python-Dokumentation: json"
+            },
+            {
+              "url": "https://docs.python.org/3/howto/unicode.html",
+              "title": "Python-Dokumentation: Unicode-HOWTO"
+            },
+            {
+              "url": "https://docs.python.org/3/library/functions.html#open",
+              "title": "Python-Dokumentation: open (Kodierung)"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): Pfadzerlegung, Schreiben und Lesen mit Umlauten, CSV mit Semikolon im Feld, falsche Kodierung (Fehler und stilles Fehlverhalten), JSON mit und ohne ensure_ascii und das Einlesen mit und ohne BOM durch die Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Windows-Pfade und -Zeilenenden, sehr große Dateien und andere Kodierungen als UTF-8 und Latin-1; Python 3.15 mit UTF-8 als Standard. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Wie sieht „Käse“ aus, wenn UTF-8-Bytes als Latin-1 gelesen werden?",
+              "options": [
+                "Unverändert „Käse“.",
+                "Als Fehlermeldung ohne Text.",
+                "Als „KÃ¤se“, ohne Fehler.",
+                "Als leere Datei."
+              ],
+              "correct": 2,
+              "explain": "Deshalb gibst du die Kodierung an und prüfst Eingaben, statt Fehler zu verdecken.",
+              "rationales": [
+                "Dann wäre die Kodierung richtig gewählt.",
+                "Latin-1 kann jedes Byte darstellen und meldet keinen Fehler.",
+                "Das zweite Byte des „ä“ wird als eigenes Zeichen gelesen.",
+                "Der Inhalt bleibt erhalten, nur falsch dargestellt."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/pathlib.html",
+                "https://docs.python.org/3/library/csv.html",
+                "https://docs.python.org/3/library/json.html",
+                "https://docs.python.org/3/howto/unicode.html",
+                "https://docs.python.org/3/library/functions.html#open"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wozu dient newline=\"\" beim Öffnen einer CSV-Datei?",
+              "options": [
+                "Es entfernt alle Leerzeilen.",
+                "Es erlaubt dem csv-Modul, Zeilenumbrüche in Feldern selbst zu behandeln.",
+                "Es wählt die Kodierung.",
+                "Es macht die Datei schreibgeschützt."
+              ],
+              "correct": 1,
+              "explain": "Ohne newline=\"\" kann es bei Feldern mit Zeilenumbruch oder unter Windows zu falschen Zeilen kommen.",
+              "rationales": [
+                "Leerzeilen bleiben erhalten.",
+                "Die Dokumentation von csv verlangt diese Einstellung.",
+                "Die Kodierung steht in encoding.",
+                "Das ist der Modus, nicht der Zeilenumbruch."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/pathlib.html",
+                "https://docs.python.org/3/library/csv.html",
+                "https://docs.python.org/3/library/json.html",
+                "https://docs.python.org/3/howto/unicode.html",
+                "https://docs.python.org/3/library/functions.html#open"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum ist encoding=\"utf-8\" auch dann sinnvoll, wenn UTF-8 der Standard ist?",
+              "options": [
+                "Der Standard ist in allen Versionen gleich.",
+                "Ohne Angabe ist das Lesen verboten.",
+                "Es beschleunigt das Lesen.",
+                "Der Code verhält sich auf allen Versionen und Systemen gleich."
+              ],
+              "correct": 3,
+              "explain": "Laut Dokumentation ist UTF-8 erst ab 3.15 Standard; ältere Versionen nutzen die Spracheinstellung des Systems.",
+              "rationales": [
+                "Bis Python 3.14 hing der Standard vom System ab.",
+                "Das Lesen ist ohne Angabe erlaubt.",
+                "Die Geschwindigkeit ändert sich nicht.",
+                "Die Absicht ist sichtbar und unabhängig von der Version."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/pathlib.html",
+                "https://docs.python.org/3/library/csv.html",
+                "https://docs.python.org/3/library/json.html",
+                "https://docs.python.org/3/howto/unicode.html",
+                "https://docs.python.org/3/library/functions.html#open"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "def read_expenses(path: Path) -> tuple[list[Expense], list[RowError]]:\n    expenses: list[Expense] = []\n    errors: list[RowError] = []\n    # Kodierung ausdrücklich angeben: Der Standard hängt vom System ab. utf-8-sig liest UTF-8 mit und ohne BOM (Excel schreibt oft eins).\n    # newline=\"\" verlangt das csv-Modul.\n    with path.open(encoding=\"utf-8-sig\", newline=\"\") as handle:\n        for line, fields in enumerate(csv.reader(handle, delimiter=\";\"), start=1):\n            if line == 1 and [field.strip().lower() for field in fields[:3]] == [\"datum\", \"kategorie\", \"betrag\"]:\n                continue  # Kopfzeile\n            if not fields or all(not field.strip() for field in fields):\n                continue  # Leerzeile\n            try:\n                expenses.append(parse_row(fields, line))\n            except RowError as error:\n                errors.append(error)\n    return expenses, errors",
+          "codeLang": "Python",
+          "code2": "with tempfile.TemporaryDirectory() as tmp:\n    path = Path(tmp) / \"kaese.csv\"\n    with path.open(\"w\", encoding=\"utf-8\", newline=\"\") as handle:\n        writer = csv.writer(handle, delimiter=\";\")\n        writer.writerow([\"Artikel\", \"Preis\", \"Notiz\"])\n        writer.writerow([\"Käse\", \"3,50\", 'enthält \"Anführungszeichen\"; und Semikolon'])\n    raw = path.read_bytes()\n    print(\"Bytes (UTF-8)  :\", len(raw), \"| 'ä' belegt\", len(\"ä\".encode(\"utf-8\")), \"Bytes, in Latin-1\", len(\"ä\".encode(\"latin-1\")))\n    with path.open(encoding=\"utf-8\", newline=\"\") as handle:\n        print(\"zurückgelesen  :\", list(csv.reader(handle, delimiter=\";\"))[1])\n    try:\n        path.read_text(encoding=\"ascii\")\n    except UnicodeDecodeError as error:\n        print(\"falsche Kodierung:\", type(error).__name__, \"->\", error.reason)\n    print(\"falsch, aber still:\", repr(raw.decode(\"latin-1\").splitlines()[1][:6]))",
+          "code2Lang": "Python",
+          "code3": "data = {\"name\": \"Müller\", \"betrag\": \"12.50\"}\nprint(\"JSON ASCII     :\", json.dumps(data))\nprint(\"JSON mit Umlaut:\", json.dumps(data, ensure_ascii=False))\nprint(\"zurück         :\", json.loads(json.dumps(data)) == data)\ntry:\n    json.loads(\"{'a': 1}\")\nexcept json.JSONDecodeError as error:\n    print(\"ungültiges JSON:\", error.msg, \"(Zeile\", error.lineno, \"Spalte\", error.colno, \")\")",
+          "code3Lang": "Python"
+        },
+        {
+          "id": "py-m1-l4",
+          "title": "Fehler und Ausnahmen: abfangen, verketten und aufräumen",
+          "minutes": 35,
+          "objectives": [
+            "try, except, else und finally in der richtigen Reihenfolge einsetzen",
+            "Eigene Ausnahmen mit aussagekräftiger Meldung definieren und mit from verketten",
+            "Mit with und contextlib sicherstellen, dass aufgeräumt wird",
+            "Fehler nicht verschlucken, sondern dort behandeln, wo man sie beheben kann"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>try, except, else und finally in der richtigen Reihenfolge einsetzen</li><li>Eigene Ausnahmen mit aussagekräftiger Meldung definieren und mit from verketten</li><li>Mit with und contextlib sicherstellen, dass aufgeräumt wird</li><li>Fehler nicht verschlucken, sondern dort behandeln, wo man sie beheben kann</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>Wenn etwas schiefgeht, löst Python eine Ausnahme aus. Sie wandert die Aufrufkette nach oben, bis jemand sie mit except fängt; sonst endet das Programm mit einer Fehlermeldung. try führt Code aus, der fehlschlagen kann, except behandelt bestimmte Ausnahmetypen, else läuft nur, wenn keine Ausnahme auftrat, und finally läuft immer.</p><p>Eigene Ausnahmen erbst du von Exception und benennst sie nach dem fachlichen Problem. Mit raise NeuerFehler(...) from original behältst du die Ursache: Sie steht dann als __cause__ am neuen Fehler und im Traceback. from None unterdrückt sie bewusst, wenn sie für den Aufrufer keine Hilfe ist.</p><p>Mit with stellst du sicher, dass Aufräumarbeiten laufen, auch bei einem Fehler. Eigene Kontextmanager baust du mit @contextlib.contextmanager: Alles vor yield ist das Öffnen, alles danach das Schließen.</p><h2>Schritt für Schritt</h2><ol><li>Starte „python3 demos/04_fehler.py“. Die ersten drei Zeilen zeigen für gültige, nicht numerische und zu große Ports die Reihenfolge try → except/else → finally.</li><li>Öffne parse_port im Demo: ValueError von int() wird in eine eigene ConfigError mit lesbarer Meldung umgewandelt und mit from error verkettet; die Ausgabe nennt die Ursache.</li><li>Vergleiche mit expenses/model.py: RowError trägt die Zeilennummer (Eigenschaften line und message) und verwendet from None, weil die interne InvalidOperation für den Aufrufer nichts erklärt.</li><li>Beobachte die Reihenfolge bei zwei verschachtelten with-Blöcken: Öffnen A, Öffnen B, Arbeit, Schließen B, Schließen A. Das Schließen läuft auch, obwohl 1 / 0 eine Ausnahme auslöst.</li><li>contextlib.suppress(FileNotFoundError) ignoriert genau diese eine Ausnahme und nur dort, wo das fachlich gewollt ist.</li><li>Beachte das Anti-Muster: except KeyError: pass lässt den Fehler spurlos verschwinden. Fange nie mehr, als du behandeln kannst, und nie ohne Grund alles mit except Exception.</li><li>Schau dir die Hierarchie an: KeyError ist ein LookupError und eine Exception. Fange den spezifischsten Typ, der zu deiner Behandlung passt.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Wo fängt man Fehler? Dort, wo man etwas Sinnvolles tun kann: wiederholen, einen Ersatzwert nehmen, den Nutzer informieren, aufräumen. Dazwischen lässt man sie durchlaufen. Das Lab sammelt zum Beispiel Zeilenfehler (RowError) im Reader und entscheidet erst an der Kommandozeile, was daraus wird (Meldung und Exit-Code 1).</p><p>Warum nicht überall except Exception? Es fängt auch Programmierfehler (Tippfehler, falsche Typen), die du sehen willst. Ein breites except gehört an die äußerste Grenze eines Programms, etwa einen Server, der pro Anfrage weiterlaufen muss, und dort mit Protokoll und Traceback, nicht mit pass.</p><p>Zum Stand: Die Namen und die Hierarchie der eingebauten Ausnahmen sind stabil und stehen in der Dokumentation. Wortlaut und Details von Fehlermeldungen ändern sich zwischen Versionen; teste deshalb den Typ der Ausnahme, nicht den genauen Text, wie es die Tests des Labs bei eingebauten Fehlern tun.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Ausnahme (Exception)</dt><dd>Objekt, das einen Fehler beschreibt und die Aufrufkette hinaufwandert, bis es gefangen wird.</dd><dt>finally</dt><dd>Block, der immer läuft, auch bei Fehlern und bei return.</dd><dt>Verkettung (from)</dt><dd>Hängt die ursprüngliche Ausnahme als Ursache (__cause__) an die neue.</dd><dt>Kontextmanager</dt><dd>Objekt für with: richtet etwas ein und räumt zuverlässig wieder auf.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>model.py</code> (Ausschnitt ab „class RowError“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>04_fehler.py</code> (Ausschnitt ab „def parse_port“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>04_fehler.py</code> (Ausschnitt ab „@contextlib.contextmanager“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehl: cd content/examples/python-lab/ &amp;&amp; python3 demos/04_fehler.py\n'8080'   try -&gt; else(8080) -&gt; finally\n'abc'    try -&gt; except(Port 'abc' ist keine Zahl) -&gt; Ursache=ValueError -&gt; finally\n'70000'  try -&gt; except(Port 70000 liegt außerhalb von 1 bis 65535) -&gt; Ursache=keine -&gt; finally\nReihenfolge     : A: öffnen | B: öffnen | Arbeit | B: schließen | A: schließen | gefangen: division by zero\nsuppress        : FileNotFoundError bewusst ignoriert\nstill verschluckt: das Programm läuft weiter, ohne Spur\nsichtbar        : sichtbar\nHierarchie      : ['KeyError', 'LookupError', 'Exception', 'BaseException', 'object']</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> except Exception: pass zu schreiben.<br><strong>Warum:</strong> Alle Fehler verschwinden, auch Programmierfehler; die Ursache ist später nicht mehr auffindbar.<br><strong>Besser:</strong> Den konkreten Typ fangen und behandeln oder protokollieren und erneut auslösen.</li><li><strong>Falsch:</strong> Aufräumen nur am Ende des try-Blocks zu schreiben.<br><strong>Warum:</strong> Bei einer Ausnahme wird es übersprungen; Dateien und Verbindungen bleiben offen.<br><strong>Besser:</strong> finally oder besser with verwenden.</li><li><strong>Falsch:</strong> Fehlermeldungen als Text zu vergleichen.<br><strong>Warum:</strong> Der Wortlaut ändert sich zwischen Versionen und Sprachen.<br><strong>Besser:</strong> Den Ausnahmetyp (oder eigene Felder wie line) prüfen.</li><li><strong>Falsch:</strong> Eine neue Ausnahme ohne from auszulösen, wo die Ursache hilft.<br><strong>Warum:</strong> Der Zusammenhang geht verloren oder erscheint missverständlich als „während der Behandlung“.<br><strong>Besser:</strong> raise Neu(...) from ursprung oder bewusst from None.</li></ul><h2>Praxis</h2><p>Schreibe eine Funktion read_port(text), die ein int zwischen 1 und 65535 liefert und sonst eine eigene Ausnahme auslöst. Teste mindestens vier Eingaben und prüfe, dass die Ursache bei „abc“ verkettet ist.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Rufe parse_port mit dem Text \" 80 \" (Leerzeichen am Rand) auf.<br><em>Abnahme:</em> Die Funktion liefert 80; du erklärst, dass int() Leerzeichen am Rand akzeptiert, und sicherst das Verhalten mit einem Test.</li><li><strong>Grenzfall:</strong> Löse in einem with-Block mit zwei Kontextmanagern in dem zweiten beim Öffnen eine Ausnahme aus.<br><em>Abnahme:</em> Du beschreibst, dass der erste noch geschlossen wird, und belegst es mit einer Ausgabe.</li><li><strong>Fehlerfall:</strong> Entferne in einer Funktion das except und lasse die Ausnahme bis zum Hauptprogramm laufen.<br><em>Abnahme:</em> Du liest den Traceback von unten nach oben und nennst die Zeile, in der der Fehler entstand.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/tutorial/errors.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Fehler und Ausnahmen (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/exceptions.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Eingebaute Ausnahmen</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/contextlib.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: contextlib</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): die Reihenfolge von try, except, else und finally, Verkettung mit from und from None, verschachtelte Kontextmanager mit Fehler, suppress, das Anti-Muster mit pass und die Eigenschaften von RowError in Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Ausnahmegruppen (except*) und nebenläufigen Code, asynchrone Kontextmanager und die Ausgabe vollständiger Tracebacks. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Schreibe eine Funktion read_port(text), die ein int zwischen 1 und 65535 liefert und sonst eine eigene Ausnahme auslöst. Teste mindestens vier Eingaben und prüfe, dass die Ursache bei „abc“ verkettet ist.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Rufe parse_port mit dem Text \" 80 \" (Leerzeichen am Rand) auf.",
+              "acceptance": "Die Funktion liefert 80; du erklärst, dass int() Leerzeichen am Rand akzeptiert, und sicherst das Verhalten mit einem Test."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Löse in einem with-Block mit zwei Kontextmanagern in dem zweiten beim Öffnen eine Ausnahme aus.",
+              "acceptance": "Du beschreibst, dass der erste noch geschlossen wird, und belegst es mit einer Ausgabe."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Entferne in einer Funktion das except und lasse die Ausnahme bis zum Hauptprogramm laufen.",
+              "acceptance": "Du liest den Traceback von unten nach oben und nennst die Zeile, in der der Fehler entstand."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/tutorial/errors.html",
+              "title": "Python-Dokumentation: Fehler und Ausnahmen (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/library/exceptions.html",
+              "title": "Python-Dokumentation: Eingebaute Ausnahmen"
+            },
+            {
+              "url": "https://docs.python.org/3/library/contextlib.html",
+              "title": "Python-Dokumentation: contextlib"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): die Reihenfolge von try, except, else und finally, Verkettung mit from und from None, verschachtelte Kontextmanager mit Fehler, suppress, das Anti-Muster mit pass und die Eigenschaften von RowError in Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Ausnahmegruppen (except*) und nebenläufigen Code, asynchrone Kontextmanager und die Ausgabe vollständiger Tracebacks. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Wann läuft der else-Block eines try-Statements?",
+              "options": [
+                "Immer, auch bei einer Ausnahme.",
+                "Nur, wenn im try-Block keine Ausnahme auftrat.",
+                "Nur, wenn eine Ausnahme gefangen wurde.",
+                "Nie, er ist nur für Schleifen da."
+              ],
+              "correct": 1,
+              "explain": "else enthält, was nur bei Erfolg passieren soll; Ausnahmen darin werden nicht von diesem try gefangen.",
+              "rationales": [
+                "Das ist die Aufgabe von finally.",
+                "So trennst du den Erfolgsfall von dem Code, der fehlschlagen kann.",
+                "Dafür gibt es den except-Block.",
+                "Auch try kennt else."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/errors.html",
+                "https://docs.python.org/3/library/exceptions.html",
+                "https://docs.python.org/3/library/contextlib.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was bewirkt raise ConfigError(...) from error?",
+              "options": [
+                "Es unterdrückt jede Ausgabe.",
+                "Es wiederholt den fehlgeschlagenen Aufruf.",
+                "Es ignoriert den ursprünglichen Fehler.",
+                "Es hängt den ursprünglichen Fehler als Ursache an."
+              ],
+              "correct": 3,
+              "explain": "So bleibt erkennbar, welche tiefere Ausnahme den fachlichen Fehler ausgelöst hat.",
+              "rationales": [
+                "Der Traceback wird sogar länger.",
+                "Wiederholungen müsstest du selbst schreiben.",
+                "Der Ursprung bleibt erhalten.",
+                "Die Ursache steht in __cause__ und im Traceback."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/errors.html",
+                "https://docs.python.org/3/library/exceptions.html",
+                "https://docs.python.org/3/library/contextlib.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum ist except Exception: pass meist schlecht?",
+              "options": [
+                "Es ist ein Syntaxfehler.",
+                "Es verlangsamt das Programm stark.",
+                "Es verdeckt auch Programmierfehler, ohne eine Spur zu hinterlassen.",
+                "Es funktioniert nur in Funktionen."
+              ],
+              "correct": 2,
+              "explain": "Fange spezifische Ausnahmen, die du behandeln kannst; sonst protokollieren oder weiterreichen.",
+              "rationales": [
+                "Die Schreibweise ist erlaubt.",
+                "Die Geschwindigkeit ist nicht das Problem.",
+                "Du erfährst nie, dass etwas schiefging.",
+                "Es funktioniert überall."
+              ],
+              "sources": [
+                "https://docs.python.org/3/tutorial/errors.html",
+                "https://docs.python.org/3/library/exceptions.html",
+                "https://docs.python.org/3/library/contextlib.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "class RowError(ValueError):\n    \"\"\"Eine Zeile der Eingabedatei ist ungültig. Trägt die Zeilennummer, damit Meldungen auffindbar sind.\"\"\"\n\n    def __init__(self, line: int, message: str) -> None:\n        super().__init__(f\"Zeile {line}: {message}\")\n        self.line = line\n        self.message = message",
+          "codeLang": "Python",
+          "code2": "def parse_port(text):\n    try:\n        port = int(text)\n    except ValueError as error:\n        raise ConfigError(f\"Port '{text}' ist keine Zahl\") from error\n    if not 1 <= port <= 65535:\n        raise ConfigError(f\"Port {port} liegt außerhalb von 1 bis 65535\")\n    return port\n\n\ndef attempt(text):\n    log = []\n    try:\n        log.append(\"try\")\n        port = parse_port(text)\n    except ConfigError as error:\n        log.append(f\"except({error})\")\n        cause = type(error.__cause__).__name__ if error.__cause__ else \"keine\"\n        log.append(f\"Ursache={cause}\")\n    else:\n        log.append(f\"else({port})\")\n    finally:\n        log.append(\"finally\")\n    return \" -> \".join(log)",
+          "code2Lang": "Python",
+          "code3": "@contextlib.contextmanager\ndef step(name, log):\n    log.append(f\"{name}: öffnen\")\n    try:\n        yield\n    finally:\n        log.append(f\"{name}: schließen\")  # läuft auch bei Fehlern\n\n\nlog = []\ntry:\n    with step(\"A\", log), step(\"B\", log):\n        log.append(\"Arbeit\")\n        1 / 0\nexcept ZeroDivisionError as error:\n    log.append(f\"gefangen: {error}\")\nprint(\"Reihenfolge     :\", \" | \".join(log))",
+          "code3Lang": "Python"
+        },
+        {
+          "id": "py-m1-l5",
+          "title": "Klassen und Typhinweise: dataclass, Unveränderlichkeit und was Python nicht prüft",
+          "minutes": 35,
+          "objectives": [
+            "Eine Klasse für Daten mit dataclass schreiben, einschließlich frozen, slots und field(default_factory=...)",
+            "Gleichheit, Ordnung und Hashbarkeit einer dataclass erklären",
+            "Typhinweise als Dokumentation und Werkzeugeingabe einordnen, nicht als Laufzeitprüfung",
+            "Methoden und Operatoren wie __add__ mit NotImplemented sinnvoll umsetzen"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Eine Klasse für Daten mit dataclass schreiben, einschließlich frozen, slots und field(default_factory=...)</li><li>Gleichheit, Ordnung und Hashbarkeit einer dataclass erklären</li><li>Typhinweise als Dokumentation und Werkzeugeingabe einordnen, nicht als Laufzeitprüfung</li><li>Methoden und Operatoren wie __add__ mit NotImplemented sinnvoll umsetzen</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>Eine Klasse bündelt Daten und das Verhalten dazu. Für reine Datenträger schreibt man in Python nicht __init__, __repr__ und __eq__ von Hand, sondern verwendet @dataclass: Du listest die Felder mit Typhinweisen auf, und Python erzeugt den Rest.</p><p>Wichtige Optionen: frozen=True macht Objekte unveränderlich und hashbar (brauchbar als Schlüssel oder in Mengen). order=True erzeugt Vergleiche wie &lt; nach Feldreihenfolge. slots=True verhindert neue Attribute (Tippfehler fallen auf) und spart Speicher. Für veränderliche Standardwerte nimmst du field(default_factory=list), damit jedes Objekt seine eigene Liste bekommt.</p><p>Typhinweise (amount: Decimal) sind Anmerkungen. Python prüft sie zur Laufzeit nicht: Port(\"kein int\") wird anstandslos angelegt. Sie helfen Lesern und Werkzeugen wie Editoren oder Typprüfern. Für Prüfungen zur Laufzeit schreibst du Code, wie parse_amount ihn enthält.</p><h2>Schritt für Schritt</h2><ol><li>Starte „python3 demos/05_klassen.py“ und lies neben jeder Ausgabe die zugehörige Klasse.</li><li>Öffne Expense in expenses/model.py: frozen=True, slots=True, vier Felder mit Typen, note hat den Standardwert \"\". Ein Expense lässt sich als Schlüssel oder in einer Menge verwenden, weil es unveränderlich ist.</li><li>Probiere im Demo die Klasse Money: Gleichheit vergleicht alle Felder, order=True erlaubt a &lt; b, und replace erzeugt eine geänderte Kopie.</li><li>Beobachte __add__: Passt der andere Operand nicht (anderer Typ oder andere Währung), gibt die Methode NotImplemented zurück. Python meldet daraufhin einen TypeError mit „unsupported operand“. Das ist besser als eigenes Raten oder ein stilles falsches Ergebnis.</li><li>Beobachte Basket mit default_factory=list: Zwei Körbe haben getrennte Listen. Mit items: list = [] würde dataclass sogar einen Fehler melden, weil veränderliche Standardwerte verboten sind.</li><li>Beobachte Port(\"kein int\"): kein Fehler. Typhinweise werden nicht erzwungen. Für echte Prüfung brauchst du Code (Lektion 4) oder einen Typprüfer in der Entwicklung.</li><li>Beobachte slots=True bei Point: Der Tippfehler point.z = 2 löst einen AttributeError aus, statt still ein neues Attribut anzulegen.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Wann dataclass, wann normale Klasse? Für Daten mit wenig Verhalten ist dataclass kürzer und weniger fehleranfällig. Hat ein Objekt viel Zustand und Regeln, schreibst du eine normale Klasse oder ergänzt Methoden. Eine Unterklasse nur für Daten ist selten nötig; Zusammensetzen (ein Feld, das auf ein anderes Objekt zeigt) ist oft klarer als Vererbung.</p><p>Warum frozen? Unveränderliche Objekte lassen sich nicht aus Versehen an anderer Stelle ändern, sind als Schlüssel brauchbar und in Nebenläufigkeit unproblematisch. Der Preis: Änderungen erzeugen ein neues Objekt (replace). Ein frozen-Objekt kann trotzdem veränderliche Inhalte halten (eine Liste), deren Inhalt sich ändern lässt.</p><p>Zum Stand: Typprüfer wie mypy oder pyright waren in diesem Lab nicht installiert und wurden nicht ausgeführt; Typhinweise im Lab sind deshalb ungeprüfte Dokumentation, auch wenn sie sorgfältig gesetzt sind (im Test steht einmal ein bewusstes „type: ignore“ für eine absichtlich verbotene Zuweisung). Details zu typing ändern sich von Version zu Version; ältere Schreibweisen wie List[str] ersetzt inzwischen list[str].</p><h2>Begriffe auf einen Blick</h2><dl><dt>dataclass</dt><dd>Dekorator, der aus Feldern mit Typhinweisen __init__, __repr__ und Vergleiche erzeugt.</dd><dt>frozen</dt><dd>Option, die Felder nach dem Anlegen unveränderlich macht und das Objekt hashbar.</dd><dt>Typhinweis</dt><dd>Anmerkung zum erwarteten Typ; Python prüft sie zur Laufzeit nicht.</dd><dt>NotImplemented</dt><dd>Rückgabewert eines Operators, der den anderen Operanden nicht versteht; Python versucht die Gegenseite oder meldet TypeError.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>model.py</code> (Ausschnitt ab „@dataclass(frozen=True“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>05_klassen.py</code> (Ausschnitt ab „@dataclass(frozen=True, order=True“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>demos/<wbr>05_klassen.py</code> (Ausschnitt ab „class Port“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehl: cd content/examples/python-lab/ &amp;&amp; python3 demos/05_klassen.py\nDarstellung     : Money(amount=Decimal('1.10'), currency='EUR')\nAddition        : Money(amount=Decimal('3.30'), currency='EUR')\nVergleich       : True True\nMenge/Schlüssel : 1 (hashbar, weil frozen)\nkopieren/ändern : Money(amount=Decimal('1.10'), currency='USD')\nunveränderlich  : FrozenInstanceError\nWährungsmix     : TypeError -&gt; unsupported operand type(s) for +: 'Money' and 'Money'\ndefault_factory : ['Brot'] []\nTyphinweis      : Port(value='kein int') (keine Prüfung durch Python)\nslots           : AttributeError bei neuem Attribut</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Typhinweise für eine Prüfung zur Laufzeit zu halten.<br><strong>Warum:</strong> Python ignoriert sie; falsche Typen werden angelegt, bis irgendwo etwas bricht.<br><strong>Besser:</strong> Eingaben an den Grenzen prüfen und zusätzlich einen Typprüfer verwenden.</li><li><strong>Falsch:</strong> Eine Liste als Standardwert eines Feldes zu schreiben.<br><strong>Warum:</strong> Alle Objekte würden dieselbe Liste teilen (dataclass verbietet es mit einem Fehler).<br><strong>Besser:</strong> field(default_factory=list).</li><li><strong>Falsch:</strong> Veränderliche Objekte als Wörterbuchschlüssel oder Mengenelemente zu verwenden.<br><strong>Warum:</strong> Sie sind nicht hashbar oder ändern ihren Hashwert.<br><strong>Besser:</strong> frozen=True oder ein Tupel verwenden.</li><li><strong>Falsch:</strong> In __add__ bei falschem Typ eine Ausnahme oder falsches Ergebnis zu liefern.<br><strong>Warum:</strong> Python kann dann die Gegenseite nicht mehr versuchen, und Fehlermeldungen sind unklar.<br><strong>Besser:</strong> NotImplemented zurückgeben.</li></ul><h2>Praxis</h2><p>Schreibe eine dataclass Temperature(value: Decimal, unit: str = \"C\") mit Validierung in __post_init__ (nur \"C\" oder \"F\") und einer Methode to_celsius. Zeige mit Tests, dass falsche Einheiten abgelehnt werden.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Mache aus Expense eine dataclass mit order=True und sortiere eine Liste nach Datum.<br><em>Abnahme:</em> Du erklärst, dass die Ordnung nach Feldreihenfolge entsteht und day zuerst stehen muss.</li><li><strong>Grenzfall:</strong> Lege ein frozen-Objekt mit einer Liste als Feld an und ändere die Liste.<br><em>Abnahme:</em> Du zeigst, dass frozen nur die Zuweisung sperrt, nicht den Inhalt, und nennst eine Abhilfe (Tupel).</li><li><strong>Fehlerfall:</strong> Schreibe items: list = [] in einer dataclass.<br><em>Abnahme:</em> Python meldet einen ValueError wegen des veränderlichen Standardwerts; du behebst ihn mit default_factory.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/library/dataclasses.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: dataclasses</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/typing.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: typing</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/tutorial/classes.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Klassen (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/reference/datamodel.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Datenmodell (Operatoren, NotImplemented)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): frozen, order, slots, replace, default_factory, __add__ mit NotImplemented und die fehlende Laufzeitprüfung von Typhinweisen im Demo-Skript sowie die Unveränderlichkeit von Expense in Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Typprüfer (mypy, pyright), Vererbung, Protokolle und Metaklassen. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Schreibe eine dataclass Temperature(value: Decimal, unit: str = \"C\") mit Validierung in __post_init__ (nur \"C\" oder \"F\") und einer Methode to_celsius. Zeige mit Tests, dass falsche Einheiten abgelehnt werden.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Mache aus Expense eine dataclass mit order=True und sortiere eine Liste nach Datum.",
+              "acceptance": "Du erklärst, dass die Ordnung nach Feldreihenfolge entsteht und day zuerst stehen muss."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Lege ein frozen-Objekt mit einer Liste als Feld an und ändere die Liste.",
+              "acceptance": "Du zeigst, dass frozen nur die Zuweisung sperrt, nicht den Inhalt, und nennst eine Abhilfe (Tupel)."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Schreibe items: list = [] in einer dataclass.",
+              "acceptance": "Python meldet einen ValueError wegen des veränderlichen Standardwerts; du behebst ihn mit default_factory."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/library/dataclasses.html",
+              "title": "Python-Dokumentation: dataclasses"
+            },
+            {
+              "url": "https://docs.python.org/3/library/typing.html",
+              "title": "Python-Dokumentation: typing"
+            },
+            {
+              "url": "https://docs.python.org/3/tutorial/classes.html",
+              "title": "Python-Dokumentation: Klassen (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/reference/datamodel.html",
+              "title": "Python-Dokumentation: Datenmodell (Operatoren, NotImplemented)"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): frozen, order, slots, replace, default_factory, __add__ mit NotImplemented und die fehlende Laufzeitprüfung von Typhinweisen im Demo-Skript sowie die Unveränderlichkeit von Expense in Tests. Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: Typprüfer (mypy, pyright), Vererbung, Protokolle und Metaklassen. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Was bewirkt frozen=True bei einer dataclass?",
+              "options": [
+                "Die Klasse kann von keiner anderen Klasse geerbt werden.",
+                "Felder bleiben nach dem Anlegen fest, das Objekt ist hashbar.",
+                "Die Klasse prüft die Typen ihrer Felder bei jeder Zuweisung.",
+                "Das Objekt wird nur im Arbeitsspeicher und nie gespeichert."
+              ],
+              "correct": 1,
+              "explain": "Das ist nützlich für Werte, die sich nicht ändern sollen, und für Schlüssel in Mengen und Wörterbüchern.",
+              "rationales": [
+                "Vererbung bleibt möglich.",
+                "Zuweisungen lösen FrozenInstanceError aus; der Hashwert ergibt sich aus den Feldern.",
+                "Typen werden nie geprüft.",
+                "Es hat nichts mit Speicherung zu tun."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/dataclasses.html",
+                "https://docs.python.org/3/library/typing.html",
+                "https://docs.python.org/3/tutorial/classes.html",
+                "https://docs.python.org/3/reference/datamodel.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was passiert bei Port(\"kein int\"), wenn value: int deklariert ist?",
+              "options": [
+                "Es wird ein TypeError ausgelöst.",
+                "Der Wert wird automatisch in eine Zahl umgewandelt.",
+                "Das Objekt wird ohne Prüfung angelegt.",
+                "Das Programm startet nicht."
+              ],
+              "correct": 2,
+              "explain": "Für Prüfungen zur Laufzeit schreibst du Code oder setzt einen Typprüfer in der Entwicklung ein.",
+              "rationales": [
+                "Python prüft Typhinweise nicht.",
+                "Es findet keine Umwandlung statt.",
+                "Typhinweise gelten für Leser und Werkzeuge, nicht zur Laufzeit.",
+                "Das Programm läuft normal."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/dataclasses.html",
+                "https://docs.python.org/3/library/typing.html",
+                "https://docs.python.org/3/tutorial/classes.html",
+                "https://docs.python.org/3/reference/datamodel.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wozu dient field(default_factory=list)?",
+              "options": [
+                "Es sortiert die Liste.",
+                "Es verhindert jede Änderung der Liste.",
+                "Es kopiert eine vorhandene Liste.",
+                "Es legt für jedes Objekt eine eigene neue Liste an."
+              ],
+              "correct": 3,
+              "explain": "Das ist die richtige Form für veränderliche Standardwerte in dataclasses.",
+              "rationales": [
+                "Sortieren ist nicht Aufgabe der Option.",
+                "Die Liste bleibt veränderlich.",
+                "Es wird nichts kopiert, sondern neu erzeugt.",
+                "So teilen sich Objekte keinen veränderlichen Standardwert."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/dataclasses.html",
+                "https://docs.python.org/3/library/typing.html",
+                "https://docs.python.org/3/tutorial/classes.html",
+                "https://docs.python.org/3/reference/datamodel.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "@dataclass(frozen=True, slots=True)\nclass Expense:\n    day: date\n    category: str\n    amount: Decimal  # Geld nie als float: 0.1 + 0.2 ist in Binärdarstellung nicht 0.3\n    note: str = \"\"",
+          "codeLang": "Python",
+          "code2": "@dataclass(frozen=True, order=True, slots=True)\nclass Money:\n    amount: Decimal\n    currency: str = \"EUR\"\n\n    def __add__(self, other):\n        if not isinstance(other, Money) or other.currency != self.currency:\n            return NotImplemented\n        return Money(self.amount + other.amount, self.currency)",
+          "code2Lang": "Python",
+          "code3": "class Port:\n    value: int  # Typhinweis: gilt für Leser und Werkzeuge, nicht zur Laufzeit\n\n\nprint(\"Typhinweis      :\", Port(\"kein int\"), \"(keine Prüfung durch Python)\")",
+          "code3Lang": "Python"
+        },
+        {
+          "id": "py-m1-l6",
+          "title": "Ein Projekt zusammensetzen: Paket, Kommandozeile, Exit-Codes, Tests und Umgebung",
+          "minutes": 40,
+          "objectives": [
+            "Ein kleines Projekt in Module aufteilen (Modell, Einlesen, Auswertung, Kommandozeile)",
+            "Eine Kommandozeile mit argparse bauen und Exit-Codes bewusst wählen",
+            "Mit unittest Normal-, Grenz- und Fehlerfälle testen und Prüfungen mit subTest bündeln",
+            "Eine virtuelle Umgebung (venv) und das Verhältnis zu pip einordnen"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Ein kleines Projekt in Module aufteilen (Modell, Einlesen, Auswertung, Kommandozeile)</li><li>Eine Kommandozeile mit argparse bauen und Exit-Codes bewusst wählen</li><li>Mit unittest Normal-, Grenz- und Fehlerfälle testen und Prüfungen mit subTest bündeln</li><li>Eine virtuelle Umgebung (venv) und das Verhältnis zu pip einordnen</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.</p><h2>In einfachen Worten</h2><p>Ein Projekt wächst aus kleinen Teilen. Im Lab ist jedes Modul für eine Aufgabe zuständig: model.py prüft eine Zeile, reader.py liest eine Datei und sammelt Fehler, report.py rechnet und formatiert, cli.py verbindet alles mit der Kommandozeile. Das Paket wird mit python3 -m expenses gestartet; __main__.py ist der Einstieg.</p><p>Kommandozeilenprogramme melden ihr Ergebnis auch über den Exit-Code: 0 heißt Erfolg, alles andere Fehler. Das Lab unterscheidet 0 (alles gültig), 1 (einzelne Zeilen ungültig; die gültigen werden trotzdem ausgewertet) und 2 (Datei nicht lesbar oder falsche Aufrufparameter, wie argparse es selbst meldet). Fehlermeldungen gehören auf stderr, Ergebnisse auf stdout.</p><p>Mit unittest aus der Standardbibliothek schreibst du Tests als Klassen mit Methoden test_… und Prüfungen wie assertEqual und assertRaises. Mit subTest läuft eine Schleife über Fälle weiter, auch wenn einer fehlschlägt. Eine virtuelle Umgebung (venv) hält die Pakete eines Projekts getrennt von denen anderer Projekte.</p><h2>Schritt für Schritt</h2><ol><li>Starte im Lab „python3 -m unittest“. Alle Tests laufen; die Anzahl steht in der letzten Zeile. Mit -v listest du die Tests, mit „python3 -m unittest tests.test_cli“ führst du eine Datei aus.</li><li>Starte „python3 -m expenses data/ausgaben.csv“ und danach mit data/fehlerhaft.csv. Beachte die Exit-Codes (in der Shell mit echo $?) und dass Fehler auf stderr stehen.</li><li>Öffne expenses/cli.py: argparse erzeugt Hilfe und Fehlermeldungen. main(argv) nimmt die Argumente als Parameter, damit Tests es direkt aufrufen können, ohne einen neuen Prozess zu starten.</li><li>Öffne tests/test_cli.py: Die Hilfsfunktion run fängt stdout und stderr ein (contextlib.redirect_stdout) und fängt SystemExit von argparse. Ein Test startet zusätzlich einen echten Prozess mit subprocess.</li><li>Öffne tests/test_model.py: Die Tests decken Normalfälle (gültige Formate), Grenzfälle (0,01 und „1.249“ ohne Komma) und Fehlerfälle (abc, 0, negativ, nan) ab. Jede Eingabe läuft in einem subTest.</li><li>Lege eine virtuelle Umgebung an (python3 -m venv .venv), aktiviere sie und prüfe, welche Pakete sie enthält (python -m pip list). Das Lab braucht keine Fremdpakete; bei Fremdpaketen hältst du sie in einer Datei (requirements.txt oder pyproject.toml) fest und installierst mit pip.</li><li>Mutationsprobe: Ändere in model.py den Vergleich value &lt;= 0 zu value &lt; 0 und starte die Tests. Ein Test muss fehlschlagen; sonst fehlt ein Grenzfall. Mache die Änderung rückgängig.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Warum diese Aufteilung? Jedes Modul lässt sich einzeln testen: parse_amount braucht weder eine Datei noch die Kommandozeile. Die Kommandozeile bleibt dünn, weil sie nur verbindet. Das ist die wichtigste Entwurfsregel dieses Projekts: Trenne Rechnen, Ein- und Ausgabe und Bedienung.</p><p>Was gehört nicht in ein Skript? Alles, was eine Datei oder das Netz berührt, sollte man in einem Test nicht ungeprüft anfassen. Das Lab nutzt temporäre Ordner (tempfile) und aufgezeichnete Daten, nicht echte. Für Fremdsysteme würde man Ersatzobjekte (unittest.mock) verwenden; das Lab brauchte sie nicht.</p><p>Zum Stand: pip, venv und das Packaging (pyproject.toml, Bauwerkzeuge) wurden hier nicht ausgeführt, weil dafür Downloads nötig wären, und sind in dieser Lektion nur beschrieben. Die offizielle Anleitung zu venv steht in der Dokumentation. Außerdem laufen die Tests des Labs unter Python 3.12 bis 3.14; unter 3.15 (am 15.11.2026 aktuell) wurden sie nicht ausgeführt.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Exit-Code</dt><dd>Zahl, mit der ein Prozess endet; 0 bedeutet Erfolg, alles andere einen Fehler.</dd><dt>argparse</dt><dd>Standardmodul für Kommandozeilenargumente samt Hilfe und Fehlermeldungen.</dd><dt>subTest</dt><dd>Gruppiert Fälle in einem Test; schlägt einer fehl, laufen die übrigen weiter.</dd><dt>virtuelle Umgebung (venv)</dt><dd>Eigener Ordner mit Interpreter und Paketen, getrennt von anderen Projekten.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>expenses/<wbr>cli.py</code> (Ausschnitt ab „def main“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>tests/<wbr>test_cli.py</code> (Ausschnitt ab „def run“)</li><li><code>content/<wbr>examples/<wbr>python-lab/<wbr>tests/<wbr>test_model.py</code> (Ausschnitt ab „def test_invalid_values_raise“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Python 3.14.6; Befehle: cd content/examples/python-lab/ &amp;&amp; python3 -m expenses data/&lt;Datei&gt; und python3 -m unittest -v tests.test_cli\n$ python3 -m expenses data/ausgaben.csv   (Exit-Code 0)\nFahrrad         1.249,90 €\nMiete             850,00 €\nLebensmittel      127,10 €\nKultur             36,50 €\nGesamt          2.263,50 €\n\n$ python3 -m expenses data/fehlerhaft.csv   (Exit-Code 1)\nMiete             850,00 €\nLebensmittel        9,99 €\nGesamt            859,99 €\n--- stderr ---\nFehler: Zeile 3: Datum „2026-13-01“ ist nicht im Format JJJJ-MM-TT\nFehler: Zeile 4: Kategorie fehlt\nFehler: Zeile 5: Betrag „abc“ ist keine Zahl\nFehler: Zeile 6: Betrag „-5,00“ muss größer als 0 sein\nFehler: Zeile 7: Betrag „3,141“ hat mehr als zwei Nachkommastellen\nFehler: Zeile 8: 2 Spalten statt mindestens 3 (Datum;Kategorie;Betrag)\n\ntest_invalid_rows_exit_one_but_valid_rows_are_reported (tests.test_cli.Cli.test_invalid_rows_exit_one_but_valid_rows_are_reported) ... ok\ntest_missing_file_exits_two (tests.test_cli.Cli.test_missing_file_exits_two) ... ok\ntest_module_entry_point_in_a_subprocess (tests.test_cli.Cli.test_module_entry_point_in_a_subprocess) ... ok\ntest_no_argument_is_an_argparse_error (tests.test_cli.Cli.test_no_argument_is_an_argparse_error) ... ok\ntest_valid_file_exits_zero (tests.test_cli.Cli.test_valid_file_exits_zero) ... ok\ntest_wrong_encoding_exits_two (tests.test_cli.Cli.test_wrong_encoding_exits_two) ... ok\nRan 6 tests\nOK</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Fehlermeldungen mit print nach stdout zu schreiben.<br><strong>Warum:</strong> Ergebnisse und Fehler vermischen sich; Pipes und Skripte lesen falsche Daten.<br><strong>Besser:</strong> Fehler auf stderr (print(..., file=sys.stderr)) und passenden Exit-Code.</li><li><strong>Falsch:</strong> Im Hauptprogramm sys.exit tief in Funktionen zu verstecken.<br><strong>Warum:</strong> Die Funktion ist nicht mehr testbar, weil sie den Test beendet.<br><strong>Besser:</strong> Funktionen liefern Werte oder Ausnahmen; nur main gibt den Exit-Code zurück.</li><li><strong>Falsch:</strong> Tests zu schreiben, die immer bestehen.<br><strong>Warum:</strong> Ein Test, der nie fehlschlägt, schützt nichts.<br><strong>Besser:</strong> Eine Mutationsprobe machen: Code absichtlich verändern und prüfen, dass ein Test fehlschlägt.</li><li><strong>Falsch:</strong> Pakete global zu installieren.<br><strong>Warum:</strong> Projekte stören sich bei unterschiedlichen Versionen; Ergebnisse hängen vom Rechner ab.<br><strong>Besser:</strong> Pro Projekt eine virtuelle Umgebung verwenden und Abhängigkeiten in einer Datei festhalten.</li></ul><h2>Praxis</h2><p>Erweitere das Projekt um eine Option --kategorie NAME, die nur eine Kategorie ausgibt. Ergänze Tests für den Normalfall, eine unbekannte Kategorie (Grenzfall) und eine fehlende Datei (Fehlerfall). Belege jeden Test mit einer Mutationsprobe.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Ergänze in cli.py die Option --kategorie und passe format_report an.<br><em>Abnahme:</em> Die Ausgabe enthält nur die gewählte Kategorie; Tests für Normalfall und unbekannte Kategorie sind grün.</li><li><strong>Grenzfall:</strong> Rufe das Programm mit einer leeren Datei und mit einer Datei nur aus der Kopfzeile auf.<br><em>Abnahme:</em> Das Programm meldet „Keine gültigen Ausgaben.“ mit Exit-Code 0; du sicherst es mit einem Test.</li><li><strong>Fehlerfall:</strong> Rufe das Programm ohne Argument auf.<br><em>Abnahme:</em> argparse meldet den fehlenden Parameter auf stderr mit Exit-Code 2; du beschreibst, wer die Meldung erzeugt.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.python.org/3/library/unittest.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: unittest</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/argparse.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: argparse</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/tutorial/venv.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: venv (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/tutorial/modules.html\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: Module und Pakete (Tutorial)</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.python.org/3/library/sys.html#sys.exit\" target=\"_blank\" rel=\"noopener noreferrer\">Python-Dokumentation: sys.exit und Exit-Codes</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): die Kommandozeile mit Exit-Codes 0, 1 und 2, alle 27 Tests (Normal-, Grenz- und Fehlerfälle) und Mutationsproben auf die Kernlogik (alle erkannt). Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: pip, venv, Packaging und Veröffentlichung, unittest.mock, Windows und Linux sowie Python 3.15. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Erweitere das Projekt um eine Option --kategorie NAME, die nur eine Kategorie ausgibt. Ergänze Tests für den Normalfall, eine unbekannte Kategorie (Grenzfall) und eine fehlende Datei (Fehlerfall). Belege jeden Test mit einer Mutationsprobe.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Ergänze in cli.py die Option --kategorie und passe format_report an.",
+              "acceptance": "Die Ausgabe enthält nur die gewählte Kategorie; Tests für Normalfall und unbekannte Kategorie sind grün."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Rufe das Programm mit einer leeren Datei und mit einer Datei nur aus der Kopfzeile auf.",
+              "acceptance": "Das Programm meldet „Keine gültigen Ausgaben.“ mit Exit-Code 0; du sicherst es mit einem Test."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Rufe das Programm ohne Argument auf.",
+              "acceptance": "argparse meldet den fehlenden Parameter auf stderr mit Exit-Code 2; du beschreibst, wer die Meldung erzeugt."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.python.org/3/library/unittest.html",
+              "title": "Python-Dokumentation: unittest"
+            },
+            {
+              "url": "https://docs.python.org/3/library/argparse.html",
+              "title": "Python-Dokumentation: argparse"
+            },
+            {
+              "url": "https://docs.python.org/3/tutorial/venv.html",
+              "title": "Python-Dokumentation: venv (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/tutorial/modules.html",
+              "title": "Python-Dokumentation: Module und Pakete (Tutorial)"
+            },
+            {
+              "url": "https://docs.python.org/3/library/sys.html#sys.exit",
+              "title": "Python-Dokumentation: sys.exit und Exit-Codes"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Python-Lab (Python 3.14.6 auf macOS; die 27 Tests liefen zusätzlich mit 3.12.15 und 3.13.16): die Kommandozeile mit Exit-Codes 0, 1 und 2, alle 27 Tests (Normal-, Grenz- und Fehlerfälle) und Mutationsproben auf die Kernlogik (alle erkannt). Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: pip, venv, Packaging und Veröffentlichung, unittest.mock, Windows und Linux sowie Python 3.15. Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert."
+          },
+          "quiz": [
+            {
+              "q": "Wofür steht der Exit-Code 0 eines Programms?",
+              "options": [
+                "Der Lauf war erfolgreich.",
+                "Es gab einen Fehler.",
+                "Das Programm wurde abgebrochen.",
+                "Es wurden keine Daten gefunden."
+              ],
+              "correct": 0,
+              "explain": "Skripte und CI-Systeme entscheiden anhand des Exit-Codes, ob ein Schritt gelungen ist.",
+              "rationales": [
+                "Das ist die Konvention für Erfolg.",
+                "Fehler haben Codes ungleich 0.",
+                "Ein Abbruch liefert einen anderen Code.",
+                "Das ist eine fachliche Aussage, kein Prozessstatus."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/unittest.html",
+                "https://docs.python.org/3/library/argparse.html",
+                "https://docs.python.org/3/tutorial/venv.html",
+                "https://docs.python.org/3/tutorial/modules.html",
+                "https://docs.python.org/3/library/sys.html#sys.exit"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum übergibt main(argv) die Argumente als Parameter?",
+              "options": [
+                "Weil argparse es verlangt.",
+                "Damit Tests das Programm ohne neuen Prozess aufrufen können.",
+                "Damit das Programm schneller startet.",
+                "Damit keine Fehler auf stderr erscheinen."
+              ],
+              "correct": 1,
+              "explain": "Funktionen mit Parametern sind leichter zu testen als solche, die globalen Zustand lesen.",
+              "rationales": [
+                "argparse liest sonst sys.argv selbst.",
+                "So lässt sich das Verhalten direkt prüfen und die Ausgabe einfangen.",
+                "Die Startzeit ändert sich nicht.",
+                "Fehlermeldungen erscheinen weiterhin."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/unittest.html",
+                "https://docs.python.org/3/library/argparse.html",
+                "https://docs.python.org/3/tutorial/venv.html",
+                "https://docs.python.org/3/tutorial/modules.html",
+                "https://docs.python.org/3/library/sys.html#sys.exit"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wozu dient eine virtuelle Umgebung (venv)?",
+              "options": [
+                "Sie beschleunigt Python.",
+                "Sie übersetzt das Projekt in Maschinencode.",
+                "Sie verschlüsselt die Quelltexte.",
+                "Sie hält die Pakete eines Projekts getrennt von anderen."
+              ],
+              "correct": 3,
+              "explain": "Pro Projekt eine Umgebung verhindert Versionskonflikte und macht Installationen reproduzierbar.",
+              "rationales": [
+                "Die Geschwindigkeit ändert sich nicht.",
+                "Python bleibt interpretiert.",
+                "Verschlüsselung ist nicht ihre Aufgabe.",
+                "So haben Projekte ihre eigenen Paketversionen."
+              ],
+              "sources": [
+                "https://docs.python.org/3/library/unittest.html",
+                "https://docs.python.org/3/library/argparse.html",
+                "https://docs.python.org/3/tutorial/venv.html",
+                "https://docs.python.org/3/tutorial/modules.html",
+                "https://docs.python.org/3/library/sys.html#sys.exit"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "def main(argv: list[str] | None = None) -> int:\n    parser = argparse.ArgumentParser(prog=\"expenses\", description=\"Summiert Ausgaben je Kategorie aus einer CSV-Datei (Spalten: Datum;Kategorie;Betrag;Notiz).\")\n    parser.add_argument(\"datei\", type=Path, help=\"Pfad der CSV-Datei (UTF-8, Trennzeichen Semikolon)\")\n    args = parser.parse_args(argv)\n    try:\n        expenses, errors = read_expenses(args.datei)\n    except (OSError, UnicodeDecodeError) as error:\n        print(f\"Datei nicht lesbar: {error}\", file=sys.stderr)\n        return 2\n    print(format_report(expenses))\n    for error in errors:\n        print(f\"Fehler: {error}\", file=sys.stderr)\n    return 1 if errors else 0",
+          "codeLang": "Python",
+          "code2": "def run(*argv: str) -> tuple[int, str, str]:\n    out, err = io.StringIO(), io.StringIO()\n    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):\n        try:\n            code = main(list(argv))\n        except SystemExit as exit_:  # argparse beendet das Programm selbst\n            code = int(exit_.code)\n    return code, out.getvalue(), err.getvalue()",
+          "code2Lang": "Python",
+          "code3": "def test_invalid_values_raise_row_error_with_line(self):\n    for text in [\"abc\", \"\", \"0\", \"0,00\", \"-5,00\", \"3,141\", \"nan\", \"inf\", \"1,2,3\"]:\n        with self.subTest(text=text):\n            with self.assertRaises(RowError) as caught:\n                parse_amount(text, 7)\n            self.assertEqual(caught.exception.line, 7)\n            self.assertTrue(str(caught.exception).startswith(\"Zeile 7: \"))",
+          "code3Lang": "Python"
+        }
+      ]
     }
   ]
 }

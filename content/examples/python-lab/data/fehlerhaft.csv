@@ -1,0 +1,9 @@
+Datum;Kategorie;Betrag;Notiz
+2026-03-02;Miete;850,00;März
+2026-13-01;Kultur;10,00;Monat 13
+2026-03-05;;18,75;ohne Kategorie
+2026-03-06;Kultur;abc;kein Betrag
+2026-03-07;Kultur;-5,00;negativ
+2026-03-08;Kultur;3,141;drei Stellen
+2026-03-09;Kultur
+2026-03-10;Lebensmittel;9,99;gültig

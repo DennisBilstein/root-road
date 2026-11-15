@@ -280,6 +280,14 @@ Das Lab `content/examples/ci-lab/` enthält einen zeilenbasierten Linter für Wo
 echten Läufen der Lab-CLI. Nicht geprüft: echte GitHub-Läufe der Beispiele, Freigaben und OIDC, das Workflow-Lockfile (nur nach der Dokumentation beschrieben),
 Dependabot; der Linter ist eine Heuristik und ersetzt actionlint oder zizmor nicht.
 
+### Python (neuer Pfad `python`, 6 Lektionen)
+
+Modul `py-m1` (Werte und Zahlen, Datenstrukturen, Dateien/Kodierung/CSV/JSON, Fehler und Kontextmanager, Klassen mit `dataclass` und Typhinweise,
+ein getestetes Kommandozeilenprojekt). Quelle: `content/tech-tracks/python-grundlagen.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`;
+der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen. Das Lab `content/examples/python-lab/` nutzt nur die Standardbibliothek
+(`python3 -m unittest`, 27 Tests, auch in `npm run test:labs`; Demo-Skripte `demos/0N_*.py` liefern die Ausgaben der Lektionen). Getestet mit Python 3.12.15, 3.13.16 und 3.14.6
+(Ausgaben aus 3.14.6). Nicht geprüft: Python 3.15 (laut python.org am 15.11.2026 die aktuelle Version), Windows, Linux, `pip`/`venv`/Packaging, Typprüfer.
+
 ## Geführte Codewerkstatt
 
 30 eigene interaktive Aufgaben für JavaScript, TypeScript, Vue, PHP, Laravel,

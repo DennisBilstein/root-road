@@ -12,6 +12,7 @@ const checks=[
   {name:'api-tests',command:'npm',args:['test'],cwd:'content/examples/api-lab'},
   {name:'docker-app-tests',command:'npm',args:['test'],cwd:'content/examples/docker-lab/app'},
   {name:'ci-lab-tests',command:'npm',args:['test'],cwd:'content/examples/ci-lab'},
+  {name:'python-tests',command:'python3',args:['-m','unittest'],cwd:'content/examples/python-lab'},
   // content/examples/shell-lab braucht Docker (run-in-container.sh) und läuft deshalb nicht in dieser Liste.
   // content/examples/docker-lab/run.mjs (Images, Härtung, Compose) braucht Docker und läuft nicht in dieser Liste; nur die App-Tests unter docker-lab/app laufen hier.
   // content/examples/sql-lab braucht Docker und ein lokales mariadb-Image (node run.mjs) und läuft deshalb ebenfalls nicht in dieser Liste.

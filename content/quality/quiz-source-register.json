@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T12:12:05.689Z",
+  "generatedAt": "2026-11-15T12:20:23.197Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -29,6 +29,9 @@
         "m4-l2#0@2026-11-07-full-v3",
         "m4-l2#1@2026-11-07-full-v3",
         "m4-l2#2@2026-11-07-full-v3",
+        "py-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#2@2026-11-14-platform-tracks-v1",
         "x#1@2026-11-07-full-v3",
         "x#2@2026-11-07-full-v3",
         "x#3@2026-11-07-full-v3",
@@ -9273,6 +9276,282 @@
         "ci-m1-l6#0@2026-11-14-platform-tracks-v1",
         "ci-m1-l6#1@2026-11-14-platform-tracks-v1",
         "ci-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/decimal.html",
+      "questionIds": [
+        "py-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/stdtypes.html",
+      "questionIds": [
+        "py-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/faq/programming.html",
+      "questionIds": [
+        "py-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/datastructures.html",
+      "questionIds": [
+        "py-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/collections.html",
+      "questionIds": [
+        "py-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/copy.html",
+      "questionIds": [
+        "py-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/pathlib.html",
+      "questionIds": [
+        "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/csv.html",
+      "questionIds": [
+        "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/json.html",
+      "questionIds": [
+        "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/howto/unicode.html",
+      "questionIds": [
+        "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/functions.html#open",
+      "questionIds": [
+        "py-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/errors.html",
+      "questionIds": [
+        "py-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/exceptions.html",
+      "questionIds": [
+        "py-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/contextlib.html",
+      "questionIds": [
+        "py-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/dataclasses.html",
+      "questionIds": [
+        "py-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/typing.html",
+      "questionIds": [
+        "py-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/classes.html",
+      "questionIds": [
+        "py-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/reference/datamodel.html",
+      "questionIds": [
+        "py-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/unittest.html",
+      "questionIds": [
+        "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/argparse.html",
+      "questionIds": [
+        "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/venv.html",
+      "questionIds": [
+        "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/modules.html",
+      "questionIds": [
+        "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.python.org/3/library/sys.html#sys.exit",
+      "questionIds": [
+        "py-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "py-m1-l6#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",

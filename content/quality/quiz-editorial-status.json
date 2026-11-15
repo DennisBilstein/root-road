@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-15T12:12:04.858Z",
-  "revised": 1577,
-  "total": 1577,
+  "updatedAt": "2026-11-15T12:20:22.396Z",
+  "revised": 1595,
+  "total": 1595,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -11047,6 +11047,132 @@
       "revision": "2026-11-14-platform-tracks-v1",
       "scenario": true,
       "question": "Warum ist OIDC meist besser als ein dauerhaftes Passwort als Secret?"
+    },
+    {
+      "lesson": "py-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ergibt 0.1 + 0.2 in Python nicht genau 0.3?"
+    },
+    {
+      "lesson": "py-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert bei def f(x, bag=[]) und mehreren Aufrufen ohne zweites Argument?"
+    },
+    {
+      "lesson": "py-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welcher Ausdruck prüft, ob zwei Listen denselben Inhalt haben?"
+    },
+    {
+      "lesson": "py-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie sortierst du ein Wörterbuch nach seinen Werten, größte zuerst?"
+    },
+    {
+      "lesson": "py-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was liefert der zweite sum(squares), wenn squares ein Generatorausdruck ist?"
+    },
+    {
+      "lesson": "py-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ändert sich bei [[0]*2]*2 eine Zelle in beiden Zeilen?"
+    },
+    {
+      "lesson": "py-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie sieht „Käse“ aus, wenn UTF-8-Bytes als Latin-1 gelesen werden?"
+    },
+    {
+      "lesson": "py-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient newline=\"\" beim Öffnen einer CSV-Datei?"
+    },
+    {
+      "lesson": "py-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist encoding=\"utf-8\" auch dann sinnvoll, wenn UTF-8 der Standard ist?"
+    },
+    {
+      "lesson": "py-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wann läuft der else-Block eines try-Statements?"
+    },
+    {
+      "lesson": "py-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt raise ConfigError(...) from error?"
+    },
+    {
+      "lesson": "py-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist except Exception: pass meist schlecht?"
+    },
+    {
+      "lesson": "py-m1-l5",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt frozen=True bei einer dataclass?"
+    },
+    {
+      "lesson": "py-m1-l5",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert bei Port(\"kein int\"), wenn value: int deklariert ist?"
+    },
+    {
+      "lesson": "py-m1-l5",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient field(default_factory=list)?"
+    },
+    {
+      "lesson": "py-m1-l6",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wofür steht der Exit-Code 0 eines Programms?"
+    },
+    {
+      "lesson": "py-m1-l6",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum übergibt main(argv) die Argumente als Parameter?"
+    },
+    {
+      "lesson": "py-m1-l6",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient eine virtuelle Umgebung (venv)?"
     }
   ]
 }

@@ -13,6 +13,7 @@ const tracks = [
   { path: 'apis', modules: ['api-m1', 'api-m2'], lessons: 14, only: ['api-m2'] },
   { path: 'docker', modules: ['dk-m1'], lessons: 6 },
   { path: 'cicd', modules: ['ci-m1'], lessons: 6 },
+  { path: 'python', modules: ['py-m1'], lessons: 6 },
 ];
 
 for (const track of tracks) {

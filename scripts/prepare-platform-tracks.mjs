@@ -7,6 +7,7 @@ import * as mariadb from '../content/tech-tracks/mariadb-vertiefung.mjs';
 import * as api from '../content/tech-tracks/api-vertiefung.mjs';
 import * as docker from '../content/tech-tracks/docker-grundlagen.mjs';
 import * as cicd from '../content/tech-tracks/cicd-grundlagen.mjs';
+import * as python from '../content/tech-tracks/python-grundlagen.mjs';
 
 const target = 'content/learning-refinements.json';
 const revision = '2026-11-14-platform-tracks-v1';
@@ -15,7 +16,7 @@ const { buildLesson, validate } = createLessonBuilder({ revision, knowledgeAsOf,
 
 const data = JSON.parse(fs.readFileSync(target, 'utf8'));
 let total = 0;
-for (const { module: meta, lessons: sources } of [mariadb, api, docker, cicd]) {
+for (const { module: meta, lessons: sources } of [mariadb, api, docker, cicd, python]) {
   const lessons = sources.map(buildLesson);
   lessons.forEach(validate);
   const module = { ...meta, lessons };
