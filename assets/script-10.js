@@ -57,8 +57,8 @@ function rbTeileGruppieren(){
   if(!document.getElementById('rbTeileWerkzeug')){
     var w = document.createElement('div');
     w.className = 'rb-teile-werkzeug'; w.id = 'rbTeileWerkzeug';
-    w.innerHTML = '<button type="button" onclick="rbTeileAlle(true)">Alle auf</button>' +
-                  '<button type="button" onclick="rbTeileAlle(false)">Alle zu</button>';
+    w.innerHTML = '<button type="button" data-onclick="rbTeileAlle(true)">Alle auf</button>' +
+                  '<button type="button" data-onclick="rbTeileAlle(false)">Alle zu</button>';
     nav.parentNode.insertBefore(w, nav);
   }
 }

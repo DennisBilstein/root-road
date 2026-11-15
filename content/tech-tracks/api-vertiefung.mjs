@@ -248,7 +248,7 @@ Im Lab liegen die Daten im Arbeitsspeicher; die Wirkung auf die Datenbank (geles
     sources: [
       rfc(8288, 'Web Linking', 'Standard zum Link-Header und rel-Werten wie next.'),
       owasp('API4 Unrestricted Resource Consumption', '0xa4-unrestricted-resource-consumption'),
-      { title: 'MariaDB-Vertiefung: Blättern mit OFFSET gegen Keyset (Lektion mariadb-m2-l5)', url: 'https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab', note: 'Eigene Lektion und eigenes Lab; zeigt die gelesenen Zeilen in MariaDB.' },
+      { title: 'MariaDB-Vertiefung: Blättern mit OFFSET gegen Keyset (Lektion mariadb-m2-l5)', url: 'https://github.com/DennisBilstein/root-road/tree/main/content/examples/sql-lab', note: 'Eigene Lektion und eigenes Lab; zeigt die gelesenen Zeilen in MariaDB.' },
     ],
     verification: verification('Lückenlose Seiten bei gleichen Zeitstempeln, stabile Seiten nach einem Löschen sowie 400 für ungültige Cursor und Limits.', 'Verhalten mit echter Datenbank und großen Datenmengen, parallele Schreibzugriffe während des Blätterns, andere Sortierungen.'),
   },

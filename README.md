@@ -1,6 +1,6 @@
 # Root Road
 
-> Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab` und der GitHub-Repository-Name `rootpfad` (Lektionen verlinken auf `github.com/DennisBilstein/rootpfad/…`). Seit 15.11.2026 heißt nur das npm-Paket in `package.json` `root-road`; das GitHub-Repository wurde bewusst nicht umbenannt.
+> Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab`. Seit 15.11.2026 heißen das npm-Paket in `package.json` und das GitHub-Repository `root-road` (`github.com/DennisBilstein/root-road`; der alte Name leitet weiter, der lokale Ordner heißt weiter `rootpfad`).
 
 ## Qualität: Start, Header, Caching · 13.11.2026
 
@@ -19,7 +19,7 @@
   nichts wird heruntergeladen oder gespiegelt. Das Video wird erst nach einem Klick auf „Video laden“ über
   `youtube-nocookie.com` eingebettet; vorher gibt es keine Anfrage an YouTube/Google. Daneben steht immer ein Direktlink.
   Titel und Kanal prüft `npm run verify:videos` per oEmbed (braucht Netz); der Inhalt der Videos ist nicht geprüft.
-  Der Server sendet dafür eine CSP (frame-src, object-src, base-uri, frame-ancestors) und seit 15.11.2026 zusätzlich script-src 'self' (ohne eval und Inline-Skriptblöcke; Ereignisattribute erlaubt über script-src-attr; die Sandbox der Code-Werkstatt hat eine eigene CSP). Die Datenschutzseite nennt die Einbettung
+  Der Server sendet dafür eine CSP (frame-src, object-src, base-uri, frame-ancestors) und seit 15.11.2026 zusätzlich default-src 'self' und script-src 'self' (ohne eval, Inline-Skriptblöcke und Inline-Ereignisattribute: script-src-attr 'none'; Ausnahmen: style-src 'unsafe-inline', img-src data:/blob:, connect-src http:/https: für den einstellbaren KI-Tutor; die Sandbox der Code-Werkstatt hat eine eigene CSP). Klicks und Eingaben laufen über `data-on…`-Attribute und die Delegation in `assets/actions.js`. Die Datenschutzseite nennt die Einbettung
   (Entwurf, rechtlich prüfen lassen).
 - **Kleine Denkaufgaben** (`content/puzzles.json`, 7 Aufgaben in `java-m25-l1`, `java-m25-l2`, `js-m4-l1`, `js-m4-l2`, `js-m4-l4`):
   „Fehler finden“ und „Zeilen ordnen“ (Parsons-Aufgabe, per Pfeil-Schaltflächen bedienbar). Jede Aufgabe nennt, womit sie geprüft wurde;

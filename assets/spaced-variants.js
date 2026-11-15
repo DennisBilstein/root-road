@@ -24,7 +24,7 @@ function rpCheckVariant(event){event.preventDefault();if(!rpVariantCurrent||rpVa
  base.apply(this,arguments);
  if(state.currentId==='competencies'){
   var html='<section class="callout"><h2>Neue Varianten nach Lernabstand</h2><p>Drei erste Aufgabenfamilien mit je zwei getrennten Datensätzen. Weitere Module haben noch keine fachlich geprüften Parallelformen.</p>';
-  RP_PARALLEL_TASKS.filter(function(t){return rpMatches(rpLessonPaths[t.lessonId]);}).forEach(function(task){var a=rpVariantAvailable(task,Date.now());html+='<p>'+esc(task.title)+' · '+(a.due?'<button class="ex-btn" onclick="rpStartVariant(\''+task.id+'\')">Neue Variante bearbeiten</button>':'Nächste Variante ab '+new Date(a.dueAt).toLocaleString('de-DE'))+'</p>';});
+  RP_PARALLEL_TASKS.filter(function(t){return rpMatches(rpLessonPaths[t.lessonId]);}).forEach(function(task){var a=rpVariantAvailable(task,Date.now());html+='<p>'+esc(task.title)+' · '+(a.due?'<button class="ex-btn" data-onclick="rpStartVariant(\''+task.id+'\')">Neue Variante bearbeiten</button>':'Nächste Variante ab '+new Date(a.dueAt).toLocaleString('de-DE'))+'</p>';});
   document.getElementById('content').insertAdjacentHTML('afterbegin',html+'</section>');
  }
 };})();

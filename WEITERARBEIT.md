@@ -11,7 +11,7 @@ MariaDB Vertiefung: `mariadb-m2` (8), Pfad `mariadb` jetzt 14 Lektionen. Quelle 
 HTML & CSS Vertiefung: `html-m2` (4) und `css-m2` (5), Pfad `htmlcss` jetzt 21 Lektionen. Quellen `content/tech-tracks/{html,css}-vertiefung.mjs` → `node scripts/prepare-html-css-vertiefung.mjs` → `npm run build`; Lab `content/examples/html-css-lab/vertiefung/`, Tests `tests/html-css-vertiefung.spec.mjs`, Abnahmen `content/assessments-html-css.json`.
 Bestand jetzt 131 Module / 542 Lektionen / 1493+306=1799 Karten; zuvor (nur Tech-Tracks) 129 / 533 / 1772; 87 Playwright-Tests grün (neu: `tests/tech-tracks.spec.mjs`), `npm run scan:secrets` sauber.
 Quellen `content/tech-tracks/*.mjs` → `node scripts/prepare-tech-tracks.mjs` (Gruppenliste dort pflegen) → `npm run build`. Details: README, Abschnitt „TypeScript, Node.js, Linux & Shell und Web-Sicherheit“.
-Offen: (1) CSP seit 15.11.2026 mit `script-src 'self'` (erst Report-Only mit Sonde, dann erzwungen; Test in `tests/page-quality.spec.mjs`), aber noch mit `script-src-attr 'unsafe-inline'` für rund 220 Inline-Ereignisattribute und ohne `default-src`; nächster Schritt: Attribute auf Ereignisdelegation umstellen und `script-src-attr` entfernen (siehe Lektion ws-m2-l3). Die Sandbox der Code-Werkstatt wird als eigene URL (`assets/guided-sandbox.html`) mit eigener CSP geladen, nicht mehr als `srcdoc`.
+CSP seit 15.11.2026: `default-src 'self'`, `script-src 'self'`, `script-src-attr 'none'` (Ausnahmen: `style-src 'unsafe-inline'`, `img-src data: blob:`, `connect-src http: https:` wegen des frei einstellbaren KI-Tutor-Endpunkts). Ereignis-Attribute heißen `data-onclick`, `data-onchange`, `data-oninput`, `data-onkeydown`, `data-onfocus`; `assets/actions.js` delegiert sie an Funktionen aus `assets/action-names.js` (erzeugt von `scripts/build-action-names.mjs`, bricht den Build bei unzulässiger Attributform ab). Neue Aktionen: Funktion mit festen Argumenten (`'Text'`, Zahl, `true/false/null`, `this`, `this.value`, `this.checked`, `event`) im Attribut aufrufen; Logik gehört in eine benannte Funktion, nicht ins Attribut. Test: `tests/actions.spec.mjs`. Die Sandbox der Code-Werkstatt wird als eigene URL (`assets/guided-sandbox.html`) mit eigener CSP geladen, nicht mehr als `srcdoc`.
 (2) Eine `unhandledrejection` „Transition was skipped“ entsteht bei sehr schnellem Lektionswechsel (View Transitions); harmlos, im Test herausgefiltert.
 (3) Ältere Skripte (`build-quiz-revisions.mjs`, `build-experts.mjs`) betten Daten ebenfalls mit `String.replace` ein; bei Inhalten mit `$'` oder `$&` dasselbe Muster wie in `build-learning-content.mjs` (Ersatzfunktion) verwenden.
 (4) Quellen: 186 Quellen warten laut `audit:learning` auf Abruf; alle URLs der 33 neuen Lektionen wurden am 14.11.2026 per HTTP-Abruf auf Erreichbarkeit geprüft, nicht inhaltlich.
@@ -380,5 +380,5 @@ Bei Serveränderungen lokalen Node-Prozess neu starten; Browser neu laden.
 
 ## GitHub
 
-Privates Repository: https://github.com/DennisBilstein/rootpfad
+Öffentliches Repository: https://github.com/DennisBilstein/root-road (bis 15.11.2026 `rootpfad`)
 Branch: `main`. Keine Veröffentlichung oder Änderung der Sichtbarkeit ohne Auftrag.

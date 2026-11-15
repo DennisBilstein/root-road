@@ -170,6 +170,7 @@ function blitzTick(){
   }
   if(rest <= 0) blitzEnde();
 }
+function blitzSchliessen(){ lab.blitz = null; renderContent(); }
 function blitzWeiter(art){
   var b = lab.blitz;
   if(!b || b.fertig) return;
@@ -206,16 +207,16 @@ function blitzHtml(){
       '<div class="gross">' + richtig + ' / ' + b.ids.length + '</div>' +
       '<p>' + b.punkte + ' Punkte' + (b.rekord ? ' – <strong>neuer Rekord!</strong>' : ' · Rekord: ' + (state.xpLog['blitz:best'] || 0)) + '</p>' +
       '<div class="lab-aktionen" style="justify-content:center">' +
-      '<button class="start-btn" type="button" onclick="blitzStart()">Nochmal</button>' +
-      '<button class="start-btn ghost" type="button" onclick="lab.blitz=null;renderContent()">Zurück zum Labor</button></div></div>';
+      '<button class="start-btn" type="button" data-onclick="blitzStart()">Nochmal</button>' +
+      '<button class="start-btn ghost" type="button" data-onclick="blitzSchliessen()">Zurück zum Labor</button></div></div>';
   }
   var rest = Math.max(0, Math.ceil((b.ende - Date.now()) / 1000));
   var h = '<div class="lab-blitz-leiste"><span class="uhr" id="blitzUhr">' + Math.floor(rest / 60) + ':' + String(rest % 60).padStart(2, '0') + '</span>' +
     '<div class="fort">' + b.ids.map(function(id, i){
       return '<i class="' + (b.ergebnis[i] || (i === b.idx ? 'jetzt' : '')) + '"></i>'; }).join('') + '</div>' +
     '<span class="punkte">✓ ' + b.ergebnis.filter(function(e){ return e === 'ok'; }).length + '</span>' +
-    '<button class="ex-btn" type="button" onclick="blitzWeiter(\'skip\')">Überspringen</button>' +
-    '<button class="ex-btn" type="button" onclick="blitzEnde()">Beenden</button></div>';
+    '<button class="ex-btn" type="button" data-onclick="blitzWeiter(\'skip\')">Überspringen</button>' +
+    '<button class="ex-btn" type="button" data-onclick="blitzEnde()">Beenden</button></div>';
   return h + labAufgabeHtml(LAB_BY_ID[b.ids[b.idx]]);
 }
 
@@ -236,12 +237,12 @@ renderLabor = function(){
 
   h += '<div class="lab-kata-karte"><span class="k-icon">🥋</span><div class="k-text"><div class="k-titel">Daily Dojo: ' + esc(kata.titel) + '</div>' +
        '<div class="k-sub">' + (kataFertig ? 'Heute erledigt – morgen wartet die nächste.' : 'Heute doppelte XP · ' + LAB_STUFEN[kata.stufe] + ' · ' + LAB_TYPEN[kata.typ]) + '</div></div>' +
-       '<button class="start-btn" type="button" onclick="labOeffnen(\'' + kata.id + '\')">' + (kataFertig ? 'Ansehen' : 'Dojo betreten') + '</button></div>';
+       '<button class="start-btn" type="button" data-onclick="labOeffnen(\'' + kata.id + '\')">' + (kataFertig ? 'Ansehen' : 'Dojo betreten') + '</button></div>';
 
   h += '<div class="lab-blitz-start"><span style="font-size:1.6rem">⚡</span><div class="b-text"><div class="b-titel">Blitzrunde</div>' +
        '<div class="b-sub">5 zufällige Aufgaben, 3 Minuten. Rekord: ' + (state.xpLog['blitz:best'] || 0) + ' Punkte' +
        (state.xpLog['blitz:' + todayKey()] ? ' · heutige XP schon kassiert' : ' · einmal täglich XP') + '</div></div>' +
-       '<button class="start-btn ghost" type="button" onclick="blitzStart()">Starten</button></div>';
+       '<button class="start-btn ghost" type="button" data-onclick="blitzStart()">Starten</button></div>';
 
   h += '<div class="lab-abschnitt">Quests</div><div class="lab-quests">' + QUESTS.map(function(q){
     var st = questStand(q), n = st.naechste && LAB_BY_ID[st.naechste];
@@ -250,7 +251,7 @@ renderLabor = function(){
       '<div class="q-bahn"><i style="width:' + Math.round(st.fertig / st.gesamt * 100) + '%"></i></div>' +
       '<div class="q-fuss"><span>' + st.fertig + '/' + st.gesamt + ' · +' + xpAnzeige(q.xp) + ' XP</span>' +
       (st.voll ? '<span style="color:var(--success)">✓ geschafft</span>' :
-       '<button class="ex-btn q-weiter" type="button" onclick="labOeffnen(\'' + st.naechste + '\')" title="' + esc(n ? n.titel : '') + '">Weiter</button>') +
+       '<button class="ex-btn q-weiter" type="button" data-onclick="labOeffnen(\'' + st.naechste + '\')" title="' + esc(n ? n.titel : '') + '">Weiter</button>') +
       '</div></div>';
   }).join('') + '</div>';
 
@@ -262,7 +263,7 @@ renderLabor = function(){
   }).join('') + '</div>';
 
   h += '<div class="lab-filter">' + [['alle','Alle'],['offen','Offen'],['ausgabe','Ausgabe'],['luecke','Lückentext'],['bug','Bug-Jagd'],['ordnen','Reihenfolge'],['befehl','Terminal']]
-    .map(function(f){ return '<button class="filter-btn' + (lab.filter === f[0] ? ' active' : '') + '" onclick="labFilter(\'' + f[0] + '\')">' + f[1] + '</button>'; }).join('') + '</div>';
+    .map(function(f){ return '<button class="filter-btn' + (lab.filter === f[0] ? ' active' : '') + '" data-onclick="labFilter(\'' + f[0] + '\')">' + f[1] + '</button>'; }).join('') + '</div>';
 
   var liste = LABOR.filter(function(t){
     if(lab.filter === 'offen') return !labGeloest(t.id);
@@ -276,7 +277,7 @@ renderLabor = function(){
     gruppe.forEach(function(t){
       if(lab.offen === t.id){ h += labAufgabeHtml(t); return; }
       var m = moduleOfLesson(t.lektion);
-      h += '<button class="lab-mini' + (labGeloest(t.id) ? ' geloest' : '') + '" type="button" onclick="labOeffnen(\'' + t.id + '\')">' +
+      h += '<button class="lab-mini' + (labGeloest(t.id) ? ' geloest' : '') + '" type="button" data-onclick="labOeffnen(\'' + t.id + '\')">' +
            '<span class="m-status">' + (labGeloest(t.id) ? '✓' : '') + '</span><span>' + esc(t.titel) +
            (m ? ' <span style="color:var(--text-dim);font-size:.8rem;">· ' + esc(m.title) + '</span>' : '') + '</span>' +
            '<span class="m-typ">' + LAB_TYPEN[t.typ] + ' · +' + xpAnzeige(LAB_XP[t.stufe]) + '</span></button>';
@@ -386,7 +387,7 @@ function rbHeuteKata(el){
   kopf.insertAdjacentHTML('afterend', '<div class="rb-heute-kata"><span style="font-size:1.6rem">🥋</span><div class="k-text">' +
     '<div class="k-titel">Daily Dojo: ' + esc(k.titel) + '</div><div class="k-sub">' +
     (fertig ? 'Erledigt – Serie: ' + labKataSerie() + ' Tage' : 'Doppelte XP heute · ' + LAB_TYPEN[k.typ] + ' · ca. 2 Minuten') + '</div></div>' +
-    '<button class="start-btn' + (fertig ? ' ghost' : '') + '" type="button" onclick="labOeffnen(\'' + k.id + '\');selectLesson(\'labor\')">' +
+    '<button class="start-btn' + (fertig ? ' ghost' : '') + '" type="button" data-onclick="labOeffnen(\'' + k.id + '\');selectLesson(\'labor\')">' +
     (fertig ? 'Zum Labor' : 'Ab ins Dojo') + '</button></div>');
 }
 

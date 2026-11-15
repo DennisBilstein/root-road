@@ -119,7 +119,7 @@ function rbTokyo(code, sprache){
 codeBlock = function(code, lang){
   lang = lang || 'Pseudocode';
   return '<div class="code-block"><div class="code-head"><span class="code-lang">' + esc(lang) + '</span>' +
-    '<button class="copy-btn" onclick="copyCode(this)">Kopieren</button></div><pre><code>' +
+    '<button class="copy-btn" data-onclick="copyCode(this)">Kopieren</button></div><pre><code>' +
     rbTokyo(String(code), rbSprache(lang)) + '</code></pre></div>';
 };
 
@@ -187,7 +187,7 @@ function labAufgabeHtml(t){
   if(t.typ === 'ausgabe'){
     h += '<div class="lab-code"><pre>' + rbTokyo(t.code, sp) + '</pre></div>';
     h += '<input class="lab-eingabe" id="lab-in-' + t.id + '" placeholder="Deine Antwort …" spellcheck="false" autocomplete="off" ' +
-         'onkeydown="if(event.key===\'Enter\'){labPruefen(\'' + t.id + '\')}">';
+         'data-onkeydown="if(event.key===\'Enter\'){labPruefen(\'' + t.id + '\')}">';
   }
   if(t.typ === 'luecke'){
     /* Platzhalter vor dem Einfaerben tauschen: Ziffern wuerden sonst als Zahl eingefaerbt. */
@@ -198,7 +198,7 @@ function labAufgabeHtml(t){
       var laenge = Math.max.apply(null, t.antworten[+i].map(function(a){ return a.length; }));
       return '<input class="lab-luecke" data-luecke="' + i + '" style="width:' + (laenge + 3) + 'ch" spellcheck="false" ' +
              'autocomplete="off" aria-label="Lücke ' + (+i + 1) + '" ' +
-             'onkeydown="if(event.key===\'Enter\'){labPruefen(\'' + t.id + '\')}">';
+             'data-onkeydown="if(event.key===\'Enter\'){labPruefen(\'' + t.id + '\')}">';
     });
     h += '<div class="lab-code"><pre>' + html + '</pre></div>';
   }
@@ -207,7 +207,7 @@ function labAufgabeHtml(t){
     t.code.split('\n').forEach(function(z, i){
       var an = st.auswahl.indexOf(i) >= 0;
       h += '<button type="button" class="lab-zeile' + (an ? ' markiert' : '') + '" aria-pressed="' + an + '" ' +
-           'onclick="labZeile(\'' + t.id + '\',' + i + ')"><span class="nr">' + (i + 1) + '</span>' +
+           'data-onclick="labZeile(\'' + t.id + '\',' + i + ')"><span class="nr">' + (i + 1) + '</span>' +
            (rbTokyo(z, sp) || ' ') + '</button>';
     });
     h += '</div>';
@@ -217,21 +217,21 @@ function labAufgabeHtml(t){
     h += '<div class="lab-ordnen"><div class="lab-spalte"><h5>Schritte</h5>';
     mix.forEach(function(idx){
       if(st.reihe.indexOf(idx) >= 0) return;
-      h += '<button type="button" class="lab-schritt" onclick="labOrdnen(\'' + t.id + '\',' + idx + ')">' +
+      h += '<button type="button" class="lab-schritt" data-onclick="labOrdnen(\'' + t.id + '\',' + idx + ')">' +
            '<span class="pos">+</span><span>' + esc(t.schritte[idx]) + '</span></button>';
     });
     h += '</div><div class="lab-spalte"><h5>Deine Reihenfolge</h5>';
     st.reihe.forEach(function(idx, p){
-      h += '<button type="button" class="lab-schritt" onclick="labOrdnenZurueck(\'' + t.id + '\',' + idx + ')" title="Zurücklegen">' +
+      h += '<button type="button" class="lab-schritt" data-onclick="labOrdnenZurueck(\'' + t.id + '\',' + idx + ')" title="Zurücklegen">' +
            '<span class="pos">' + (p + 1) + '</span><span>' + esc(t.schritte[idx]) + '</span></button>';
     });
     h += '</div></div>';
   }
 
   h += '<div class="lab-aktionen">' +
-       '<button class="ex-btn primary" type="button" onclick="labPruefen(\'' + t.id + '\')">Prüfen</button>' +
-       '<button class="ex-btn" type="button" onclick="labTipp(\'' + t.id + '\')">Tipp' + (geloest ? '' : ' (halbe XP)') + '</button>' +
-       (st.versuche >= 2 && !geloest ? '<button class="ex-btn lab-aufdecken" type="button" onclick="labAufdecken(\'' + t.id + '\')">Lösung zeigen</button>' : '') +
+       '<button class="ex-btn primary" type="button" data-onclick="labPruefen(\'' + t.id + '\')">Prüfen</button>' +
+       '<button class="ex-btn" type="button" data-onclick="labTipp(\'' + t.id + '\')">Tipp' + (geloest ? '' : ' (halbe XP)') + '</button>' +
+       (st.versuche >= 2 && !geloest ? '<button class="ex-btn lab-aufdecken" type="button" data-onclick="labAufdecken(\'' + t.id + '\')">Lösung zeigen</button>' : '') +
        '</div><div class="lab-feedback" id="lab-fb-' + t.id + '" aria-live="polite"></div>';
   return h + '</div>';
 }
@@ -342,7 +342,7 @@ function labPruefen(id){
     if(st.versuche === 2){
       var akt = box.querySelector('.lab-aktionen');
       if(akt && !akt.querySelector('.lab-aufdecken')){
-        akt.insertAdjacentHTML('beforeend', '<button class="ex-btn lab-aufdecken" type="button" onclick="labAufdecken(\'' + id + '\')">Lösung zeigen</button>');
+        akt.insertAdjacentHTML('beforeend', '<button class="ex-btn lab-aufdecken" type="button" data-onclick="labAufdecken(\'' + id + '\')">Lösung zeigen</button>');
       }
     }
     return;
@@ -465,7 +465,7 @@ function renderLabor(){
   h += labHudHtml();
   h += '<div class="lab-kata-karte"><span class="k-icon">🥋</span><div class="k-text"><div class="k-titel">Daily Dojo: ' + esc(kata.titel) + '</div>' +
        '<div class="k-sub">' + (kataFertig ? 'Heute erledigt – morgen wartet die nächste.' : 'Heute doppelte XP · ' + LAB_STUFEN[kata.stufe] + ' · ' + LAB_TYPEN[kata.typ]) + '</div></div>' +
-       '<button class="start-btn" type="button" onclick="labOeffnen(\'' + kata.id + '\')">' + (kataFertig ? 'Ansehen' : 'Dojo betreten') + '</button></div>';
+       '<button class="start-btn" type="button" data-onclick="labOeffnen(\'' + kata.id + '\')">' + (kataFertig ? 'Ansehen' : 'Dojo betreten') + '</button></div>';
 
   h += '<div class="lab-tracks">' + LAB_TRACKS.map(function(tr){
     var alle = LABOR.filter(tr.wer), fertig = alle.filter(function(t){ return labGeloest(t.id); }).length;
@@ -475,7 +475,7 @@ function renderLabor(){
   }).join('') + '</div>';
 
   h += '<div class="lab-filter">' + [['alle','Alle'],['offen','Offen'],['ausgabe','Ausgabe'],['luecke','Lückentext'],['bug','Bug-Jagd'],['ordnen','Reihenfolge']]
-    .map(function(f){ return '<button class="filter-btn' + (lab.filter === f[0] ? ' active' : '') + '" onclick="labFilter(\'' + f[0] + '\')">' + f[1] + '</button>'; }).join('') + '</div>';
+    .map(function(f){ return '<button class="filter-btn' + (lab.filter === f[0] ? ' active' : '') + '" data-onclick="labFilter(\'' + f[0] + '\')">' + f[1] + '</button>'; }).join('') + '</div>';
 
   var liste = LABOR.filter(function(t){
     if(lab.filter === 'offen') return !labGeloest(t.id);
@@ -489,7 +489,7 @@ function renderLabor(){
     gruppe.forEach(function(t){
       if(lab.offen === t.id){ h += labAufgabeHtml(t); return; }
       var m = moduleOfLesson(t.lektion);
-      h += '<button class="lab-mini' + (labGeloest(t.id) ? ' geloest' : '') + '" type="button" onclick="labOeffnen(\'' + t.id + '\')">' +
+      h += '<button class="lab-mini' + (labGeloest(t.id) ? ' geloest' : '') + '" type="button" data-onclick="labOeffnen(\'' + t.id + '\')">' +
            '<span class="m-status">' + (labGeloest(t.id) ? '✓' : '') + '</span><span>' + esc(t.titel) +
            (m ? ' <span style="color:var(--text-dim);font-size:.8rem;">· ' + esc(m.title) + '</span>' : '') + '</span>' +
            '<span class="m-typ">' + LAB_TYPEN[t.typ] + ' · +' + xpAnzeige(LAB_XP[t.stufe]) + '</span></button>';
@@ -520,6 +520,9 @@ function rbTeilenText(){
   return 'Ich lerne mit Root Road für die AP1: Rang „' + lp.cur.name + '“, ' + (state.xp || 0) + ' XP, ' +
          state.completed.size + '/' + TOTAL + ' Lektionen, ' + labAnzahlGeloest() + ' Laboraufgaben gelöst.';
 }
+function rbFeldMarkieren(feld){ feld.select(); }
+function rbLinkTeilen(link){ navigator.share({ title: 'Root Road', url: link }).catch(function(){}); }
+function rbTextKopieren(knopf){ rbKopieren(rbTeilenText(), knopf); }
 function rbKopieren(text, knopf){
   try{
     navigator.clipboard.writeText(text).then(function(){
@@ -573,12 +576,12 @@ function rbTeilenOeffnen(){
   d.id = 'rbTeilen';
   d.innerHTML =
     '<div class="rb-dialog" role="dialog" aria-modal="true" aria-labelledby="rbTeilenTitel">' +
-    '<button class="zu" type="button" aria-label="Schließen" onclick="rbTeilenSchliessen()">×</button>' +
+    '<button class="zu" type="button" aria-label="Schließen" data-onclick="rbTeilenSchliessen()">×</button>' +
     '<h2 id="rbTeilenTitel">Teilen</h2><p style="color:var(--text-dim);margin:0;">' + esc(titel) + '</p>' +
     '<h3>Link zu dieser Ansicht</h3>' +
-    '<div class="rb-zeile"><input readonly value="' + esc(link) + '" onfocus="this.select()">' +
-    '<button class="ex-btn" type="button" onclick="rbKopieren(\'' + link.replace(/'/g, "\\'") + '\', this)">Kopieren</button>' +
-    (navigator.share && !lokal ? '<button class="ex-btn primary" type="button" onclick="navigator.share({title:\'Root Road\',url:\'' + link.replace(/'/g, "\\'") + '\'}).catch(function(){})">Teilen …</button>' : '') +
+    '<div class="rb-zeile"><input readonly value="' + esc(link) + '" data-onfocus="rbFeldMarkieren(this)">' +
+    '<button class="ex-btn" type="button" data-onclick="rbKopieren(\'' + link.replace(/'/g, "\\'") + '\', this)">Kopieren</button>' +
+    (navigator.share && !lokal ? '<button class="ex-btn primary" type="button" data-onclick="rbLinkTeilen(\'' + link.replace(/'/g, "\\'") + '\')">Teilen …</button>' : '') +
     '</div>' +
     (lokal ? '<div class="rb-hinweis"><strong>Diese Seite liegt nur auf deinem Rechner.</strong> Ein file://-Link funktioniert bei anderen nicht. ' +
       'So machst du Root Road für andere erreichbar:<ol>' +
@@ -588,9 +591,9 @@ function rbTeilenOeffnen(){
       'Danach führt der Link oben direkt in diese Lektion.</div>' : '') +
     '<h3>Erfolgskarte</h3><div id="rbKarteHost"></div>' +
     '<div class="rb-zeile" style="flex-wrap:wrap;">' +
-    '<button class="ex-btn primary" type="button" onclick="rbKarteSpeichern()">Als Bild speichern</button>' +
-    '<button class="ex-btn" type="button" id="rbKarteTeilen" onclick="rbKarteTeilen()" hidden>Bild teilen …</button>' +
-    '<button class="ex-btn" type="button" onclick="rbKopieren(rbTeilenText(), this)">Text kopieren</button></div>' +
+    '<button class="ex-btn primary" type="button" data-onclick="rbKarteSpeichern()">Als Bild speichern</button>' +
+    '<button class="ex-btn" type="button" id="rbKarteTeilen" data-onclick="rbKarteTeilen()" hidden>Bild teilen …</button>' +
+    '<button class="ex-btn" type="button" data-onclick="rbTextKopieren(this)">Text kopieren</button></div>' +
     '</div>';
   d.addEventListener('click', function(e){ if(e.target === d) rbTeilenSchliessen(); });
   d.addEventListener('keydown', function(e){ if(e.key === 'Escape') rbTeilenSchliessen(); else fokusFalle(d, e); });
@@ -678,7 +681,7 @@ renderTutor = function(){
     '<p>Im Ordner <code>Downloads/rootpfad-tutor</code> liegt ein kleiner Server. Einmalig <code>npm install</code>, ' +
     'dann mit deinem Schlüssel starten:</p>' +
     codeBlock('cd ~/Downloads/rootpfad-tutor\nnpm install\nANTHROPIC_API_KEY=sk-ant-... npm start', 'Bash') +
-    '<div class="rb-zeile" style="align-items:center;"><button class="ex-btn primary" type="button" onclick="rbLokalenTutorTesten()">Mit lokalem Server verbinden</button>' +
+    '<div class="rb-zeile" style="align-items:center;"><button class="ex-btn primary" type="button" data-onclick="rbLokalenTutorTesten()">Mit lokalem Server verbinden</button>' +
     '<span id="rbTutorStatus" class="rb-status"></span></div></div>' +
     '<div class="rb-tutor-weg"><h3>3 · Eigener Dienst auf einem Server</h3><p>Für einen öffentlich gehosteten Kurs: ' +
     'denselben Server hinter HTTPS betreiben und die Adresse hier eintragen.</p></div>' +

@@ -7,7 +7,7 @@ function rpQuestionFeedback(cardId){
 (function(){
   var base=checkQuiz;checkQuiz=function(id){base(id);var lesson=lessonById(id);
     lesson.quiz.forEach(function(q,i){var box=document.getElementById('fb_'+id+'_'+i);if(!box?.classList.contains('show'))return;var key=rpQuestionId(lesson,i);if(box.querySelector('[data-question-feedback]'))return;
-      var details=document.createElement('details');details.dataset.questionFeedback='true';details.innerHTML='<summary>Frage unklar,mehrdeutig oder fachlich auffällig?</summary><label for="feedback-note-'+key+'">Beschreibe die konkrete Unklarheit ohne persönliche Daten</label><textarea class="tutor-input" id="feedback-note-'+key+'" maxlength="1500" rows="3">'+esc(rpCompetencies.feedback[key]?.note||'')+'</textarea><button type="button" class="ex-btn" onclick="rpQuestionFeedback(\''+key+'\')">Hinweis speichern</button><p role="status" id="feedback-status-'+key+'"></p>';box.appendChild(details);
+      var details=document.createElement('details');details.dataset.questionFeedback='true';details.innerHTML='<summary>Frage unklar,mehrdeutig oder fachlich auffällig?</summary><label for="feedback-note-'+key+'">Beschreibe die konkrete Unklarheit ohne persönliche Daten</label><textarea class="tutor-input" id="feedback-note-'+key+'" maxlength="1500" rows="3">'+esc(rpCompetencies.feedback[key]?.note||'')+'</textarea><button type="button" class="ex-btn" data-onclick="rpQuestionFeedback(\''+key+'\')">Hinweis speichern</button><p role="status" id="feedback-status-'+key+'"></p>';box.appendChild(details);
     });
   };
   var record=recordAnswer;recordAnswer=function(id,correct){

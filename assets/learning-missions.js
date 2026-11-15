@@ -81,15 +81,15 @@ function rpMissionNext(){
 }
 function rpRenderMission(){
   var h = '<div class="breadcrumb">Lernwerkstatt · etwa 15 Minuten, ohne Zeitlimit</div><h1>Deine Tagesmission</h1>';
-  if(!rpMission || rpMission.path !== rpPath) return h+'<p>Fällige Karten zuerst, danach ein unsicheres Thema und eine Abrufaufgabe. Du kannst jederzeit pausieren. Nicht gespeicherte Antworten einer laufenden Runde werden beim Neuladen verworfen; beantwortete Fragen bleiben gespeichert.</p><button class="start-btn" onclick="rpStartMission()">Mission starten</button>';
-  if(rpMission.done) return h+'<div class="callout"><h2>Mission bearbeitet</h2><p>Deine Antworten sind gespeichert und für Wiederholungen eingeplant. Der Abschluss zeigt Aktivität, nicht automatisch Beherrschung.</p></div><button class="start-btn" onclick="selectLesson(\'lernwerkstatt\')">Lernstand und Modul-Bosse</button>';
+  if(!rpMission || rpMission.path !== rpPath) return h+'<p>Fällige Karten zuerst, danach ein unsicheres Thema und eine Abrufaufgabe. Du kannst jederzeit pausieren. Nicht gespeicherte Antworten einer laufenden Runde werden beim Neuladen verworfen; beantwortete Fragen bleiben gespeichert.</p><button class="start-btn" data-onclick="rpStartMission()">Mission starten</button>';
+  if(rpMission.done) return h+'<div class="callout"><h2>Mission bearbeitet</h2><p>Deine Antworten sind gespeichert und für Wiederholungen eingeplant. Der Abschluss zeigt Aktivität, nicht automatisch Beherrschung.</p></div><button class="start-btn" data-onclick="selectLesson(\'lernwerkstatt\')">Lernstand und Modul-Bosse</button>';
   var card = rpMission.cards[rpMission.index], stage = rpMission.index < rpMission.reviewCount ? 'Wiederholen' : rpMission.index === rpMission.reviewCount ? 'Unsicheres Thema / Vertiefung' : 'Erst selbst abrufen';
   var recall = rpMission.index > rpMission.reviewCount;
   h += '<p>Schritt '+(rpMission.index+1)+' / '+rpMission.cards.length+' · '+stage+'</p><div class="srs-card"><p class="badge topic">'+esc(card.moduleTitle)+'</p><h2>'+esc(card.q)+'</h2>';
-  if(recall && !rpMission.revealed) return h+'<label for="rpRecall">Formuliere zuerst deine eigene Antwort. Sie wird nicht automatisch bewertet.</label><textarea id="rpRecall" class="tutor-input" rows="4" maxlength="4000"></textarea><button class="check-btn" onclick="rpMissionRecall()">Mit Antwortmöglichkeiten vergleichen</button></div>';
+  if(recall && !rpMission.revealed) return h+'<label for="rpRecall">Formuliere zuerst deine eigene Antwort. Sie wird nicht automatisch bewertet.</label><textarea id="rpRecall" class="tutor-input" rows="4" maxlength="4000"></textarea><button class="check-btn" data-onclick="rpMissionRecall()">Mit Antwortmöglichkeiten vergleichen</button></div>';
   if(recall) h += '<p><strong>Deine erste Antwort:</strong> '+esc(rpMission.text)+'</p><p>Wähle jetzt die passende Antwort. Nur diese Auswahl wird bewertet; das ist noch kein Transfernachweis.</p>';
-  card.options.forEach(function(o,i){ h += '<button class="srs-opt" '+(rpMission.picked !== null ? 'disabled' : '')+' onclick="rpMissionAnswer('+i+')">'+esc(o)+'</button>'; });
-  if(rpMission.picked !== null) h += '<div class="srs-explain">'+(rpMission.picked === card.correct ? 'Richtig. ' : 'Noch nicht richtig. ')+'Lösung: '+esc(card.options[card.correct])+'. '+esc(card.explain)+'</div><button class="check-btn" onclick="rpMissionNext()">Weiter</button>';
+  card.options.forEach(function(o,i){ h += '<button class="srs-opt" '+(rpMission.picked !== null ? 'disabled' : '')+' data-onclick="rpMissionAnswer('+i+')">'+esc(o)+'</button>'; });
+  if(rpMission.picked !== null) h += '<div class="srs-explain">'+(rpMission.picked === card.correct ? 'Richtig. ' : 'Noch nicht richtig. ')+'Lösung: '+esc(card.options[card.correct])+'. '+esc(card.explain)+'</div><button class="check-btn" data-onclick="rpMissionNext()">Weiter</button>';
   return h+'</div>';
 }
 function rpStartBoss(id){
@@ -124,31 +124,31 @@ function rpBossNext(){
   renderContent();
 }
 function rpRenderBoss(){
-  if(!rpBossRun || !['all','abap'].includes(rpPath)) return '<h1>Modul-Bosse</h1><p>Wähle im ABAP-Lernpfad einen Boss aus.</p><button class="start-btn" onclick="selectLesson(\'lernwerkstatt\')">Zur Lernwerkstatt</button>';
+  if(!rpBossRun || !['all','abap'].includes(rpPath)) return '<h1>Modul-Bosse</h1><p>Wähle im ABAP-Lernpfad einen Boss aus.</p><button class="start-btn" data-onclick="selectLesson(\'lernwerkstatt\')">Zur Lernwerkstatt</button>';
   var run = rpBossRun, b = RP_BOSSES.find(function(b){ return b.id === run.id; }), questions = b.variants[run.variant];
   var h = '<div class="breadcrumb">Transfertraining · Variante '+(run.variant+1)+'</div><h1>'+esc(b.title)+'</h1>';
-  if(run.finished) return h+'<div class="score-hero"><div class="score-num">'+run.score+' / '+questions.length+'</div><p>'+run.hints+' Hinweise genutzt</p><p>'+(run.score === questions.length && !run.hints ? 'Diese Variante ist selbstständig gelöst.' : 'Bearbeitet. Für den selbstständigen Nachweis müssen alle Antworten ohne Hinweise richtig sein.')+'</p></div><p>„Übertragen“ erfordert zwei unterschiedliche vollständig richtige Varianten ohne Hinweise und gefestigte Lektionen. Eine wiederholte Aufgabe ist kein Beweis für allgemeine Beherrschung.</p><button class="start-btn" onclick="rpStartBoss(\''+b.id+'\')">Nächste Variante / erneut üben</button> <button class="ex-btn" onclick="selectLesson(\'lernwerkstatt\')">Lernstand ansehen</button>';
+  if(run.finished) return h+'<div class="score-hero"><div class="score-num">'+run.score+' / '+questions.length+'</div><p>'+run.hints+' Hinweise genutzt</p><p>'+(run.score === questions.length && !run.hints ? 'Diese Variante ist selbstständig gelöst.' : 'Bearbeitet. Für den selbstständigen Nachweis müssen alle Antworten ohne Hinweise richtig sein.')+'</p></div><p>„Übertragen“ erfordert zwei unterschiedliche vollständig richtige Varianten ohne Hinweise und gefestigte Lektionen. Eine wiederholte Aufgabe ist kein Beweis für allgemeine Beherrschung.</p><button class="start-btn" data-onclick="rpStartBoss(\''+b.id+'\')">Nächste Variante / erneut üben</button> <button class="ex-btn" data-onclick="selectLesson(\'lernwerkstatt\')">Lernstand ansehen</button>';
   var q = questions[run.index];
   h += '<p>Aufgabe '+(run.index+1)+' / '+questions.length+' · Kein Zeitlimit. Hinweise kosten keine XP, verhindern aber den Selbstständigkeitsnachweis dieser Runde.</p><div class="srs-card"><h2>'+esc(q.q)+'</h2>';
-  q.options.forEach(function(o,i){h += '<button class="srs-opt" '+(run.picked !== null ? 'disabled' : '')+' onclick="rpBossAnswer('+i+')">'+esc(o)+'</button>';});
-  if(run.picked === null) h += '<button class="ex-btn" onclick="rpBossHint()">Hinweis anzeigen</button>'+(run.hint ? '<p>'+esc(q.hint)+'</p>' : '');
-  else h += '<div class="srs-explain">'+(run.picked === q.correct ? 'Richtig. ' : 'Lösung: '+esc(q.options[q.correct])+'. ')+esc(q.explain)+'</div><button class="check-btn" onclick="rpBossNext()">Weiter</button>';
+  q.options.forEach(function(o,i){h += '<button class="srs-opt" '+(run.picked !== null ? 'disabled' : '')+' data-onclick="rpBossAnswer('+i+')">'+esc(o)+'</button>';});
+  if(run.picked === null) h += '<button class="ex-btn" data-onclick="rpBossHint()">Hinweis anzeigen</button>'+(run.hint ? '<p>'+esc(q.hint)+'</p>' : '');
+  else h += '<div class="srs-explain">'+(run.picked === q.correct ? 'Richtig. ' : 'Lösung: '+esc(q.options[q.correct])+'. ')+esc(q.explain)+'</div><button class="check-btn" data-onclick="rpBossNext()">Weiter</button>';
   return h+'</div>';
 }
 function rpRenderWorkshop(){
   var modules = rpData().modules;
   var done = !!rpLearning.missions[rpMissionKey()];
-  var h = '<div class="breadcrumb">Lernen mit Rückmeldung</div><h1>Lernwerkstatt</h1><div class="callout"><h2>Deine 15-Minuten-Mission</h2><p>Bis zu fünf fällige Karten zuerst, ein Fehler-/Vertiefungsthema und eine Aufgabe mit eigener Antwort vor den Optionen. Ohne Zeitdruck; 15 Minuten sind ein Richtwert.</p><p>'+(done ? 'Heute bereits bearbeitet. Erneutes Üben ist möglich, Abschluss-XP gibt es nur einmal pro Tag und Pfad.' : 'Heute noch offen.')+'</p><button class="start-btn" onclick="rpStartMission()">Mission starten</button></div>';
+  var h = '<div class="breadcrumb">Lernen mit Rückmeldung</div><h1>Lernwerkstatt</h1><div class="callout"><h2>Deine 15-Minuten-Mission</h2><p>Bis zu fünf fällige Karten zuerst, ein Fehler-/Vertiefungsthema und eine Aufgabe mit eigener Antwort vor den Optionen. Ohne Zeitdruck; 15 Minuten sind ein Richtwert.</p><p>'+(done ? 'Heute bereits bearbeitet. Erneutes Üben ist möglich, Abschluss-XP gibt es nur einmal pro Tag und Pfad.' : 'Heute noch offen.')+'</p><button class="start-btn" data-onclick="rpStartMission()">Mission starten</button></div>';
   h += '<details class="callout"><summary>Wie werden Beherrschungsstufen bestimmt?</summary><p>Erkundet: alle Lektionen als bearbeitet markiert. Geübt: jede Lektionsquizfrage mindestens einmal richtig. Gefestigt: jede Frage seit dem letzten Fehler mindestens zweimal richtig, mit mindestens drei Tagen Abstand zwischen erster und letzter richtiger Antwort. Übertragen: zusätzlich beide Varianten des zugehörigen Bosses vollständig richtig ohne Hinweise.</p><p>Ein Modul erhält nur die niedrigste gemeinsame Stufe seiner Lektionen. Alte Quizstände zählen für „Geübt“; zeitliche Nachweise werden erst seit Einführung der Lernwerkstatt erfasst. Ohne Boss gibt es noch keinen Transfernachweis. Die Einstufung ist eine Lernhilfe, kein Zertifikat. XP und Selbsteinschätzung ersetzen keinen Nachweis.</p></details>';
   if(['all','abap'].includes(rpPath)){
     h += '<h2>ABAP-Modul-Bosse</h2><div class="rp-path-grid">';
     RP_BOSSES.forEach(function(b){
       var clean = new Set(rpEvents().filter(function(e){return e.kind === 'boss' && e.bossId === b.id && e.clean && e.score === e.total;}).map(function(e){return e.variant;})).size;
-      h += '<button class="rp-path-card" onclick="rpStartBoss(\''+b.id+'\')"><strong>'+esc(b.title)+'</strong><span>3 gemischte Aufgaben je Variante</span><small>'+clean+' / 2 Varianten selbstständig gelöst</small></button>';
+      h += '<button class="rp-path-card" data-onclick="rpStartBoss(\''+b.id+'\')"><strong>'+esc(b.title)+'</strong><span>3 gemischte Aufgaben je Variante</span><small>'+clean+' / 2 Varianten selbstständig gelöst</small></button>';
     }); h += '</div>';
   }
   h += '<h2 style="margin-top:24px">Deine Wissenskarte</h2><ul class="rp-mastery-list">';
-  modules.forEach(function(m){ h += '<li><button class="ex-btn" onclick="selectLesson(\''+m.lessons[0].id+'\')">'+esc(m.title)+'</button><span>'+rpModuleMastery(m)+'</span></li>'; });
+  modules.forEach(function(m){ h += '<li><button class="ex-btn" data-onclick="selectLesson(\''+m.lessons[0].id+'\')">'+esc(m.title)+'</button><span>'+rpModuleMastery(m)+'</span></li>'; });
   return h+'</ul>';
 }
 (function(){
@@ -171,12 +171,12 @@ function rpRenderWorkshop(){
     var el = document.getElementById('content');
     if(['heute','intro'].includes(state.currentId)){
       el.querySelector('#rpMissionTeaser')?.remove();
-      el.insertAdjacentHTML('afterbegin','<section id="rpMissionTeaser" class="callout"><h2>Deine nächste Lernmission</h2><p>Wiederholen, Schwächen aufarbeiten und erst selbst antworten – etwa 15 Minuten ohne Zeitlimit.</p><button class="start-btn" onclick="selectLesson(\'lernwerkstatt\')">Mission und Wissenskarte öffnen</button></section>');
+      el.insertAdjacentHTML('afterbegin','<section id="rpMissionTeaser" class="callout"><h2>Deine nächste Lernmission</h2><p>Wiederholen, Schwächen aufarbeiten und erst selbst antworten – etwa 15 Minuten ohne Zeitlimit.</p><button class="start-btn" data-onclick="selectLesson(\'lernwerkstatt\')">Mission und Wissenskarte öffnen</button></section>');
     }
     var lesson = rpCatalog.lessons.find(function(l){ return l.id === state.currentId; });
     if(lesson){
       el.querySelector('#rpLessonMastery')?.remove();
-      el.insertAdjacentHTML('afterbegin','<p id="rpLessonMastery" class="badge topic">Lernstand: '+rpLessonMastery(lesson).label+' · <a href="#" onclick="selectLesson(\'lernwerkstatt\');return false">Kriterien und Modul-Bosse</a></p>');
+      el.insertAdjacentHTML('afterbegin','<p id="rpLessonMastery" class="badge topic">Lernstand: '+rpLessonMastery(lesson).label+' · <a href="#" data-onclick="selectLesson(\'lernwerkstatt\');return false">Kriterien und Modul-Bosse</a></p>');
     }
   };
   var sideBase = renderSidebar;

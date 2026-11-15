@@ -16,6 +16,10 @@ function ueSchreiben(exId, wert){
   clearTimeout(ue.speichern);
   ue.speichern = setTimeout(saveProgress, 900);
 }
+function reviewBeenden(){ review.queue = []; renderContent(); }
+function pruefungNeuStarten(){ exam.active = false; renderContent(); }
+function traceAuswahl(){ tracer.id = null; renderContent(); }
+function seiteNeuLaden(){ location.reload(); }
 function ueTaste(ev, exId){
   if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); uePruefen(exId); }
 }
@@ -285,10 +289,10 @@ function renderReview(){
       h += '<p class="intro-sub">Aktives Abrufen schlägt Wiederlesen — deutlich. Jede Frage aus allen '+TOTAL+' Lektionen wird hier nach dem Vergessenskurven-Prinzip wieder vorgelegt: richtig beantwortete Karten kommen in immer größeren Abständen, falsche noch am selben Tag.</p>';
     }
     h += '<div class="today-grid" style="margin-top:20px;">';
-    h += '<div class="today-item '+(due?'due accent':'')+'" onclick="startReview(\'due\')"><span class="ti-label">Heute fällig</span><span class="ti-value">'+due+'</span><span class="ti-sub">'+(due?'Jetzt wiederholen':'Alles erledigt 🎉')+'</span></div>';
-    h += '<div class="today-item" onclick="startReview(\'new\')"><span class="ti-label">Neue Karten</span><span class="ti-value">'+fresh+'</span><span class="ti-sub">12 neue lernen</span></div>';
+    h += '<div class="today-item '+(due?'due accent':'')+'" data-onclick="startReview(\'due\')"><span class="ti-label">Heute fällig</span><span class="ti-value">'+due+'</span><span class="ti-sub">'+(due?'Jetzt wiederholen':'Alles erledigt 🎉')+'</span></div>';
+    h += '<div class="today-item" data-onclick="startReview(\'new\')"><span class="ti-label">Neue Karten</span><span class="ti-value">'+fresh+'</span><span class="ti-sub">12 neue lernen</span></div>';
     var weakCount = CARDS.filter(function(c){ var s = state.stats[c.id]; return s && s.wrong > 0; }).length;
-    h += '<div class="today-item '+(weakCount?'weak':'')+'" onclick="startReview(\'weak\')"><span class="ti-label">Fehlerkarten</span><span class="ti-value">'+weakCount+'</span><span class="ti-sub">Gezielt nachholen</span></div>';
+    h += '<div class="today-item '+(weakCount?'weak':'')+'" data-onclick="startReview(\'weak\')"><span class="ti-label">Fehlerkarten</span><span class="ti-value">'+weakCount+'</span><span class="ti-sub">Gezielt nachholen</span></div>';
     h += '</div>';
 
     var learned = CARDS.filter(function(c){ return !!state.srs[c.id]; }).length;
@@ -304,7 +308,7 @@ function renderReview(){
   html += '<div class="srs-progress"><span>'+(review.idx+1)+' / '+review.queue.length+'</span>'+
           '<div class="srs-bar"><div style="width:'+Math.round((review.idx/review.queue.length)*100)+'%"></div></div>'+
           '<span>'+review.right+' richtig</span>'+
-          '<button class="ex-btn" style="padding:4px 10px;" onclick="review.queue=[];renderContent();">Beenden</button></div>';
+          '<button class="ex-btn" style="padding:4px 10px;" data-onclick="reviewBeenden()">Beenden</button></div>';
 
   html += '<div class="srs-card">';
   html += '<div class="srs-meta"><span class="badge topic">'+esc(card.moduleTitle)+'</span>'+
@@ -317,7 +321,7 @@ function renderReview(){
     KONF_STUFEN.forEach(function(st){
       html += '<button type="button" class="konf-btn'+(review.konf === st.k ? ' an' : '')+'" '+
         'aria-pressed="'+(review.konf === st.k ? 'true' : 'false')+'" '+
-        'onclick="setzeKonf(\''+st.k+'\')">'+st.t+
+        'data-onclick="setzeKonf(\''+st.k+'\')">'+st.t+
         '<span class="konf-sub">'+st.s+'</span></button>';
     });
     html += '</div></div>';
@@ -338,18 +342,18 @@ function renderReview(){
       if(i === card.correct) cls = ' correct';
       else if(i === review.picked) cls = ' wrong';
     }
-    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' onclick="pickReview('+i+')">'+esc(opt)+'</button>';
+    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' data-onclick="pickReview('+i+')">'+esc(opt)+'</button>';
   });
   html += '</div>';
 
   if(revealed){
     html += '<div class="srs-explain">'+(review.picked === card.correct ? '✓ ' : '✗ ')+esc(card.explain)+
-            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
+            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" data-onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
     html += '<div><div class="ti-label" style="margin-bottom:6px;">Wie sicher saß das?</div><div class="rate-row">'+
-      '<button class="rate-btn again" onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
-      '<button class="rate-btn" onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
-      '<button class="rate-btn" onclick="rateAndNext(2)">Gut<span class="rt-sub"><kbd>3</kbd> normal</span></button>'+
-      '<button class="rate-btn easy" onclick="rateAndNext(3)">Einfach<span class="rt-sub"><kbd>4</kbd> langes Intervall</span></button>'+
+      '<button class="rate-btn again" data-onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
+      '<button class="rate-btn" data-onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
+      '<button class="rate-btn" data-onclick="rateAndNext(2)">Gut<span class="rt-sub"><kbd>3</kbd> normal</span></button>'+
+      '<button class="rate-btn easy" data-onclick="rateAndNext(3)">Einfach<span class="rt-sub"><kbd>4</kbd> langes Intervall</span></button>'+
       '</div></div>';
   }
   html += '</div></div>';
@@ -480,7 +484,7 @@ function renderExam(){
     h += '<div class="exam-setup">';
     Object.keys(EXAM_MODES).forEach(function(k){
       var m = EXAM_MODES[k];
-      h += '<div class="exam-mode" onclick="startExam(\''+k+'\')"><h3>'+m.label+'</h3>'+
+      h += '<div class="exam-mode" data-onclick="startExam(\''+k+'\')"><h3>'+m.label+'</h3>'+
            '<p>'+m.desc+'</p><p style="margin-top:8px;"><span class="badge topic">'+m.n+' Fragen</span> <span class="badge topic">'+m.min+' Min.</span></p></div>';
     });
     h += '</div>';
@@ -531,13 +535,13 @@ function renderExam(){
               (exam.answers[i] === -1 ? '<em>nicht beantwortet</em>' : esc(c.options[exam.answers[i]]))+'<br>'+
               '<span style="color:var(--success);">Richtig:</span> '+esc(c.options[c.correct])+'</p>'+
               '<p style="font-size:.85rem;color:var(--text-dim);margin:0;">'+esc(c.explain)+'</p>'+
-              '<div class="ex-actions"><button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
+              '<div class="ex-actions"><button class="ex-btn" data-onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
       });
     } else {
       h2 += '<div class="ex-panel" style="border-left:3px solid var(--success);">Fehlerfrei — stark. Erhöhe beim nächsten Mal Umfang oder Tempo.</div>';
     }
-    h2 += '<div class="ex-actions" style="margin-top:20px;"><button class="check-btn" onclick="exam.active=false;renderContent();">Neuen Durchlauf starten</button>'+
-          '<button class="ex-btn" onclick="startReview(\'weak\')">Fehlerkarten jetzt wiederholen</button></div>';
+    h2 += '<div class="ex-actions" style="margin-top:20px;"><button class="check-btn" data-onclick="pruefungNeuStarten()">Neuen Durchlauf starten</button>'+
+          '<button class="ex-btn" data-onclick="startReview(\'weak\')">Fehlerkarten jetzt wiederholen</button></div>';
     return h2;
   }
 
@@ -545,22 +549,22 @@ function renderExam(){
   var picked = exam.answers[exam.idx];
   var h3 = '<div class="exam-bar"><span class="timer" id="examTimer">--:--</span>'+
     '<span style="font-size:.85rem;color:var(--text-dim);">Frage '+(exam.idx+1)+'/'+exam.qs.length+'</span>'+
-    '<button class="check-btn" style="padding:7px 14px;" onclick="finishExam(false)">Abgeben</button>'+
+    '<button class="check-btn" style="padding:7px 14px;" data-onclick="finishExam(false)">Abgeben</button>'+
     '<div class="exam-qnav">';
   exam.qs.forEach(function(q, i){
-    h3 += '<button class="qdot'+(exam.answers[i] !== -1 ? ' answered' : '')+(i === exam.idx ? ' current' : '')+'" onclick="gotoExamQ('+i+')">'+(i+1)+'</button>';
+    h3 += '<button class="qdot'+(exam.answers[i] !== -1 ? ' answered' : '')+(i === exam.idx ? ' current' : '')+'" data-onclick="gotoExamQ('+i+')">'+(i+1)+'</button>';
   });
   h3 += '</div></div>';
 
   h3 += '<div class="srs-card"><div class="srs-meta"><span class="badge topic">Teil '+card.part+'</span></div>'+
         '<div class="srs-q">'+esc(card.q)+'</div><div class="srs-opts">';
   card.options.forEach(function(opt, i){
-    h3 += '<button class="srs-opt" style="'+(picked === i ? 'border-color:var(--accent);background:var(--part-bg);font-weight:600;' : '')+'" onclick="answerExam('+i+')">'+esc(opt)+'</button>';
+    h3 += '<button class="srs-opt" style="'+(picked === i ? 'border-color:var(--accent);background:var(--part-bg);font-weight:600;' : '')+'" data-onclick="answerExam('+i+')">'+esc(opt)+'</button>';
   });
   h3 += '</div><div class="ex-actions">'+
-        '<button class="ex-btn" onclick="nextExamQ(-1)" '+(exam.idx===0?'disabled':'')+'>← Zurück</button>'+
-        '<button class="ex-btn primary" onclick="nextExamQ(1)" '+(exam.idx===exam.qs.length-1?'disabled':'')+'>Weiter →</button>'+
-        '<button class="ex-btn" onclick="answerExam(-1)">Antwort verwerfen</button>'+
+        '<button class="ex-btn" data-onclick="nextExamQ(-1)" '+(exam.idx===0?'disabled':'')+'>← Zurück</button>'+
+        '<button class="ex-btn primary" data-onclick="nextExamQ(1)" '+(exam.idx===exam.qs.length-1?'disabled':'')+'>Weiter →</button>'+
+        '<button class="ex-btn" data-onclick="answerExam(-1)">Antwort verwerfen</button>'+
         '</div></div>';
   h3 += '<p class="ex-meta">Während der Prüfung gibt es bewusst kein Feedback — die Auswertung kommt erst nach der Abgabe, wie in der echten Prüfung.</p>';
   return h3;
@@ -620,7 +624,7 @@ function renderTracer(){
       '<p class="intro-sub">Die häufigste Aufgabenform der AP1 lautet sinngemäß: „Was liefert dieser Algorithmus für Eingabe X?" Genau das übst du hier — Zeile für Zeile, mit einer Wertetabelle, wie du sie in der Prüfung auf Papier führen würdest. An kritischen Stellen musst du den nächsten Wert selbst vorhersagen, bevor er aufgedeckt wird.</p>';
     h += '<div class="module-grid" style="margin-top:22px;">';
     TRACES.forEach(function(t){
-      h += '<div class="module-card" onclick="startTrace(\''+t.id+'\')">'+
+      h += '<div class="module-card" data-onclick="startTrace(\''+t.id+'\')">'+
            '<div class="mnum">'+(t.level===1?'EINSTEIGER':'FORTGESCHRITTEN')+'</div>'+
            '<h3>'+esc(t.title)+'</h3><p class="mono" style="font-size:.78rem;">'+esc(t.input)+'</p>'+
            '<p style="margin-top:6px;">'+t.steps.filter(function(s){return s.ask;}).length+' Vorhersagen · '+t.steps.length+' Schritte</p></div>';
@@ -634,7 +638,7 @@ function renderTracer(){
   var html = '<div class="breadcrumb">Algorithmus-Trainer</div>';
   html += '<div class="lesson-head"><div><h1>'+esc(t.title)+'</h1>'+
           '<div class="meta-row"><span class="mono">'+esc(t.input)+'</span><span>Schritt '+(tracer.step+1)+'/'+t.steps.length+'</span></div></div>'+
-          '<button class="ex-btn" onclick="tracer.id=null;renderContent();">Andere Aufgabe</button></div>';
+          '<button class="ex-btn" data-onclick="traceAuswahl()">Andere Aufgabe</button></div>';
   html += '<p style="font-size:.9rem;">'+t.intro+'</p>';
 
   var cur = t.steps[tracer.step];
@@ -658,19 +662,19 @@ function renderTracer(){
   if(pending){
     if(pending.ask){
       html += '<div class="predict-box"><label for="predictInput">Vorhersage: Welchen Wert hat <span class="mono">'+esc(pending.ask)+'</span> nach dem nächsten Schritt?</label>'+
-        '<div class="predict-row"><input class="predict-input" id="predictInput" autocomplete="off" placeholder="z. B. '+(pending.ask==='zahlen'?'[2, 5, 9, 1]':'12')+'" onkeydown="if(event.key===\'Enter\')traceAdvance(false)">'+
-        '<button class="check-btn" onclick="traceAdvance(false)">Prüfen</button>'+
-        '<button class="ex-btn" onclick="traceAdvance(true)">Zeigen</button></div>';
+        '<div class="predict-row"><input class="predict-input" id="predictInput" autocomplete="off" placeholder="z. B. '+(pending.ask==='zahlen'?'[2, 5, 9, 1]':'12')+'" data-onkeydown="if(event.key===\'Enter\')traceAdvance(false)">'+
+        '<button class="check-btn" data-onclick="traceAdvance(false)">Prüfen</button>'+
+        '<button class="ex-btn" data-onclick="traceAdvance(true)">Zeigen</button></div>';
       if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'">'+esc(tracer.fb.msg)+'</div>';
       html += '</div>';
     } else {
       if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'" style="margin-bottom:10px;">'+esc(tracer.fb.msg)+'</div>';
-      html += '<button class="check-btn" onclick="traceAdvance(false)">Nächster Schritt →</button>';
+      html += '<button class="check-btn" data-onclick="traceAdvance(false)">Nächster Schritt →</button>';
     }
   } else {
     html += '<div class="predict-box"><label for="finalInput">Letzte Frage: Was liefert der Algorithmus zurück?</label>'+
-      '<div class="predict-row"><input class="predict-input" id="finalInput" autocomplete="off" onkeydown="if(event.key===\'Enter\')checkFinal()">'+
-      '<button class="check-btn" onclick="checkFinal()">Prüfen</button></div>';
+      '<div class="predict-row"><input class="predict-input" id="finalInput" autocomplete="off" data-onkeydown="if(event.key===\'Enter\')checkFinal()">'+
+      '<button class="check-btn" data-onclick="checkFinal()">Prüfen</button></div>';
     if(tracer.finalFb){
       html += '<div class="predict-fb '+(tracer.finalFb.ok?'ok':'no')+'">'+esc(tracer.finalFb.msg)+'</div>';
       if(tracer.finalFb.ok){
@@ -678,8 +682,8 @@ function renderTracer(){
       }
     }
     html += '</div>';
-    html += '<div class="ex-actions"><button class="ex-btn" onclick="tracer.id=null;renderContent();">Nächste Aufgabe wählen</button>'+
-            '<button class="ex-btn" onclick="startTrace(\''+t.id+'\')">Nochmal von vorn</button></div>';
+    html += '<div class="ex-actions"><button class="ex-btn" data-onclick="traceAuswahl()">Nächste Aufgabe wählen</button>'+
+            '<button class="ex-btn" data-onclick="startTrace(\''+t.id+'\')">Nochmal von vorn</button></div>';
   }
   return html;
 }
@@ -738,7 +742,7 @@ function renderKiEinstellungen(){
        'Dienstes ein &mdash; der API-Schluessel bleibt dabei auf dem Server und niemals im Browser.</p>';
   h += '<div class="sb-grid">';
   h += '<label class="sb-field"><span>Bezugsquelle</span>'+
-       '<select class="sb-input" onchange="kiModusSetzen(this.value)">'+
+       '<select class="sb-input" data-onchange="kiModusSetzen(this.value)">'+
        ['auto','artifact','backend','aus'].map(function(m){
          var t = { auto:'Automatisch', artifact:'Nur Claude (Artifact)',
                    backend:'Nur eigener Dienst', aus:'Tutor abschalten' }[m];
@@ -746,10 +750,10 @@ function renderKiEinstellungen(){
        }).join('')+'</select></label>';
   h += '<label class="sb-field"><span>Adresse des eigenen Dienstes</span>'+
        '<input class="sb-input" type="url" spellcheck="false" placeholder="https://api.deine-domain.de/tutor" '+
-       'value="'+esc(KI.endpunkt)+'" oninput="kiEndpunktSetzen(this.value)"></label>';
+       'value="'+esc(KI.endpunkt)+'" data-oninput="kiEndpunktSetzen(this.value)"></label>';
   h += '</div>';
   h += '<div class="ex-actions"><button class="ex-btn primary" type="button" '+
-       'onclick="tutorNeuVerbinden()">Verbindung neu aufbauen</button></div>';
+       'data-onclick="tutorNeuVerbinden()">Verbindung neu aufbauen</button></div>';
   h += '<details class="kl-details"><summary>Welches Protokoll der Dienst sprechen muss</summary>'+
        codeBlock(
          "POST <deine Adresse>\n"+
@@ -822,15 +826,15 @@ function renderProfile(){
       '<label style="display:flex; flex-direction:column; gap:6px;">'+
         '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Prüfungstermin</span>'+
         '<input type="date" id="pruefDatum" class="dat-feld" value="'+esc(state.pruefungsdatum || '')+'" '+
-        'onchange="setzePruefung(this.value)">'+
+        'data-onchange="setzePruefung(this.value)">'+
       '</label>'+
       '<label style="display:flex; flex-direction:column; gap:6px;">'+
         '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Lektionen pro Tag</span>'+
         '<input type="number" id="tagesZiel" class="dat-feld" min="1" max="30" '+
-        'style="width:90px;" value="'+(state.tagesziel || 3)+'" onchange="setzeZiel(this.value)">'+
+        'style="width:90px;" value="'+(state.tagesziel || 3)+'" data-onchange="setzeZiel(this.value)">'+
       '</label>'+
-      '<button class="ex-btn" onclick="fokusUmschalten()">Lesemodus umschalten</button>'+
-      '<button class="ex-btn" onclick="selectLesson(\'tasten\')">Tastaturkürzel</button>'+
+      '<button class="ex-btn" data-onclick="fokusUmschalten()">Lesemodus umschalten</button>'+
+      '<button class="ex-btn" data-onclick="selectLesson(\'tasten\')">Tastaturkürzel</button>'+
     '</div></div>';
 
   h += '<h2 class="sec-h">Geräte und Sicherung</h2>';
@@ -840,9 +844,9 @@ function renderProfile(){
     'Für eine lokal gespeicherte Kopie oder als Sicherung nutzt du den Export: Er legt deinen kompletten Stand als Text in die Zwischenablage. '+
     'Beim Import wird <em>zusammengeführt</em>, nicht überschrieben — abgeschlossene Lektionen, XP und Abzeichen gehen also nie verloren.</p>'+
     '<div class="ex-actions">'+
-      '<button class="ex-btn primary" onclick="exportProgress()">Fortschritt exportieren</button>'+
-      '<button class="ex-btn" onclick="showImport()">Fortschritt importieren</button>'+
-      '<button class="ex-btn" id="ioApply" hidden onclick="applyImport()">Übernehmen</button>'+
+      '<button class="ex-btn primary" data-onclick="exportProgress()">Fortschritt exportieren</button>'+
+      '<button class="ex-btn" data-onclick="showImport()">Fortschritt importieren</button>'+
+      '<button class="ex-btn" id="ioApply" hidden data-onclick="applyImport()">Übernehmen</button>'+
     '</div>'+
     '<textarea class="io-area" id="ioArea" hidden spellcheck="false"></textarea>'+
     '</div>';
@@ -1068,10 +1072,10 @@ function renderSubnet(){
 
   h += '<div class="ex-actions">';
   if(!subnet.checked){
-    h += '<button class="ex-btn primary" onclick="checkSubnetTask()">Pr&uuml;fen</button>';
-    h += '<button class="ex-btn" onclick="newSubnetTask()">&uuml;berspringen</button>';
+    h += '<button class="ex-btn primary" data-onclick="checkSubnetTask()">Pr&uuml;fen</button>';
+    h += '<button class="ex-btn" data-onclick="newSubnetTask()">&uuml;berspringen</button>';
   } else {
-    h += '<button class="ex-btn primary" onclick="newSubnetTask()">N&auml;chste Aufgabe</button>';
+    h += '<button class="ex-btn primary" data-onclick="newSubnetTask()">N&auml;chste Aufgabe</button>';
   }
   h += '</div>';
 
@@ -1545,11 +1549,11 @@ function renderTutor(){
        'placeholder="Deine Frage \u2026 (Strg+Enter sendet)">'+vor+'</textarea>'+
        '<div class="ex-actions" style="margin-top:10px;">';
   if(tutor.busy){
-    h += '<button class="ex-btn" onclick="tutorAbbrechen()">Stopp</button>';
+    h += '<button class="ex-btn" data-onclick="tutorAbbrechen()">Stopp</button>';
   } else {
-    h += '<button class="ex-btn primary" onclick="tutorSenden()">Fragen</button>';
+    h += '<button class="ex-btn primary" data-onclick="tutorSenden()">Fragen</button>';
   }
-  h += '<button class="ex-btn" onclick="tutorNeu()">Neu beginnen</button>';
+  h += '<button class="ex-btn" data-onclick="tutorNeu()">Neu beginnen</button>';
   h += '</div></div>';
   h += '</div>';
 
@@ -1564,7 +1568,7 @@ function renderTutor(){
       'Was sind die drei Lernarten beim maschinellen Lernen?',
       'Erkl\u00e4re Kapselung so, als w\u00e4re ich im ersten Lehrjahr.'
     ].forEach(function(t){
-      h += '<button class="tutor-chip" onclick="tutorSchnell(\''+t.replace(/'/g, "\\'")+'\')">'+esc(t)+'</button>';
+      h += '<button class="tutor-chip" data-onclick="tutorSchnell(\''+t.replace(/'/g, "\\'")+'\')">'+esc(t)+'</button>';
     });
     h += '</div>';
   }
@@ -1665,7 +1669,7 @@ function renderLernplan(){
   var p = lernplan();
   if(!p){
     if(state.pruefungsdatum) return '';
-    return '<div class="plan-hinweis">Trag im <button class="ex-btn" onclick="selectLesson(\'profile\')">Profil</button> '+
+    return '<div class="plan-hinweis">Trag im <button class="ex-btn" data-onclick="selectLesson(\'profile\')">Profil</button> '+
            'deinen Prüfungstermin ein — dann rechnet dir der Lernplan aus, welches Modul bis wann sitzen muss.</div>';
   }
   if(p.fertig){
@@ -1680,7 +1684,7 @@ function renderLernplan(){
   h += '<ol class="plan-liste">';
   p.module.slice(0, 8).forEach(function(e){
     h += '<li class="plan-zeile">'+
-      '<button class="plan-titel" onclick="selectLesson(\''+e.modul.lessons[0].id+'\')">'+esc(e.modul.title)+'</button>'+
+      '<button class="plan-titel" data-onclick="selectLesson(\''+e.modul.lessons[0].id+'\')">'+esc(e.modul.title)+'</button>'+
       '<span class="plan-offen">'+e.offen+' offen</span>'+
       '<span class="plan-datum">bis '+datumKurz(e.datum)+'</span></li>';
   });
@@ -1746,10 +1750,10 @@ function setzeLf(n){
 }
 function lfFilterZeile(){
   var h = '<div class="lf-leiste"><span class="lf-frage">Nach Lernfeld der Berufsschule:</span><div class="filter-row" style="margin:0;">';
-  h += '<button class="filter-btn'+(lfFilter === 0 ? ' active' : '')+'" onclick="setzeLf(0)">Alle</button>';
+  h += '<button class="filter-btn'+(lfFilter === 0 ? ' active' : '')+'" data-onclick="setzeLf(0)">Alle</button>';
   [1,2,3,4,5,6].forEach(function(n){
     var anz = MODULES.filter(function(m){ return lfVon(m.id) === n; }).length;
-    h += '<button class="filter-btn'+(lfFilter === n ? ' active' : '')+'" onclick="setzeLf('+n+')" '+
+    h += '<button class="filter-btn'+(lfFilter === n ? ' active' : '')+'" data-onclick="setzeLf('+n+')" '+
          'title="'+esc(LF_TITEL[n])+'">LF '+n+' <span class="lf-anz">'+anz+'</span></button>';
   });
   h += '</div></div>';
@@ -1775,7 +1779,7 @@ function renderRecht(){
   [['impressum','Impressum'],['datenschutz','Datenschutz'],['nutzung','Nutzungsbedingungen'],['ueber','&Uuml;ber']]
     .forEach(function(t){
       h += '<button class="filter-btn'+(rechtTab === t[0] ? ' active' : '')+'" type="button" '+
-           'onclick="setzeRecht(\''+t[0]+'\')">'+t[1]+'</button>';
+           'data-onclick="setzeRecht(\''+t[0]+'\')">'+t[1]+'</button>';
     });
   h += '</div>';
 
@@ -1902,7 +1906,7 @@ function renderStartHinweis(){
   if(!zeigeStartHinweis()) return '';
   var h = '<div class="start-box">';
   h += '<div class="start-kopf"><strong>Erste Schritte</strong>'+
-       '<button class="ex-btn" type="button" onclick="startHinweisWeg()">Verstanden</button></div>';
+       '<button class="ex-btn" type="button" data-onclick="startHinweisWeg()">Verstanden</button></div>';
   h += '<p class="start-text">Vier Dinge, und du bist eingerichtet:</p>';
   h += '<ol class="start-liste">'+
     '<li><strong>Pr&uuml;fungstermin eintragen.</strong> Dann rechnet dir der Lernplan aus, '+
@@ -1974,13 +1978,13 @@ function renderHeute(){
 
   h += '<div class="heute-raster">';
 
-  h += '<button class="hk" onclick="selectLesson(\''+esc(naechste.id)+'\')">'+
+  h += '<button class="hk" data-onclick="selectLesson(\''+esc(naechste.id)+'\')">'+
     '<span class="hk-oben">Weiterlernen</span>'+
     '<span class="hk-titel">'+esc(naechste.title)+'</span>'+
     '<span class="hk-text">'+esc(nMod ? nMod.title : '')+' · ca. '+naechste.minutes+' Min.</span>'+
     '</button>';
 
-  h += '<button class="hk" onclick="selectLesson(\'review\')">'+
+  h += '<button class="hk" data-onclick="selectLesson(\'review\')">'+
     '<span class="hk-oben">Wiederholung</span>'+
     '<span class="hk-zahl'+(faellig > 0 ? ' warn' : ' gut')+'">'+faellig+'</span>'+
     '<span class="hk-text">'+(faellig > 0
@@ -1996,13 +2000,13 @@ function renderHeute(){
 
   if(schwach && schwach.length){
     var w = schwach[0];
-    h += '<button class="hk" onclick="selectLesson(\'profile\')">'+
+    h += '<button class="hk" data-onclick="selectLesson(\'profile\')">'+
       '<span class="hk-oben">Schwachstelle</span>'+
       '<span class="hk-titel">'+esc(w.title)+'</span>'+
       '<span class="hk-text">'+Math.round(w.rate * 100)+' % Trefferquote. Dort lohnt sich die nächste halbe Stunde am meisten.</span>'+
       '</button>';
   } else {
-    h += '<button class="hk" onclick="selectLesson(\'subnet\')">'+
+    h += '<button class="hk" data-onclick="selectLesson(\'subnet\')">'+
       '<span class="hk-oben">Trainieren</span>'+
       '<span class="hk-titel">Subnetting-Trainer</span>'+
       '<span class="hk-text">Unbegrenzt viele Aufgaben. Kein Thema der AP1 belohnt Wiederholung so zuverlässig.</span>'+
@@ -2016,19 +2020,19 @@ function renderHeute(){
 
   h += '<h2 class="sec-h">Schnellzugriff</h2>';
   h += '<div class="heute-raster">'+
-    '<button class="hk" onclick="selectLesson(\'exam\')"><span class="hk-oben">Prüfung</span>'+
+    '<button class="hk" data-onclick="selectLesson(\'exam\')"><span class="hk-oben">Prüfung</span>'+
       '<span class="hk-titel">Simulator starten</span>'+
       '<span class="hk-text">40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1.</span></button>'+
-    '<button class="hk" onclick="selectLesson(\'klausur\')"><span class="hk-oben">Klausur</span>'+
+    '<button class="hk" data-onclick="selectLesson(\'klausur\')"><span class="hk-oben">Klausur</span>'+
       '<span class="hk-titel">Frei schreiben statt ankreuzen</span>'+
       '<span class="hk-text">Offene Aufgaben mit Zeit, danach eine Bewertung mit Punkten.</span></button>'+
-    '<button class="hk" onclick="selectLesson(\'tutor\')"><span class="hk-oben">Tutor</span>'+
+    '<button class="hk" data-onclick="selectLesson(\'tutor\')"><span class="hk-oben">Tutor</span>'+
       '<span class="hk-titel">Etwas nicht verstanden?</span>'+
       '<span class="hk-text">Frag nach. Der Tutor kennt jede Lektion dieses Kurses.</span></button>'+
-    '<button class="hk" onclick="selectLesson(\'cheatsheet\')"><span class="hk-oben">Formelblatt</span>'+
+    '<button class="hk" data-onclick="selectLesson(\'cheatsheet\')"><span class="hk-oben">Formelblatt</span>'+
       '<span class="hk-titel">Alle Formeln auf einen Blick</span>'+
       '<span class="hk-text">Netzplan, Subnetting, Kalkulation, Einheiten, Prüfungstaktik.</span></button>'+
-    '<button class="hk" onclick="selectLesson(\'intro\')"><span class="hk-oben">Übersicht</span>'+
+    '<button class="hk" data-onclick="selectLesson(\'intro\')"><span class="hk-oben">Übersicht</span>'+
       '<span class="hk-titel">'+MODULES.length+' Module</span>'+
       '<span class="hk-text">Der ganze Kurs nach Teilen sortiert, mit Prüfungsrelevanz.</span></button>'+
     '</div>';
@@ -2216,7 +2220,7 @@ function renderMobilbar(){
   ];
   el.innerHTML = eintraege.map(function(e){
     var aktiv = state.currentId === e[0];
-    return '<button class="mb'+(aktiv ? ' aktiv' : '')+'" onclick="selectLesson(\''+e[0]+'\')" aria-label="'+e[1]+'">'+
+    return '<button class="mb'+(aktiv ? ' aktiv' : '')+'" data-onclick="selectLesson(\''+e[0]+'\')" aria-label="'+e[1]+'">'+
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+e[2]+'"/></svg>'+
       (e[0] === 'review' && faellig ? '<span class="punkt"></span>' : '')+
       '<span>'+e[1]+'</span></button>';
@@ -2297,7 +2301,7 @@ function renderAbzeichen(){
         var t = w === 'alle' ? 'Alle ' + BADGES.length
               : w === 'hat'  ? 'Erreicht ' + hat.length
                              : 'Offen ' + (BADGES.length - hat.length);
-        return '<button class="'+(azFilter === w ? 'an' : '')+'" onclick="setzeAzFilter(\''+w+'\')">'+t+'</button>';
+        return '<button class="'+(azFilter === w ? 'an' : '')+'" data-onclick="setzeAzFilter(\''+w+'\')">'+t+'</button>';
       }).join('')+
     '</div></div>';
 
@@ -2378,15 +2382,15 @@ function renderFehlerheft(){
        (ungeloest ? '<strong>'+ungeloest+'</strong> davon sitzen noch gar nicht.' : 'Keine davon ist mehr kritisch.')+'</p>';
 
   h += '<div class="ex-actions" style="margin-bottom:18px;">'+
-       '<button class="ex-btn primary" onclick="startExam(\'fehler\')">Nur diese Fragen prüfen</button>'+
-       '<button class="ex-btn" onclick="selectLesson(\'review\')">Zur normalen Wiederholung</button></div>';
+       '<button class="ex-btn primary" data-onclick="startExam(\'fehler\')">Nur diese Fragen prüfen</button>'+
+       '<button class="ex-btn" data-onclick="selectLesson(\'review\')">Zur normalen Wiederholung</button></div>';
 
   h += '<div class="fh-liste">';
   liste.slice(0, 60).forEach(function(e){
     var c = e.c, auf = !!fhOffen[c.id];
     var proz = Math.round(e.quote * 100);
     h += '<div class="fh">'+
-      '<button class="fh-kopf" onclick="fhZeigen(\''+c.id+'\')" aria-expanded="'+auf+'">'+
+      '<button class="fh-kopf" data-onclick="fhZeigen(\''+c.id+'\')" aria-expanded="'+auf+'">'+
         '<span class="fh-quote'+(proz < 50 ? ' schlecht' : proz < 80 ? ' mittel' : '')+'">'+proz+'%</span>'+
         '<span class="fh-frage">'+esc(c.q)+'</span>'+
         '<span class="fh-zaehler">'+e.right+'✓ '+e.wrong+'✗</span>'+
@@ -2396,7 +2400,7 @@ function renderFehlerheft(){
       h += '<div class="fh-koerper">'+
         '<div class="fh-antwort"><span class="fh-label">Richtig</span>'+esc(c.options[c.correct])+'</div>'+
         '<p class="fh-erklaerung">'+esc(c.explain)+'</p>'+
-        '<button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">'+
+        '<button class="ex-btn" data-onclick="selectLesson(\''+c.lessonId+'\')">'+
         'Zur Lektion: '+esc(c.lessonTitle)+'</button>'+
         '</div>';
     }
@@ -2555,7 +2559,7 @@ async function erkPruefen(lessonId){
     if(!txt) return;   /* bewusst abgebrochen */
     ziel.innerHTML = erkErgebnisHtml({ fehler: txt }) +
       '<div class="ex-actions"><button class="ex-btn" type="button" '+
-      'onclick="erkPruefen(' + String.fromCharCode(39) + lessonId + String.fromCharCode(39) + ')">'+
+      'data-onclick="erkPruefen(' + String.fromCharCode(39) + lessonId + String.fromCharCode(39) + ')">'+
       'Noch einmal versuchen</button></div>';
   }
 }
@@ -2565,17 +2569,17 @@ function renderLektionWerkzeuge(lessonId){
   var erkFrueher = (state.erklaerungen || {})[lessonId] || null;
   var erkAlt = erkFrueher ? (erkFrueher.text || '') : '';
   return '<div class="lw">'+
-    '<button class="ex-btn'+(gemerkt ? ' primary' : '')+'" onclick="merkenUmschalten(\''+lessonId+'\')">'+
+    '<button class="ex-btn'+(gemerkt ? ' primary' : '')+'" data-onclick="merkenUmschalten(\''+lessonId+'\')">'+
       (gemerkt ? '★ Gemerkt' : '☆ Merken')+'</button>'+
-    '<button class="ex-btn" onclick="notizUmschalten(\''+lessonId+'\')">'+
+    '<button class="ex-btn" data-onclick="notizUmschalten(\''+lessonId+'\')">'+
       '✎ Notiz'+(notiz ? '' : '')+'<span id="notizMarke" class="lw-punkt"'+(notiz ? '' : ' hidden')+'></span></button>'+
-    '<button class="ex-btn" onclick="tutorZuLektion(\''+lessonId+'\')">&#128172; Tutor fragen</button>'+
-    '<button class="ex-btn" onclick="erkUmschalten(\''+lessonId+'\')">&#9997; In einem Satz erklären</button>'+
+    '<button class="ex-btn" data-onclick="tutorZuLektion(\''+lessonId+'\')">&#128172; Tutor fragen</button>'+
+    '<button class="ex-btn" data-onclick="erkUmschalten(\''+lessonId+'\')">&#9997; In einem Satz erklären</button>'+
     '<div class="erk-box" id="erkBox" hidden>'+
       '<label class="notiz-label" for="erkFeld">Ohne nachzusehen: Was ist der Kern dieser Lektion? Ein bis zwei Sätze.</label>'+
       '<textarea class="notiz-feld" id="erkFeld" rows="3" spellcheck="false" '+
       'placeholder="Zum Beispiel: Die Subnetzmaske trennt Netz- von Hostanteil, indem …">'+esc(erkAlt)+'</textarea>'+
-      '<div class="erk-fuss"><button class="ex-btn primary" type="button" onclick="erkPruefen(\''+lessonId+'\')">Prüfen lassen</button>'+
+      '<div class="erk-fuss"><button class="ex-btn primary" type="button" data-onclick="erkPruefen(\''+lessonId+'\')">Prüfen lassen</button>'+
       '<span class="erk-hinweis">Der Tutor vergleicht deinen Satz mit der Lektion.</span></div>'+
       '<div id="erkErg">'+erkErgebnisHtml(erkFrueher)+'</div>'+
     '</div>'+
@@ -2583,7 +2587,7 @@ function renderLektionWerkzeuge(lessonId){
       '<label class="notiz-label" for="notizFeld">Deine Notiz zu dieser Lektion — sie wandert mit deinem Fortschritt mit.</label>'+
       '<textarea class="notiz-feld" id="notizFeld" rows="3" spellcheck="false" '+
       'placeholder="Was verwechselst du hier immer? Was ist die Eselsbrücke?" '+
-      'oninput="notizSpeichern(\''+lessonId+'\', this.value)">'+esc(notiz)+'</textarea>'+
+      'data-oninput="notizSpeichern(\''+lessonId+'\', this.value)">'+esc(notiz)+'</textarea>'+
     '</div></div>';
 }
 function renderMerkzettel(){
@@ -2604,7 +2608,7 @@ function renderMerkzettel(){
       var l = FLAT.find(function(x){ return x.id === id; });
       if(!l) return;
       var m = moduleOfLesson(id);
-      h += '<button class="hk" onclick="selectLesson(\''+id+'\')">'+
+      h += '<button class="hk" data-onclick="selectLesson(\''+id+'\')">'+
         '<span class="hk-oben">'+esc(m ? m.title : '')+'</span>'+
         '<span class="hk-titel">'+esc(l.title)+'</span>'+
         '<span class="hk-text">markiert am '+new Date(state.merkzettel[id]).toLocaleDateString('de-DE')+'</span>'+
@@ -2617,7 +2621,7 @@ function renderMerkzettel(){
     notizIds.forEach(function(id){
       var l = FLAT.find(function(x){ return x.id === id; });
       if(!l) return;
-      h += '<div class="nz"><button class="nz-titel" onclick="selectLesson(\''+id+'\')">'+esc(l.title)+'</button>'+
+      h += '<div class="nz"><button class="nz-titel" data-onclick="selectLesson(\''+id+'\')">'+esc(l.title)+'</button>'+
            '<p class="nz-text">'+esc(state.notizen[id])+'</p></div>';
     });
   }
@@ -2835,7 +2839,7 @@ function renderKlausur(){
     Object.keys(KL_VARIANTEN).forEach(function(k){
       var v = KL_VARIANTEN[k];
       var punkte = v.n * (v.stufen.length === 1 ? KL_PUNKTE[v.stufen[0]] : 8);
-      h += '<button class="hk" onclick="klStarten(\''+k+'\')">'+
+      h += '<button class="hk" data-onclick="klStarten(\''+k+'\')">'+
         '<span class="hk-oben">'+v.n+' Aufgaben · '+v.min+' Min.</span>'+
         '<span class="hk-titel">'+esc(v.label)+'</span>'+
         '<span class="hk-text">'+esc(v.text)+' Etwa '+punkte+' Punkte.</span></button>';
@@ -2866,13 +2870,13 @@ function renderKlausur(){
         '<div class="kl-text">'+a.task+'</div>'+
         '<textarea class="kl-feld" id="klFeld'+i+'" rows="9" spellcheck="false" '+
         'placeholder="Deine Lösung — Rechenweg mit Einheiten, Begründungen ausformuliert." '+
-        'oninput="klSchreiben('+i+', this.value)">'+esc(klausur.antworten[i])+'</textarea>'+
+        'data-oninput="klSchreiben('+i+', this.value)">'+esc(klausur.antworten[i])+'</textarea>'+
         '</div>';
     });
 
     h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
-      '<button class="ex-btn primary" onclick="klAbgeben(false)">Abgeben und bewerten lassen</button>'+
-      '<button class="ex-btn" onclick="klAbbrechen()">Verwerfen</button></div>';
+      '<button class="ex-btn primary" data-onclick="klAbgeben(false)">Abgeben und bewerten lassen</button>'+
+      '<button class="ex-btn" data-onclick="klAbbrechen()">Verwerfen</button></div>';
     return h;
   }
 
@@ -2934,9 +2938,9 @@ function renderKlausur(){
   });
 
   h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
-    '<button class="ex-btn primary" onclick="klNochmal()">Neue Klausur</button>'+
-    '<button class="ex-btn" onclick="selectLesson(\'exercises\')">Zu den Übungsaufgaben</button>'+
-    '<button class="ex-btn" onclick="selectLesson(\'fehler\')">Zum Fehlerheft</button></div>';
+    '<button class="ex-btn primary" data-onclick="klNochmal()">Neue Klausur</button>'+
+    '<button class="ex-btn" data-onclick="selectLesson(\'exercises\')">Zu den Übungsaufgaben</button>'+
+    '<button class="ex-btn" data-onclick="selectLesson(\'fehler\')">Zum Fehlerheft</button></div>';
   return h;
 }
 function appFehlerZu(){
@@ -2957,9 +2961,9 @@ function zeigeBanner(titel, text, detail){
       '<div class="af-kopf">'+esc(titel)+'</div>'+
       '<p class="af-text">'+esc(text)+'</p>'+
       '<div class="af-knoepfe">'+
-        '<button class="ex-btn primary" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
-        '<button class="ex-btn" type="button" onclick="location.reload()">Neu laden</button>'+
-        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+        '<button class="ex-btn primary" type="button" data-onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" data-onclick="seiteNeuLaden()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" data-onclick="appFehlerZu()">Schliessen</button>'+
       '</div>'+
       (detail ? '<code class="af-detail">'+esc(String(detail)).slice(0, 240)+'</code>' : '');
   }catch(e){}
@@ -2980,9 +2984,9 @@ function appFehler(quelle, f){
       '<p class="af-text">Dein Fortschritt ist gespeichert. Du kannst weiterarbeiten oder die '+
       'Seite neu laden. Sichere vorher zur Sicherheit deinen Stand.</p>'+
       '<div class="af-knoepfe">'+
-        '<button class="ex-btn primary" type="button" onclick="location.reload()">Neu laden</button>'+
-        '<button class="ex-btn" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
-        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+        '<button class="ex-btn primary" type="button" data-onclick="seiteNeuLaden()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" data-onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" data-onclick="appFehlerZu()">Schliessen</button>'+
       '</div>'+
       '<code class="af-detail">'+esc(String(quelle) + ': ' + String(txt)).slice(0, 240)+'</code>';
   }catch(e){}
@@ -3078,7 +3082,7 @@ function railLektion(lesson){
     var zustand = state.completed.has(l.id) ? 'fertig'
                 : (l.id === lesson.id ? 'aktiv' : 'offen');
     h += '<li class="rail-schritt ' + zustand + '">' +
-         '<button type="button" onclick="selectLesson(\'' + l.id + '\')"' +
+         '<button type="button" data-onclick="selectLesson(\'' + l.id + '\')"' +
          (zustand === 'aktiv' ? ' aria-current="true"' : '') + '>' +
          '<span class="rs-punkt" aria-hidden="true">' +
          (zustand === 'fertig' ? '✓' : (i + 1)) + '</span>' +
@@ -3095,7 +3099,7 @@ function railLektion(lesson){
          '<span class="rail-zahl">' + railBegriffe.length + '</span></div>' +
          '<div class="rail-begriffe">';
     railBegriffe.forEach(function(w, i){
-      h += '<button type="button" class="rail-begriff" onclick="railSpringe(' + i + ')">' +
+      h += '<button type="button" class="rail-begriff" data-onclick="railSpringe(' + i + ')">' +
            esc(w) + '</button>';
     });
     h += '</div><p class="rail-fuss" style="margin-top:9px;">' +
@@ -3107,7 +3111,7 @@ function railLektion(lesson){
   if(lesson.tip){
     h += '<section class="rail-karte"><div class="rail-kopf">' +
          '<span class="rail-augenbraue">Merksatz</span></div>' +
-         '<button type="button" class="rail-deck" id="railDeck" onclick="railMerksatz()">' +
+         '<button type="button" class="rail-deck" id="railDeck" data-onclick="railMerksatz()">' +
          'Erst selbst sagen — dann aufdecken</button>' +
          '<p class="rail-tipp" id="railTipp" hidden>' + lesson.tip + '</p></section>';
   }
@@ -3123,9 +3127,9 @@ function railLektion(lesson){
          (k.faellig ? ' · ' + k.faellig + ' heute fällig' : '') +
          (k.neu ? ' · ' + k.neu + ' noch offen' : '') + '</p>' +
          '<button type="button" class="rail-knopf' + (k.neu ? ' primaer' : '') +
-         '" onclick="railZumCheck(\'' + lesson.id + '\')">Zum Kurz-Check</button>';
+         '" data-onclick="railZumCheck(\'' + lesson.id + '\')">Zum Kurz-Check</button>';
     if(k.faellig){
-      h += '<button type="button" class="rail-knopf" onclick="selectLesson(\'review\')">' +
+      h += '<button type="button" class="rail-knopf" data-onclick="selectLesson(\'review\')">' +
            k.faellig + ' Karten wiederholen</button>';
     }
     h += '</section>';
@@ -3139,7 +3143,7 @@ function railLektion(lesson){
          '<h2 class="rail-titel">' + esc(next.title) + '</h2>' +
          '<p class="rail-text">' + esc(nm.title) + ' · ca. ' + next.minutes +
          ' Min.</p><button type="button" class="rail-knopf" ' +
-         'onclick="selectLesson(\'' + next.id + '\')">Weiter →</button></section>';
+         'data-onclick="selectLesson(\'' + next.id + '\')">Weiter →</button></section>';
   }
 
   return h;
@@ -3192,7 +3196,7 @@ function railStand(){
        '<div class="rail-balken"><i style="width:' + pct + '%"></i></div>' +
        '<p class="rail-text">' + completed + ' von ' + TOTAL +
        ' Lektionen</p><button type="button" class="rail-knopf primaer" ' +
-       'onclick="selectLesson(\'' + naechste.id + '\')">Weiterlernen</button>' +
+       'data-onclick="selectLesson(\'' + naechste.id + '\')">Weiterlernen</button>' +
        '<p class="rail-fuss" style="margin-top:9px;">' + esc(naechste.title) +
        '<br>' + esc(nm.title) + '</p></section>';
 
@@ -3203,7 +3207,7 @@ function railStand(){
          '<p class="rail-text">Karten sind heute fällig. Wer sie liegen lässt, ' +
          'lernt sie später noch einmal von vorn.</p>' +
          '<button type="button" class="rail-knopf primaer" ' +
-         'onclick="selectLesson(\'review\')">Jetzt wiederholen</button></section>';
+         'data-onclick="selectLesson(\'review\')">Jetzt wiederholen</button></section>';
   }
 
   return h;
@@ -3234,7 +3238,7 @@ function railAblage(){
            '<p class="rail-fuss">' + q + ' % richtig aus ' + w.total +
            ' Antworten</p></div>';
     });
-    h += '<button type="button" class="rail-knopf primaer" onclick="selectLesson(\'' +
+    h += '<button type="button" class="rail-knopf primaer" data-onclick="selectLesson(\'' +
          schwach[0].lessonId + '\')">Schwächste Stelle öffnen</button></section>';
   }
 
@@ -3248,7 +3252,7 @@ function railAblage(){
       var l = FLAT.find(function(x){ return x.id === id; });
       if(!l) return;
       h += '<button type="button" class="rail-knopf" style="text-align:left;' +
-           'margin-top:6px;font-weight:500;" onclick="selectLesson(\'' + id + '\')">' +
+           'margin-top:6px;font-weight:500;" data-onclick="selectLesson(\'' + id + '\')">' +
            esc(l.title) + '</button>';
     });
     if(ids.length > 5){
@@ -3267,7 +3271,7 @@ function railAblage(){
          '<span class="rail-augenbraue">Notizen</span>' +
          '<span class="rail-zahl">' + notizen + '</span></div>' +
          '<p class="rail-text">Deine eigenen Worte schlagen jede Zusammenfassung.</p>' +
-         '<button type="button" class="rail-knopf" onclick="selectLesson(\'merk\')">' +
+         '<button type="button" class="rail-knopf" data-onclick="selectLesson(\'merk\')">' +
          'Zum Merkzettel</button></section>';
   }
 
@@ -3333,7 +3337,7 @@ function renderContentIntern(){
       if(!mods.length) return '';
       var cards = mods.map(function(m){
         var gi = MODULES.indexOf(m)+1;
-        return '<div class="module-card" onclick="selectLesson(\''+m.lessons[0].id+'\')">'+
+        return '<div class="module-card" data-onclick="selectLesson(\''+m.lessons[0].id+'\')">'+
           '<div class="mnum">MODUL '+gi+'</div><h3>'+esc(m.title)+'</h3>'+
           '<p>'+m.lessons.length+' Lektionen · '+m.lessons.reduce(function(a,l){return a+l.minutes;},0)+' Min.</p>'+
           relBadge(m.relevanz)+lfBadge(m.id)+'</div>';
@@ -3354,20 +3358,20 @@ function renderContentIntern(){
       '<div style="display:flex;align-items:center;gap:10px;"><div class="ring" style="--pct:'+pct+'"><span>'+pct+'%</span></div>'+
       '<span style="font-size:.82rem;color:var(--text-dim);">'+completed+' von '+TOTAL+' Lektionen</span></div></div>';
     today += '<div class="today-grid">';
-    today += '<div class="today-item accent" onclick="selectLesson(\''+nextLesson.id+'\')"><span class="ti-label">Weiterlernen</span>'+
+    today += '<div class="today-item accent" data-onclick="selectLesson(\''+nextLesson.id+'\')"><span class="ti-label">Weiterlernen</span>'+
              '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(nextLesson.title)+'</span>'+
              '<span class="ti-sub">Teil '+nextMod.part+' · '+esc(nextMod.title)+'</span></div>';
-    today += '<div class="today-item '+(due?'due':'')+'" onclick="selectLesson(\'review\')"><span class="ti-label">Karten fällig</span>'+
+    today += '<div class="today-item '+(due?'due':'')+'" data-onclick="selectLesson(\'review\')"><span class="ti-label">Karten fällig</span>'+
              '<span class="ti-value">'+due+'</span><span class="ti-sub">'+(due ? 'Wiederholung startet sofort' : 'Nichts offen — gut so')+'</span></div>';
-    today += '<div class="today-item" onclick="selectLesson(\'exam\')"><span class="ti-label">Letzte Prüfung</span>'+
+    today += '<div class="today-item" data-onclick="selectLesson(\'exam\')"><span class="ti-label">Letzte Prüfung</span>'+
              '<span class="ti-value">'+(lastExam ? Math.round(lastExam.score/lastExam.total*100)+'%' : '—')+'</span>'+
              '<span class="ti-sub">'+(lastExam ? lastExam.score+'/'+lastExam.total+' · erneut antreten' : 'Noch kein Durchlauf')+'</span></div>';
     if(weak.length){
-      today += '<div class="today-item weak" onclick="selectLesson(\''+weak[0].lessonId+'\')"><span class="ti-label">Schwachstelle</span>'+
+      today += '<div class="today-item weak" data-onclick="selectLesson(\''+weak[0].lessonId+'\')"><span class="ti-label">Schwachstelle</span>'+
                '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(weak[0].title)+'</span>'+
                '<span class="ti-sub">'+Math.round(weak[0].rate*100)+'% Trefferquote · nacharbeiten</span></div>';
     } else {
-      today += '<div class="today-item" onclick="selectLesson(\'tracer\')"><span class="ti-label">Trockendurchlauf</span>'+
+      today += '<div class="today-item" data-onclick="selectLesson(\'tracer\')"><span class="ti-label">Trockendurchlauf</span>'+
                '<span class="ti-value">'+TRACES.length+'</span><span class="ti-sub">AP1-Kernkompetenz üben</span></div>';
     }
     today += '</div></div>';
@@ -3384,7 +3388,7 @@ function renderContentIntern(){
       '</div>'+
       today+
       '<div class="stat-row">'+
-        '<div class="stat-tile" style="cursor:pointer;border-color:var(--accent);" onclick="selectLesson(\'profile\')">'+
+        '<div class="stat-tile" style="cursor:pointer;border-color:var(--accent);" data-onclick="selectLesson(\'profile\')">'+
           '<div class="num">'+lpIntro.cur.icon+' '+(state.xp||0)+'</div><div class="lbl">XP · '+esc(lpIntro.cur.name)+'</div></div>'+
         '<div class="stat-tile"><div class="num">'+TOTAL+'</div><div class="lbl">Lektionen</div></div>'+
         '<div class="stat-tile"><div class="num">'+CARDS.length+'</div><div class="lbl">Abfragekarten</div></div>'+
@@ -3393,9 +3397,9 @@ function renderContentIntern(){
         '<div class="stat-tile"><div class="num">~'+TOTAL_MIN+'</div><div class="lbl">Minuten Lesestoff</div></div>'+
       '</div>'+
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
-        '<button class="start-btn rb-star" onclick="selectLesson(\''+nextLesson.id+'\')">'+(state.completed.size ? 'Weiterlernen' : 'Los geht’s')+'</button>'+
-        '<button class="start-btn ghost" onclick="selectLesson(\'exam\')">Prüfung simulieren</button>'+
-        '<button class="start-btn ghost" onclick="selectLesson(\'tracer\')">Algorithmus durchspielen</button>'+
+        '<button class="start-btn rb-star" data-onclick="selectLesson(\''+nextLesson.id+'\')">'+(state.completed.size ? 'Weiterlernen' : 'Los geht’s')+'</button>'+
+        '<button class="start-btn ghost" data-onclick="selectLesson(\'exam\')">Prüfung simulieren</button>'+
+        '<button class="start-btn ghost" data-onclick="selectLesson(\'tracer\')">Algorithmus durchspielen</button>'+
       '</div>'+
       '<div class="part-grid">'+partsHtml+'</div>';
     return;
@@ -3419,7 +3423,7 @@ function renderContentIntern(){
       if(state.currentId === wanted) renderContent();
     }, function(){
       if(state.currentId !== wanted) return;
-      el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="alert">Die Lektion konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" onclick="renderContent()">Erneut versuchen</button>';
+      el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="alert">Die Lektion konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" data-onclick="renderContent()">Erneut versuchen</button>';
     });
     return;
   }
@@ -3432,7 +3436,7 @@ function renderContentIntern(){
   var html = '';
   html += '<div class="breadcrumb">Teil '+mod.part+' · '+esc(mod.title)+' · Lektion '+(mod.lessons.findIndex(function(l){return l.id===lesson.id;})+1)+'/'+mod.lessons.length+'</div>';
   html += '<div class="lesson-head"><div><h1>'+esc(lesson.title)+'</h1><div class="meta-row"><span>⏱ ca. '+lesson.minutes+' Min.</span> '+relBadge(mod.relevanz)+'</div></div>';
-  html += '<label class="complete-toggle'+(done?' on':'')+'"><input type="checkbox" '+(done?'checked':'')+' onchange="toggleComplete(\''+lesson.id+'\', this.checked)"> '+(done?'Abgeschlossen':'Als abgeschlossen markieren')+'</label></div>';
+  html += '<label class="complete-toggle'+(done?' on':'')+'"><input type="checkbox" '+(done?'checked':'')+' data-onchange="toggleComplete(\''+lesson.id+'\', this.checked)"> '+(done?'Abgeschlossen':'Als abgeschlossen markieren')+'</label></div>';
   html += renderLessonBlocks(lesson);
   html += typeof rpPuzzleSection === 'function' ? rpPuzzleSection(lesson.id) : '';
   html += typeof rpVideoSection === 'function' ? rpVideoSection(lesson.id) : '';
@@ -3442,12 +3446,12 @@ function renderContentIntern(){
 
   html += '<div class="nav-buttons">';
   if(prev){
-    html += '<button class="nav-btn" onclick="selectLesson(\''+prev.id+'\')"><span class="lbl">← Zurück</span><span>'+esc(prev.title)+'</span></button>';
+    html += '<button class="nav-btn" data-onclick="selectLesson(\''+prev.id+'\')"><span class="lbl">← Zurück</span><span>'+esc(prev.title)+'</span></button>';
   } else { html += '<span></span>'; }
   if(next){
-    html += '<button class="nav-btn next" onclick="selectLesson(\''+next.id+'\')"><span class="lbl">Weiter →</span><span>'+esc(next.title)+'</span></button>';
+    html += '<button class="nav-btn next" data-onclick="selectLesson(\''+next.id+'\')"><span class="lbl">Weiter →</span><span>'+esc(next.title)+'</span></button>';
   } else {
-    html += '<button class="nav-btn next" onclick="selectLesson(\'cheatsheet\')"><span class="lbl">Weiter →</span><span>Zum Spickzettel</span></button>';
+    html += '<button class="nav-btn next" data-onclick="selectLesson(\'cheatsheet\')"><span class="lbl">Weiter →</span><span>Zum Spickzettel</span></button>';
   }
   html += '</div>';
 

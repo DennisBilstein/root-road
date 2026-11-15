@@ -14,6 +14,6 @@
       return;
     }
     base.apply(this,arguments);
-    if(state.currentId==='competencies')document.getElementById('content').insertAdjacentHTML('afterbegin','<p><button class="ex-btn" onclick="selectLesson(\'sources\')">Quellen und Prüfstatus ansehen</button></p>');
+    if(state.currentId==='competencies')document.getElementById('content').insertAdjacentHTML('afterbegin','<p><button class="ex-btn" data-onclick="selectLesson(\'sources\')">Quellen und Prüfstatus ansehen</button></p>');
   };
 })();

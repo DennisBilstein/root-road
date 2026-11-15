@@ -16,7 +16,7 @@ async function rpAPI(url,method,body){
 function rpAccountBar(){
   var host = document.getElementById('rpAccountBar');
   if(!host){ host = document.createElement('section'); host.id = 'rpAccountBar'; document.getElementById('moduleNav').before(host); }
-  host.innerHTML = rpAccount ? '<strong>'+esc(rpAccount.name)+'</strong><p role="status">'+esc(rpSyncMessage)+'</p>'+(rpAccount.role === 'admin' ? '<p><a href="/admin">Admin · Teilnehmerampel</a></p>' : '')+'<button class="ex-btn" onclick="rpLogout()">Abmelden</button>' : '<p role="status">'+esc(rpSyncMessage)+'</p><button class="ex-btn" onclick="rpLoginView()">Anmelden</button>';
+  host.innerHTML = rpAccount ? '<strong>'+esc(rpAccount.name)+'</strong><p role="status">'+esc(rpSyncMessage)+'</p>'+(rpAccount.role === 'admin' ? '<p><a href="/admin">Admin · Teilnehmerampel</a></p>' : '')+'<button class="ex-btn" data-onclick="rpLogout()">Abmelden</button>' : '<p role="status">'+esc(rpSyncMessage)+'</p><button class="ex-btn" data-onclick="rpLoginView()">Anmelden</button>';
 }
 function rpLoginView(){ state.currentId = 'account'; renderContent(); }
 function rpAccountForm(){

@@ -81,7 +81,7 @@ function rpPathControls(){
     host = document.createElement('div'); host.id = 'rpPathControl';
     document.getElementById('moduleNav').before(host);
   }
-  host.innerHTML = '<label for="rpPathSelect">Dein Lernpfad</label><select id="rpPathSelect" onchange="rpChoosePath(this.value)">' +
+  host.innerHTML = '<label for="rpPathSelect">Dein Lernpfad</label><select id="rpPathSelect" data-onchange="rpChoosePath(this.value)">' +
     RP_PATHS.map(function(p){ return '<option value="'+p.id+'"'+(p.id === rpPath ? ' selected' : '')+'>'+p.title+'</option>'; }).join('')+'</select>';
 }
 function rpChoosePath(id){
@@ -104,7 +104,7 @@ function rpPicker(){
   return '<section class="rp-path-picker" aria-labelledby="rpPathHeading"><h2 id="rpPathHeading">Was möchtest du lernen?</h2><p>Deine Auswahl filtert Lektionen und Trainings. Lernstände bleiben beim Wechsel erhalten.</p><div class="rp-path-grid">'+
     RP_PATHS.map(function(p){
       var d = rpData(p.id), done = d.lessons.filter(function(l){ return state.completed.has(l.id); }).length;
-      return '<button type="button" class="rp-path-card" aria-pressed="'+(rpPath === p.id)+'" onclick="rpChoosePath(\''+p.id+'\')"><strong>'+p.title+'</strong><span>'+p.description+'</span><small>'+done+' / '+d.lessons.length+' Lektionen abgeschlossen</small></button>';
+      return '<button type="button" class="rp-path-card" aria-pressed="'+(rpPath === p.id)+'" data-onclick="rpChoosePath(\''+p.id+'\')"><strong>'+p.title+'</strong><span>'+p.description+'</span><small>'+done+' / '+d.lessons.length+' Lektionen abgeschlossen</small></button>';
     }).join('')+'</div></section>';
 }
 (function(){
@@ -133,7 +133,7 @@ function rpPicker(){
       var unavailable = (state.currentId === 'subnet' && !['all','ap1'].includes(rpPath)) ||
         (state.currentId === 'labor' && !d.labor.length) || (state.currentId === 'tracer' && !d.traces.length) ||
         (state.currentId === 'exercises' && !d.exercises.length);
-      if(unavailable) el.innerHTML = '<h1>Für diesen Lernpfad nicht verfügbar</h1><p>Für diesen Trainingsmodus sind im gewählten Pfad noch keine Aufgaben hinterlegt. Quiz und Karteikarten kannst du bereits nutzen.</p><button class="start-btn" onclick="selectLesson(\'review\')">Karteikarten trainieren</button>';
+      if(unavailable) el.innerHTML = '<h1>Für diesen Lernpfad nicht verfügbar</h1><p>Für diesen Trainingsmodus sind im gewählten Pfad noch keine Aufgaben hinterlegt. Quiz und Karteikarten kannst du bereits nutzen.</p><button class="start-btn" data-onclick="selectLesson(\'review\')">Karteikarten trainieren</button>';
     }
   };
   var sidebar = renderSidebar;

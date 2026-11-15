@@ -38,7 +38,7 @@ function rpRenderAssessment(){
 }
 function rpRenderCompetencies(){
   var h='<h1>Kompetenzen und praktische Nachweise</h1><p>Gelesen ist eine Bearbeitungsmarkierung. Wiedererkannt bedeutet mindestens eine richtige Auswahlantwort – kein Anwendungsnachweis. Praktisch abgenommen erfordert eine eingereichte Arbeit mit Normal-,Grenz- und Fehlerfall sowie eine manuelle Adminfreigabe. Das ist eine Kursabnahme, kein unabhängiges Zertifikat.</p><p>Die bisherige Adminampel bleibt eine Aktivitäts-/Bearbeitungsampel und wird dadurch nicht heimlich zur Kompetenzbewertung.</p><ul class="rp-mastery-list">';
-  rpData().modules.forEach(function(m){var c=rpCompetency(m);h+='<li><div><strong>'+esc(m.title)+'</strong><p>Gelesen: '+c.read+'/'+c.total+' · Wiedererkannt: '+c.recognized+'/'+c.questions+' · '+c.label+'</p></div><button class="ex-btn" onclick="rpOpenAssessment(\''+m.id+'\')">Praktische Abnahme</button></li>';});
+  rpData().modules.forEach(function(m){var c=rpCompetency(m);h+='<li><div><strong>'+esc(m.title)+'</strong><p>Gelesen: '+c.read+'/'+c.total+' · Wiedererkannt: '+c.recognized+'/'+c.questions+' · '+c.label+'</p></div><button class="ex-btn" data-onclick="rpOpenAssessment(\''+m.id+'\')">Praktische Abnahme</button></li>';});
   return h+'</ul>';
 }
 (function(){
@@ -59,7 +59,7 @@ function rpRenderCompetencies(){
       document.getElementById('rpAssessmentForm')?.addEventListener('submit',rpSubmitAssessment);return;
     }
     contentBase.apply(this,arguments);
-    if(state.currentId==='lernwerkstatt')document.getElementById('content').insertAdjacentHTML('afterbegin','<div class="callout"><h2>Gelesen ≠ wiedererkannt ≠ angewendet</h2><p>Praktische Arbeiten und getrennte Kompetenznachweise ansehen.</p><button class="start-btn" onclick="selectLesson(\'competencies\')">Kompetenzübersicht öffnen</button></div>');
+    if(state.currentId==='lernwerkstatt')document.getElementById('content').insertAdjacentHTML('afterbegin','<div class="callout"><h2>Gelesen ≠ wiedererkannt ≠ angewendet</h2><p>Praktische Arbeiten und getrennte Kompetenznachweise ansehen.</p><button class="start-btn" data-onclick="selectLesson(\'competencies\')">Kompetenzübersicht öffnen</button></div>');
   };
   var sideBase=renderSidebar;renderSidebar=function(){sideBase.apply(this,arguments);if(!document.getElementById('rpCompetencyNav')){var b=document.createElement('button');b.id='rpCompetencyNav';b.type='button';b.className='nav-link';b.textContent='Kompetenzen & Abnahmen';b.onclick=function(){selectLesson('competencies');};document.getElementById('moduleNav').before(b);}};
   if(!window.RP_BOOTING) render();

@@ -61,7 +61,7 @@ renderTutor = function(){
     '<p style="font-size:.82rem;color:var(--text-dim)">Fragt macOS beim ersten Mal, ob das Skript geöffnet werden darf: Rechtsklick → Öffnen.</p></div>' +
     '<div class="rb-tutor-weg"><h3>Schritt 3 · Verbindung prüfen</h3>' +
     '<p>Auf „Verbinden“ klicken. Läuft der Tutor-Server, erscheint unten rechts „Tutor fragen“ – ohne weitere Einstellungen.</p>' +
-    '<div class="rb-zeile" style="align-items:center;"><button class="ex-btn primary" type="button" onclick="rbTutorStatusZeigen()">Verbinden</button></div></div>' +
+    '<div class="rb-zeile" style="align-items:center;"><button class="ex-btn primary" type="button" data-onclick="rbTutorStatusZeigen()">Verbinden</button></div></div>' +
     '<div class="rb-tutor-weg"><h3>Alternative · auf claude.ai</h3><p>Lädst du die Datei auf claude.ai als Artifact hoch, läuft der Tutor dort über ' +
     'dein claude.ai-Konto – ganz ohne API-Schlüssel.</p></div>' +
     '</div>' + renderKiEinstellungen();

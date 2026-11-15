@@ -21,7 +21,7 @@ if(rpRecoveryToken){history.replaceState(null,'',location.pathname+location.sear
   }
   base.apply(this,arguments);
   if(state.currentId==='account'&&!document.getElementById('rpForgotButton')){var b=document.createElement('button');b.type='button';b.id='rpForgotButton';b.className='ex-btn';b.textContent='Passwort vergessen';b.onclick=function(){selectLesson('forgot-password');};document.getElementById('content').appendChild(b);}
-  if(state.currentId==='account-settings'&&rpAccount)document.getElementById('content').insertAdjacentHTML('beforeend','<section class="callout"><h2>Konto und Daten löschen</h2><p>Vorher gegebenenfalls exportieren. Löschung ist keine forensische Bereinigung externer Kopien oder Backups.</p><button class="ex-btn" onclick="selectLesson(\'delete-account\')">Löschvorgang öffnen</button></section>');
+  if(state.currentId==='account-settings'&&rpAccount)document.getElementById('content').insertAdjacentHTML('beforeend','<section class="callout"><h2>Konto und Daten löschen</h2><p>Vorher gegebenenfalls exportieren. Löschung ist keine forensische Bereinigung externer Kopien oder Backups.</p><button class="ex-btn" data-onclick="selectLesson(\'delete-account\')">Löschvorgang öffnen</button></section>');
  };
  if(rpRecoveryToken)renderContent();
  var deleted=sessionStorage.getItem('rp-account-deleted');if(deleted){sessionStorage.removeItem('rp-account-deleted');var notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent=deleted+' Lokaler Kontolernstand entfernt; andere Geräte und Downloads separat löschen.';document.getElementById('content').before(notice);}

@@ -1,9 +1,10 @@
 var rpRubricSession={};
+function rpRubricSet(key,checked){rpRubricSession[key]=checked;}
 function rpContract(lesson,index){return RP_QUIZ_CONTRACT_BY_ID[rpQuestionId(lesson,index)];}
 function rpRenderRubric(contract,key){
   if(!contract)return '';
   var reasons=contract.rationales?.length?'<details><summary>Antwortoptionen fachlich vergleichen</summary><ol>'+contract.rationales.map(function(text){return '<li>'+esc(text)+'</li>';}).join('')+'</ol></details>':'';
-  return '<section class="rq-review"><h4>Deine Erklärung selbst prüfen · keine automatische Benotung</h4><p>Vergleiche deine erste Erklärung erst jetzt mit den Kriterien. Eine Auswahlantwort allein belegt noch keinen Transfer.</p>'+contract.criteria.map(function(c,i){return '<div><label><input type="checkbox" '+(rpRubricSession[key+':'+i]?'checked':'')+' onchange="rpRubricSession[\''+key+':'+i+'\']=this.checked"> '+esc(c.label)+'</label><p>'+esc(c.reference)+'</p></div>';}).join('')+reasons+'<p><strong>Redaktionsstand:</strong> '+(contract.editorialStatus==='individually-revised'?'Diese Frage wurde einzeln als Szenario redigiert.':'Der Lernvertrag wurde aus der vorhandenen Frage und Lösung aufbereitet. Der fachliche Kern wurde nicht unabhängig neu validiert.')+'</p></section>';
+  return '<section class="rq-review"><h4>Deine Erklärung selbst prüfen · keine automatische Benotung</h4><p>Vergleiche deine erste Erklärung erst jetzt mit den Kriterien. Eine Auswahlantwort allein belegt noch keinen Transfer.</p>'+contract.criteria.map(function(c,i){return '<div><label><input type="checkbox" '+(rpRubricSession[key+':'+i]?'checked':'')+' data-onchange="rpRubricSet(\''+key+':'+i+'\', this.checked)"> '+esc(c.label)+'</label><p>'+esc(c.reference)+'</p></div>';}).join('')+reasons+'<p><strong>Redaktionsstand:</strong> '+(contract.editorialStatus==='individually-revised'?'Diese Frage wurde einzeln als Szenario redigiert.':'Der Lernvertrag wurde aus der vorhandenen Frage und Lösung aufbereitet. Der fachliche Kern wurde nicht unabhängig neu validiert.')+'</p></section>';
 }
 (function(){
   var quizBase=renderQuiz;

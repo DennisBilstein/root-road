@@ -6,7 +6,7 @@ function relBadge(r){
 }
 function codeBlock(code, lang){
   lang = lang || 'Pseudocode';
-  return '<div class="code-block"><div class="code-head"><span class="code-lang">'+esc(lang)+'</span><button class="copy-btn" onclick="copyCode(this)">Kopieren</button></div><pre><code>'+esc(code)+'</code></pre></div>';
+  return '<div class="code-block"><div class="code-head"><span class="code-lang">'+esc(lang)+'</span><button class="copy-btn" data-onclick="copyCode(this)">Kopieren</button></div><pre><code>'+esc(code)+'</code></pre></div>';
 }
 function copyCode(btn){
   var code = btn.closest('.code-block').querySelector('code').textContent;

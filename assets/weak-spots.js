@@ -46,7 +46,7 @@
       html += '<table class="ws-table"><caption>Fällige Karten je Tag</caption><thead><tr><th scope="col">Tag</th><th scope="col">Fällige Karten</th></tr></thead><tbody>' +
         plan.map(function(day){ return '<tr><th scope="row">' + esc(day.label) + '</th><td data-label="Fällige Karten">' + day.count + '</td></tr>'; }).join('') + '</tbody></table>' +
         '<p class="ws-note">Die Karten kommen nach dem Prinzip der verteilten Wiederholung wieder: je sicherer du antwortest, desto größer der Abstand.</p>' +
-        '<p><button type="button" class="ex-btn primary" onclick="selectLesson(\'review\')">Jetzt wiederholen</button></p>';
+        '<p><button type="button" class="ex-btn primary" data-onclick="selectLesson(\'review\')">Jetzt wiederholen</button></p>';
     }
     html += '</section>';
 
@@ -59,7 +59,7 @@
         '<thead><tr><th scope="col">Lektion</th><th scope="col">Richtig / falsch</th><th scope="col">Quote</th><th scope="col">Fällig</th><th scope="col">Aktion</th></tr></thead><tbody>' +
         weak.map(function(entry){
           return '<tr><th scope="row">' + esc(entry.title) + '</th><td data-label="Richtig / falsch">' + entry.right + ' / ' + entry.wrong + '</td><td data-label="Quote">' + Math.round(entry.rate * 100) + ' %</td><td data-label="Fällig">' + entry.due + '</td>' +
-            '<td><button type="button" class="ex-btn" onclick="selectLesson(\'' + esc(entry.id) + '\')" aria-label="Lektion öffnen: ' + esc(entry.title) + '">Lektion öffnen</button></td></tr>';
+            '<td><button type="button" class="ex-btn" data-onclick="selectLesson(\'' + esc(entry.id) + '\')" aria-label="Lektion öffnen: ' + esc(entry.title) + '">Lektion öffnen</button></td></tr>';
         }).join('') + '</tbody></table>';
     }
     return html + '</section>';

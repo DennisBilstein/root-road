@@ -109,6 +109,9 @@ test('CSP erlaubt Skripte nur von der eigenen Herkunft; nur die Sandbox der Code
   const main = (await request.get('/')).headers()['content-security-policy'];
   const scriptSrc = main.split(';').map((part) => part.trim()).find((part) => part.startsWith('script-src '));
   expect(scriptSrc).toBe("script-src 'self'");
+  expect(main).toContain("script-src-attr 'none'");
+  expect(main).toContain("default-src 'self'");
+  expect(main).toContain("object-src 'none'");
   expect(main).not.toContain('unsafe-eval');
   expect(main).toContain("frame-ancestors 'none'");
   const sandbox = await request.get('/assets/guided-sandbox.html');
