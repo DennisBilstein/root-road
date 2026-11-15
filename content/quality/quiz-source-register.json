@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T12:54:48.615Z",
+  "generatedAt": "2026-11-15T14:19:10.403Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -7420,7 +7420,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab",
+      "url": "https://github.com/DennisBilstein/root-road/tree/main/content/examples/sql-lab",
       "questionIds": [
         "api-m2-l3#0@2026-11-14-platform-tracks-v1",
         "api-m2-l3#1@2026-11-14-platform-tracks-v1",

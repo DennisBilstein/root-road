@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-15T12:54:48.108Z",
+  "updatedAt": "2026-11-15T14:19:09.880Z",
   "cards": 1901,
   "learningContracts": 1901,
   "individuallyRevised": 1901,
@@ -45440,7 +45440,7 @@
       "sources": [
         "https://www.rfc-editor.org/rfc/rfc8288.html",
         "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
-        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+        "https://github.com/DennisBilstein/root-road/tree/main/content/examples/sql-lab"
       ],
       "rationales": [
         "Löschen ist erlaubt.",
@@ -45475,7 +45475,7 @@
       "sources": [
         "https://www.rfc-editor.org/rfc/rfc8288.html",
         "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
-        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+        "https://github.com/DennisBilstein/root-road/tree/main/content/examples/sql-lab"
       ],
       "rationales": [
         "Abgelaufene Cursor liefern im Lab 400.",
@@ -45510,7 +45510,7 @@
       "sources": [
         "https://www.rfc-editor.org/rfc/rfc8288.html",
         "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
-        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+        "https://github.com/DennisBilstein/root-road/tree/main/content/examples/sql-lab"
       ],
       "rationales": [
         "Es geht nicht um Optik.",
