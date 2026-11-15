@@ -1,0 +1,42 @@
+# Beispiel für ein Release mit Freigabe: Der Job läuft nur für Tags, wartet auf die Freigabe der Umgebung "production" und
+# veröffentlicht nichts selbst; hier steht nur der Rahmen. Ein echtes Ziel (Registry, Server) ist nicht Teil des Labs.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Platzhalter für den Veröffentlichungsschritt
+        run: echo "Hier würde veröffentlicht, nachdem die Umgebung production freigegeben wurde."

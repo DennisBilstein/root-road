@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-15T11:13:08.766Z",
-  "cards": 1865,
-  "learningContracts": 1865,
-  "individuallyRevised": 1865,
+  "updatedAt": "2026-11-15T12:12:05.135Z",
+  "cards": 1883,
+  "learningContracts": 1883,
+  "individuallyRevised": 1883,
   "independentFactualReviewComplete": false,
   "contracts": [
     {
@@ -51409,6 +51409,630 @@
         "Sie dienen der Sicherheit.",
         "Volumes sind unabhängig davon möglich.",
         "Was in Entwicklung gilt, landet später oft im Betrieb."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l1#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l1",
+      "recall": "Beantworte „Wie laufen die Jobs eines Workflows standardmäßig ab?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Parallel, jeder auf einem eigenen Runner."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Parallelität spart Zeit; Abhängigkeiten zwischen Jobs legst du mit needs fest."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+      ],
+      "rationales": [
+        "Mit needs lässt sich eine Reihenfolge festlegen.",
+        "Ohne needs gibt es keine feste Reihenfolge.",
+        "Jeder Job bekommt eine frische Maschine.",
+        "Alle Jobs laufen, sofern keine Bedingung sie ausschließt."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l1#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l1",
+      "recall": "Beantworte „Wozu dient der Schritt actions/checkout?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Er lädt den Quelltext des Repositories auf den Runner."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ohne Checkout fehlt der Projektinhalt, und Befehle wie npm ci scheitern."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+      ],
+      "rationales": [
+        "Das erledigt setup-node.",
+        "Der Runner startet leer und braucht die Dateien.",
+        "Rechte werden über permissions gesteuert.",
+        "Veröffentlichen ist ein eigener Schritt."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l1#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l1",
+      "recall": "Beantworte „Warum ist eine Datei .github/workflows/test.yaml.txt kein funktionierender Workflow?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "GitHub liest nur Dateien mit der Endung .yml oder .yaml in diesem Ordner."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Mit falscher Endung oder am falschen Ort wird die Datei einfach ignoriert, ohne Fehlermeldung."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Workflow-Aufbau: Ereignisse, Jobs, Schritte und Runner“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+      ],
+      "rationales": [
+        "Die Größe ist nicht der Grund.",
+        "Die Endung und der Ordner entscheiden, ob GitHub die Datei als Workflow liest.",
+        "Der Ordner heißt klein .github/workflows.",
+        "Der Ordner liegt im Wurzelverzeichnis des Repositories."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l2#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l2",
+      "recall": "Beantworte „Was speichert cache: npm bei setup-node?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Download-Verzeichnis von npm, abhängig von der Sperrdatei."
+        },
+        {
+          "label": "Begründung",
+          "reference": "So spart der Lauf das Herunterladen, bleibt aber reproduzierbar, weil npm ci frisch installiert."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+      ],
+      "rationales": [
+        "Gebaute Ergebnisse sind nicht Teil davon.",
+        "node_modules wird nicht gesichert; npm ci läuft weiter.",
+        "Ändert sich package-lock.json, entsteht ein neuer Cache.",
+        "Zugangsdaten gehören nie in einen Cache."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l2#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l2",
+      "recall": "Beantworte „Wann ist cancel-in-progress: true ungeeignet?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Bei Deployments, die nicht halb abgebrochen werden dürfen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Für Releases setzt man cancel-in-progress: false, damit neue Läufe warten statt den laufenden abzubrechen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+      ],
+      "rationales": [
+        "Dort spart es Zeit, weil nur der neueste Stand zählt.",
+        "Ein abgebrochener Deploy kann einen unfertigen Zustand hinterlassen.",
+        "Die Matrix hat damit nichts zu tun.",
+        "Lesende Läufe lassen sich unbedenklich abbrechen."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l2#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l2",
+      "recall": "Beantworte „Welches Standardlimit gilt laut Dokumentation für einen Job ohne timeout-minutes?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "360 Minuten."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ohne eigenes Limit kann ein hängender Job sehr lange Laufzeit verbrauchen; setze ein passendes timeout-minutes."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schneller und stabiler: Cache, Matrix, Concurrency und Zeitlimits“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+      ],
+      "rationales": [
+        "Das wäre viel zu kurz für normale Builds.",
+        "Das ist ein Wert aus dem Beispiel dieses Repositories, kein Standard.",
+        "Der Standard ist höher.",
+        "Das ist der dokumentierte Standardwert (6 Stunden)."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l3#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l3",
+      "recall": "Beantworte „Was passiert mit nicht genannten Rechten, sobald du permissions angibst?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie werden auf „keine“ gesetzt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Deshalb nennst du jedes benötigte Recht ausdrücklich, auch contents: read."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/automatic-token-authentication",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "Mit einem permissions-Block gelten die Standards nicht mehr.",
+        "Nur die ausdrücklich genannten Rechte bleiben erhalten.",
+        "Es gibt keinen automatischen Lesezugriff auf alles.",
+        "Das wäre das Gegenteil des Minimalprinzips."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l3#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l3",
+      "recall": "Beantworte „Warum sind enge Rechte für das GITHUB_TOKEN wichtig?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Ein kompromittierter Schritt kann dann weniger Schaden anrichten."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Das Minimalprinzip begrenzt den Schaden, wenn eine Action oder ein Schritt missbraucht wird."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/automatic-token-authentication",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "Die Rechte beeinflussen die Laufzeit nicht.",
+        "Das gilt für alle Workflows, nicht nur für Forks.",
+        "Auch fremde Actions laufen mit den Rechten des Tokens.",
+        "Rechte ersetzen keine Prüfung des Codes."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l3#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l3",
+      "recall": "Beantworte „Welche Rechte erhält das Token bei einem Pull Request aus einem Fork?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Nur Leserechte, und Secrets werden nicht übergeben."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Einschränkung schützt Secrets und Code vor fremden Pull Requests."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Rechte nach dem Minimalprinzip: GITHUB_TOKEN und permissions“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/automatic-token-authentication",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "Das wäre ein Sicherheitsrisiko für das Hauptrepository.",
+        "Das ist die dokumentierte Einschränkung für das Ereignis pull_request.",
+        "Lesen ist erlaubt.",
+        "Der Fork-Besitzer hat im Hauptrepository keine Schreibrechte."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l4#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l4",
+      "recall": "Beantworte „Warum ist ein Ausdruck mit github.event.issue.title in einem run-Skript gefährlich?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Wer den Titel setzt, bestimmt damit den Text des Skripts."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Dadurch können Sonderzeichen im Titel weitere Befehle einschleusen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/concepts/security/script-injections",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "Die Länge ist nicht das Problem.",
+        "Die Geschwindigkeit spielt keine Rolle.",
+        "Das Feld ist lesbar und häufig im Einsatz.",
+        "GitHub setzt den Wert vor dem Lauf als Text in das Skript ein."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l4#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l4",
+      "recall": "Beantworte „Welche Lösung empfiehlt die Dokumentation für Skripte?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Den Wert in eine Zwischenvariable (env) legen und dort lesen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Zwischenvariable trennt Code und Daten; in der Shell wird sie in Anführungszeichen gelesen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/concepts/security/script-injections",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "So wird der Wert zu Daten, nicht zu Code.",
+        "Das ändert die Sonderzeichen nicht.",
+        "Das löst das Einsetzen des Werts nicht.",
+        "Andere Sonderzeichen genügen für einen Angriff."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l4#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l4",
+      "recall": "Beantworte „Welche Aussage über die Lab-CLI ist richtig?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie prüft bekannte Felder zeilenweise und kann Fälle übersehen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Verwende zusätzlich Werkzeuge wie actionlint oder zizmor und ein sorgfältiges Review."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Script-Injection: Eingaben aus Tickets und Branches sind Daten, kein Code“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/concepts/security/script-injections",
+        "https://docs.github.com/en/actions/reference/security/secure-use"
+      ],
+      "rationales": [
+        "Sie kennt nur bekannte Muster.",
+        "Ein Linter ergänzt das Review, er ersetzt es nicht.",
+        "Neue Felder und mehrzeilige Ausdrücke erkennt sie nicht.",
+        "Sie liest nur den Text der Datei."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l5#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l5",
+      "recall": "Beantworte „Warum ist uses: besitzer/name@v2 weniger sicher als eine Festlegung auf eine SHA?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Tag v2 kann auf einen anderen Commit verschoben werden."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein Commit mit seiner SHA kann nicht verschoben werden, ein Tag schon."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/security/secure-use",
+        "https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles",
+        "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot",
+        "https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/"
+      ],
+      "rationales": [
+        "Dann läuft anderer Code, ohne dass sich der Workflow geändert hat.",
+        "Tags funktionieren überall.",
+        "Die Geschwindigkeit ist nicht der Grund.",
+        "Tags sind erlaubt, nur nicht unveränderlich."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l5#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l5",
+      "recall": "Beantworte „Was macht pull_request_target mit Checkout des Pull-Request-Codes gefährlich?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Fremdcode läuft mit Schreibrechten und Secrets des Zielrepositories."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Verwende für Tests pull_request mit eingeschränkten Rechten und trenne Schreibschritte vom Fremdcode."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/security/secure-use",
+        "https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles",
+        "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot",
+        "https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/"
+      ],
+      "rationales": [
+        "Die Dauer ist nicht das Problem.",
+        "Das Ereignis läuft im Kontext des Zielrepositories, der Code stammt aber von außen.",
+        "Die Prüfung ist unabhängig davon.",
+        "Die Zahl der Starts hat damit nichts zu tun."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l5#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l5",
+      "recall": "Beantworte „Wofür ist Dependabot im Zusammenhang mit festgelegten Actions nützlich?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es schlägt Aktualisierungen der festgelegten Versionen vor."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Festlegen und Pflegen gehören zusammen; Dependabot kann Versionen von github-actions aktualisieren."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Lieferkette: Actions festlegen, pull_request_target und Fremdcode“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/reference/security/secure-use",
+        "https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles",
+        "https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot",
+        "https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/"
+      ],
+      "rationales": [
+        "Tests führen Workflows aus.",
+        "Secrets verwaltet GitHub getrennt.",
+        "Vorgeschlagene Änderungen müssen weiter geprüft werden.",
+        "So veralten Festlegungen nicht und Korrekturen kommen an."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l6#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l6",
+      "recall": "Beantworte „Wozu dient needs: verify im Job release?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es legt fest, dass release nur nach erfolgreichem verify startet."
+        },
+        {
+          "label": "Begründung",
+          "reference": "needs ordnet Jobs; ein fehlgeschlagener verify-Job verhindert die Veröffentlichung."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+        "https://docs.github.com/en/actions/concepts/security/openid-connect",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency"
+      ],
+      "rationales": [
+        "Dateien müssten über Artefakte weitergegeben werden.",
+        "So wird nur veröffentlicht, was geprüft und grün war.",
+        "Rechte werden mit permissions gesetzt.",
+        "Jeder Job hat einen eigenen Runner."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l6#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l6",
+      "recall": "Beantworte „Was bringt eine Umgebung wie production mit Freigabe?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Job startet erst, nachdem eine berechtigte Person freigegeben hat."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Freigabe schützt vor Versehen und Missbrauch; Secrets der Umgebung stehen erst danach bereit."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+        "https://docs.github.com/en/actions/concepts/security/openid-connect",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency"
+      ],
+      "rationales": [
+        "Die Freigabe verzögert den Start eher.",
+        "Rechte werden weiterhin mit permissions begrenzt.",
+        "Das ist eine zweite Entscheidung vor einer folgenreichen Handlung.",
+        "Das regelt concurrency, nicht die Umgebung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "ci-m1-l6#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "ci-m1-l6",
+      "recall": "Beantworte „Warum ist OIDC meist besser als ein dauerhaftes Passwort als Secret?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Token gilt nur kurz und ist an den Lauf gebunden."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Zusätzlich kann die Gegenseite die Anmeldung auf Repository, Branch oder Umgebung beschränken."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Release und Freigabe: Umgebungen, Reihenfolge und kurzlebige Zugangsdaten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments",
+        "https://docs.github.com/en/actions/concepts/security/openid-connect",
+        "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency"
+      ],
+      "rationales": [
+        "Die Länge ist nicht der Grund.",
+        "Tests bleiben nötig.",
+        "Die Anmeldung braucht eine Verbindung.",
+        "Es gibt kein dauerhaftes Passwort, das abfließen kann."
       ],
       "editorialStatus": "individually-revised"
     },

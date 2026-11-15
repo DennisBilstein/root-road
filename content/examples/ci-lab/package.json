@@ -1,0 +1,12 @@
+{
+  "name": "rootpfad-ci-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Geprüfter Code für die CI/CD-Lektionen (ci-m1): ein zeilenbasierter Linter für GitHub-Actions-Workflows mit Beispiel-Workflows. Keine Abhängigkeiten.",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "lint": "node src/cli.js ../../../.github/workflows"
+  }
+}

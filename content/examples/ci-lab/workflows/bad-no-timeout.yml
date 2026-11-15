@@ -1,0 +1,15 @@
+name: Nächtlicher Lauf
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: ./scripts/long-running-check.sh

@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-15T11:13:08.452Z",
-  "revised": 1559,
-  "total": 1559,
+  "updatedAt": "2026-11-15T12:12:04.858Z",
+  "revised": 1577,
+  "total": 1577,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -10921,6 +10921,132 @@
       "revision": "2026-11-14-platform-tracks-v1",
       "scenario": true,
       "question": "Warum übernimmt compose.yaml die Härtungsoptionen aus Lektion 3?"
+    },
+    {
+      "lesson": "ci-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie laufen die Jobs eines Workflows standardmäßig ab?"
+    },
+    {
+      "lesson": "ci-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient der Schritt actions/checkout?"
+    },
+    {
+      "lesson": "ci-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist eine Datei .github/workflows/test.yaml.txt kein funktionierender Workflow?"
+    },
+    {
+      "lesson": "ci-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was speichert cache: npm bei setup-node?"
+    },
+    {
+      "lesson": "ci-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wann ist cancel-in-progress: true ungeeignet?"
+    },
+    {
+      "lesson": "ci-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welches Standardlimit gilt laut Dokumentation für einen Job ohne timeout-minutes?"
+    },
+    {
+      "lesson": "ci-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert mit nicht genannten Rechten, sobald du permissions angibst?"
+    },
+    {
+      "lesson": "ci-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum sind enge Rechte für das GITHUB_TOKEN wichtig?"
+    },
+    {
+      "lesson": "ci-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Rechte erhält das Token bei einem Pull Request aus einem Fork?"
+    },
+    {
+      "lesson": "ci-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist ein Ausdruck mit github.event.issue.title in einem run-Skript gefährlich?"
+    },
+    {
+      "lesson": "ci-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Lösung empfiehlt die Dokumentation für Skripte?"
+    },
+    {
+      "lesson": "ci-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Aussage über die Lab-CLI ist richtig?"
+    },
+    {
+      "lesson": "ci-m1-l5",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist uses: besitzer/name@v2 weniger sicher als eine Festlegung auf eine SHA?"
+    },
+    {
+      "lesson": "ci-m1-l5",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was macht pull_request_target mit Checkout des Pull-Request-Codes gefährlich?"
+    },
+    {
+      "lesson": "ci-m1-l5",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wofür ist Dependabot im Zusammenhang mit festgelegten Actions nützlich?"
+    },
+    {
+      "lesson": "ci-m1-l6",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient needs: verify im Job release?"
+    },
+    {
+      "lesson": "ci-m1-l6",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bringt eine Umgebung wie production mit Freigabe?"
+    },
+    {
+      "lesson": "ci-m1-l6",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist OIDC meist besser als ein dauerhaftes Passwort als Secret?"
     }
   ]
 }

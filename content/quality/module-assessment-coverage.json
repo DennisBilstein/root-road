@@ -1,7 +1,7 @@
 {
-  "modules": 134,
-  "manualAssignments": 134,
-  "individuallyAuthored": 134,
+  "modules": 135,
+  "manualAssignments": 135,
+  "individuallyAuthored": 135,
   "fullyIndependentRubrics": 0,
   "drafts": 0,
   "execution": "not-executed-manual-review-required",
@@ -5204,6 +5204,46 @@
         "https://docs.docker.com/build/building/multi-stage/",
         "https://docs.docker.com/engine/security/",
         "https://docs.docker.com/reference/compose-file/services/"
+      ]
+    },
+    {
+      "id": "ci-m1@assessment-platform-tracks-v1",
+      "moduleId": "ci-m1",
+      "title": "Ein abgesicherter Release-Workflow mit Tests, minimalen Rechten und einem Prüfwerkzeug für Workflows",
+      "lessonId": "ci-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Entwirf für ein kleines eigenes Projekt (erfundene Daten, ohne echte Zugangsdaten) eine CI-Pipeline als GitHub-Actions-Workflow und einen Release-Workflow. Die CI soll bei Pushes und Pull Requests Abhängigkeiten aus dem Cache nutzen, mehrere Node-Versionen prüfen, überholte Läufe abbrechen und Zeitlimits haben. Setze für jeden Job nur die nötigen Rechte, übergib alle von außen steuerbaren Werte über Umgebungsvariablen, lege Actions von Dritten auf Commit-SHAs fest und vermeide pull_request_target mit Checkout von Fremdcode. Der Release-Workflow trennt Prüfung und Veröffentlichung, nutzt eine Umgebung mit Freigabe und läuft nacheinander statt abgebrochen. Schreibe außerdem ein kleines Skript ohne Abhängigkeiten, das Workflow-Dateien auf diese Regeln prüft, mit je einem guten und schlechten Beispiel pro Regel und automatischen Tests. Dokumentiere, was geprüft wurde und was nicht (zum Beispiel echte GitHub-Läufe, Freigaben, OIDC).",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Gute Beispiel-Workflows und den echten Workflow des Projekts mit dem Prüfskript untersuchen",
+          "expected": "Keine Befunde der Stufe Fehler; die Tests des Skripts sind grün; das Protokoll nennt die Annahmen."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Eine Action mit einer SHA von 39 Zeichen, eine lokale Action, einen Job mit Rechten pro Job und einen Aufruf eines wiederverwendbaren Workflows prüfen",
+          "expected": "Die 39-stellige SHA wird gemeldet, lokale Actions nicht; Rechte pro Job ersetzen den obersten Block; der Aufruf des wiederverwendbaren Workflows erhält keine Warnung wegen eines fehlenden Zeitlimits."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Einen Ticket-Titel direkt in ein Skript einsetzen, permissions: write-all setzen, pull_request_target mit Checkout des Pull-Request-Codes verwenden und ein Zeitlimit weglassen",
+          "expected": "Das Prüfskript meldet script-injection, write-all und pull-request-target-checkout als Fehler und das fehlende Zeitlimit als Warnung; du behebst jeden Befund und zeigst, dass er verschwindet."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Die CI nutzt Cache, Matrix, concurrency und Zeitlimits begründet, und der Release trennt Prüfung und Veröffentlichung mit Freigabe und ohne Abbruch laufender Vorgänge.",
+        "Rechte sind pro Job minimal gesetzt, von außen steuerbare Werte laufen nur über Umgebungsvariablen, und fremde Actions sind festgelegt (SHA oder Lockfile) mit einem Verfahren zur Pflege.",
+        "Das Prüfskript deckt jede Regel mit guten und schlechten Beispielen ab, wird durch Mutationsproben oder gleichwertige Gegenproben abgesichert und nennt seine Grenzen ehrlich.",
+        "Das Protokoll trennt geprüft von nicht geprüft (echte GitHub-Läufe, Freigaben, OIDC beim Anbieter, Standardrechte des Repositories) und enthält keine echten Zugangsdaten."
+      ],
+      "revision": "assessment-platform-tracks-v1",
+      "sources": [
+        "https://docs.github.com/en/actions/reference/security/secure-use",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+        "https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments"
       ]
     }
   ]

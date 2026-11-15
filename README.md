@@ -270,6 +270,16 @@ lokalen Speicher, ohne Download): `node content/examples/docker-lab/run.mjs [NN]
 (Präfix `rootpfad-dk-<pid>`, Label `rootpfad.lab=docker-lab`). Es braucht Docker und läuft nicht in `npm test` oder der CI; die App-Tests laufen in
 `npm run test:labs`. Nicht geprüft: native Linux-Hosts, rootless Docker, Podman, Registry und Veröffentlichung, Last- und Ausfallverhalten.
 
+### CI/CD mit GitHub Actions (neuer Pfad `cicd`, 6 Lektionen)
+
+Modul `ci-m1` (Workflow-Aufbau, Cache/Matrix/concurrency/Zeitlimits, Rechte nach dem Minimalprinzip, Script-Injection, Lieferkette mit
+SHA-Festlegung und `pull_request_target`, Release mit Freigabe und OIDC). Quelle: `content/tech-tracks/cicd-grundlagen.mjs` →
+`node scripts/prepare-platform-tracks.mjs` → `npm run build`; der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen.
+Das Lab `content/examples/ci-lab/` enthält einen zeilenbasierten Linter für Workflow-Dateien (sechs Regeln, keine Abhängigkeiten), Beispiel-Workflows
+(`workflows/good-*.yml`, `bad-*.yml`, nie unter `.github/workflows`) und 15 Tests (`npm test`, auch in `npm run test:labs`). Die Ausgaben der Lektionen stammen aus
+echten Läufen der Lab-CLI. Nicht geprüft: echte GitHub-Läufe der Beispiele, Freigaben und OIDC, das Workflow-Lockfile (nur nach der Dokumentation beschrieben),
+Dependabot; der Linter ist eine Heuristik und ersetzt actionlint oder zizmor nicht.
+
 ## Geführte Codewerkstatt
 
 30 eigene interaktive Aufgaben für JavaScript, TypeScript, Vue, PHP, Laravel,
