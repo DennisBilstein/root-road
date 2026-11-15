@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 const script=fs.readFileSync('assets/script-01.js','utf8'),catalog={};vm.createContext(catalog);vm.runInContext(script.slice(0,script.indexOf('var VERSION =')),catalog);
+// Die Quizverträge werden im Browser erst bei Bedarf geladen (assets/quiz-contracts-data.js); für die Prüfung gehören sie dazu.
+catalog.window=catalog;
+vm.runInContext(fs.readFileSync('assets/quiz-contracts-data.js','utf8'),catalog);
 const failures=[];
 for(const card of catalog.CARDS){
  const contract=catalog.RP_QUIZ_CONTRACT_BY_ID[card.id];
