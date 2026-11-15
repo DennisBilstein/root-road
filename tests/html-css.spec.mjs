@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
 test('HTML/CSS-Pfad enthält 21 Lektionen und 63 Selbsttestfragen',async({page})=>{
-  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
+  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
   const result=await page.evaluate(()=>{
     rpChoosePath('htmlcss');const lessons=rpData().lessons;const failures=[];
     for(const l of lessons){state.currentId=l.id;renderContent();if(!document.querySelector('main')?.textContent.includes('Drei Übungen')||document.querySelectorAll('fieldset.qcard').length!==l.quiz.length)failures.push(l.id);}

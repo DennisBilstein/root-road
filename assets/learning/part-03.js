@@ -1,2141 +1,1429 @@
-MODULES.push({
-  id:'m38', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Systemarchitekturen & Gerätewahl', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m38-l1', title:'Serverbauformen und Rechenzentrum', minutes:8,
-      body:
-        '<p>Server gibt es in drei Bauformen, und die Wahl ist eine typische Begründungsaufgabe:</p>'+
-        '<table class="lesson-table"><tr><th>Bauform</th><th>Merkmal</th><th>Sinnvoll bei</th></tr>'+
-        '<tr><td><strong>Tower</strong></td><td>wie ein großer PC, leise, kein Schrank nötig</td><td>ein bis zwei Server, kein Serverraum</td></tr>'+
-        '<tr><td><strong>Rack</strong></td><td>19-Zoll-Einschub, in <strong>Höheneinheiten</strong> gemessen</td><td>Standardfall ab wenigen Servern</td></tr>'+
-        '<tr><td><strong>Blade</strong></td><td>Einschübe teilen sich Gehäuse, Netzteile und Kühlung</td><td>hohe Dichte, viele gleichartige Server</td></tr></table>'+
-        '<p>Eine <strong>Höheneinheit</strong> (HE oder U) misst <strong>44,45 mm</strong>; ein üblicher Schrank fasst 42 HE. Die Rechnung „Wie viele Server passen in den Schrank?" gehört zu den einfachsten Punkten der Prüfung — vergiss dabei nicht, Platz für Switches, Patchfelder und die USV abzuziehen.</p>'+
-        '<p><strong>Der Serverraum</strong> braucht mehr als Strom und Netz. Die Punkte, die in Aufgaben zur Einrichtung erwartet werden:</p>'+
-        '<ul><li><strong>Kühlung</strong> — Serverabwärme muss abgeführt werden; die Faustregel lautet, dass die Klimaanlage etwa die elektrische Leistung der Server als Kühlleistung erbringen muss.</li>'+
-        '<li><strong>Kalt- und Warmgang</strong> — Racks werden so ausgerichtet, dass alle Fronten sich gegenüberstehen, damit warme und kalte Luft sich nicht vermischen.</li>'+
-        '<li><strong>USV</strong> — überbrückt kurze Ausfälle und fährt bei langen kontrolliert herunter.</li>'+
-        '<li><strong>Brandschutz</strong> — Brandmeldeanlage und eine Löschanlage, die Elektronik nicht zerstört.</li>'+
-        '<li><strong>Zutrittskontrolle und Protokollierung</strong> — der Serverraum ist der sensibelste Raum des Unternehmens.</li>'+
-        '<li><strong>Redundanz</strong> — zwei Netzteile je Server an <em>zwei getrennten</em> Stromkreisen.</li></ul>'+
-        '<p><strong>Das N+1-Prinzip</strong> bedeutet: Es wird eine Einheit mehr vorgehalten, als für den Betrieb nötig ist. Bei drei benötigten Klimageräten werden vier installiert, sodass eines ausfallen oder gewartet werden kann, ohne dass der Betrieb leidet. Dasselbe Prinzip gilt für Netzteile, Lüfter und Netzwerkpfade.</p>',
-      code:
-        "RACK-PLANUNG - eine typische Rechenaufgabe\n\n"+
-        "  Gegeben: Schrank mit 42 HE\n"+
-        "           6 Server zu je 2 HE\n"+
-        "           2 Switches zu je 1 HE\n"+
-        "           2 Patchfelder zu je 1 HE\n"+
-        "           1 USV mit 3 HE\n\n"+
-        "  Belegt: 6*2 + 2*1 + 2*1 + 3 = 12 + 2 + 2 + 3 = 19 HE\n"+
-        "  Frei:   42 - 19 = 23 HE\n\n"+
-        "  Aber: Zwischen Geraeten Luft lassen und Reserve fuer\n"+
-        "  Erweiterung einplanen. Ein Schrank wird nie ganz gefuellt.\n\n"+
-        "KUEHLLAST ABSCHAETZEN\n"+
-        "  6 Server a 400 W   = 2.400 W\n"+
-        "  Netzwerktechnik    =   200 W\n"+
-        "  USV-Verluste       =   150 W\n"+
-        "  ------------------------------\n"+
-        "  Summe              = 2.750 W  ->  rund 2,75 kW Kuehlleistung\n\n"+
-        "  Faustregel: Was an elektrischer Leistung hineingeht,\n"+
-        "  kommt als Waerme wieder heraus.",
-      codeLang:'Rechenzentrum',
-      tip:'Bei der Frage nach der Einrichtung eines Serverraums reicht „Klimaanlage und USV" nicht für die volle Punktzahl. Die Prüfung erwartet mehrere Ebenen: baulich mit Brandschutz und Zutrittskontrolle, technisch mit Kühlung, USV und Redundanz, organisatorisch mit Zutrittsprotokoll und Wartungsplan. Nenne bewusst aus jeder Ebene etwas — dieselbe Systematik wie bei den TOM.',
-      quiz:[
-        {q:'Wie hoch ist eine Höheneinheit im 19-Zoll-Rack?', options:['25,4 mm','44,45 mm','100 mm'], correct:1, explain:'Ein üblicher Schrank fasst 42 HE, also gut 1,85 Meter nutzbare Höhe.'},
-        {q:'Was besagt das N+1-Prinzip?', options:['Jeder Server bekommt einen zweiten Prozessor','Es wird eine Einheit mehr vorgehalten, als betrieblich nötig ist','Es wird jährlich ein Server ergänzt'], correct:1, explain:'So kann eine Einheit ausfallen oder gewartet werden, ohne den Betrieb zu stören.'},
-        {q:'Wozu dient die Trennung in Kalt- und Warmgang?', options:['Zur besseren Verkabelung','Damit warme Abluft sich nicht mit der Zuluft vermischt','Zur Brandvermeidung'], correct:1, explain:'Dafür stehen sich die Rackfronten jeweils gegenüber.'}
-      ]
-    },
-    {
-      id:'m38-l2', title:'Skalierung, Lastverteilung und Cluster', minutes:8,
-      body:
-        '<p>Wenn ein System an seine Grenze kommt, gibt es zwei Wege — und die Unterscheidung wird direkt abgefragt.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Vertikal (Scale-up)</th><th>Horizontal (Scale-out)</th></tr>'+
-        '<tr><td>Vorgehen</td><td>eine Maschine stärker machen</td><td>mehr Maschinen daneben stellen</td></tr>'+
-        '<tr><td>Beispiel</td><td>mehr RAM, schnellere CPU</td><td>ein zweiter, dritter Webserver</td></tr>'+
-        '<tr><td>Grenze</td><td>irgendwann technisch erschöpft</td><td>praktisch unbegrenzt</td></tr>'+
-        '<tr><td>Ausfallsicherheit</td><td>keine — ein Gerät, ein Risiko</td><td>hoch, die anderen übernehmen</td></tr>'+
-        '<tr><td>Aufwand</td><td>gering, oft ohne Umbau</td><td>Anwendung muss verteilbar sein</td></tr>'+
-        '<tr><td>Ausfallzeit beim Aufrüsten</td><td>ja, Maschine muss herunter</td><td>nein, im laufenden Betrieb</td></tr></table>'+
-        '<p><strong>Der Satz, der die Frage beantwortet:</strong> Vertikale Skalierung ist einfacher, horizontale ist besser. Denn nur die horizontale erhöht zugleich die Verfügbarkeit — beim Scale-up bleibt der einzelne Server ein <strong>Single Point of Failure</strong>.</p>'+
-        '<p>Damit mehrere Server zusammenwirken, braucht es einen <strong>Load Balancer</strong>, der die Anfragen verteilt. Verfahren sind Round Robin, die geringste Anzahl aktiver Verbindungen oder eine Gewichtung nach Leistungsfähigkeit. Wichtig ist die <strong>Sitzungspersistenz</strong>: Ein angemeldeter Benutzer muss entweder beim selben Server bleiben oder die Sitzung muss zentral abgelegt sein — sonst ist er nach dem nächsten Klick abgemeldet. Das ist die klassische Stolperfalle beim Umstieg auf mehrere Server.</p>'+
-        '<p>Ein <strong>Cluster</strong> ist ein Verbund, der nach außen wie ein System wirkt. Zwei Bauarten: Beim <strong>Aktiv-Passiv</strong>-Cluster wartet ein Knoten im Standby und übernimmt beim Ausfall (<strong>Failover</strong>). Beim <strong>Aktiv-Aktiv</strong>-Cluster arbeiten alle Knoten und teilen sich die Last — das nutzt die Hardware besser, verlangt aber eine Anwendung, die parallel laufen kann.</p>',
-      code:
-        "WANN WELCHE SKALIERUNG? - Begruendungen fuer die Pruefung\n\n"+
-        "  Datenbankserver stoesst an die RAM-Grenze,\n"+
-        "  Wartungsfenster am Wochenende moeglich\n"+
-        "     -> vertikal. Eine Datenbank laesst sich nicht ohne\n"+
-        "        Weiteres auf mehrere Knoten verteilen.\n\n"+
-        "  Webshop, Lastspitzen im Weihnachtsgeschaeft,\n"+
-        "  Ausfall kostet Umsatz\n"+
-        "     -> horizontal. Zusaetzliche Server lassen sich zur\n"+
-        "        Spitze zuschalten und danach wieder abschalten,\n"+
-        "        und ein Ausfall nimmt nur einen Knoten heraus.\n\n"+
-        "VERFUEGBARKEIT DURCH REDUNDANZ\n\n"+
-        "  Ein Server mit 99 % Verfuegbarkeit faellt\n"+
-        "  rund 3,65 Tage im Jahr aus.\n\n"+
-        "  Zwei unabhaengige Server, von denen einer genuegt:\n"+
-        "     Ausfall nur, wenn BEIDE ausfallen\n"+
-        "     0,01 * 0,01 = 0,0001  ->  99,99 %\n"+
-        "     nur noch rund 53 Minuten im Jahr.\n\n"+
-        "  Voraussetzung: wirklich unabhaengig - eigener Stromkreis,\n"+
-        "  eigener Switch, moeglichst eigener Brandabschnitt.",
-      codeLang:'Skalierung',
-      tip:'Die Multiplikation der Ausfallwahrscheinlichkeiten ist eine dankbare Rechnung, weil sie mit einer Zeile beeindruckende Zahlen liefert. Achte aber auf die Voraussetzung, die in der Begründung genannt werden sollte: Die Rechnung gilt nur bei unabhängigen Ausfällen. Hängen beide Server am selben Stromkreis oder Switch, nützt die Redundanz nichts — dann fällt der gemeinsame Teil aus und nimmt beide mit.',
-      quiz:[
-        {q:'Was bedeutet horizontale Skalierung?', options:['Eine Maschine wird leistungsfähiger gemacht','Es werden weitere Maschinen danebengestellt','Die Festplatte wird vergrößert'], correct:1, explain:'Sie erhöht zugleich die Verfügbarkeit, weil kein einzelnes Gerät allein trägt.'},
-        {q:'Was passiert ohne Sitzungspersistenz hinter einem Load Balancer?', options:['Die Server werden langsamer','Angemeldete Benutzer verlieren beim Serverwechsel ihre Sitzung','Der Load Balancer fällt aus'], correct:1, explain:'Abhilfe: gleicher Server je Benutzer oder eine zentral abgelegte Sitzung.'},
-        {q:'Zwei unabhängige Server mit je 99 % Verfügbarkeit — wie hoch ist die Verfügbarkeit des Verbunds, wenn einer genügt?', options:['99 %','99,5 %','99,99 %'], correct:2, explain:'Beide müssen gleichzeitig ausfallen: 0,01 mal 0,01 ergibt 0,0001.'}
-      ]
-    },
-    {
-      id:'m38-l3', title:'Arbeitsplatzmodelle: Fat Client, Thin Client und VDI', minutes:8,
-      body:
-        '<p>Nicht jeder Arbeitsplatz braucht einen vollwertigen PC. Die drei Modelle und ihre Abwägung sind eine wiederkehrende Aufgabe zum <em>Einrichten eines IT-gestützten Arbeitsplatzes</em> — also dem Kernthema der AP1.</p>'+
-        '<p>Dahinter steht ein Gedanke, der weit über die Gerätewahl hinausreicht: die <strong>Drei-Schichten-Architektur</strong>. Jede Anwendung lässt sich in drei Schichten zerlegen — die <strong>Präsentationsschicht</strong> (was der Benutzer sieht), die <strong>Logikschicht</strong> (die fachlichen Regeln) und die <strong>Datenhaltungsschicht</strong> (die Datenbank). Die Arbeitsplatzmodelle unterscheiden sich nur darin, <em>wo</em> diese Schichten laufen: Beim Fat Client liegen Präsentation und oft auch Logik lokal, beim Thin Client bleibt vor Ort nur die Darstellung, und bei einer Webanwendung läuft die Präsentation im Browser, während Logik und Daten auf dem Server bleiben.</p>'+
-        '<p>Der Sinn der Trennung ist nicht Ordnung, sondern <strong>Austauschbarkeit</strong>: Eine neue Oberfläche lässt sich ergänzen, ohne die Fachlogik anzufassen, und die Datenbank lässt sich wechseln, ohne die Oberfläche neu zu schreiben. Das ist dieselbe Begründung wie bei loser Kopplung im Klassenentwurf, nur eine Ebene höher.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Fat Client</th><th>Thin Client</th><th>VDI</th></tr>'+
-        '<tr><td>Rechenleistung</td><td>lokal</td><td>auf dem Server</td><td>in der virtuellen Maschine</td></tr>'+
-        '<tr><td>Anschaffung</td><td>hoch je Gerät</td><td>niedrig je Gerät</td><td>niedrig je Gerät, hoch zentral</td></tr>'+
-        '<tr><td>Wartung</td><td>je Gerät einzeln</td><td>zentral</td><td>zentral, je Benutzer eigenes Abbild</td></tr>'+
-        '<tr><td>Offline nutzbar</td><td>ja</td><td>nein</td><td>nein</td></tr>'+
-        '<tr><td>Datenhaltung</td><td>lokal — Diebstahlrisiko</td><td>zentral</td><td>zentral</td></tr>'+
-        '<tr><td>Lebensdauer</td><td>3 bis 5 Jahre</td><td>7 bis 10 Jahre</td><td>7 bis 10 Jahre</td></tr></table>'+
-        '<p>Ein <strong>Thin Client</strong> ist ein sparsames Kleingerät, das im Wesentlichen Bildschirminhalte darstellt und Eingaben weiterreicht. Die Anwendungen laufen auf einem <strong>Terminalserver</strong>, auf dem sich alle Benutzer Betriebssystem und Programme teilen.</p>'+
-        '<p><strong>VDI</strong> (Virtual Desktop Infrastructure) geht einen Schritt weiter: Jeder Benutzer bekommt eine <em>eigene</em> virtuelle Maschine. Das kostet mehr Serverressourcen, erlaubt aber individuelle Software und trennt die Benutzer sauber voneinander.</p>'+
-        '<p><strong>Die drei Argumente für zentrale Modelle</strong>, die in Begründungen erwartet werden: geringerer Administrationsaufwand, weil nur zentral gepflegt wird; höhere Datensicherheit, weil nichts lokal liegt und ein gestohlenes Gerät keine Daten enthält; längere Lebensdauer der Endgeräte, weil ihre Leistung kaum altert.</p>'+
-        '<p><strong>Die Gegenargumente</strong>: Ohne Netz geht gar nichts, der Server ist ein Single Point of Failure und muss redundant ausgelegt werden, und rechenintensive Anwendungen wie CAD oder Videoschnitt laufen auf einem geteilten Server schlecht. Genau diese Abwägung will die Prüfung sehen — ein Modell zu nennen, ohne beide Seiten zu wiegen, bringt nur den halben Punkt.</p>',
-      code:
-        "TCO-VERGLEICH UEBER 5 JAHRE - 30 Arbeitsplaetze\n\n"+
-        "  FAT CLIENT\n"+
-        "    Geraete   30 x  800 EUR                = 24.000 EUR\n"+
-        "    Ersatz nach 4 Jahren, anteilig 1 Jahr  =  6.000 EUR\n"+
-        "    Administration 30 x 3 h/Jahr x 5 x 60  = 27.000 EUR\n"+
-        "    Strom 30 x 120 W x 2000 h x 5 x 0,30   = 10.800 EUR\n"+
-        "    ---------------------------------------------------\n"+
-        "    Summe                                    67.800 EUR\n\n"+
-        "  THIN CLIENT + TERMINALSERVER\n"+
-        "    Geraete   30 x  350 EUR                = 10.500 EUR\n"+
-        "    Server (redundant) inkl. Lizenzen      = 28.000 EUR\n"+
-        "    Administration 30 x 1 h/Jahr x 5 x 60  =  9.000 EUR\n"+
-        "    Strom 30 x  15 W x 2000 h x 5 x 0,30   =  1.350 EUR\n"+
-        "    ---------------------------------------------------\n"+
-        "    Summe                                    48.850 EUR\n\n"+
-        "  Ersparnis rund 19.000 EUR - der groesste Posten ist\n"+
-        "  nicht die Hardware, sondern die Administration.\n\n"+
-        "  ABER: Ohne Netz steht der Betrieb. Deshalb gehoert in\n"+
-        "  die Rechnung auch ein redundanter Server und eine\n"+
-        "  belastbare Netzanbindung.",
-      codeLang:'Arbeitsplatzmodelle',
-      tip:'Der TCO-Vergleich zeigt, was die Prüfung sehen will: Die Anschaffung ist selten der entscheidende Posten. Administration und Strom über fünf Jahre übersteigen den Gerätepreis deutlich. Wer bei einer Wirtschaftlichkeitsaufgabe nur die Kaufpreise gegenüberstellt, rechnet an der Sache vorbei — nenne immer auch Betriebs-, Wartungs- und Energiekosten.',
-      quiz:[
-        {q:'Was unterscheidet VDI vom klassischen Terminalserver?', options:['VDI läuft ohne Netzwerk','Bei VDI bekommt jeder Benutzer eine eigene virtuelle Maschine','VDI braucht keine Server'], correct:1, explain:'Beim Terminalserver teilen sich alle Benutzer ein Betriebssystem.'},
-        {q:'Welcher Vorteil spricht für Thin Clients?', options:['Sie funktionieren auch ohne Netz','Zentrale Wartung und keine lokalen Daten','Sie sind für CAD besonders geeignet'], correct:1, explain:'Ein gestohlenes Gerät enthält keine Unternehmensdaten.'},
-        {q:'Welcher Kostenposten überwiegt in einem TCO-Vergleich über fünf Jahre meist?', options:['Der Anschaffungspreis der Geräte','Administration und Betrieb','Die Verpackung'], correct:1, explain:'Deshalb ist eine reine Kaufpreisgegenüberstellung keine Wirtschaftlichkeitsrechnung.'}
-      ]
-    },
-    {
-      id:'m38-l4', title:'Embedded-Systeme, IoT und Peripherie', minutes:8,
-      body:
-        '<p>Nicht jeder Rechner sieht aus wie einer. <strong>Eingebettete Systeme</strong> stecken in Maschinen, Fahrzeugen, Messgeräten und Haustechnik — sie erfüllen dort <em>eine</em> festgelegte Aufgabe.</p>'+
-        '<p><strong>Mikrocontroller gegen Mikroprozessor</strong> — die Abgrenzung wird gern geprüft: Ein <strong>Mikroprozessor</strong> ist nur die CPU und braucht Speicher und Peripherie als eigene Bausteine. Ein <strong>Mikrocontroller</strong> vereint CPU, Speicher und Schnittstellen auf <em>einem</em> Chip. Er ist langsamer und kleiner, dafür billig, sparsam und sofort einsatzbereit — deshalb sitzt er in der Waschmaschine, nicht im Notebook.</p>'+
-        '<p><strong>Echtzeitfähigkeit</strong> ist der zweite Kernbegriff und wird oft missverstanden: Echtzeit bedeutet <em>nicht</em> besonders schnell, sondern <strong>garantiert rechtzeitig</strong>. Bei <strong>harter Echtzeit</strong> ist eine Überschreitung der Frist ein Fehler mit möglicherweise gefährlichen Folgen — ein Airbag muss innerhalb von Millisekunden auslösen, nicht im Mittel schnell. Bei <strong>weicher Echtzeit</strong> mindert eine Überschreitung nur die Qualität, etwa ein Ruckler im Videostream.</p>'+
-        '<p><strong>Der typische IoT-Aufbau</strong>: <strong>Sensoren</strong> messen (Temperatur, Druck, Bewegung), der Mikrocontroller verarbeitet, <strong>Aktoren</strong> wirken zurück (Ventil, Motor, Relais). Das ist das EVA-Prinzip in der Fertigung. Daten gehen häufig an ein <strong>Gateway</strong>, das sie bündelt und weiterleitet.</p>'+
-        '<p><strong>Edge Computing</strong> heißt, dass ein Teil der Auswertung schon vor Ort passiert statt in der Cloud. Die Begründung dafür ist dreifach: geringere Latenz, weniger Datenübertragung und Weiterbetrieb bei gestörter Verbindung. Für eine Maschinensteuerung ist das keine Optimierung, sondern Voraussetzung.</p>'+
-        '<p><strong>Peripherie und Schnittstellen</strong> unterscheidet man nach Richtung: <strong>Eingabegeräte</strong> (Tastatur, Maus, Scanner, Sensor, Kartenleser), <strong>Ausgabegeräte</strong> (Monitor, Drucker, Aktor) und <strong>kombinierte</strong> Geräte (Touchscreen, Netzwerkkarte, Multifunktionsgerät). Dass Standards wie USB, DIN-Normen und ISO-Normen eingehalten werden, ist kein Selbstzweck: Nur so lassen sich Geräte verschiedener Hersteller kombinieren und später einzeln ersetzen, ohne das ganze System zu tauschen.</p>',
-      code:
-        "IoT-KETTE IN DER FERTIGUNG\n\n"+
-        "  Sensor        Temperaturfuehler an der Presse\n"+
-        "     |          misst alle 100 ms\n"+
-        "     v\n"+
-        "  Mikrocontroller\n"+
-        "     |          prueft Grenzwert, entscheidet vor Ort\n"+
-        "     |          -> Edge Computing: keine Cloud noetig\n"+
-        "     +--> Aktor  schaltet Kuehlung zu   (harte Echtzeit)\n"+
-        "     |\n"+
-        "     v\n"+
-        "  Gateway ---> Netzwerk ---> Server / Cloud\n"+
-        "                              Auswertung, Trends,\n"+
-        "                              vorausschauende Wartung\n\n"+
-        "WARUM NICHT ALLES IN DIE CLOUD?\n"+
-        "  1. Latenz     - der Weg zur Cloud dauert zu lang fuer\n"+
-        "                  eine Sicherheitsabschaltung\n"+
-        "  2. Datenmenge - 10 Sensoren x 10 Messungen/s x 24 h\n"+
-        "                  = 8,64 Mio Werte pro Tag je Maschine\n"+
-        "  3. Ausfall    - bei gestoerter Leitung muss die\n"+
-        "                  Maschine trotzdem sicher weiterlaufen\n\n"+
-        "HARTE ODER WEICHE ECHTZEIT?\n"+
-        "  Airbag, Notaus, Bremsassistent   -> hart\n"+
-        "  Videostream, Anzeigetafel        -> weich",
-      codeLang:'Embedded & IoT',
-      tip:'Wenn eine Aufgabe nach Vorteilen von Edge Computing fragt, nenne die drei Gründe mit je einer Folge statt nur Stichworten: Latenz, weil eine Sicherheitsabschaltung nicht auf die Cloud warten kann; Datenmenge, weil Rohdaten aus Sensoren die Leitung fluten; Ausfallsicherheit, weil die Maschine bei gestörter Verbindung weiterlaufen muss. Die Begründung bringt die Punkte, nicht der Begriff.',
-      quiz:[
-        {q:'Was unterscheidet einen Mikrocontroller von einem Mikroprozessor?', options:['Er ist deutlich schneller','Er vereint CPU, Speicher und Schnittstellen auf einem Chip','Er braucht kein Programm'], correct:1, explain:'Dadurch ist er günstig, sparsam und ohne Zusatzbausteine einsatzbereit.'},
-        {q:'Was bedeutet harte Echtzeit?', options:['Besonders hohe Rechenleistung','Eine Fristüberschreitung ist ein Fehler mit möglicherweise gefährlichen Folgen','Das System läuft rund um die Uhr'], correct:1, explain:'Bei weicher Echtzeit mindert eine Überschreitung nur die Qualität.'},
-        {q:'Welcher Grund spricht für Edge Computing in einer Maschinensteuerung?', options:['Die Cloud ist teurer','Die Latenz zur Cloud ist für eine Sicherheitsabschaltung zu hoch','Edge-Geräte brauchen keinen Strom'], correct:1, explain:'Dazu kommen die reduzierte Datenmenge und der Weiterbetrieb bei gestörter Leitung.'}
-      ]
-    }
-  ]
+CHEATSHEET_HTML += "<section class=\"sheet-section\" id=\"spickzettel-abap\"><h2>ABAP Expertenpfad</h2><div class=\"sheet-section\"><h2>Pseudocode-Konventionen (AP1)</h2><table class=\"lesson-table\"><tr><th>Konzept</th><th>Notation</th></tr><tr><td>Zuweisung</td><td>&lt;- oder :=</td></tr><tr><td>Verzweigung</td><td>IF ... THEN ... ELSE ... ENDIF</td></tr><tr><td>Zählschleife</td><td>FOR i &lt;- 1 TO n DO ... ENDFOR</td></tr><tr><td>Kopfgesteuerte Schleife</td><td>WHILE ... DO ... ENDWHILE</td></tr><tr><td>Fußgesteuerte Schleife</td><td>REPEAT ... UNTIL</td></tr><tr><td>Funktion</td><td>FUNCTION name(param) ... RETURN wert ENDFUNCTION</td></tr><tr><td>Ein-/Ausgabe</td><td>READ/INPUT, WRITE/OUTPUT</td></tr></table><p style=\"font-size:.8rem;color:var(--text-dim);\">Kein einheitlicher Standard — das Syntax-Beiblatt der jeweiligen Prüfung ist maßgeblich. Logik zählt mehr als exakte Syntax.</p></div><div class=\"sheet-section\"><h2>ER-Modell & Normalisierung</h2><table class=\"lesson-table\"><tr><th>Begriff</th><th>Bedeutung</th></tr><tr><td>1NF</td><td>Nur atomare Werte, keine Wiederholungsgruppen</td></tr><tr><td>2NF</td><td>1NF + volle funktionale Abhängigkeit vom gesamten Schlüssel</td></tr><tr><td>3NF</td><td>2NF + keine transitiven Abhängigkeiten</td></tr><tr><td>n:m-Beziehung</td><td>Wird immer über eine Verknüpfungstabelle aufgelöst</td></tr></table></div><div class=\"sheet-section\"><h2>SQL: JOINs & DDL/DML/DCL</h2><table class=\"lesson-table\"><tr><th>JOIN</th><th>Ergebnis</th></tr><tr><td>INNER JOIN</td><td>Nur Zeilen mit Treffer auf beiden Seiten</td></tr><tr><td>LEFT OUTER JOIN</td><td>Alle Zeilen links, rechts NULL falls kein Treffer</td></tr><tr><td>CROSS JOIN</td><td>Kartesisches Produkt (jede Zeile mit jeder)</td></tr></table><table class=\"lesson-table\"><tr><th>Kategorie</th><th>Befehle</th></tr><tr><td>DDL</td><td>CREATE, ALTER, DROP</td></tr><tr><td>DML</td><td>SELECT, INSERT, UPDATE, DELETE</td></tr><tr><td>DCL</td><td>GRANT, REVOKE</td></tr></table></div><div class=\"sheet-section\"><h2>UML-Beziehungen</h2><table class=\"lesson-table\"><tr><th>Beziehung</th><th>ABAP-Äquivalent</th></tr><tr><td>Vererbung (Generalisierung)</td><td>INHERITING FROM</td></tr><tr><td>Realisierung</td><td>INTERFACES</td></tr><tr><td>Komposition</td><td>Existenzabhängiges \"hat-ein\"</td></tr><tr><td>Aggregation</td><td>Unabhängiges \"hat-ein\"</td></tr></table></div><div class=\"sheet-section\"><h2>Moderne ABAP-Ausdrücke</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">ABAP</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>DATA(x)      = 5.                          \" Inline Declaration\nDATA(text)   = |Wert: { x }|.               \" String-Template\nDATA(status) = COND string( WHEN x &gt; 0 THEN 'pos' ELSE 'neg' ).\nDATA(subset) = FILTER #( itab WHERE feld = 'X' ).\nDATA(sum)    = REDUCE i( INIT s = 0 FOR row IN itab NEXT s = s + row-betrag ).\nDATA(row)    = VALUE #( itab[ id = 1 ] OPTIONAL ).</code></pre></div></div><div class=\"sheet-section\"><h2>Interne Tabellentypen</h2><table class=\"lesson-table\"><tr><th>Typ</th><th>Zugriff</th><th>Einsatz</th></tr><tr><td>STANDARD TABLE</td><td>Index O(1), Schlüssel O(n)</td><td>Sequentielle Verarbeitung</td></tr><tr><td>SORTED TABLE</td><td>Index O(1), Schlüssel O(log n)</td><td>Bereichsabfragen</td></tr><tr><td>HASHED TABLE</td><td>Nur Schlüssel, O(1)</td><td>Große Nachschlagetabellen</td></tr></table></div><div class=\"sheet-section\"><h2>CDS & RAP Grundgerüst</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">CDS</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>@AccessControl.authorizationCheck: #CHECK\ndefine view entity ZI_Beispiel as select from db_tabelle\n{ key id, name, betrag }</code></pre></div><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">RAP Behavior Definition</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>managed implementation in class zbp_i_beispiel unique;\nstrict ( 2 );\n\ndefine behavior for ZI_Beispiel alias Beispiel\npersistent table db_tabelle\nlock master\netag master LastChangedAt\nauthorization master ( instance )\n{\n  create; update; delete;\n  mapping for db_tabelle { id = id; name = name; betrag = betrag; }\n}</code></pre></div></div><div class=\"sheet-section\"><h2>Fiori-Elements-Annotationen</h2><table class=\"lesson-table\"><tr><th>Annotation</th><th>Wirkung</th></tr><tr><td>@UI.lineItem</td><td>Spalte in der Listenansicht</td></tr><tr><td>@UI.selectionField</td><td>Filterfeld in der Filterleiste</td></tr><tr><td>@UI.facet</td><td>Abschnitt auf der Object Page</td></tr><tr><td>@Consumption.valueHelpDefinition</td><td>Value Help über eine Assoziation</td></tr></table></div><div class=\"sheet-section\"><h2>Werkzeuge & Betrieb</h2><table class=\"lesson-table\"><tr><th>Werkzeug</th><th>Zweck</th></tr><tr><td>ADT (Eclipse)</td><td>Moderne Entwicklungsumgebung</td></tr><tr><td>ATC</td><td>Statische Codequalitäts-/Sicherheitsprüfung</td></tr><tr><td>ABAP Unit</td><td>Automatisierte funktionale Tests</td></tr><tr><td>SAT</td><td>Laufzeitanalyse eines Programmlaufs</td></tr><tr><td>ST05</td><td>SQL-Trace für Datenbankzugriffe</td></tr><tr><td>ST22 / STAD</td><td>Dump-Analyse / systemweite Workload-Analyse</td></tr><tr><td>abapGit / gCTS</td><td>Versionskontrolle für ABAP-Entwicklungsobjekte</td></tr></table></div></section>\n<section class=\"sheet-section\" id=\"spickzettel-java\"><h2>Java Expertenpfad</h2><div class=\"sheet-section\"><h2>Pseudocode-Konventionen (AP1)</h2><table class=\"lesson-table\"><tr><th>Konzept</th><th>Notation</th></tr><tr><td>Zuweisung</td><td>&lt;- oder :=</td></tr><tr><td>Verzweigung</td><td>IF ... THEN ... ELSE ... ENDIF</td></tr><tr><td>Zählschleife</td><td>FOR i &lt;- 1 TO n DO ... ENDFOR</td></tr><tr><td>Kopfgesteuert</td><td>WHILE ... DO ... ENDWHILE</td></tr><tr><td>Fußgesteuert</td><td>REPEAT ... UNTIL</td></tr><tr><td>Funktion</td><td>FUNCTION name(p) ... RETURN wert ENDFUNCTION</td></tr></table><p style=\"font-size:.8rem;color:var(--text-dim);\">Kein einheitlicher Standard — das Syntax-Beiblatt der Prüfung ist maßgeblich. Die Logik zählt mehr als die Schreibweise.</p></div><div class=\"sheet-section\"><h2>Komplexität & Collections</h2><table class=\"lesson-table\"><tr><th>Struktur</th><th>Zugriff</th><th>Suche</th><th>Einfügen</th></tr><tr><td>ArrayList</td><td>O(1)</td><td>O(n)</td><td>O(1) am Ende</td></tr><tr><td>LinkedList</td><td>O(n)</td><td>O(n)</td><td>O(1) am Anfang</td></tr><tr><td>HashSet / HashMap</td><td>—</td><td>O(1)</td><td>O(1)</td></tr><tr><td>TreeSet / TreeMap</td><td>—</td><td>O(log n)</td><td>O(log n)</td></tr></table></div><div class=\"sheet-section\"><h2>Primitive Typen</h2><table class=\"lesson-table\"><tr><th>Typ</th><th>Größe</th><th>Hinweis</th></tr><tr><td>int</td><td>32 Bit</td><td>Standard für Ganzzahlen</td></tr><tr><td>long</td><td>64 Bit</td><td>Literal mit L: 10_000L</td></tr><tr><td>double</td><td>64 Bit</td><td>NICHT für Geld — BigDecimal nutzen</td></tr><tr><td>char</td><td>16 Bit</td><td>Ein Unicode-Zeichen</td></tr><tr><td>boolean</td><td>—</td><td>true / false</td></tr></table></div><div class=\"sheet-section\"><h2>Klasse, Record, Enum</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>public class Konto {\n    private final String iban;\n    public Konto(String iban) { this.iban = iban; }\n    public String getIban() { return iban; }\n}\n\npublic record Adresse(String strasse, String plz, String ort) { }\n\npublic enum Status { OFFEN, BEZAHLT, STORNIERT }</code></pre></div></div><div class=\"sheet-section\"><h2>Collections im Alltag</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>List&lt;String&gt; liste = new ArrayList&lt;&gt;();\nMap&lt;String,Integer&gt; map = new HashMap&lt;&gt;();\nSet&lt;String&gt; menge = new HashSet&lt;&gt;();\n\nList&lt;String&gt; fest = List.of(\"a\", \"b\");        // unveränderlich\n\nmap.merge(\"key\", 1, Integer::sum);               // zählen\nmap.computeIfAbsent(k, x -&gt; new ArrayList&lt;&gt;()).add(v);   // gruppieren\nmap.getOrDefault(k, 0);\n\nliste.removeIf(String::isBlank);                 // sicher entfernen</code></pre></div></div><div class=\"sheet-section\"><h2>Stream-Pipeline</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>List&lt;String&gt; namen = kunden.stream()\n    .filter(k -&gt; k.umsatz() &gt; 1000)\n    .map(Kunde::name)\n    .sorted()\n    .toList();\n\nMap&lt;String,List&lt;Kunde&gt;&gt; nachOrt =\n    kunden.stream().collect(Collectors.groupingBy(Kunde::ort));\n\nMap&lt;String,Long&gt; anzahl =\n    kunden.stream().collect(groupingBy(Kunde::ort, counting()));\n\nint summe = liste.stream().mapToInt(Integer::intValue).sum();\nString text = liste.stream().collect(joining(\", \", \"[\", \"]\"));</code></pre></div></div><div class=\"sheet-section\"><h2>Optional</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>return repo.finde(id)\n    .map(Kunde::name)\n    .orElse(\"unbekannt\");\n\nopt.orElseGet(() -&gt; teuerBerechnen());   // lazy\nopt.orElseThrow(() -&gt; new NichtGefunden(id));\nopt.ifPresentOrElse(this::nutze, this::melde);</code></pre></div></div><div class=\"sheet-section\"><h2>Exceptions & Ressourcen</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>try (var reader = Files.newBufferedReader(pfad)) {\n    return reader.readLine();\n} catch (IOException e) {\n    throw new LeseException(\"Datei nicht lesbar: \" + pfad, e);  // cause mitgeben!\n}</code></pre></div></div><div class=\"sheet-section\"><h2>equals & hashCode</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>@Override\npublic boolean equals(Object o) {\n    if (this == o) return true;\n    if (!(o instanceof Artikel a)) return false;\n    return nummer.equals(a.nummer);\n}\n@Override\npublic int hashCode() { return Objects.hash(nummer); }</code></pre></div></div><div class=\"sheet-section\"><h2>JUnit 5</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Java</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>@Test\nvoid einzahlungErhoehtSaldo() {\n    konto.einzahlen(new BigDecimal(\"50\"));\n    assertEquals(new BigDecimal(\"150\"), konto.getSaldo());\n}\n\nassertThrows(IllegalArgumentException.class, () -&gt; konto.einzahlen(minus));\n\n@ParameterizedTest\n@ValueSource(ints = {17, 18, 65, 66})\nvoid grenzwerte(int alter) { ... }</code></pre></div></div><div class=\"sheet-section\"><h2>SQL kompakt</h2><table class=\"lesson-table\"><tr><th>JOIN</th><th>Ergebnis</th></tr><tr><td>INNER JOIN</td><td>Nur Treffer auf beiden Seiten</td></tr><tr><td>LEFT OUTER JOIN</td><td>Alle links, rechts ggf. NULL</td></tr><tr><td>CROSS JOIN</td><td>Kartesisches Produkt</td></tr></table><table class=\"lesson-table\"><tr><th>Kategorie</th><th>Befehle</th></tr><tr><td>DDL</td><td>CREATE, ALTER, DROP</td></tr><tr><td>DML</td><td>SELECT, INSERT, UPDATE, DELETE</td></tr><tr><td>DCL</td><td>GRANT, REVOKE</td></tr><tr><td>TCL</td><td>COMMIT, ROLLBACK</td></tr></table><p style=\"font-size:.82rem;color:var(--text-dim);\">WHERE filtert Zeilen vor der Gruppierung, HAVING Gruppen danach. Auf fehlende Werte prüft man mit IS NULL.</p></div><div class=\"sheet-section\"><h2>Normalisierung & UML</h2><table class=\"lesson-table\"><tr><th>Begriff</th><th>Bedeutung</th></tr><tr><td>1NF</td><td>Nur atomare Werte</td></tr><tr><td>2NF</td><td>Keine Teilabhängigkeit vom zusammengesetzten Schlüssel</td></tr><tr><td>3NF</td><td>Keine transitiven Abhängigkeiten</td></tr><tr><td>Generalisierung</td><td>extends</td></tr><tr><td>Realisierung</td><td>implements</td></tr><tr><td>Komposition</td><td>Teil stirbt mit dem Ganzen</td></tr><tr><td>Aggregation</td><td>Teil existiert unabhängig</td></tr></table></div><div class=\"sheet-section\"><h2>Spring Boot: Annotationen</h2><table class=\"lesson-table\"><tr><th>Annotation</th><th>Zweck</th></tr><tr><td>@SpringBootApplication</td><td>Einstiegspunkt: Konfiguration, Auto-Config, Component-Scan</td></tr><tr><td>@Service / @Repository / @Component</td><td>Bean im Container registrieren</td></tr><tr><td>@Bean in @Configuration</td><td>Bean aus Fremdklassen erzeugen</td></tr><tr><td>@ConfigurationProperties</td><td>Typsichere, gebündelte Konfiguration</td></tr><tr><td>@RestController</td><td>Controller mit JSON-Rückgabe</td></tr><tr><td>@GetMapping / @PostMapping …</td><td>HTTP-Methode auf Methode abbilden</td></tr><tr><td>@PathVariable / @RequestParam / @RequestBody</td><td>Eingaben binden</td></tr><tr><td>@Valid</td><td>Bean Validation auslösen</td></tr><tr><td>@RestControllerAdvice</td><td>Zentrale Fehlerbehandlung</td></tr><tr><td>@Transactional</td><td>Transaktionsgrenze (an der Serviceschicht)</td></tr><tr><td>@EntityGraph</td><td>Beziehungen mitladen, gegen N+1</td></tr></table></div><div class=\"sheet-section\"><h2>Spring Boot: Grundgerüst</h2><div class=\"code-block\"><div class=\"code-head\"><span class=\"code-lang\">Spring Boot</span><button class=\"copy-btn\" onclick=\"copyCode(this)\">Kopieren</button></div><pre><code>@RestController\n@RequestMapping(\"/api/artikel\")\npublic class ArtikelController {\n    private final ArtikelService service;\n    public ArtikelController(ArtikelService s) { this.service = s; }   // Konstruktorinjektion\n\n    @GetMapping(\"/{id}\")\n    public ArtikelDto lesen(@PathVariable long id) {\n        return service.finde(id).orElseThrow(() -&gt; new NichtGefundenException(\"\" + id));\n    }\n\n    @PostMapping\n    public ResponseEntity&lt;ArtikelDto&gt; anlegen(@Valid @RequestBody NeuerArtikel e) {\n        var neu = service.anlegen(e);\n        return ResponseEntity.created(URI.create(\"/api/artikel/\" + neu.id())).body(neu);\n    }\n}</code></pre></div></div><div class=\"sheet-section\"><h2>Spring: Testarten & Statuscodes</h2><table class=\"lesson-table\"><tr><th>Testart</th><th>Lädt</th></tr><tr><td>Plain JUnit</td><td>Nichts von Spring — für Geschäftslogik</td></tr><tr><td>@WebMvcTest</td><td>Nur die Web-Schicht</td></tr><tr><td>@DataJpaTest</td><td>Nur JPA mit Testdatenbank</td></tr><tr><td>@SpringBootTest</td><td>Gesamten Kontext — sparsam einsetzen</td></tr></table><table class=\"lesson-table\"><tr><th>Status</th><th>Bedeutung</th></tr><tr><td>200 / 201 / 204</td><td>OK / Angelegt (mit Location) / Kein Inhalt</td></tr><tr><td>400 / 401 / 403 / 404</td><td>Ungültig / Nicht angemeldet / Verboten / Nicht gefunden</td></tr><tr><td>409 / 500</td><td>Konflikt / Interner Fehler</td></tr></table></div><div class=\"sheet-section\"><h2>Werkzeuge</h2><table class=\"lesson-table\"><tr><th>Werkzeug</th><th>Zweck</th></tr><tr><td>javac / java</td><td>Kompilieren und Ausführen</td></tr><tr><td>Maven / Gradle</td><td>Build und Abhängigkeiten</td></tr><tr><td>JUnit 5 + Mockito</td><td>Tests und Test Doubles</td></tr><tr><td>SLF4J + Logback</td><td>Logging</td></tr><tr><td>JaCoCo</td><td>Testabdeckung</td></tr><tr><td>VisualVM / JMH</td><td>Profiling und Mikrobenchmarks</td></tr><tr><td>mvn dependency:tree</td><td>Versionskonflikte finden</td></tr></table></div></section>";
+var RP_APPLICATION_SUPPLEMENTS=[{"id":"api-m1-l6","title":"SSRF: Wenn der Server fremde URLs abruft","source":"https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html","html":"<p>Ein Bildimport oder Webhook-Tester ruft eine vom Benutzer gelieferte URL vom Server aus ab. Bei <strong>Server-Side Request Forgery (SSRF)</strong> missbraucht ein Angreifer dessen Netzwerkzugang, etwa zu internen Admin-Endpunkten oder Cloud-Metadaten. Ein erfolgreicher Login und CORS schützen diesen ausgehenden Zugriff nicht.</p><p>Wo möglich feste Zielsysteme erlauben statt beliebiger URLs. URL mit einem bewährten Parser zerlegen; Protokoll, Host und Port erlaubnislistenbasiert prüfen, Credentials ablehnen. Sämtliche aufgelösten IPv4-/IPv6-Ziele gegen die Netzwerkpolicy prüfen; ein öffentlicher Hostname allein genügt wegen DNS-Rebinding nicht. Der tatsächlich verbundene Zielhost muss zur geprüften Adresse passen, während TLS den ursprünglichen Host weiterhin korrekt verifiziert. Keine selbst geschriebene Teilprüfung als vollständigen Schutz ausgeben.</p><p>Redirects abschalten oder jedes neue Ziel gleichwertig validieren. Zusätzlich Egress-Firewall/Proxy, begrenzte Antwortgröße, Timeout und restriktive Zielports einsetzen. Keine Cookies oder Authorization-Header an fremde Ziele weiterreichen. Diese Lektion führt absichtlich keinen echten Request gegen interne Dienste aus.</p><h4>Praxisauftrag und Abnahme</h4><ol><li>Normalfall: Erlaubter HTTPS-Bildanbieter liefert eine begrenzte Bildantwort. Dokumentiere Policy, Timeout und Größenlimit.</li><li>Grenzfall: Der erlaubte Name löst zu mehreren Adressen auf, darunter eine interne IPv6-Adresse. Erwartung: keine Verbindung zu einem nicht erlaubten Ziel.</li><li>Fehlerfall: Ein erlaubter Anbieter antwortet mit Redirect auf einen internen Dienst. Teste mit lokalen HTTP-/DNS-Fixtures, nicht mit realen Metadatendiensten: Redirect verweigern oder neu prüfen.</li></ol><p><strong>Selbsttest:</strong> „Der Hostname enthält unseren Anbieternamen“ ist keine Hostprüfung: <code>trusted.example.attacker.invalid</code> gehört nicht zu <code>trusted.example</code>. Auch korrektes Parsen allein verhindert kein DNS-Rebinding. Abnahme verlangt überprüfte Verbindung und unabhängige Netzgrenzen.</p>"},{"id":"api-m1-l2","title":"HTTP Caching: Frische, Validierung und private Daten","source":"https://www.rfc-editor.org/rfc/rfc9111","html":"<p>Browsercache und gemeinsamer Proxy-/CDN-Cache haben unterschiedliche Vertrauensgrenzen. <code>Cache-Control: private</code> untersagt Speicherung in Shared Caches, erlaubt aber grundsätzlich private Speicherung. <code>no-store</code> untersagt das Speichern dieser Antwort; es entfernt nicht rückwirkend sämtliche früheren Kopien. <code>no-cache</code> bedeutet dagegen: vor Wiederverwendung erfolgreich validieren, nicht „niemals speichern“.</p><pre><code>GET /catalog HTTP/1.1\nIf-None-Match: \"catalog-r7\"\n\nHTTP/1.1 304 Not Modified\nETag: \"catalog-r7\"\nCache-Control: public, max-age=60\nVary: Accept-Encoding</code></pre><p>304 hat keinen Nachrichteninhalt; der Client verwendet seine gespeicherte Repräsentation. <code>If-None-Match</code> dient hier der Cachevalidierung; <code>If-Match</code> beim Schreiben schützt dagegen bei atomarer Prüfung vor Lost Updates. <code>Vary</code> benennt Requestfelder, die zur Auswahl einer Repräsentation beitragen. Es ist kein Ersatz für Autorisierung. Ein CDN darf personalisierte Antworten nicht versehentlich unter einem gemeinsamen öffentlichen Schlüssel speichern; Set-Cookie allein ist keine universelle Cache-Sperre.</p><h4>Praxisauftrag und Abnahme</h4><ol><li>Normalfall: Öffentlichen Katalog mit ETag lesen, dann bedingt erneut anfordern. Gleiche Revision ergibt 304 ohne Body, neue Revision 200 mit neuem ETag.</li><li>Grenzfall: Zwei Kompressionsvarianten abrufen und Vary prüfen. Fingerprint-Dateinamen können lange gecacht werden; überschreibbare Dateinamen brauchen Revalidierung oder kurze Frische.</li><li>Fehlerfall: Zwei Benutzer rufen <code>/api/me</code> durch einen Testproxy ab. Nutze <code>Cache-Control: no-store</code>; kein Benutzer darf Daten des anderen erhalten. Zusätzlich Logout/Zurück-Navigation prüfen, ohne Cacheheader für eine vollständige Browser-Datenlöschung zu halten.</li></ol><p><strong>Selbsttest:</strong> Eine sensible Antwort soll nicht gespeichert werden: no-store ist passend, no-cache allein nicht. Ein Cachetreffer beweist keine aktuelle Berechtigung. Tests brauchen deshalb getrennte Benutzer und einen tatsächlich eingeschalteten Testcache.</p>"},{"id":"m49-l3","title":"Transactional Outbox: Commit und Nachricht zuverlässig verbinden","source":"https://microservices.io/patterns/data/transactional-outbox.html","html":"<p>Eine Bestellung wird gespeichert und danach ein Event gesendet. Stirbt der Prozess zwischen Commit und Send, fehlt das Event; Send vor Commit kann dagegen eine später zurückgerollte Bestellung melden. Eine lokale DB-Transaktion kann eine bereits zugestellte Nachricht nicht zurücknehmen.</p><pre><code>BEGIN;\nINSERT INTO orders (id, status) VALUES (42, 'confirmed');\nINSERT INTO outbox (event_id, aggregate_id, event_type, payload)\nVALUES ('evt-42-1', 42, 'order.confirmed', '{\"orderId\":42}');\nCOMMIT;\n-- Separater Relay liest committed Outbox-Zeilen,\n-- publiziert und markiert bestätigte Zustellung.</code></pre><p>Fachdaten und Outbox werden in <strong>derselben</strong> lokalen Transaktion geschrieben. Der Relay kann nach bestätigtem Publish, aber vor seiner eigenen Markierung abstürzen. Deshalb muss mit erneuter Zustellung gerechnet werden. Beim Consumer werden eine eindeutige Event-ID und die lokale Fachwirkung gemeinsam in einer Transaktion gespeichert; ein UNIQUE-Constraint schützt vor doppelter Anwendung. Für externe Effekte wie Zahlungen ist zusätzlich die Idempotenzfunktion des Zielsystems oder ein belastbarer Abgleich nötig.</p><p>Retry mit Backoff und begrenztem Budget, Quarantäne fehlerhafter Nachrichten, kontrolliertes Replay und Monitoring des ältesten offenen Events gehören zum Betrieb. Reihenfolge pro Aggregat gegebenenfalls durch Sequenznummern/Partitionierung absichern; mehrere Worker garantieren sie nicht automatisch. Outbox ist kein globaler Exactly-once-Beweis.</p><h4>Praxisauftrag und Abnahme</h4><ol><li>Normalfall: Bestellung und Outbox committen gemeinsam; ein Test-Relay veröffentlicht das Event.</li><li>Grenzfall: Dasselbe Event zweimal liefern. Die lokale Lagerwirkung erfolgt genau einmal; Deduplizierungsmarker und Wirkung werden gemeinsam committed.</li><li>Fehlerfall: Crash nach Publish, aber vor Markierung simulieren. Wiederanlauf liefert erneut, ohne doppelte Wirkung. Bei Rollback der Bestellung darf keine committed Outbox-Zeile übrig bleiben.</li></ol><p><strong>Selbsttest:</strong> Eine Zeile vor Publish als erledigt markieren verhindert Duplikate nicht zuverlässig, sondern riskiert Nachrichtenverlust. Erst nach bestätigtem Publish markieren und Duplikate auf Empfängerseite absichern. Protokolliere ausgeführte Crash-Fixtures getrennt von nur geplanten Tests.</p>"}];
+var RP_ABAP_SENIOR_LESSONS=[{"id":"abap-m15-senior-authorization","moduleId":"abap-m15","title":"RAP-Berechtigungen durchgängig: DCL, Operationen und negative Tests","minutes":30,"prerequisites":"CDS-Projektionen, RAP-Verhalten und Rollen-Grundlagen; zwei getrennte Testbenutzer in einer freigegebenen Lernumgebung.","objectives":["Lese-, Änderungs- und Serviceberechtigungen getrennt modellieren.","Unbeabsichtigte Rechteausweitung über Projektionen und interne Aufrufe erkennen.","Negative Berechtigungstests mit beobachtbarem Soll-Ergebnis entwerfen."],"paragraphs":["Ein Sachbearbeiter darf Belege seines Buchungskreises lesen, aber nur offene Belege ändern. Dafür reichen weder ein ausgeblendeter Fiori-Button noch ein erfolgreicher OData-Serviceaufruf. Trenne Servicezugang, datensatzbezogenes Lesen und erlaubte Änderungen/Aktionen. Die konkrete Rollenpflege unterscheidet sich zwischen klassischen PFCG-Landschaften, S/4HANA Cloud und SAP BTP ABAP environment.","CDS Access Controls in DCL begrenzen den Zugriff auf die jeweilige CDS-Entität. Eine Projektion erbt diese Bedingungen nicht automatisch nur deshalb, weil sie auf einer geschützten View aufbaut. Definiere für den tatsächlich exponierten Zugriff eine passende Access Control, gegebenenfalls mit expliziter Vererbung. Die Annotation authorizationCheck allein formuliert noch keine fachliche Filterbedingung. Direkter Tabellenzugriff ist nicht automatisch durch die DCL einer anderen View geschützt.","RAP Global Authorization prüft instanzunabhängige Rechte, etwa ob ein Benutzer grundsätzlich anlegen darf. Instance Authorization berücksichtigt den Zustand einer Instanz. Eine Prüfung des bestehenden Buchungskreises ist nicht automatisch eine Prüfung eines neu übergebenen Buchungskreises: ein unerlaubter Wechsel muss zusätzlich passend zum Zielzustand abgewehrt werden. Feature Control verbessert die Bedienung, ersetzt aber keine Autorisierung.","IN LOCAL MODE ist ein bewusster interner Zugriff im eigenen Behavior-Kontext und kann Autorisierungs- und Featureprüfungen umgehen. Nutze es nicht als Reparatur für einen 403-Fehler. Prüfe privilegierte Lesepfade, technische Benutzer, Hintergrundjobs und Exporte separat. Ein Test mit dem Entwickler-Admin kann eine fehlende DCL verdecken."],"codeLang":"text","cases":["Benutzer A liest einen eigenen offenen Beleg und ändert einen erlaubten Text; nur dieser Beleg ändert sich.","Ein eigener bereits gebuchter Beleg bleibt lesbar, eine verbotene Änderungsaktion wird verweigert.","A sendet fremden Schlüssel oder unzulässigen Buchungskreis direkt an den Service; kein fremder Inhalt und keine persistierte Änderung."],"quiz":[{"q":"Eine CDS-Projektion exponiert Belege über OData. Nur die darunterliegende Modell-View hat DCL. Welcher Review-Schritt ist erforderlich?","options":["Den Filter der Modell-View als automatisch geerbt dokumentieren.","Die exponierte Entität und deren Access Control explizit prüfen.","Nur das Entfernen der Fiori-Suchfunktion im Client testen."],"correct":1,"rationales":["DCL der unteren View schützt die darauf aufgebaute Projektion nicht pauschal.","Die Lesegrenze muss am tatsächlichen Zugriff wirken; explizite Vererbung kann dafür eingesetzt werden.","Die Suche zu verstecken verhindert direkte Servicezugriffe nicht."],"explain":"Nicht passend: DCL der unteren View schützt die darauf aufgebaute Projektion nicht pauschal. Richtig: Die Lesegrenze muss am tatsächlichen Zugriff wirken; explizite Vererbung kann dafür eingesetzt werden. Nicht passend: Die Suche zu verstecken verhindert direkte Servicezugriffe nicht.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Eine RAP-Action ist in Fiori deaktiviert. Ein direkter Request kann sie dennoch unberechtigt ausführen. Was ist die richtige Korrektur?","options":["Die serverseitige Autorisierung der Operation ergänzen und negativ testen.","Den Button zusätzlich aus der Toolbar-Konfiguration entfernen.","Den Service mit einem gemeinsamen Admin-Benutzer aufrufen."],"correct":0,"rationales":["Bedienhinweise sind keine harte Grenze; der Backendpfad muss unberechtigte Operationen verweigern.","Ein zweites UI-Versteck schließt den direkten Request nicht.","Ein Admin-Benutzer verschärft die Rechteausweitung und verdeckt fehlende Prüfungen."],"explain":"Richtig: Bedienhinweise sind keine harte Grenze; der Backendpfad muss unberechtigte Operationen verweigern. Nicht passend: Ein zweites UI-Versteck schließt den direkten Request nicht. Nicht passend: Ein Admin-Benutzer verschärft die Rechteausweitung und verdeckt fehlende Prüfungen.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein Benutzer darf einen Beleg aus Kreis 1000 ändern und übergibt als neuen Kreis 2000. Die Instanzprüfung prüft nur den alten Zustand. Was fehlt?","options":["Eine UI-Sortierung nach dem bisherigen Buchungskreis.","Ein Retry mit demselben Request nach der Instanzprüfung.","Eine passende Prüfung der Berechtigung für den Zielzustand."],"correct":2,"rationales":["Sortierung begrenzt weder Zielwerte noch Zugriffe.","Wiederholung ergänzt keine Prüfung des neu übergebenen Zustands.","Das Recht auf den bestehenden Beleg erlaubt nicht automatisch einen Wechsel in jeden anderen Berechtigungsbereich."],"explain":"Nicht passend: Sortierung begrenzt weder Zielwerte noch Zugriffe. Nicht passend: Wiederholung ergänzt keine Prüfung des neu übergebenen Zustands. Richtig: Das Recht auf den bestehenden Beleg erlaubt nicht automatisch einen Wechsel in jeden anderen Berechtigungsbereich.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["auth"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: auth","url":"https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Benutzer A liest einen eigenen offenen Beleg und ändert einen erlaubten Text; nur dieser Beleg ändert sich.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Ein eigener bereits gebuchter Beleg bleibt lesbar, eine verbotene Änderungsaktion wird verweigert.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"A sendet fremden Schlüssel oder unzulässigen Buchungskreis direkt an den Service; kein fremder Inhalt und keine persistierte Änderung.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m12-senior-eml-tests","moduleId":"abap-m12","title":"RAP mit EML testen: Puffer, Save Sequence und echte Fehlernachweise","minutes":35,"prerequisites":"Managed RAP BO, EML-Grundlagen und ABAP Unit; CDS-/SQL-Test-Doubles im Zielrelease verfügbar.","objectives":["Puffererfolg von erfolgreicher Persistierung unterscheiden.","FAILED, REPORTED und MAPPED fachlich auswerten.","BO-Szenariotests von Autorisierungs- und HTTP-Integrationstests abgrenzen."],"paragraphs":["Ein Test, der nur prüft, dass MODIFY ENTITIES keinen Dump erzeugt, belegt wenig. EML bearbeitet zunächst den transaktionalen Puffer. Validierungen und späte Fehler können erst in der Save Sequence sichtbar werden. Definiere deshalb vorher den fachlichen Vertrag: Ein gültiger Auftrag wird mit korrekten Werten gespeichert; ein ungültiger Auftrag hinterlässt keine persistierte Instanz.","FAILED benennt fehlgeschlagene Instanzen, REPORTED transportiert Meldungen und MAPPED ordnet temporäre Anlege-IDs den Schlüsseln zu. Eine Meldung kann auch eine Warnung sein; REPORTED ungleich initial ist nicht pauschal ein fehlgeschlagener Save. Prüfe erwartete Meldungsschwere, betroffene Instanz und bei feldbezogenen Meldungen den Feldbezug. Die Responses des Änderungsaufrufs und des Commits sind getrennte Prüfpunkte.","Ein äußerer EML-Consumer oder Szenariotest steuert COMMIT ENTITIES beziehungsweise ROLLBACK ENTITIES. Innerhalb der Behavior-Implementierung gehört diese Transaktionssteuerung dem RAP-Framework; dort nicht eigenmächtig COMMIT WORK oder COMMIT ENTITIES einbauen. Teste fachlichen Zustand nach erfolgreichem Save, nicht nur die Anzahl gemappter Schlüssel.","Das SAP-RAP100-Beispiel isoliert CDS-Lesezugriffe und zusätzliche SQL-Abhängigkeiten mit passenden Test-Doubles. setup leert Testzustand, class_teardown zerstört die Testumgebungen. ROLLBACK ENTITIES verwirft noch nicht gespeicherte Pufferdaten, ist aber kein universelles Undo eines früheren echten Datenbankcommits. Verwende keine produktiven Tabellen als Testfixture. Ein isolierter EML-Test mit internem Zugriff beweist weder Benutzerautorisierung noch HTTP-ETag-Verhalten."],"codeLang":"abap","cases":["Gültige Instanz erzeugen, Action ausführen und nach Save den erwarteten Status und Betrag prüfen.","Eine gültige Warnung zulassen und anhand der Schwere zeigen, dass nicht jede Meldung einen Fehler bedeutet.","Datum verletzt Save-Validierung: späte Fehlerresponse prüfen und nachweisen, dass keine neue fachliche Instanz gespeichert wurde."],"quiz":[{"q":"Ein EML-Test erhält nach CREATE einen gemappten Schlüssel. Die Save-Validierung schlägt später fehl. Welche Aussage trägt der erste Prüfschritt allein?","options":["Der vollständige Auftrag wurde bereits dauerhaft gespeichert.","Der Benutzer besitzt alle benötigten OData-Schreibrechte.","Die frühe Anlegephase lieferte ein Mapping, nicht den Save-Erfolg."],"correct":2,"rationales":["Ein Mapping belegt nicht den Erfolg der späteren Save Sequence.","Ein internes EML-Mapping prüft nicht sämtliche Service- und Benutzergrenzen.","Commitresponses und persistierter Fachzustand sind eigene Nachweise."],"explain":"Nicht passend: Ein Mapping belegt nicht den Erfolg der späteren Save Sequence. Nicht passend: Ein internes EML-Mapping prüft nicht sämtliche Service- und Benutzergrenzen. Richtig: Commitresponses und persistierter Fachzustand sind eigene Nachweise.","sources":["https://developers.sap.com/tutorials/abap-environment-rap100-unit-testing.html"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Nach dem COMMIT ENTITIES eines äußeren Szenariotests ist REPORTED gefüllt, FAILED aber leer. Wie bewertet man den Lauf?","options":["Jede vorhandene Meldung als fehlgeschlagenen Commit behandeln.","Meldungsschwere, Sollvertrag und gespeicherten Zustand prüfen.","Alle Meldungen löschen und nur auf den gemappten Schlüssel schauen."],"correct":1,"rationales":["REPORTED kann auch Informationen oder Warnungen enthalten.","Die fachliche Erwartung und Fehlerresponse entscheiden, nicht bloß die Existenz einer Meldung.","Damit würden relevante Warnungen und fachliche Abweichungen verdeckt."],"explain":"Nicht passend: REPORTED kann auch Informationen oder Warnungen enthalten. Richtig: Die fachliche Erwartung und Fehlerresponse entscheiden, nicht bloß die Existenz einer Meldung. Nicht passend: Damit würden relevante Warnungen und fachliche Abweichungen verdeckt.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/using-the-entity-manipulation-language-eml-to-access-business-objects"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein Behavior-Handler soll nach jeder Änderung selbst COMMIT WORK ausführen, damit der Test grün wird. Was ist angemessen?","options":["Transaktionshoheit beim Framework lassen und den äußeren Test korrigieren.","COMMIT WORK im Handler durch COMMIT ENTITIES im Handler ersetzen.","Den Commit nur bei aktivem Debugger im Handler ausführen."],"correct":0,"rationales":["Eigenmächtiges Commit im Handler verletzt das RAP-Transaktionsmodell.","Auch diese Transaktionssteuerung gehört hier nicht in die Behavior-Implementierung.","Das erzeugt abweichendes Laufzeitverhalten statt eines belastbaren Tests."],"explain":"Richtig: Eigenmächtiges Commit im Handler verletzt das RAP-Transaktionsmodell. Nicht passend: Auch diese Transaktionssteuerung gehört hier nicht in die Behavior-Implementierung. Nicht passend: Das erzeugt abweichendes Laufzeitverhalten statt eines belastbaren Tests.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/using-the-entity-manipulation-language-eml-to-access-business-objects"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["tests","eml"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: tests","url":"https://developers.sap.com/tutorials/abap-environment-rap100-unit-testing.html","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."},{"title":"SAP-Originalquelle: eml","url":"https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/using-the-entity-manipulation-language-eml-to-access-business-objects","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Gültige Instanz erzeugen, Action ausführen und nach Save den erwarteten Status und Betrag prüfen.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Eine gültige Warnung zulassen und anhand der Schwere zeigen, dass nicht jede Meldung einen Fehler bedeutet.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Datum verletzt Save-Validierung: späte Fehlerresponse prüfen und nachweisen, dass keine neue fachliche Instanz gespeichert wurde.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m13-senior-side-effects","moduleId":"abap-m13","title":"Fiori Elements V4: Side Effects, Meldungen und sichere Erweiterungen","minutes":30,"prerequisites":"Fiori Elements List Report/Object Page, OData V4 und RAP-Determinations; SAPUI5-Version und Service-Metadaten bekannt.","objectives":["Backend-Neuberechnung und UI-Neuladen unterscheiden.","Side-Effect-Quellen und Ziele aus dem Datenvertrag herleiten.","Unterstützte Extension APIs statt generierter Control-Interna wählen."],"paragraphs":["Ein Benutzer ändert Menge von 2 auf 3 bei Einzelpreis 10. Das Backend berechnet den Betrag von 20 auf 30, die Object Page zeigt aber weiter 20. Ursache kann eine fehlende Aktualisierung des betroffenen Feldes sein, nicht eine fehlende Multiplikation. Ein Side Effect beschreibt, welche Repräsentationen nach einer Änderung neu gelesen werden sollen; die Annotation ist nicht selbst die fachliche Berechnung.","Für OData V4 verbinden Side-Effect-Metadaten etwa Quantity als Quelle mit NetAmount als Ziel. Prüfe die tatsächlich ausgelieferten Metadaten und die Unterstützung deiner SAPUI5-/Backendversion. RAP-Side-Effect-Definitionen und lokale XML-Annotationen sind unterschiedliche Wege mit releaseabhängigen Möglichkeiten. CAP-CDS-Syntax aus einem Fiori-Tutorial ist nicht unverändert ABAP CDS. Standard-Side-Effects existieren bereits, zusätzliche Regeln müssen nicht jeden Refresh duplizieren.","Ein ungültiger Wert kann schon an der Clientvalidierung scheitern. Dann wird die Änderung noch nicht an das Backend geschickt und die Neuberechnung wird nicht ausgelöst. Analysiere zuerst den Browser-Network-Tab: PATCH, Batch-Teilantworten, nachfolgende Reads und fachliche Meldungen. HTTP 200 für den äußeren Batch beweist nicht den Erfolg jedes inneren Requests. Backendfehler gehören als verständliche, möglichst feldbezogene Meldungen in den regulären Message Flow.","Erweitere zuerst über Annotationen und Konfiguration, dann über dokumentierte Extension Points, Building Blocks und Controller Extensions. Greife nicht auf private generierte Controller oder zufällige DOM-IDs zu. Die SAP-Learning-Quelle zeigt clientseitige Extensions an einem CAP-Backend; ihre Backendbeispiele werden hier nicht als RAP-Code ausgegeben. Prüfe asynchrone Antworten nach Navigation auf den aktuellen Binding-Kontext, damit Daten von Objekt A nicht auf Objekt B erscheinen."],"codeLang":"text","cases":["Menge 2 → 3: Backendbetrag und sichtbarer Betrag werden 30; gezielter Ziel-Read nachvollziehbar.","Ungültiger Zahlenwert: sichtbare Validierung, kein unbeabsichtigter Serverwrite und keine erfundene Neuberechnung.","Während einer langsamen Erweiterungsabfrage von A nach B navigieren: verspätetes Ergebnis von A überschreibt B nicht."],"quiz":[{"q":"Nach einer Mengenänderung berechnet RAP den Betrag korrekt, Fiori zeigt noch den alten Wert. Was prüfst du zuerst?","options":["Side-Effect-Ziel, Metadaten und den nachfolgenden Read des Betrags.","Eine zweite unabhängige Preisberechnung im Controller einführen.","Die ETag-Prüfung für alle Schreibrequests der App entfernen."],"correct":0,"rationales":["Die Backendberechnung ist bereits korrekt; die aktualisierte Repräsentation muss den Client erreichen.","Doppelte Fachlogik kann abweichende Ergebnisse und Rundungsfehler erzeugen.","Nebenläufigkeitsschutz zu entfernen aktualisiert keine Anzeige und riskiert Lost Updates."],"explain":"Richtig: Die Backendberechnung ist bereits korrekt; die aktualisierte Repräsentation muss den Client erreichen. Nicht passend: Doppelte Fachlogik kann abweichende Ergebnisse und Rundungsfehler erzeugen. Nicht passend: Nebenläufigkeitsschutz zu entfernen aktualisiert keine Anzeige und riskiert Lost Updates.","sources":["https://github.com/SAP-docs/sapui5/blob/main/docs/06_SAP_Fiori_Elements/side-effects-18b17bd.md"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Im Fiori-V4-Formular verletzt eine Eingabe MaxLength. Es gibt keinen PATCH und kein Side-Effect-Read. Was passt zum Ablauf?","options":["Der Side Effect sollte die ungültige Eingabe ohne Server korrigieren.","Der Server hat die Eingabe bereits erfolgreich gespeichert.","Die Clientvalidierung hält den Write bis zur Korrektur zurück."],"correct":2,"rationales":["Side Effects sind keine allgemeine clientseitige Reparaturregel für ungültige Werte.","Ohne gesendeten Schreibrequest folgt aus der UI-Eingabe kein Serverwrite.","Solange die betroffenen Werte ungültig sind, wird der Backendablauf nicht regulär ausgelöst."],"explain":"Nicht passend: Side Effects sind keine allgemeine clientseitige Reparaturregel für ungültige Werte. Nicht passend: Ohne gesendeten Schreibrequest folgt aus der UI-Eingabe kein Serverwrite. Richtig: Solange die betroffenen Werte ungültig sind, wird der Backendablauf nicht regulär ausgelöst.","sources":["https://github.com/SAP-docs/sapui5/blob/main/docs/06_SAP_Fiori_Elements/side-effects-18b17bd.md"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Eine Fiori-Erweiterung benötigt einen dokumentierten Edit-Hook. Welche Abhängigkeit ist am tragfähigsten?","options":["Die interne generierte Controller-Methode aus dem Debugger kopieren.","Die passende öffentliche Controller Extension der Zielversion verwenden.","Eine zufällig beobachtete DOM-ID der Speichern-Schaltfläche fest verdrahten."],"correct":1,"rationales":["Private Implementierungsdetails haben keinen stabilen Erweiterungsvertrag.","Ein dokumentierter Hook ist der vorgesehene Vertrag; Verfügbarkeit und Lifecycle werden dennoch geprüft.","Generierte DOM-Struktur ist kein Ersatz für eine unterstützte API."],"explain":"Nicht passend: Private Implementierungsdetails haben keinen stabilen Erweiterungsvertrag. Richtig: Ein dokumentierter Hook ist der vorgesehene Vertrag; Verfügbarkeit und Lifecycle werden dennoch geprüft. Nicht passend: Generierte DOM-Struktur ist kein Ersatz für eine unterstützte API.","sources":["https://learning.sap.com/courses/developing-an-sap-fiori-elements-app-based-on-a-cap-odata-v4-service/using-controller-extensions_f47e841f-2dd8-4b88-ba5e-39c0eedd983e"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["sideEffects","extensions"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: sideEffects","url":"https://github.com/SAP-docs/sapui5/blob/main/docs/06_SAP_Fiori_Elements/side-effects-18b17bd.md","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."},{"title":"SAP-Originalquelle: extensions","url":"https://learning.sap.com/courses/developing-an-sap-fiori-elements-app-based-on-a-cap-odata-v4-service/using-controller-extensions_f47e841f-2dd8-4b88-ba5e-39c0eedd983e","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Menge 2 → 3: Backendbetrag und sichtbarer Betrag werden 30; gezielter Ziel-Read nachvollziehbar.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Ungültiger Zahlenwert: sichtbare Validierung, kein unbeabsichtigter Serverwrite und keine erfundene Neuberechnung.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Während einer langsamen Erweiterungsabfrage von A nach B navigieren: verspätetes Ergebnis von A überschreibt B nicht.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m14-senior-btp-identity","moduleId":"abap-m14","title":"BTP Connectivity: Destination, Cloud Connector und Benutzeridentität","minutes":30,"prerequisites":"HTTP, Authentifizierung/Autorisierung und BTP-Subaccount; Architekturübung ohne echte Zugangsdaten möglich.","objectives":["Netzweg, Trust und Fachberechtigung getrennt diagnostizieren.","Benutzerweitergabe von technischen Integrationsidentitäten abgrenzen.","BTP Cloud Foundry und ABAP-Communication-Konfiguration nicht vermischen."],"paragraphs":["Eine Side-by-Side-App auf BTP erreicht einen internen S/4HANA-Service. Die Destination beschreibt Ziel und Authentifizierungsart; Connectivity und Cloud Connector ermöglichen den kontrollierten Weg ins On-Premise-Netz. Eine grüne Destination-Verbindungsprüfung beweist weder korrekte Endbenutzerzuordnung noch fachliche Rechte. Entitlements, Subaccount, Runtime und Servicebindungen müssen für die konkrete App passen.","Bei Principal Propagation wird die angemeldete Identität entlang einer eingerichteten Vertrauenskette an das Backend weitergegeben. Cloud Connector muss nur notwendige Systeme und Ressourcen freigeben; virtuelle Hosts und Location ID gehören zum Routingvertrag. Das Backend muss die übermittelte Identität korrekt einem Benutzer zuordnen und dessen Rechte prüfen. Eine unkontrollierte Weitergabe des Browser-Bearer-Tokens an irgendeine URL ist keine Principal Propagation.","Interaktive Aktionen können eine Benutzeridentität benötigen; ein nächtlicher Job braucht häufig eine eigens begrenzte technische Identität. OAuth Client Credentials ist nicht automatisch ein Endbenutzerkontext. Wähle Authentifizierungsverfahren anhand des unterstützten API-/Kommunikationsszenarios. SAP BTP ABAP environment verwendet für viele Verbindungen Communication Scenarios, Systems und Arrangements; Destination-Einstellungen einer Cloud-Foundry-App nicht blind auf jede ABAP-Laufzeit übertragen.","Fehlersuche folgt den Grenzen: DNS/Route/Cloud-Connector-Ressource, TLS und Trust, Token/Zertifikat und User-Mapping, Servicezugang, dann Fachrechte. 401/403 sind Hinweise, aber kein eindeutiger Ursachenbeweis; Proxy und Backend können beide antworten. Erfasse zuständiges System, Zeitfenster und bereinigte Korrelations-ID. Tokens, Cookies, private Schlüssel und personenbezogene Payloads gehören nicht in Tickets oder Screenshots."],"codeLang":"text","cases":["Zwei interaktive Testbenutzer werden im Backend unterschiedlich erkannt und erhalten nur ihre erlaubten Belege.","Ein technischer Jobzugang erreicht nur den vorgesehenen Service und besitzt keine allgemeinen Administratorrechte.","Mapping oder Ressourcenfreigabe fehlt: kontrollierter Fehler, lokalisierte Grenze und bereinigtes Diagnoseprotokoll ohne Secrets."],"quiz":[{"q":"Der BTP-Destination-Check ist grün, im Backend erscheinen alle Aufrufe als derselbe technische Benutzer. Was ist noch nicht belegt?","options":["Dass irgendeine technische Verbindung zum Ziel aufgebaut werden kann.","Dass individuelle Benutzeridentität und Fachrechte korrekt wirken.","Dass die App überhaupt einen Zielnamen konfigurieren durfte."],"correct":1,"rationales":["Ein erfolgreicher Check liefert gerade einen begrenzten Nachweis technischer Erreichbarkeit.","Connectivity-Erfolg und authentischer Endbenutzerkontext sind verschiedene Nachweise.","Der beobachtete Check beantwortet nicht die fachlich entscheidende Identitätsfrage durch diese Alternative."],"explain":"Nicht passend: Ein erfolgreicher Check liefert gerade einen begrenzten Nachweis technischer Erreichbarkeit. Richtig: Connectivity-Erfolg und authentischer Endbenutzerkontext sind verschiedene Nachweise. Nicht passend: Der beobachtete Check beantwortet nicht die fachlich entscheidende Identitätsfrage durch diese Alternative.","sources":["https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/configuring-principal-propagation"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein nächtlicher BTP-Job verwendet OAuth Client Credentials. Darf die Anwendung daraus die Identität des zuletzt angemeldeten Sachbearbeiters ableiten?","options":["Ja, der letzte Browserlogin bestimmt automatisch jeden Hintergrundjob.","Ja, wenn der Job denselben Destination-Namen wie die UI benutzt.","Nein, technische Identität und Endbenutzerkontext sind getrennt."],"correct":2,"rationales":["Ein technischer Token übernimmt keinen beliebigen früheren Browserkontext.","Der Name eines Ziels verleiht keine Endbenutzeridentität.","Das unterstützte Authverfahren und der Jobvertrag bestimmen, unter welcher Identität die Operation läuft."],"explain":"Nicht passend: Ein technischer Token übernimmt keinen beliebigen früheren Browserkontext. Nicht passend: Der Name eines Ziels verleiht keine Endbenutzeridentität. Richtig: Das unterstützte Authverfahren und der Jobvertrag bestimmen, unter welcher Identität die Operation läuft.","sources":["https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/configuring-principal-propagation"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Cloud-Foundry-Beispielwerte für eine Destination sollen in SAP BTP ABAP environment übernommen werden. Was ist der erste Schritt?","options":["Das passende Communication Scenario und die Laufzeitunterstützung prüfen.","Das technische Passwort als Konstante in die ABAP-Klasse schreiben.","Alle Backendpfade für den Cloud Connector pauschal freigeben."],"correct":0,"rationales":["ABAP-Kommunikationsartefakte und unterstützte Verfahren richten sich nach dem konkreten Szenario.","Hardcodierte Secrets sind kein Ersatz für passende Kommunikationskonfiguration.","Eine breite Netzfreigabe löst weder Laufzeitkompatibilität noch Identitätsvertrag."],"explain":"Richtig: ABAP-Kommunikationsartefakte und unterstützte Verfahren richten sich nach dem konkreten Szenario. Nicht passend: Hardcodierte Secrets sind kein Ersatz für passende Kommunikationskonfiguration. Nicht passend: Eine breite Netzfreigabe löst weder Laufzeitkompatibilität noch Identitätsvertrag.","sources":["https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/configuring-principal-propagation"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["connectivity"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: connectivity","url":"https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/configuring-principal-propagation","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Zwei interaktive Testbenutzer werden im Backend unterschiedlich erkannt und erhalten nur ihre erlaubten Belege.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Ein technischer Jobzugang erreicht nur den vorgesehenen Service und besitzt keine allgemeinen Administratorrechte.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Mapping oder Ressourcenfreigabe fehlt: kontrollierter Fehler, lokalisierte Grenze und bereinigtes Diagnoseprotokoll ohne Secrets.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m14-senior-s4-migration","moduleId":"abap-m14","title":"S/4HANA Custom Code: Migration, Clean Core und messbare Modernisierung","minutes":30,"prerequisites":"ABAP SQL, ATC und Erweiterungsstrategie; Schwerpunkt ERP → S/4HANA On-Premise/Private Edition, nicht pauschal Public Edition.","objectives":["Fachliche Migration und optionale Optimierung getrennt planen.","Nutzungsdaten und ATC-Funde begründet priorisieren.","Wrapper, Released APIs und Upgradeverantwortung unterscheiden."],"paragraphs":["SAP HANA ist die Datenbank, SAP S/4HANA das darauf aufbauende ERP-Produkt. Eine Datenbankumstellung allein macht alten Custom Code nicht fachlich kompatibel mit veränderten S/4HANA-Datenmodellen. Ein SELECT kann syntaktisch aktiv sein und dennoch falsche Semantik oder ein ungeeignetes Zugriffsmuster haben. Prüfe Zielrelease und Edition; verfügbare Werkzeuge und erlaubte Erweiterungen sind nicht überall gleich.","Beginne mit einem Inventar und einem aussagekräftigen Nutzungszeitraum, der auch Monats-/Jahresabschluss und seltene Pflichtprozesse berücksichtigt. Kein Aufruf im kurzen Messfenster bedeutet nicht automatisch entbehrlich. Ordne Eigentümer, Abhängigkeiten und geplante Ablösung zu. Nicht mehr benötigter Code wird nur nach freigegebenem Stilllegungsplan entfernt, nicht aufgrund einer einzelnen Statistik.","ATC mit passenden S/4HANA-Prüfungen und Simplification-Inhalten identifiziert Anpassungsbedarf. Behebe Syntaxfehler, wiederhole die Analyse und prüfe Quick Fixes fachlich. Ein grüner ATC-Lauf ist weder ein vollständiger Prozesstest noch ein Performancebeweis. Vergleiche Belegzahlen, Beträge und fachliche Zustände mit einer geprüften Referenz. Modifikationsabgleich und eigentliche Systemkonvertierung gehören in den dafür geregelten Projektablauf.","Nach fachlicher Korrektheit priorisierst du gemessene Hotspots, etwa mit SQL Monitor und der SQL Performance Tuning Worklist in unterstützten klassischen Landschaften. Nicht jeden LOOP reflexartig in AMDP übersetzen. Für neue ABAP-Cloud-Erweiterungen freigegebene APIs verwenden und Release Contract prüfen. Ein kundeneigener Wrapper um eine nicht freigegebene API macht die SAP-API selbst nicht released; in zulässigen klassischen Landschaften bleibt dies eine bewusst verwaltete Ausnahme mit eigener Upgradepflicht."],"codeLang":"text","cases":["Genutzten Z-Report mit einem releasebezogenen ATC-Fund anpassen und Belegzahlen/Beträge gegen Referenz prüfen.","Report nur am Jahresende genutzt: Eigentümer bestätigt Bedarf trotz leerem Wochenmessfenster.","Wrapper ruft nicht freigegebene API auf: keine falsche Cloud-Freigabe; Ausnahme und zulässige Alternative dokumentieren."],"quiz":[{"q":"Ein Z-Report wurde sieben Tage nicht aufgerufen, ist aber für den Jahresabschluss vorgesehen. Was folgt daraus?","options":["Report erst nach Prozess-/Ownerprüfung und längerer Nutzungsbewertung stilllegen.","Report automatisch löschen, weil Nutzungsdaten immer vollständig sind.","Report sofort durch AMDP ersetzen, weil die Nutzung selten ist."],"correct":0,"rationales":["Ein kurzes Messfenster deckt seltene verpflichtende Geschäftsprozesse nicht ab.","Die Beobachtungsdauer kann den relevanten Prozess schlicht verfehlen.","Seltene Nutzung begründet weder Löschung noch eine bestimmte Optimierungstechnik."],"explain":"Richtig: Ein kurzes Messfenster deckt seltene verpflichtende Geschäftsprozesse nicht ab. Nicht passend: Die Beobachtungsdauer kann den relevanten Prozess schlicht verfehlen. Nicht passend: Seltene Nutzung begründet weder Löschung noch eine bestimmte Optimierungstechnik.","sources":["https://learning.sap.com/courses/implementing-sap-s-4hana-cloud-private-edition/analyzing-customizations-after-system-conversion_b9083e6d-e207-4578-8aa6-6c85cb42974a"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Nach S/4HANA-Anpassung ist ATC grün. Welcher zusätzliche Nachweis fehlt für die fachliche Abnahme?","options":["Dass alle lokalen Variablennamen maximal kurz geschrieben sind.","Dass jede SELECT-Anweisung durch eine HANA-Prozedur ersetzt wurde.","Dass relevante Prozesse und Ergebnisse auf dem Zielrelease stimmen."],"correct":2,"rationales":["Namenslänge ist kein Nachweis korrekter Belegverarbeitung.","Eine pauschale technische Umschreibung beweist keine fachliche Gleichheit.","Statische Prüfungen ersetzen keine Regression der Geschäftsfunktionen."],"explain":"Nicht passend: Namenslänge ist kein Nachweis korrekter Belegverarbeitung. Nicht passend: Eine pauschale technische Umschreibung beweist keine fachliche Gleichheit. Richtig: Statische Prüfungen ersetzen keine Regression der Geschäftsfunktionen.","sources":["https://learning.sap.com/courses/implementing-sap-s-4hana-cloud-private-edition/analyzing-customizations-after-system-conversion_b9083e6d-e207-4578-8aa6-6c85cb42974a"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein eigener Wrapper kapselt eine nicht freigegebene SAP-API. Was ist die korrekte Bewertung?","options":["Die SAP-API ist dadurch automatisch für ABAP Cloud freigegeben.","Die Kapselung braucht zulässige Laufzeit und eigene Upgradeverantwortung.","Der Wrapper beseitigt jeden zukünftigen Regressionstest."],"correct":1,"rationales":["Eine Kundenkapselung ändert den Release Contract des SAP-Objekts nicht.","Eine erlaubte Ausnahme ist gesondert zu verwalten und nicht mit einem offiziellen Release gleichzusetzen.","Auch gekapselte Abhängigkeiten können bei einem Upgrade ihr Verhalten ändern."],"explain":"Nicht passend: Eine Kundenkapselung ändert den Release Contract des SAP-Objekts nicht. Richtig: Eine erlaubte Ausnahme ist gesondert zu verwalten und nicht mit einem offiziellen Release gleichzusetzen. Nicht passend: Auch gekapselte Abhängigkeiten können bei einem Upgrade ihr Verhalten ändern.","sources":["https://learning.sap.com/courses/implementing-sap-s-4hana-cloud-private-edition/analyzing-customizations-after-system-conversion_b9083e6d-e207-4578-8aa6-6c85cb42974a"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["migration"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: migration","url":"https://learning.sap.com/courses/implementing-sap-s-4hana-cloud-private-edition/analyzing-customizations-after-system-conversion_b9083e6d-e207-4578-8aa6-6c85cb42974a","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Genutzten Z-Report mit einem releasebezogenen ATC-Fund anpassen und Belegzahlen/Beträge gegen Referenz prüfen.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Report nur am Jahresende genutzt: Eigentümer bestätigt Bedarf trotz leerem Wochenmessfenster.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Wrapper ruft nicht freigegebene API auf: keine falsche Cloud-Freigabe; Ausnahme und zulässige Alternative dokumentieren.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m19-senior-restartable-jobs","moduleId":"abap-m19","title":"Application Jobs betreiben: Wiederanlauf, Idempotenz und Application Log","minutes":30,"prerequisites":"ABAP-Transaktionen, Hintergrundverarbeitung und Fehlerkategorien; freigegebene Job-/Log-APIs des Zielsystems prüfen.","objectives":["Jobstatus und fachliches Ergebnis getrennt prüfen.","Persistierten Wiederanlaufpunkt mit atomarer Fachwirkung planen.","Diagnosefähige, datensparsame Logs und einen sicheren Replay-Prozess entwerfen."],"paragraphs":["Ein Job verarbeitet 1000 Belege und bricht nach 400 ab. „Noch einmal starten“ ist nur sicher, wenn der Vertrag festlegt, welche Belege bereits wirksam verarbeitet wurden. Ein Job kann technisch beendet sein und fachlich abgewiesene Datensätze enthalten. Umgekehrt kann nach einem Timeout eine externe Buchung bereits erfolgreich sein. Statusfarbe und End-to-End-Fachwirkung sind verschiedene Größen.","Arbeite mit begrenzten Paketen und einem stabilen fachlichen Schlüssel oder einer Versionsmarke. Für rein lokale Verarbeitung müssen Wirkung und Verarbeitungsmarker in derselben geeigneten Transaktion gesichert werden. Ein Marker vor der Wirkung riskiert Verlust, ein ungekoppelter Marker danach Duplikate. Ein Neustart muss bereits verarbeitete Belege erkennen, konkurrierende Läufe dürfen dieselbe Wirkung nicht doppelt ausführen.","Für externe Seiteneffekte brauchst du einen Idempotenzvertrag oder belastbaren Abgleich mit dem Ziel. Ein lokales ROLLBACK nimmt eine fremde Buchung nicht zurück. Transiente Fehler können begrenzt mit Backoff wiederholt werden; fachlich ungültige Belege brauchen Korrektur statt Endlos-Retry. Eine Wiederaufnahme „nach Fehlerstep“ darf keine noch notwendigen fachlichen Voraussetzungen überspringen.","Application Log und Jobmonitoring sollen Lauf-ID, Paket/Objektbezug, Fehlerkategorie, Bearbeitungszahlen und erlaubte nächste Aktion zeigen. Keine kompletten Geschäftspayloads, Tokens oder Passwörter protokollieren; auch Log-Leserechte sind zu begrenzen. Die SAP-Samplequelle zeigt konkrete ältere Interfaces und Scheduling-APIs, deren Unterstützung und zulässige RAP-Phase im Zielrelease geprüft werden müssen. Sie ist kein Beweis, dass jeder gezeigte API-Aufruf in jeder RAP-Phase sicher ist."],"codeLang":"text","cases":["Zwei lokale Pakete verarbeiten; Zähler und gesicherte Belegzustände stimmen überein.","Letztes Paket enthält nur einen Beleg; weder Auslassung noch doppelte Verarbeitung durch Pagination.","Crash nach Zielbuchung vor lokaler Quittierung: Abgleich/Idempotenz verhindert zweite Buchung, unsicherer Zustand wird sichtbar."],"quiz":[{"q":"Ein Job-Log meldet „Finished“, enthält aber 12 fachlich abgewiesene Belege. Wie meldest du das Ergebnis?","options":["Vollständig fachlich erfolgreich, weil der Scheduler grün ist.","Unbekannt, da Logs grundsätzlich keinen Ergebnisbezug haben.","Technisch beendet, mit separat ausgewiesenen fachlichen Ablehnungen."],"correct":2,"rationales":["Technischer Abschluss löscht keine im Log enthaltenen fachlichen Fehler.","Das bereinigte Log und die gesicherten Zustände liefern durchaus relevante Evidenz.","Betriebsstatus und Fachresultat müssen getrennt nachvollziehbar sein."],"explain":"Nicht passend: Technischer Abschluss löscht keine im Log enthaltenen fachlichen Fehler. Nicht passend: Das bereinigte Log und die gesicherten Zustände liefern durchaus relevante Evidenz. Richtig: Betriebsstatus und Fachresultat müssen getrennt nachvollziehbar sein.","sources":["https://learning.sap.com/courses/administrating-sap-s-4hana-cloud-public-edition/monitoring-application-jobs_f18a1e3b-b367-46f0-828a-99fea42cd3b4"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein rein lokaler Paketjob speichert einen Erledigt-Marker vor der eigentlichen Belegänderung und stürzt danach ab. Welche Korrektur schützt den Wiederanlauf?","options":["Marker und Fachwirkung in derselben geeigneten Transaktion sichern.","Die Marker früher schreiben und nur den Scheduler häufiger starten.","Alle Protokolle entfernen und jeden Beleg immer erneut buchen."],"correct":0,"rationales":["Der Neustart darf eine nicht ausgeführte Wirkung nicht irrtümlich als erledigt überspringen.","Das vergrößert das Verlustfenster statt es atomar zu schließen.","Ohne Deduplizierung drohen doppelte Wirkungen und fehlende Diagnose."],"explain":"Richtig: Der Neustart darf eine nicht ausgeführte Wirkung nicht irrtümlich als erledigt überspringen. Nicht passend: Das vergrößert das Verlustfenster statt es atomar zu schließen. Nicht passend: Ohne Deduplizierung drohen doppelte Wirkungen und fehlende Diagnose.","sources":["https://github.com/SAP-samples/abap-platform-application-jobs"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Ein externer Buchungsaufruf endet im Timeout; das Ziel könnte bereits gebucht haben. Was ist vor einem blinden Retry nötig?","options":["Ein lokales ROLLBACK, das auch die fremde Buchung sicher entfernt.","Idempotenzschlüssel oder verbindlicher Statusabgleich beim Ziel.","Ein neues zufälliges Belegkennzeichen für jede Wiederholung."],"correct":1,"rationales":["Die lokale Transaktion kontrolliert keine bereits wirksame Buchung des fremden Systems.","Der unsichere Ausgang muss so geklärt werden, dass keine doppelte Fachwirkung entsteht.","Ein neuer Schlüssel kann die Deduplizierung umgehen und eine zweite Buchung ermöglichen."],"explain":"Nicht passend: Die lokale Transaktion kontrolliert keine bereits wirksame Buchung des fremden Systems. Richtig: Der unsichere Ausgang muss so geklärt werden, dass keine doppelte Fachwirkung entsteht. Nicht passend: Ein neuer Schlüssel kann die Deduplizierung umgehen und eine zweite Buchung ermöglichen.","sources":["https://github.com/SAP-samples/abap-platform-application-jobs"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["jobs","monitoring"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: jobs","url":"https://github.com/SAP-samples/abap-platform-application-jobs","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."},{"title":"SAP-Originalquelle: monitoring","url":"https://learning.sap.com/courses/administrating-sap-s-4hana-cloud-public-edition/monitoring-application-jobs_f18a1e3b-b367-46f0-828a-99fea42cd3b4","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Zwei lokale Pakete verarbeiten; Zähler und gesicherte Belegzustände stimmen überein.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Letztes Paket enthält nur einen Beleg; weder Auslassung noch doppelte Verarbeitung durch Pagination.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Crash nach Zielbuchung vor lokaler Quittierung: Abgleich/Idempotenz verhindert zweite Buchung, unsicherer Zustand wird sichtbar.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m13-senior-launchpad","moduleId":"abap-m13","title":"Fiori Launchpad: Intents, Kataloge und Fehlersuche nach dem Transport","minutes":25,"prerequisites":"Fiori-App und Service; Schwerpunkt ABAP Launchpad in S/4HANA, Tools in Public Edition/BTP separat prüfen.","objectives":["App-Sichtbarkeit, Navigation und Backendberechtigung auseinanderhalten.","Semantic Object/Action und Target Mapping nachvollziehen.","Transportabhängigkeiten und Upgrade-Nachfolger kontrolliert prüfen."],"paragraphs":["Die App funktioniert in der lokalen Vorschau, nach Transport erscheint jedoch keine Kachel oder „Navigation target could not be resolved“. Vorschau und produktiver Launchpad-Einstieg sind unterschiedliche Wege. Das Launchpad löst einen Intent aus Semantic Object und Action mit passenden Parametern zu einem Navigationsziel auf. Eine vorhandene UI5-Anwendung allein liefert noch kein korrekt zugeordnetes Target Mapping.","Business-Kataloge stellen rollenbezogenen App-/Navigationsinhalt bereit. Spaces und Pages organisieren die Oberfläche. Diese Struktur ist nicht identisch mit der fachlichen Backendautorisierung. Eine sichtbare Kachel kann an fehlenden Service- oder Datenrechten scheitern; eine ausgeblendete Kachel verhindert keinen direkten API-Aufruf. Der konkrete Rollen- und Content-Lifecycle hängt von Edition und Launchpad-Variante ab.","Vergleiche nach einem Transport mit einem echten Fachbenutzer: Intent/Parameter, Katalog-/Rollenzuordnung, Page, Target Mapping, App-ID/Version, Zielsystemalias und Service. Prüfe UI-Deployment, OData-Service sowie erforderliche Konfiguration als getrennte Abhängigkeiten. Ein Entwickler mit breiten Rechten ist kein repräsentativer Abnahmetest. Cacheinvalidierung erst nach Befund einsetzen, nicht als Universalantwort.","Nach Upgrades können Referenzen gebrochen oder Apps deprecated/obsolete sein. Im unterstützten ABAP Launchpad hilft der Content Manager, Referenzen und Nachfolger zu analysieren. Änderungen in verschiedenen Konfigurations-/Customizing-Scopes können sich entkoppeln. Übernimm Nachfolger samt Page, Services und Rollen kontrolliert; vorhandene kundeneigene Anpassungen nicht unbesehen durch einen Reset überschreiben."],"codeLang":"text","cases":["Fachbenutzer startet den freigegebenen Intent und landet auf dem richtigen Objekt im richtigen Zielsystem.","Zwei Mappings mit unterschiedlichen Pflichtparametern: reproduzierbare, passende Zielauflösung nachweisen.","Nach Transport fehlt eine Mappingreferenz: Konfiguration lokalisieren, ohne pauschale Adminrechte zu vergeben."],"quiz":[{"q":"Eine UI5-App läuft in der Vorschau, ihr Launchpad-Intent wird nach Transport nicht aufgelöst. Wo setzt die erste Diagnose an?","options":["Bei der Ersetzung aller ABAP-SELECTs durch neue CDS-Views.","Bei Intent, Parametern, Target Mapping und zugeordnetem Inhalt.","Bei der Entfernung aller Backend-Berechtigungsprüfungen."],"correct":1,"rationales":["Der Fehler liegt bereits vor dem fachlichen Datenzugriff in der Zielauflösung.","Die Vorschau beweist die produktive Intentauflösung und Rollenverteilung nicht.","Fehlendes Target Mapping wird dadurch nicht angelegt; zusätzlich entsteht eine Sicherheitslücke."],"explain":"Nicht passend: Der Fehler liegt bereits vor dem fachlichen Datenzugriff in der Zielauflösung. Richtig: Die Vorschau beweist die produktive Intentauflösung und Rollenverteilung nicht. Nicht passend: Fehlendes Target Mapping wird dadurch nicht angelegt; zusätzlich entsteht eine Sicherheitslücke.","sources":["https://learning.sap.com/courses/exploring-the-authorization-concept-for-sap-fiori-on-sap-s-4hana/checking-and-adjusting-launchpad-content"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Eine Kachel ist sichtbar, der Service verweigert einen fremden Beleg. Welche Schlussfolgerung passt?","options":["Kachel und Fachrechte sind verschiedene Grenzen; Ablehnung kann korrekt sein.","Sichtbarkeit garantiert Vollzugriff auf alle Daten dieser Anwendung.","Der Benutzer muss vorsorglich ein dauerhaftes Adminprofil bekommen."],"correct":0,"rationales":["Sichtbarkeit einer Anwendung verleiht kein Recht auf jeden Datensatz.","Katalog-/Oberflächeninhalt ist kein universeller Datensatzberechtigungsnachweis.","Breite Zusatzrechte umgehen den Fachvertrag und sind keine Fehlerdiagnose."],"explain":"Richtig: Sichtbarkeit einer Anwendung verleiht kein Recht auf jeden Datensatz. Nicht passend: Katalog-/Oberflächeninhalt ist kein universeller Datensatzberechtigungsnachweis. Nicht passend: Breite Zusatzrechte umgehen den Fachvertrag und sind keine Fehlerdiagnose.","sources":["https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Nach einem Upgrade meldet der Content Manager eine veraltete App und einen Nachfolger. Was gehört zur Umstellung?","options":["Nur die Kachel beschriften; der technische Verweis kann unverändert bleiben.","Alle Kundenscopes ohne Prüfung auf SAP-Standard zurücksetzen.","Mapping, Page, Services und Rollen des Nachfolgers gemeinsam prüfen."],"correct":2,"rationales":["Ein neuer Text migriert weder Navigation noch Serviceabhängigkeiten.","Das kann berechtigte kundeneigene Anpassungen verwerfen.","Der neue Einstieg muss mit seinen technischen und fachlichen Abhängigkeiten konsistent sein."],"explain":"Nicht passend: Ein neuer Text migriert weder Navigation noch Serviceabhängigkeiten. Nicht passend: Das kann berechtigte kundeneigene Anpassungen verwerfen. Richtig: Der neue Einstieg muss mit seinen technischen und fachlichen Abhängigkeiten konsistent sein.","sources":["https://learning.sap.com/courses/exploring-the-authorization-concept-for-sap-fiori-on-sap-s-4hana/checking-and-adjusting-launchpad-content"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["launchpad","auth"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: launchpad","url":"https://learning.sap.com/courses/exploring-the-authorization-concept-for-sap-fiori-on-sap-s-4hana/checking-and-adjusting-launchpad-content","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."},{"title":"SAP-Originalquelle: auth","url":"https://learning.sap.com/courses/building-transactional-apps-with-the-abap-restful-application-programming-model/implementing-authority-checks","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Fachbenutzer startet den freigegebenen Intent und landet auf dem richtigen Objekt im richtigen Zielsystem.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"Zwei Mappings mit unterschiedlichen Pflichtparametern: reproduzierbare, passende Zielauflösung nachweisen.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Nach Transport fehlt eine Mappingreferenz: Konfiguration lokalisieren, ohne pauschale Adminrechte zu vergeben.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]},{"id":"abap-m11-senior-semantics","moduleId":"abap-m11","title":"CDS-Fachsemantik: Währungen, Einheiten und belastbare Summen","minutes":25,"prerequisites":"CDS View Entities, Aggregationen und DDIC-Typen; Zielfunktionen für Umrechnung sind releaseabhängig.","objectives":["Beträge und Mengen zusammen mit ihrer Referenz modellieren.","Annotation und tatsächliche Umrechnung unterscheiden.","Aggregation und Rundung mit Gegenbeispielen testen."],"paragraphs":["Eine Zahl 100 ist ohne Einheit oder Währung fachlich unvollständig. Ein Betrag braucht seine Währungsreferenz, eine Menge ihre Maßeinheit. Für entsprechend typisierte Elemente in CDS View Entities werden diese Referenzen durch Semantics-Annotationen verbunden. Wähle die tatsächlichen projizierten Feldnamen; ein umbenanntes CurrencyCode muss auch in der Referenz korrekt erscheinen.","Die Annotation amount.currencyCode erklärt, zu welchem Währungsfeld der Betrag gehört. Sie rechnet 100 USD nicht in 100 EUR um. Mengen von 10 KG und 5 ST dürfen nicht blind als 15 summiert werden. Entweder nach kompatibler Einheit/Währung gruppieren oder eine definierte Umrechnung mit fachlich passender Dimension und Referenz vornehmen.","Bei Währungsumrechnung sind Zielwährung, Kursdatum, Kurstyp, verfügbare Kurse und Fehlerbehandlung Teil des Vertrags. Datenbanktyp, Währungsdezimalstellen, Berechnungspräzision und Anzeigeformat sind unterschiedliche Ebenen. Vermeide binäre Gleitkommaarithmetik als pauschale Geldstrategie; auch DECIMAL allein entscheidet nicht, wann fachlich gerundet wird. Fehlende Kurse nicht still als 1 behandeln.","Prüfe Zeilengranularität vor der Aggregation: ein Join auf mehrere Texte oder Positionen kann denselben Betrag vervielfachen. DISTINCT ist keine allgemeine Reparatur, weil zwei fachlich verschiedene Positionen denselben Wert haben können. Vergleiche Schlüssel, Anzahl und Summen vor und nach der Erweiterung. Technisch schnelle falsche Summen bleiben fachlich falsch."],"codeLang":"cds","cases":["Zwei EUR-Positionen derselben Granularität ergeben die erwartete EUR-Summe mit korrekter Referenz.","EUR und USD bleiben getrennt oder werden mit festgelegtem Datum/Kurstyp nachvollziehbar konvertiert.","Fehlender Kurs oder vervielfachender Textjoin: kontrollierter Fehler beziehungsweise korrigierte Ergebnismenge statt erfundener Summe."],"quiz":[{"q":"Eine View annotiert NetAmount mit CurrencyCode. Eine Zeile enthält USD, die andere EUR. Was bewirkt die Annotation allein?","options":["Sie rechnet alle Beträge automatisch in die Anmeldesprache um.","Sie ersetzt die Werte implizit durch Beträge in der Hauswährung.","Sie verknüpft Betrag und Währungsreferenz, ohne Werte umzurechnen."],"correct":2,"rationales":["Sprache ist keine Zielwährung und die Annotation führt keine Kursumrechnung aus.","Eine semantische Referenz bestimmt weder Kurs noch Umrechnungsdatum.","Für eine gemeinsame Summe ist zusätzlich ein fachlich definierter Umrechnungs- oder Gruppierungsvertrag nötig."],"explain":"Nicht passend: Sprache ist keine Zielwährung und die Annotation führt keine Kursumrechnung aus. Nicht passend: Eine semantische Referenz bestimmt weder Kurs noch Umrechnungsdatum. Richtig: Für eine gemeinsame Summe ist zusätzlich ein fachlich definierter Umrechnungs- oder Gruppierungsvertrag nötig.","sources":["https://learning.sap.com/courses/building-data-models-with-the-abap-dictionary-and-abap-core-data-services/using-abap-annotations-in-cds-views_fcda7ade-1bb7-4c79-8b1f-0f20c7f45a70"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Nach einem Join auf zwei sprachabhängige Texte verdoppelt sich die Belegsumme. Was prüfst du zuerst?","options":["Die Join-Kardinalität und Zeilengranularität vor der Aggregation.","Ob die Betragsanzeige von zwei auf null Nachkommastellen wechselt.","Ob man DISTINCT nur auf dem Betrag als universellen Fix setzen kann."],"correct":0,"rationales":["Mehrere Texttreffer können die gleichen fachlichen Beträge mehrfach in die Summe aufnehmen.","Darstellungspräzision erklärt nicht die systematische Verdopplung der Zeilen.","Gleiche Beträge können zu verschiedenen echten Positionen gehören; DISTINCT kann dann Daten verlieren."],"explain":"Richtig: Mehrere Texttreffer können die gleichen fachlichen Beträge mehrfach in die Summe aufnehmen. Nicht passend: Darstellungspräzision erklärt nicht die systematische Verdopplung der Zeilen. Nicht passend: Gleiche Beträge können zu verschiedenen echten Positionen gehören; DISTINCT kann dann Daten verlieren.","sources":["https://learning.sap.com/courses/building-data-models-with-the-abap-dictionary-and-abap-core-data-services/using-abap-annotations-in-cds-views_fcda7ade-1bb7-4c79-8b1f-0f20c7f45a70"],"revision":"2026-11-08-abap-senior-v1"},{"q":"Für eine EUR-Umrechnung fehlt am geforderten Kursdatum der USD-Kurs. Welche Behandlung ist fachlich belastbar?","options":["Den fehlenden Kurs still durch 1 ersetzen und die Summe freigeben.","Den fehlenden Kurs nach festgelegtem Fehlervertrag sichtbar behandeln.","Die Währungsannotation entfernen und die Beträge als Stückzahlen summieren."],"correct":1,"rationales":["Das erzeugt ohne fachliche Grundlage einen falschen Gegenwert.","Fallback, Ablehnung oder Nachpflege müssen ausdrücklich vereinbart sein; keine erfundene Umrechnung.","Die Semantik zu entfernen löst den fehlenden Kurs nicht."],"explain":"Nicht passend: Das erzeugt ohne fachliche Grundlage einen falschen Gegenwert. Richtig: Fallback, Ablehnung oder Nachpflege müssen ausdrücklich vereinbart sein; keine erfundene Umrechnung. Nicht passend: Die Semantik zu entfernen löst den fehlenden Kurs nicht.","sources":["https://learning.sap.com/courses/building-data-models-with-the-abap-dictionary-and-abap-core-data-services/using-abap-annotations-in-cds-views_fcda7ade-1bb7-4c79-8b1f-0f20c7f45a70"],"revision":"2026-11-08-abap-senior-v1"}],"sourceKeys":["semantics"],"order":["body","code","body2"],"sources":[{"title":"SAP-Originalquelle: semantics","url":"https://learning.sap.com/courses/building-data-models-with-the-abap-dictionary-and-abap-core-data-services/using-abap-annotations-in-cds-views_fcda7ade-1bb7-4c79-8b1f-0f20c7f45a70","access":"Öffentliche Fachreferenz; praktische Ausführung benötigt passendes SAP-System, Release, Zugang und Berechtigungen. Kein kostenloser Systemzugang zugesagt."}],"researchedAt":"2026-11-08","seniorRevision":"2026-11-08-abap-senior-v1","exercises":[{"level":"Normalfall","task":"Zwei EUR-Positionen derselben Granularität ergeben die erwartete EUR-Summe mit korrekter Referenz.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Grenzfall","task":"EUR und USD bleiben getrennt oder werden mit festgelegtem Datum/Kurstyp nachvollziehbar konvertiert.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."},{"level":"Fehlerfall","task":"Fehlender Kurs oder vervielfachender Textjoin: kontrollierter Fehler beziehungsweise korrigierte Ergebnismenge statt erfundener Summe.","acceptance":"Soll-Ergebnis aus dem Fall begründen; bei Systemzugang tatsächliches Ergebnis und Release protokollieren. Ohne Systemzugang nur Entwurfsnachweis, kein ausgeführter SAP-Test."}]}];
+var TOTAL_MIN = 0;
+var FLAT = [];
+MODULES.forEach(function(m){
+  m.lessons.forEach(function(l){ FLAT.push(l); TOTAL_MIN += l.minutes; });
 });
-MODULES.push({
-  id:'m22', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Übertragungsmedien & Verkabelung', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m22-l1', title:'Twisted-Pair-Kabel: Kategorien und Grenzen', minutes:9,
-      body:
-        '<p>Das Kupfer-Netzwerkkabel ist ein <strong>Twisted-Pair-Kabel</strong>: vier verdrillte Adernpaare. Die Verdrillung ist kein Zufall, sie hebt eingestreute Störungen gegenseitig auf — deshalb heißt es so.</p>'+
-        '<table class="lesson-table"><tr><th>Kategorie</th><th>Frequenz</th><th>Unterstützt</th><th>Länge</th></tr>'+
-        '<tr><td>Cat 5e</td><td>100 MHz</td><td>1 Gbit/s</td><td>100 m</td></tr>'+
-        '<tr><td>Cat 6</td><td>250 MHz</td><td>1 Gbit/s (10 Gbit/s bis 55 m)</td><td>100 m</td></tr>'+
-        '<tr><td>Cat 6a</td><td>500 MHz</td><td>10 Gbit/s</td><td>100 m</td></tr>'+
-        '<tr><td>Cat 7</td><td>600 MHz</td><td>10 Gbit/s</td><td>100 m</td></tr>'+
-        '<tr><td>Cat 8</td><td>2.000 MHz</td><td>25–40 Gbit/s</td><td>30 m</td></tr></table>'+
-        '<p><strong>Die 100-Meter-Regel</strong> ist die meistgeprüfte Zahl des Themas: Eine Ethernet-Strecke über Kupfer darf höchstens <strong>100 m</strong> lang sein — davon 90 m fest verlegtes Installationskabel plus zweimal 5 m Patchkabel. Wer weiter muss, braucht einen Switch als Zwischenstation oder Glasfaser.</p>'+
-        '<p><strong>Schirmung</strong> — das Kürzel liest sich als <em>Gesamtschirm/Paarschirm</em>TP:</p>'+
-        '<ul><li><strong>U/UTP</strong> – ungeschirmt, günstig, für unkritische Büroumgebungen.</li>'+
-        '<li><strong>F/UTP</strong> – Folie als Gesamtschirm.</li>'+
-        '<li><strong>S/FTP</strong> – Geflecht außen, Folie um jedes Paar. Die beste Wahl bei starken Störquellen wie Maschinen, Motoren oder Leuchtstofflampen.</li></ul>',
-      code:
-        "Steckerbelegung RJ45 nach EIA/TIA:\n\n"+
-        "  T568B (in Deutschland ueblich)      T568A\n"+
-        "   1 weiss-orange                      1 weiss-gruen\n"+
-        "   2 orange                            2 gruen\n"+
-        "   3 weiss-gruen                       3 weiss-orange\n"+
-        "   4 blau                              4 blau\n"+
-        "   5 weiss-blau                        5 weiss-blau\n"+
-        "   6 gruen                             6 orange\n"+
-        "   7 weiss-braun                       7 weiss-braun\n"+
-        "   8 braun                             8 braun\n\n"+
-        "  Beide Seiten gleich  = Patchkabel (1:1)\n"+
-        "  A auf B              = Crossover (heute unnoetig, Auto-MDI-X)\n\n"+
-        "Merke: Verlegekabel hat STARRE Adern (Klemmen im Patchfeld),\n"+
-        "Patchkabel hat LITZE (flexibel, fuer Steckverbindungen).",
-      codeLang:'Verkabelung',
-      tip:'Bei „Welches Kabel empfehlen Sie und warum?" gehören immer zwei Angaben in die Antwort: die Kategorie und die Schirmung, jeweils begründet. Also nicht „Cat 6a", sondern „Cat 6a S/FTP, weil 10 Gbit/s über die volle Strecke von 100 Metern gefordert sind und die Leitung durch einen Bereich mit Maschinen führt". Und prüfe immer die Streckenlänge gegen die 100-Meter-Grenze — wenn die Aufgabe 130 Meter nennt, ist das der eigentliche Prüfungspunkt.',
-      quiz:[
-        {q:'Wie lang darf eine Ethernet-Strecke über Twisted Pair maximal sein?', options:['50 m','100 m','300 m'], correct:1, explain:'90 m Verlegekabel plus zweimal 5 m Patchkabel.'},
-        {q:'Welche Kategorie brauchst du für 10 Gbit/s über 100 m?', options:['Cat 5e','Cat 6','Cat 6a'], correct:2, explain:'Cat 6 schafft 10 Gbit/s nur bis etwa 55 m.'},
-        {q:'Wie lang darf das fest verlegte Installationskabel höchstens sein?', options:['100 m','90 m','55 m'], correct:1, explain:'Plus zweimal 5 m Patchkabel ergibt das die zulässige Gesamtstrecke von 100 m.'}
-      ]
-    },
-    {
-      id:'m22-l2', title:'Glasfaser und die Wahl des Mediums', minutes:9,
-      body:
-        '<p><strong>Lichtwellenleiter (LWL)</strong> übertragen Licht statt Strom. Daraus folgen alle Vorteile:</p>'+
-        '<ul><li><strong>Keine elektromagnetische Störung</strong> – weder ein- noch abstrahlend. Ideal neben Starkstrom und Maschinen.</li>'+
-        '<li><strong>Große Reichweite</strong> – Kilometer statt 100 Meter.</li>'+
-        '<li><strong>Abhörsicherheit</strong> – ein Abgriff erzeugt Dämpfung und ist messbar.</li>'+
-        '<li><strong>Galvanische Trennung</strong> – kein Potenzialausgleich zwischen Gebäuden nötig, kein Blitzschadensweg.</li>'+
-        '<li><strong>Hohe Bandbreite</strong> und geringes Gewicht.</li></ul>'+
-        '<p>Nachteile: teurere Aktivtechnik (Transceiver), empfindlich gegen enge Biegeradien, Konfektionierung erfordert Spezialwerkzeug und Fachkenntnis.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Multimode (MM)</th><th>Singlemode (SM)</th></tr>'+
-        '<tr><td>Kernduchmesser</td><td>50 oder 62,5 µm</td><td>9 µm</td></tr>'+
-        '<tr><td>Lichtquelle</td><td>LED oder VCSEL</td><td>Laser</td></tr>'+
-        '<tr><td>Reichweite</td><td>bis ca. 550 m</td><td>bis viele Kilometer</td></tr>'+
-        '<tr><td>Kosten</td><td>Technik günstiger</td><td>Technik teurer</td></tr>'+
-        '<tr><td>Einsatz</td><td>innerhalb eines Gebäudes, Backbone</td><td>zwischen Standorten, WAN</td></tr></table>'+
-        '<p>Merkhilfe: <strong>Multi</strong>mode hat den <strong>dicken</strong> Kern und viele Lichtwege, die sich mit der Entfernung gegenseitig verwischen (Modendispersion) — deshalb die kürzere Reichweite.</p>',
-      code:
-        "Medienwahl - typische Pruefungssituationen:\n\n"+
-        "  Arbeitsplatz zum Etagenverteiler, 35 m\n"+
-        "     -> Cat 6a U/UTP, Kupfer reicht, guenstig, PoE moeglich\n\n"+
-        "  Etagenverteiler zum Serverraum, 180 m, hohe Last\n"+
-        "     -> Multimode-LWL (OM4), da ueber 100 m und hohe Bandbreite\n\n"+
-        "  Zweites Firmengebaeude, 1,2 km entfernt\n"+
-        "     -> Singlemode-LWL, Reichweite und galvanische Trennung\n\n"+
-        "  Werkhalle mit Schweissrobotern, 60 m\n"+
-        "     -> LWL oder mindestens Cat 6a S/FTP wegen starker EMV-Last\n\n"+
-        "  Ueberwachungskamera an der Aussenwand, 45 m, kein Stromanschluss\n"+
-        "     -> Cat 6 mit PoE, da Strom und Daten ueber ein Kabel",
-      codeLang:'Medienwahl',
-      tip:'Drei Stichwörter in der Aufgabenstellung entscheiden die Medienwahl fast immer allein. Eine Entfernung über 100 Meter bedeutet Glasfaser. Störquellen wie Motoren, Schweißgeräte oder Leuchtstofflampen bedeuten Schirmung oder Glasfaser. Und eine Gebäudeverbindung im Freien bedeutet Singlemode, weil dort zusätzlich die galvanische Trennung gegen Blitzschäden zählt. Suche diese Signalwörter, bevor du anfängst zu schreiben.',
-      quiz:[
-        {q:'Welche Faser nutzt man für 1,5 km zwischen zwei Gebäuden?', options:['Multimode','Singlemode','Cat 7'], correct:1, explain:'Multimode reicht nur etwa 550 m, Kupfer nur 100 m.'},
-        {q:'Welcher Vorteil von LWL zählt neben einem Maschinenpark am meisten?', options:['Der niedrige Preis','Die Unempfindlichkeit gegen elektromagnetische Störungen','Das geringe Gewicht'], correct:1, explain:'Licht lässt sich elektromagnetisch nicht stören.'},
-        {q:'Welcher LWL-Vorteil zählt bei einer Verbindung zwischen zwei Gebäuden besonders?', options:['Das geringe Gewicht','Die galvanische Trennung — kein Blitzschadensweg','Der Preis'], correct:1, explain:'Zusätzlich zur Reichweite über 100 m und der Störunempfindlichkeit.'}
-      ]
-    },
-    {
-      id:'m22-l3', title:'Strukturierte Verkabelung und PoE', minutes:9,
-      body:
-        '<p>Die <strong>strukturierte Verkabelung</strong> nach EN 50173 trennt das Netz in drei Bereiche — sie ist anwendungsneutral, also unabhängig davon, ob später Telefonie, Ethernet oder Gebäudetechnik darüber läuft:</p>'+
-        '<ul><li><strong>Primärbereich</strong> (Geländeverkabelung) – zwischen Gebäuden, fast immer Singlemode-LWL.</li>'+
-        '<li><strong>Sekundärbereich</strong> (Steigbereich) – zwischen den Etagenverteilern eines Gebäudes, meist Multimode-LWL.</li>'+
-        '<li><strong>Tertiärbereich</strong> (Etagenverkabelung) – vom Etagenverteiler zur Anschlussdose, Kupfer, maximal 90 m.</li></ul>'+
-        '<p>Im <strong>Verteilerschrank</strong> enden die Verlegekabel am <strong>Patchfeld</strong>. Von dort wird mit kurzen Patchkabeln flexibel auf die Switch-Ports rangiert. Der Vorteil: Ein Arbeitsplatz lässt sich ohne neue Verlegung einem anderen VLAN oder Switch zuordnen.</p>'+
-        '<p><strong>Power over Ethernet (PoE)</strong> überträgt Strom und Daten über dasselbe Kabel — unverzichtbar für Access Points, IP-Kameras und IP-Telefone an Stellen ohne Steckdose.</p>'+
-        '<table class="lesson-table"><tr><th>Standard</th><th>Bezeichnung</th><th>Leistung am Endgerät</th></tr>'+
-        '<tr><td>802.3af</td><td>PoE</td><td>ca. 12,95 W</td></tr>'+
-        '<tr><td>802.3at</td><td>PoE+</td><td>ca. 25,5 W</td></tr>'+
-        '<tr><td>802.3bt Typ 3</td><td>PoE++</td><td>ca. 51 W</td></tr>'+
-        '<tr><td>802.3bt Typ 4</td><td>PoE++</td><td>ca. 71 W</td></tr></table>'+
-        '<p>Beachte: Am Switch-Port wird jeweils mehr eingespeist, ein Teil geht als Leitungsverlust verloren. Wichtig ist außerdem das <strong>PoE-Budget</strong> des Switches — die Summe über alle Ports ist begrenzt.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 220" role="img" aria-label="Primaer-, Sekundaer- und Tertiaerbereich der strukturierten Verkabelung"><rect class="s-box" x="20" y="120" width="120" height="76" rx="6"/><text class="s-hd" x="80" y="144" text-anchor="middle">Geb&#228;ude B</text><text class="s-lbl" x="80" y="166" text-anchor="middle">Standortverteiler</text><rect class="s-box" x="200" y="120" width="120" height="76" rx="6"/><text class="s-hd" x="260" y="144" text-anchor="middle">Geb&#228;ude A</text><text class="s-lbl" x="260" y="166" text-anchor="middle">Standortverteiler</text><line class="s-lwl" x1="140" y1="158" x2="200" y2="158"/><text class="s-lbl" x="170" y="150" text-anchor="middle">1</text><rect class="s-accent" x="200" y="62" width="120" height="44" rx="6"/><text class="s-lbl" x="260" y="88" text-anchor="middle">Etagenverteiler</text><line class="s-lwl" x1="260" y1="120" x2="260" y2="106"/><text class="s-lbl" x="272" y="116">2</text><rect class="s-strong" x="380" y="62" width="160" height="44" rx="6"/><text class="s-lbl" x="460" y="88" text-anchor="middle">Anschlussdose &#183; Arbeitsplatz</text><line class="s-cu" x1="320" y1="84" x2="380" y2="84"/><text class="s-lbl" x="350" y="76" text-anchor="middle">3</text><text class="s-lbl" x="20" y="28">1 &#183; Prim&#228;rbereich &#8211; zwischen Geb&#228;uden, Singlemode-LWL</text><text class="s-lbl" x="20" y="44">2 &#183; Sekund&#228;rbereich &#8211; Steigbereich im Geb&#228;ude, meist Multimode-LWL</text><text class="s-lbl" x="320" y="28">3 &#183; Terti&#228;rbereich &#8211; Etage, Kupfer, max. 90 m</text><text class="s-lbl" x="20" y="214">Alle Verlegekabel enden am Patchfeld; von dort wird flexibel auf die Switch-Ports rangiert.</text></svg><figcaption>Die drei Bereiche nach EN 50173. Die Norm ist anwendungsneutral: Sie legt nur fest, wie verkabelt wird, nicht was darueber laeuft.</figcaption></figure>',
-      code:
-        "PoE-BUDGET PRUEFEN\n\n"+
-        "  Switch: 24 Ports, PoE-Budget 370 W\n"+
-        "  Geplant: 12 Access Points a 25,5 W (PoE+)\n"+
-        "            6 IP-Kameras   a 12,95 W (PoE)\n"+
-        "            8 IP-Telefone  a  6,5 W\n\n"+
-        "  12 x 25,50 = 306,0 W\n"+
-        "   6 x 12,95 =  77,7 W\n"+
-        "   8 x  6,50 =  52,0 W\n"+
-        "  ---------------------\n"+
-        "  Summe      = 435,7 W   >  370 W Budget\n\n"+
-        "  Ergebnis: Das Budget reicht NICHT.\n"+
-        "  Loesung: Switch mit groesserem PoE-Budget, zweiter PoE-Switch\n"+
-        "  oder PoE-Injektoren fuer einzelne Geraete.",
-      codeLang:'PoE-Planung',
-      tip:'Die PoE-Budget-Aufgabe ist beliebt, weil sie nach einer einfachen Addition aussieht und trotzdem eine Entscheidung verlangt. Rechne die Summe, vergleiche sie mit dem Budget und schreibe dann ausdrücklich hin, ob es reicht — plus einen Lösungsvorschlag, wenn nicht. Die Portzahl allein genügt nie als Prüfung: Ein 24-Port-Switch kann durchaus weniger als 24 Geräte mit voller PoE+-Leistung versorgen.',
-      quiz:[
-        {q:'Welcher Bereich der strukturierten Verkabelung verbindet Gebäude miteinander?', options:['Tertiärbereich','Sekundärbereich','Primärbereich'], correct:2, explain:'Tertiär ist die Etage, Sekundär der Steigbereich im Gebäude.'},
-        {q:'Wozu dient ein Patchfeld?', options:['Zur Stromverteilung','Als fester Endpunkt der Verlegekabel, von dem flexibel auf Switch-Ports rangiert wird','Zur Verstärkung des Signals'], correct:1, explain:'So lässt sich ein Arbeitsplatz ohne Neuverlegung umkonfigurieren.'},
-        {q:'Ein Switch hat 24 Ports und 190 W PoE-Budget. Wie viele PoE+-Geräte à 25,5 W sind versorgbar?', options:['24','7','12'], correct:1, explain:'190 / 25,5 = 7,45 — die Portzahl allein sagt nichts über das Budget.'}
-      ]
-    }
-  ]
+var TOTAL = FLAT.length;
+var TRACES = [
+{
+  id:'tr1', level:1, title:'Zählen mit Bedingung', input:'werte = [4, 9, 2, 11, 6]',
+  intro:'Der Einstieg: ein Zähler mit Filterbedingung. Achte darauf, wann sich <code>anzahl</code> ändert — und wann der Rumpf übersprungen wird.',
+  code:[
+    'FUNKTION zaehleGrosse(werte, grenze)',
+    '  anzahl <- 0',
+    '  FUER i VON 0 BIS LAENGE(werte)-1 TUE',
+    '    WENN werte[i] > grenze DANN',
+    '      anzahl <- anzahl + 1',
+    '    ENDEWENN',
+    '  ENDEFUER',
+    '  GIB anzahl ZURUECK',
+    'ENDEFUNKTION'
+  ],
+  vars:['i','werte[i]','anzahl'],
+  steps:[
+    {line:1, values:{i:'—', 'werte[i]':'—', anzahl:'0'}, note:'Zähler initialisieren. grenze = 5.'},
+    {line:2, values:{i:'0', 'werte[i]':'4', anzahl:'0'}, note:'1. Durchlauf: Index 0, Wert 4.'},
+    {line:3, values:{i:'0', 'werte[i]':'4', anzahl:'0'}, note:'4 > 5 ist falsch → Rumpf übersprungen.'},
+    {line:2, values:{i:'1', 'werte[i]':'9', anzahl:'0'}, note:'2. Durchlauf: Index 1, Wert 9.'},
+    {line:3, values:{i:'1', 'werte[i]':'9', anzahl:'0'}, note:'9 > 5 ist wahr.'},
+    {line:4, values:{i:'1', 'werte[i]':'9', anzahl:'1'}, ask:'anzahl', note:'anzahl wird um 1 erhöht.'},
+    {line:2, values:{i:'2', 'werte[i]':'2', anzahl:'1'}, note:'3. Durchlauf: Wert 2.'},
+    {line:3, values:{i:'2', 'werte[i]':'2', anzahl:'1'}, note:'2 > 5 ist falsch.'},
+    {line:2, values:{i:'3', 'werte[i]':'11', anzahl:'1'}, note:'4. Durchlauf: Wert 11.'},
+    {line:4, values:{i:'3', 'werte[i]':'11', anzahl:'2'}, ask:'anzahl', note:'11 > 5 → anzahl = 2.'},
+    {line:2, values:{i:'4', 'werte[i]':'6', anzahl:'2'}, note:'5. Durchlauf: Wert 6.'},
+    {line:4, values:{i:'4', 'werte[i]':'6', anzahl:'3'}, ask:'anzahl', note:'6 > 5 → anzahl = 3.'},
+    {line:7, values:{i:'5', 'werte[i]':'—', anzahl:'3'}, note:'i erreicht 5, die Bedingung ist verletzt → Rückgabe.'}
+  ],
+  result:'3',
+  lesson:'Zähle nicht die Schleifendurchläufe, sondern die tatsächlichen Erhöhungen: Fünf Durchläufe, aber nur drei Treffer. Die Prüfung fragt gern „Wie oft wird Zeile 5 ausgeführt?" — die Antwort ist hier 3, nicht 5. Beachte auch die Obergrenze LAENGE − 1: Bei fünf Elementen läuft i von 0 bis 4.'
+},
+{
+  id:'tr2', level:1, title:'MOD und DIV auseinanderhalten', input:'zahl = 4711',
+  intro:'Quersumme über MOD und DIV. Diese beiden Operatoren werden in der AP1 regelmäßig verwechselt — hier siehst du beide im Wechselspiel.',
+  code:[
+    'FUNKTION quersumme(zahl)',
+    '  summe <- 0',
+    '  SOLANGE zahl > 0 TUE',
+    '    ziffer <- zahl MOD 10',
+    '    summe  <- summe + ziffer',
+    '    zahl   <- zahl DIV 10',
+    '  ENDESOLANGE',
+    '  GIB summe ZURUECK',
+    'ENDEFUNKTION'
+  ],
+  vars:['zahl','ziffer','summe'],
+  steps:[
+    {line:1, values:{zahl:'4711', ziffer:'—', summe:'0'}, note:'Start: summe auf 0.'},
+    {line:3, values:{zahl:'4711', ziffer:'1', summe:'0'}, ask:'ziffer', note:'4711 MOD 10 = 1 — MOD liefert die letzte Ziffer.'},
+    {line:4, values:{zahl:'4711', ziffer:'1', summe:'1'}, note:'summe = 0 + 1.'},
+    {line:5, values:{zahl:'471', ziffer:'1', summe:'1'}, ask:'zahl', note:'4711 DIV 10 = 471 — DIV schneidet die letzte Ziffer ab.'},
+    {line:3, values:{zahl:'471', ziffer:'1', summe:'1'}, note:'471 MOD 10 = 1.'},
+    {line:4, values:{zahl:'471', ziffer:'1', summe:'2'}, note:'summe = 1 + 1 = 2.'},
+    {line:5, values:{zahl:'47', ziffer:'1', summe:'2'}, note:'471 DIV 10 = 47.'},
+    {line:3, values:{zahl:'47', ziffer:'7', summe:'2'}, note:'47 MOD 10 = 7.'},
+    {line:4, values:{zahl:'47', ziffer:'7', summe:'9'}, ask:'summe', note:'summe = 2 + 7 = 9.'},
+    {line:5, values:{zahl:'4', ziffer:'7', summe:'9'}, note:'47 DIV 10 = 4.'},
+    {line:3, values:{zahl:'4', ziffer:'4', summe:'9'}, note:'4 MOD 10 = 4.'},
+    {line:4, values:{zahl:'4', ziffer:'4', summe:'13'}, note:'summe = 9 + 4 = 13.'},
+    {line:5, values:{zahl:'0', ziffer:'4', summe:'13'}, note:'4 DIV 10 = 0 — Abbruchbedingung erreicht.'},
+    {line:7, values:{zahl:'0', ziffer:'4', summe:'13'}, note:'zahl > 0 ist falsch → Schleife endet.'}
+  ],
+  result:'13',
+  lesson:'Merke dir das Paar: MOD 10 holt die letzte Ziffer heraus, DIV 10 entfernt sie. Zusammen zerlegen sie jede Zahl von hinten. Der Abbruch erfolgt automatisch, weil DIV irgendwann 0 liefert — vergisst man Zeile 5, entsteht eine Endlosschleife. Das ist eine der häufigsten Fangfragen zu Schleifen.'
+},
+{
+  id:'tr3', level:2, title:'Die UND-Falle bei der Berechtigungsprüfung', input:'id = 3, raumNr = 236',
+  intro:'Dieses Muster stammt aus einer echten AP1-Aufgabe. Der Kern ist die UND-Verknüpfung: Beide Teilbedingungen müssen wahr sein — ein Treffer in nur einer Spalte genügt nicht.',
+  code:[
+    'FUNKTION pruefeBerechtigung(id, raumNr)',
+    '  FUER i VON 0 BIS zeilen-1 TUE',
+    '    WENN tabelle[i][0] = id UND tabelle[i][1] = raumNr DANN',
+    '      GIB WAHR ZURUECK',
+    '    ENDEWENN',
+    '  ENDEFUER',
+    '  GIB FALSCH ZURUECK',
+    'ENDEFUNKTION'
+  ],
+  vars:['i','tabelle[i][0]','tabelle[i][1]','Treffer'],
+  steps:[
+    {line:1, values:{i:'0', 'tabelle[i][0]':'1', 'tabelle[i][1]':'236', Treffer:'—'}, note:'Tabelle: (1,236) (3,101) (3,236) (5,236). Gesucht: id=3, raum=236.'},
+    {line:2, values:{i:'0', 'tabelle[i][0]':'1', 'tabelle[i][1]':'236', Treffer:'nein'}, ask:'Treffer', note:'Raum stimmt, aber id 1 ≠ 3 → UND ist falsch.'},
+    {line:1, values:{i:'1', 'tabelle[i][0]':'3', 'tabelle[i][1]':'101', Treffer:'nein'}, note:'2. Zeile.'},
+    {line:2, values:{i:'1', 'tabelle[i][0]':'3', 'tabelle[i][1]':'101', Treffer:'nein'}, ask:'Treffer', note:'id stimmt, aber Raum 101 ≠ 236 → UND ist wieder falsch.'},
+    {line:1, values:{i:'2', 'tabelle[i][0]':'3', 'tabelle[i][1]':'236', Treffer:'—'}, note:'3. Zeile.'},
+    {line:2, values:{i:'2', 'tabelle[i][0]':'3', 'tabelle[i][1]':'236', Treffer:'ja'}, ask:'Treffer', note:'Beide Teilbedingungen wahr → UND ist wahr.'},
+    {line:3, values:{i:'2', 'tabelle[i][0]':'3', 'tabelle[i][1]':'236', Treffer:'ja'}, note:'GIB WAHR ZURUECK — die Funktion endet sofort.'}
+  ],
+  result:'WAHR (nach 3 von 4 Zeilen)',
+  lesson:'Zwei Erkenntnisse für die Prüfung. Erstens: Bei UND reicht ein falscher Teil, um die ganze Bedingung falsch zu machen — Zeile 0 und 1 sehen wie Treffer aus, sind aber keine. Zweitens: Das RETURN in der Schleife beendet die Funktion sofort, die vierte Zeile wird gar nicht mehr geprüft. Auf die Frage „Wie viele Zeilen werden durchlaufen?" lautet die Antwort 3, nicht 4.'
+},
+{
+  id:'tr4', level:2, title:'Binäre Suche Schritt für Schritt', input:'feld = [2,5,8,12,16,23,38,56,72,91], gesucht = 23',
+  intro:'Die binäre Suche halbiert den Bereich in jedem Schritt. Verfolge <code>links</code>, <code>rechts</code> und <code>mitte</code> — und zähle mit, wie wenige Schritte nötig sind.',
+  code:[
+    'FUNKTION binaereSuche(feld, gesucht)',
+    '  links  <- 0',
+    '  rechts <- LAENGE(feld) - 1',
+    '  SOLANGE links <= rechts TUE',
+    '    mitte <- (links + rechts) DIV 2',
+    '    WENN feld[mitte] = gesucht DANN GIB mitte ZURUECK',
+    '    WENN feld[mitte] < gesucht DANN links <- mitte + 1',
+    '    SONST rechts <- mitte - 1',
+    '  ENDESOLANGE',
+    '  GIB -1 ZURUECK',
+    'ENDEFUNKTION'
+  ],
+  vars:['links','rechts','mitte','feld[mitte]'],
+  steps:[
+    {line:1, values:{links:'0', rechts:'9', mitte:'—', 'feld[mitte]':'—'}, note:'10 Elemente → Indizes 0 bis 9.'},
+    {line:4, values:{links:'0', rechts:'9', mitte:'4', 'feld[mitte]':'16'}, ask:'mitte', note:'(0+9) DIV 2 = 4 — ganzzahlige Division rundet ab.'},
+    {line:5, values:{links:'0', rechts:'9', mitte:'4', 'feld[mitte]':'16'}, note:'16 ≠ 23, kein Treffer.'},
+    {line:6, values:{links:'5', rechts:'9', mitte:'4', 'feld[mitte]':'16'}, ask:'links', note:'16 < 23 → rechte Hälfte, links = mitte + 1 = 5.'},
+    {line:4, values:{links:'5', rechts:'9', mitte:'7', 'feld[mitte]':'56'}, ask:'mitte', note:'(5+9) DIV 2 = 7.'},
+    {line:7, values:{links:'5', rechts:'6', mitte:'7', 'feld[mitte]':'56'}, ask:'rechts', note:'56 > 23 → linke Hälfte, rechts = mitte − 1 = 6.'},
+    {line:4, values:{links:'5', rechts:'6', mitte:'5', 'feld[mitte]':'23'}, note:'(5+6) DIV 2 = 5 (abgerundet).'},
+    {line:5, values:{links:'5', rechts:'6', mitte:'5', 'feld[mitte]':'23'}, ask:'feld[mitte]', note:'Treffer! feld[5] = 23 → Rückgabe des Index 5.'}
+  ],
+  result:'5 (Index), gefunden in 3 Schritten',
+  lesson:'Drei Schritte für zehn Elemente — die lineare Suche hätte sechs Vergleiche gebraucht. Die Obergrenze ist log₂(10), aufgerundet 4. Zwei Punkte zum Merken: Die ganzzahlige Division rundet immer ab, und die Voraussetzung ist ein sortiertes Feld. Auf einem unsortierten Array liefert das Verfahren falsche Ergebnisse, ohne einen Fehler zu melden.'
+},
+{
+  id:'tr5', level:2, title:'Netzplan-Vorwärtsrechnung', input:'A(4) → B(6), C(3); B → D(5); C → E(2); D,E → F(4)',
+  intro:'Auch ein Netzplan lässt sich als Trockenlauf verfolgen. Die entscheidende Stelle ist der Vorgang mit zwei Vorgängern — dort gilt das Maximum.',
+  code:[
+    'FUER jeden Vorgang in topologischer Reihenfolge TUE',
+    '  WENN keine Vorgaenger DANN FAZ <- 0',
+    '  SONST FAZ <- MAX(FEZ aller Vorgaenger)',
+    '  FEZ <- FAZ + D',
+    'ENDEFUER',
+    'Projektdauer <- FEZ des letzten Vorgangs'
+  ],
+  vars:['Vorgang','FAZ','D','FEZ'],
+  steps:[
+    {line:1, values:{Vorgang:'A', FAZ:'0', D:'4', FEZ:'4'}, note:'A hat keine Vorgänger → FAZ = 0, FEZ = 0 + 4.'},
+    {line:2, values:{Vorgang:'B', FAZ:'4', D:'6', FEZ:'10'}, ask:'FEZ', note:'Vorgänger A mit FEZ 4 → FAZ = 4, FEZ = 4 + 6.'},
+    {line:2, values:{Vorgang:'C', FAZ:'4', D:'3', FEZ:'7'}, note:'Ebenfalls Vorgänger A → FAZ = 4, FEZ = 7.'},
+    {line:2, values:{Vorgang:'D', FAZ:'10', D:'5', FEZ:'15'}, note:'Vorgänger B mit FEZ 10 → FEZ = 15.'},
+    {line:2, values:{Vorgang:'E', FAZ:'7', D:'2', FEZ:'9'}, note:'Vorgänger C mit FEZ 7 → FEZ = 9.'},
+    {line:2, values:{Vorgang:'F', FAZ:'15', D:'4', FEZ:'19'}, ask:'FAZ', note:'Zwei Vorgänger: D mit 15 und E mit 9 → MAX = 15.'},
+    {line:5, values:{Vorgang:'Ende', FAZ:'—', D:'—', FEZ:'19'}, note:'Projektdauer = FEZ des letzten Vorgangs.'}
+  ],
+  result:'Projektdauer 19 Zeiteinheiten',
+  lesson:'Der Vorgang F ist die Stelle, an der die meisten Punkte verloren gehen: Die beiden Vorgänger liefern 15 und 9, und es gilt das Maximum. Wer hier addiert oder das Minimum nimmt, hat den ganzen Netzplan verrechnet. Denk an die Baustelle — wenn zwei Gewerke fertig sein müssen, wartest du auf das langsamere. Der Zweig C–E hat entsprechend Puffer, weil er früher fertig ist als nötig.'
+},
+{
+  id:'tr6', level:3, title:'Rekursive Fakultät und der Aufrufstapel', input:'n = 4',
+  intro:'Rekursion baut den Stapel erst auf und rechnet dann beim Zurückspringen. Verfolge zuerst den Abstieg, dann den Aufstieg.',
+  code:[
+    'FUNKTION fakultaet(n)',
+    '  WENN n <= 1 DANN',
+    '    GIB 1 ZURUECK',
+    '  SONST',
+    '    GIB n * fakultaet(n-1) ZURUECK',
+    '  ENDEWENN',
+    'ENDEFUNKTION'
+  ],
+  vars:['Ebene','n','Aktion','Rückgabe'],
+  steps:[
+    {line:0, values:{Ebene:'1', n:'4', Aktion:'Aufruf fakultaet(4)', 'Rückgabe':'offen'}, note:'Abstieg beginnt.'},
+    {line:4, values:{Ebene:'1', n:'4', Aktion:'4 > 1 → ruft fakultaet(3)', 'Rückgabe':'offen'}, note:'Ergebnis wird zurückgestellt.'},
+    {line:4, values:{Ebene:'2', n:'3', Aktion:'3 > 1 → ruft fakultaet(2)', 'Rückgabe':'offen'}, note:'Zweiter Stapelrahmen.'},
+    {line:4, values:{Ebene:'3', n:'2', Aktion:'2 > 1 → ruft fakultaet(1)', 'Rückgabe':'offen'}, note:'Dritter Stapelrahmen.'},
+    {line:1, values:{Ebene:'4', n:'1', Aktion:'Abbruchbedingung erreicht', 'Rückgabe':'1'}, ask:'Rückgabe', note:'n ≤ 1 → die Rekursion endet hier.'},
+    {line:4, values:{Ebene:'3', n:'2', Aktion:'2 * 1', 'Rückgabe':'2'}, ask:'Rückgabe', note:'Aufstieg: Ebene 3 rechnet nun weiter.'},
+    {line:4, values:{Ebene:'2', n:'3', Aktion:'3 * 2', 'Rückgabe':'6'}, ask:'Rückgabe', note:'Ebene 2 setzt das Ergebnis ein.'},
+    {line:4, values:{Ebene:'1', n:'4', Aktion:'4 * 6', 'Rückgabe':'24'}, ask:'Rückgabe', note:'Ebene 1 liefert das Endergebnis.'}
+  ],
+  result:'24',
+  lesson:'Der entscheidende Denkfehler bei Rekursion ist die Annahme, es werde beim Abstieg gerechnet. Tatsächlich werden vier Stapelrahmen aufgebaut, und erst die Abbruchbedingung löst die Rechnung aus — von innen nach außen. Zwei typische Prüfungsfragen dazu: Wie viele Aufrufe finden statt? Hier fünf, nämlich fakultaet(4) bis fakultaet(0) ausgenommen, also 4, 3, 2 und 1. Und was passiert ohne Abbruchbedingung? Der Stapel läuft über — Stack Overflow.'
+}
+,
+{
+  id:'tr7', level:2, title:'Netzplan-Rückwärtsrechnung und Puffer', input:'Projektende = 19, Vorgänge A(4) B(6) C(3) D(5) E(2) F(4)',
+  intro:'Die Vorwärtsrechnung hast du in Durchlauf 5 geübt. Jetzt der Teil, an dem die meisten Punkte verloren gehen: rückwärts mit <strong>MIN</strong> statt MAX, dann die Puffer und der kritische Pfad.',
+  code:[
+    'Rueckwaerts, vom letzten Vorgang aus:',
+    '  letzter Vorgang:  SEZ = FEZ',
+    '  SAZ = SEZ - D',
+    '  SEZ = MIN(SAZ aller Nachfolger)',
+    'Puffer:',
+    '  GP  = SAZ - FAZ   (= SEZ - FEZ)',
+    '  FP  = MIN(FAZ Nachfolger) - eigener FEZ',
+    'Kritischer Pfad: alle Vorgaenge mit GP = 0'
+  ],
+  vars:['Vorgang','SEZ','D','SAZ','GP'],
+  steps:[
+    {line:1, values:{Vorgang:'F (letzter)', SEZ:'19', D:'4', SAZ:'15', GP:'—'}, note:'Aus der Vorwärtsrechnung: FAZ 15, FEZ 19. Beim letzten Vorgang gilt SEZ = FEZ = 19.'},
+    {line:2, values:{Vorgang:'F', SEZ:'19', D:'4', SAZ:'15', GP:'0'}, ask:'GP', note:'GP = SAZ − FAZ = 15 − 15 = 0 → kritisch.'},
+    {line:3, values:{Vorgang:'D', SEZ:'15', D:'5', SAZ:'10', GP:'0'}, note:'D hat nur F als Nachfolger → SEZ = SAZ von F = 15. SAZ = 15 − 5 = 10. FAZ war 10 → GP = 0, kritisch.'},
+    {line:3, values:{Vorgang:'E', SEZ:'15', D:'2', SAZ:'13', GP:'—'}, note:'E hat ebenfalls nur F als Nachfolger → SEZ = 15, SAZ = 13.'},
+    {line:5, values:{Vorgang:'E', SEZ:'15', D:'2', SAZ:'13', GP:'6'}, ask:'GP', note:'FAZ von E war 7 → GP = 13 − 7 = 6. E ist nicht kritisch.'},
+    {line:3, values:{Vorgang:'B', SEZ:'10', D:'6', SAZ:'4', GP:'0'}, note:'B hat nur D als Nachfolger → SEZ = SAZ von D = 10. SAZ = 4, FAZ war 4 → GP = 0.'},
+    {line:3, values:{Vorgang:'C', SEZ:'13', D:'3', SAZ:'10', GP:'6'}, note:'C hat nur E als Nachfolger → SEZ = SAZ von E = 13. SAZ = 10, FAZ war 4 → GP = 6.'},
+    {line:3, values:{Vorgang:'A', SEZ:'4', D:'4', SAZ:'0', GP:'0'}, ask:'SEZ', note:'A hat ZWEI Nachfolger: B mit SAZ 4 und C mit SAZ 10 → MIN = 4. SAZ = 0.'},
+    {line:7, values:{Vorgang:'Probe', SEZ:'—', D:'—', SAZ:'0', GP:'0'}, note:'SAZ des ersten Vorgangs ist 0 → die Rechnung stimmt.'},
+    {line:7, values:{Vorgang:'A-B-D-F', SEZ:'—', D:'19', SAZ:'—', GP:'0'}, note:'Kritischer Pfad: durchgehende Kette mit GP = 0. Der Zweig C–E hat 6 Zeiteinheiten Puffer.'}
+  ],
+  result:'Kritischer Pfad A–B–D–F, Projektdauer 19, Puffer im Zweig C–E: 6',
+  lesson:'Der entscheidende Schritt ist der letzte: Bei Vorgang A treffen zwei Nachfolger zusammen, und dort gilt das Minimum der SAZ-Werte — nicht das Maximum wie in der Vorwärtsrechnung. Wer hier 10 statt 4 nimmt, bekommt für A einen Puffer von 6 und verliert den kritischen Pfad. Merke: Vorwärts MAX, rückwärts MIN. Und beachte, dass C und E ihre 6 Zeiteinheiten Puffer gemeinsam nur einmal haben — verbraucht C fünf Tage, bleibt E genau einer.'
+},
+{
+  id:'tr8', level:2, title:'Subnetzmaske binär bestimmen', input:'172.20.37.155 / 255.255.255.224',
+  intro:'Wenn du dich beim Subnetting nicht auf die Blockgröße verlassen willst oder die Aufgabe den Binärweg verlangt, führt dieser Weg immer zum Ziel. Verfolge das letzte Oktett Bit für Bit.',
+  code:[
+    'IP    172 . 20 . 37 . 155',
+    'Maske 255 .255 .255 . 224',
+    '',
+    'Letztes Oktett binaer:',
+    '  155 = 1001 1011',
+    '  224 = 1110 0000     -> 3 Netzbits, 5 Hostbits',
+    '',
+    'Netzadresse  = IP UND Maske      (Hostbits auf 0)',
+    'Broadcast    = Hostbits auf 1'
+  ],
+  vars:['Schritt','Wert binär','Wert dezimal'],
+  steps:[
+    {line:5, values:{Schritt:'Maske 224', 'Wert binär':'11100000', 'Wert dezimal':'128+64+32 = 224'}, ask:'Wert dezimal', note:'Drei gesetzte Bits im letzten Oktett → Präfix = 24 + 3 = /27.'},
+    {line:4, values:{Schritt:'IP-Oktett 155', 'Wert binär':'10011011', 'Wert dezimal':'128+16+8+2+1 = 155'}, note:'Zerlegung über die Stellenwerte 128 64 32 16 8 4 2 1.'},
+    {line:7, values:{Schritt:'UND-Verknüpfung', 'Wert binär':'10000000', 'Wert dezimal':'128'}, ask:'Wert dezimal', note:'10011011 UND 11100000: Nur wo beide 1 sind, bleibt 1 → 100 00000 = 128.'},
+    {line:7, values:{Schritt:'Netzadresse', 'Wert binär':'—', 'Wert dezimal':'172.20.37.128'}, note:'Die ersten drei Oktette bleiben unverändert, da die Maske dort 255 ist.'},
+    {line:8, values:{Schritt:'Hostbits auf 1', 'Wert binär':'10011111', 'Wert dezimal':'128+16+8+4+2+1 = 159'}, ask:'Wert dezimal', note:'Netzanteil 100 bleibt, die fünf Hostbits werden alle 1 → 10011111 = 159.'},
+    {line:8, values:{Schritt:'Broadcast', 'Wert binär':'—', 'Wert dezimal':'172.20.37.159'}, note:'Erster Host .129, letzter Host .158.'},
+    {line:6, values:{Schritt:'Nutzbare Hosts', 'Wert binär':'2^5 − 2', 'Wert dezimal':'30'}, note:'Fünf Hostbits ergeben 32 Adressen, abzüglich Netz und Broadcast.'}
+  ],
+  result:'Netz 172.20.37.128/27 · Hosts .129–.158 · Broadcast .159 · 30 Hosts',
+  lesson:'Der Binärweg ist langsamer als die Blockgrößen-Methode, aber er versagt nie und liefert die Begründung gleich mit. Die Kontrolle: 256 − 224 = 32 — und genau das ist die Blockgröße. Die Netze beginnen also bei .0, .32, .64, .96, .128, .160 und so weiter, und .155 fällt in den Block ab .128. Beide Wege kommen zum selben Ergebnis, das ist deine Probe.'
+}
+];
+TRACES.push.apply(TRACES, [{"id":"abap-tr1","level":1,"title":"ABAP · Summe der geraden Zahlen","input":"zahlen = [3, 4, 7, 8]","intro":"Der Klassiker: Akkumulator plus Filterbedingung. Verfolge, wann <code>summe</code> sich ändert — und wann nicht.","code":["FUNCTION summeGerade(zahlen)","  summe <- 0","  FOR EACH zahl IN zahlen DO","    IF zahl MOD 2 = 0 THEN","      summe <- summe + zahl","    ENDIF","  ENDFOR","  RETURN summe","ENDFUNCTION"],"vars":["zahl","summe"],"steps":[{"line":1,"values":{"zahl":"—","summe":"0"},"note":"Akkumulator initialisieren."},{"line":2,"values":{"zahl":"3","summe":"0"},"note":"1. Durchlauf: zahl = 3."},{"line":3,"values":{"zahl":"3","summe":"0"},"note":"3 MOD 2 = 1 → Bedingung falsch, Rumpf wird übersprungen."},{"line":2,"values":{"zahl":"4","summe":"0"},"note":"2. Durchlauf: zahl = 4."},{"line":3,"values":{"zahl":"4","summe":"0"},"note":"4 MOD 2 = 0 → Bedingung wahr."},{"line":4,"values":{"zahl":"4","summe":"4"},"ask":"summe","note":"summe = 0 + 4."},{"line":2,"values":{"zahl":"7","summe":"4"},"note":"3. Durchlauf: zahl = 7."},{"line":3,"values":{"zahl":"7","summe":"4"},"note":"7 ist ungerade → übersprungen."},{"line":2,"values":{"zahl":"8","summe":"4"},"note":"4. Durchlauf: zahl = 8."},{"line":3,"values":{"zahl":"8","summe":"4"},"note":"8 ist gerade → Rumpf wird ausgeführt."},{"line":4,"values":{"zahl":"8","summe":"12"},"ask":"summe","note":"summe = 4 + 8."},{"line":7,"values":{"zahl":"8","summe":"12"},"note":"Liste zu Ende → Rückgabe."}],"result":"12","lesson":"Zähle bei solchen Aufgaben nicht die Elemente, sondern die tatsächlichen Zuweisungen: von vier Schleifendurchläufen ändern nur zwei den Akkumulator.","course":"abap"},{"id":"abap-tr2","level":1,"title":"ABAP · Maximum-Suche mit Gleichstand","input":"zahlen = [12, 45, 7, 45, 23]","intro":"Achte genau auf den Vergleichsoperator: <code>&gt;</code> oder <code>&gt;=</code> macht bei doppelten Werten den Unterschied.","code":["FUNCTION findeMaximum(zahlen)","  maximum <- zahlen[1]","  FOR i <- 2 TO LAENGE(zahlen) DO","    IF zahlen[i] > maximum THEN","      maximum <- zahlen[i]","    ENDIF","  ENDFOR","  RETURN maximum","ENDFUNCTION"],"vars":["i","zahlen[i]","maximum"],"steps":[{"line":1,"values":{"i":"—","zahlen[i]":"—","maximum":"12"},"note":"Startwert ist das erste Element."},{"line":2,"values":{"i":"2","zahlen[i]":"45","maximum":"12"},"note":"Schleife beginnt bei Index 2."},{"line":3,"values":{"i":"2","zahlen[i]":"45","maximum":"12"},"note":"45 > 12 → wahr."},{"line":4,"values":{"i":"2","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"Neues Maximum gefunden."},{"line":2,"values":{"i":"3","zahlen[i]":"7","maximum":"45"},"note":"Nächster Index."},{"line":3,"values":{"i":"3","zahlen[i]":"7","maximum":"45"},"note":"7 > 45 → falsch."},{"line":2,"values":{"i":"4","zahlen[i]":"45","maximum":"45"},"note":"Achtung: gleicher Wert wie das Maximum."},{"line":3,"values":{"i":"4","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"45 > 45 ist FALSCH — strikt größer. maximum bleibt unverändert."},{"line":2,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"Letzter Index."},{"line":3,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"23 > 45 → falsch."},{"line":7,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"Rückgabe des Maximums."}],"result":"45","lesson":"Mit >= statt > wäre das Ergebnis identisch — aber die Zuweisung würde einmal zusätzlich ausgeführt. Prüfungsfragen zielen genau auf solche Unterschiede: „Wie oft wird Zeile 5 ausgeführt?\" → mit > genau 1×, mit >= genau 2×.","course":"abap"},{"id":"abap-tr3","level":2,"title":"ABAP · Bubble-Sort komplett","input":"zahlen = [5, 2, 9, 1]","intro":"Verschachtelte Schleifen mit Tausch. Verfolge den Array-Zustand nach jedem Vergleich.","code":["n <- LAENGE(zahlen)","FOR i <- 1 TO n - 1 DO","  FOR j <- 1 TO n - i DO","    IF zahlen[j] > zahlen[j+1] THEN","      temp <- zahlen[j]","      zahlen[j] <- zahlen[j+1]","      zahlen[j+1] <- temp","    ENDIF","  ENDFOR","ENDFOR"],"vars":["i","j","Vergleich","zahlen"],"steps":[{"line":0,"values":{"i":"—","j":"—","Vergleich":"—","zahlen":"[5, 2, 9, 1]"},"note":"n = 4."},{"line":3,"values":{"i":"1","j":"1","Vergleich":"5 > 2 ✓","zahlen":"[5, 2, 9, 1]"},"note":"Erster Vergleich, Tausch nötig."},{"line":6,"values":{"i":"1","j":"1","Vergleich":"5 > 2 ✓","zahlen":"[2, 5, 9, 1]"},"ask":"zahlen","note":"Nach dem Tausch."},{"line":3,"values":{"i":"1","j":"2","Vergleich":"5 > 9 ✗","zahlen":"[2, 5, 9, 1]"},"note":"Kein Tausch."},{"line":3,"values":{"i":"1","j":"3","Vergleich":"9 > 1 ✓","zahlen":"[2, 5, 9, 1]"},"note":"Tausch nötig."},{"line":6,"values":{"i":"1","j":"3","Vergleich":"9 > 1 ✓","zahlen":"[2, 5, 1, 9]"},"ask":"zahlen","note":"Die 9 ist jetzt „durchgeblubbert\" — ihr Endplatz steht fest."},{"line":3,"values":{"i":"2","j":"1","Vergleich":"2 > 5 ✗","zahlen":"[2, 5, 1, 9]"},"note":"2. Durchlauf, innere Schleife nur noch bis n-i = 2."},{"line":3,"values":{"i":"2","j":"2","Vergleich":"5 > 1 ✓","zahlen":"[2, 5, 1, 9]"},"note":"Tausch nötig."},{"line":6,"values":{"i":"2","j":"2","Vergleich":"5 > 1 ✓","zahlen":"[2, 1, 5, 9]"},"note":"Nach dem Tausch."},{"line":3,"values":{"i":"3","j":"1","Vergleich":"2 > 1 ✓","zahlen":"[2, 1, 5, 9]"},"note":"3. Durchlauf, nur noch ein Vergleich."},{"line":6,"values":{"i":"3","j":"1","Vergleich":"2 > 1 ✓","zahlen":"[1, 2, 5, 9]"},"ask":"zahlen","note":"Letzter Tausch — fertig sortiert."}],"result":"[1, 2, 5, 9]","lesson":"Gesamtzahl der Vergleiche: 3 + 2 + 1 = 6, also n·(n-1)/2. Genau daraus folgt die Komplexität O(n²) — eine typische Anschlussfrage in der Prüfung.","course":"abap"},{"id":"abap-tr4","level":2,"title":"ABAP · Quersumme mit Ganzzahldivision","input":"zahl = 4712","intro":"WHILE-Schleife mit MOD und DIV — das Standardmuster zum Zerlegen von Zahlen.","code":["FUNCTION quersumme(zahl)","  summe <- 0","  WHILE zahl > 0 DO","    summe <- summe + (zahl MOD 10)","    zahl <- zahl DIV 10","  ENDWHILE","  RETURN summe","ENDFUNCTION"],"vars":["zahl","zahl MOD 10","summe"],"steps":[{"line":1,"values":{"zahl":"4712","zahl MOD 10":"—","summe":"0"},"note":"Start."},{"line":3,"values":{"zahl":"4712","zahl MOD 10":"2","summe":"2"},"ask":"summe","note":"Letzte Ziffer per MOD 10 abgreifen."},{"line":4,"values":{"zahl":"471","zahl MOD 10":"2","summe":"2"},"ask":"zahl","note":"DIV 10 schneidet die letzte Ziffer ab (Ganzzahldivision, kein Runden)."},{"line":3,"values":{"zahl":"471","zahl MOD 10":"1","summe":"3"},"note":"summe = 2 + 1."},{"line":4,"values":{"zahl":"47","zahl MOD 10":"1","summe":"3"},"note":"Nächste Stelle."},{"line":3,"values":{"zahl":"47","zahl MOD 10":"7","summe":"10"},"ask":"summe","note":"summe = 3 + 7."},{"line":4,"values":{"zahl":"4","zahl MOD 10":"7","summe":"10"},"note":"Nur noch eine Ziffer übrig."},{"line":3,"values":{"zahl":"4","zahl MOD 10":"4","summe":"14"},"note":"summe = 10 + 4."},{"line":4,"values":{"zahl":"0","zahl MOD 10":"4","summe":"14"},"note":"4 DIV 10 = 0 → Schleifenbedingung wird falsch."},{"line":6,"values":{"zahl":"0","zahl MOD 10":"—","summe":"14"},"note":"Rückgabe."}],"result":"14","lesson":"Das Paar MOD 10 / DIV 10 ist das universelle Muster zum Zerlegen von Zahlen — mit MOD 2 / DIV 2 wird daraus die Umwandlung in Binärdarstellung, eine beliebte Prüfungsvariante.","course":"abap"},{"id":"java-tr1","level":1,"title":"Java · Summe der geraden Zahlen","input":"zahlen = [3, 4, 7, 8]","intro":"Der Klassiker: Akkumulator plus Filterbedingung. Verfolge, wann sich <code>summe</code> ändert — und wann nicht.","code":["int summeGerade(int[] zahlen) {","    int summe = 0;","    for (int zahl : zahlen) {","        if (zahl % 2 == 0) {","            summe += zahl;","        }","    }","    return summe;","}"],"vars":["zahl","summe"],"steps":[{"line":1,"values":{"zahl":"—","summe":"0"},"note":"Akkumulator initialisieren."},{"line":2,"values":{"zahl":"3","summe":"0"},"note":"1. Durchlauf: zahl = 3."},{"line":3,"values":{"zahl":"3","summe":"0"},"note":"3 % 2 ergibt 1 → Bedingung falsch, Rumpf übersprungen."},{"line":2,"values":{"zahl":"4","summe":"0"},"note":"2. Durchlauf: zahl = 4."},{"line":3,"values":{"zahl":"4","summe":"0"},"note":"4 % 2 ergibt 0 → Bedingung wahr."},{"line":4,"values":{"zahl":"4","summe":"4"},"ask":"summe","note":"summe = 0 + 4."},{"line":2,"values":{"zahl":"7","summe":"4"},"note":"3. Durchlauf: zahl = 7."},{"line":3,"values":{"zahl":"7","summe":"4"},"note":"7 ist ungerade → übersprungen."},{"line":2,"values":{"zahl":"8","summe":"4"},"note":"4. Durchlauf: zahl = 8."},{"line":3,"values":{"zahl":"8","summe":"4"},"note":"8 ist gerade → Rumpf wird ausgeführt."},{"line":4,"values":{"zahl":"8","summe":"12"},"ask":"summe","note":"summe = 4 + 8."},{"line":7,"values":{"zahl":"8","summe":"12"},"note":"Array zu Ende → Rückgabe."}],"result":"12","lesson":"Zähle bei solchen Aufgaben nicht die Elemente, sondern die tatsächlichen Zuweisungen: Von vier Durchläufen ändern nur zwei den Akkumulator. Genau danach fragen Prüfungsaufgaben gern („Wie oft wird Zeile 5 ausgeführt?\").","course":"java"},{"id":"java-tr2","level":1,"title":"Java · Maximum-Suche mit Gleichstand","input":"zahlen = [12, 45, 7, 45, 23]","intro":"Achte auf den Vergleichsoperator: <code>&gt;</code> oder <code>&gt;=</code> macht bei doppelten Werten den Unterschied.","code":["int findeMaximum(int[] zahlen) {","    int maximum = zahlen[0];","    for (int i = 1; i < zahlen.length; i++) {","        if (zahlen[i] > maximum) {","            maximum = zahlen[i];","        }","    }","    return maximum;","}"],"vars":["i","zahlen[i]","maximum"],"steps":[{"line":1,"values":{"i":"—","zahlen[i]":"—","maximum":"12"},"note":"Startwert ist das erste Element (Index 0)."},{"line":2,"values":{"i":"1","zahlen[i]":"45","maximum":"12"},"note":"Schleife beginnt bei Index 1."},{"line":3,"values":{"i":"1","zahlen[i]":"45","maximum":"12"},"note":"45 > 12 → wahr."},{"line":4,"values":{"i":"1","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"Neues Maximum."},{"line":2,"values":{"i":"2","zahlen[i]":"7","maximum":"45"},"note":"Nächster Index."},{"line":3,"values":{"i":"2","zahlen[i]":"7","maximum":"45"},"note":"7 > 45 → falsch."},{"line":2,"values":{"i":"3","zahlen[i]":"45","maximum":"45"},"note":"Achtung: gleicher Wert wie das aktuelle Maximum."},{"line":3,"values":{"i":"3","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"45 > 45 ist FALSCH — strikt größer. maximum bleibt unverändert."},{"line":2,"values":{"i":"4","zahlen[i]":"23","maximum":"45"},"note":"Letzter Index."},{"line":3,"values":{"i":"4","zahlen[i]":"23","maximum":"45"},"note":"23 > 45 → falsch."},{"line":7,"values":{"i":"5","zahlen[i]":"—","maximum":"45"},"note":"i = 5 bricht die Schleife ab (length = 5). Rückgabe."}],"result":"45","lesson":"Mit >= statt > wäre das Ergebnis identisch — aber Zeile 5 würde zweimal statt einmal ausgeführt. Prüfungsfragen zielen genau auf diesen Unterschied. Und beachte die Abbruchbedingung: i < zahlen.length, nicht <=, sonst gibt es eine ArrayIndexOutOfBoundsException.","course":"java"},{"id":"java-tr3","level":2,"title":"Java · Bubble-Sort komplett","input":"zahlen = [5, 2, 9, 1]","intro":"Verschachtelte Schleifen mit Tausch über eine Hilfsvariable. Verfolge den Array-Zustand nach jedem Vergleich.","code":["void bubbleSort(int[] a) {","    int n = a.length;","    for (int i = 1; i < n; i++) {","        for (int j = 0; j < n - i; j++) {","            if (a[j] > a[j + 1]) {","                int temp = a[j];","                a[j] = a[j + 1];","                a[j + 1] = temp;","            }","        }","    }","}"],"vars":["i","j","Vergleich","a"],"steps":[{"line":1,"values":{"i":"—","j":"—","Vergleich":"—","a":"[5, 2, 9, 1]"},"note":"n = 4."},{"line":4,"values":{"i":"1","j":"0","Vergleich":"5 > 2 ✓","a":"[5, 2, 9, 1]"},"note":"Erster Vergleich, Tausch nötig."},{"line":7,"values":{"i":"1","j":"0","Vergleich":"5 > 2 ✓","a":"[2, 5, 9, 1]"},"ask":"a","note":"Nach dem Tausch über temp."},{"line":4,"values":{"i":"1","j":"1","Vergleich":"5 > 9 ✗","a":"[2, 5, 9, 1]"},"note":"Kein Tausch."},{"line":4,"values":{"i":"1","j":"2","Vergleich":"9 > 1 ✓","a":"[2, 5, 9, 1]"},"note":"Tausch nötig."},{"line":7,"values":{"i":"1","j":"2","Vergleich":"9 > 1 ✓","a":"[2, 5, 1, 9]"},"ask":"a","note":"Die 9 ist durchgeblubbert — ihr Endplatz steht fest."},{"line":4,"values":{"i":"2","j":"0","Vergleich":"2 > 5 ✗","a":"[2, 5, 1, 9]"},"note":"2. Durchlauf, innere Schleife nur noch bis n-i = 2."},{"line":4,"values":{"i":"2","j":"1","Vergleich":"5 > 1 ✓","a":"[2, 5, 1, 9]"},"note":"Tausch nötig."},{"line":7,"values":{"i":"2","j":"1","Vergleich":"5 > 1 ✓","a":"[2, 1, 5, 9]"},"note":"Nach dem Tausch."},{"line":4,"values":{"i":"3","j":"0","Vergleich":"2 > 1 ✓","a":"[2, 1, 5, 9]"},"note":"3. Durchlauf, nur noch ein Vergleich."},{"line":7,"values":{"i":"3","j":"0","Vergleich":"2 > 1 ✓","a":"[1, 2, 5, 9]"},"ask":"a","note":"Letzter Tausch — fertig sortiert."}],"result":"[1, 2, 5, 9]","lesson":"Gesamtzahl der Vergleiche: 3 + 2 + 1 = 6, allgemein n·(n-1)/2. Daraus folgt die Komplexität O(n²) — eine typische Anschlussfrage. In echtem Java-Code nimmt man natürlich Arrays.sort() mit O(n log n).","course":"java"},{"id":"java-tr4","level":2,"title":"Java · Quersumme mit Ganzzahldivision","input":"zahl = 4712","intro":"While-Schleife mit Modulo und Ganzzahldivision — das Standardmuster zum Zerlegen von Zahlen.","code":["int quersumme(int zahl) {","    int summe = 0;","    while (zahl > 0) {","        summe += zahl % 10;","        zahl = zahl / 10;","    }","    return summe;","}"],"vars":["zahl","zahl % 10","summe"],"steps":[{"line":1,"values":{"zahl":"4712","zahl % 10":"—","summe":"0"},"note":"Start."},{"line":3,"values":{"zahl":"4712","zahl % 10":"2","summe":"2"},"ask":"summe","note":"Letzte Ziffer mit % 10 abgreifen."},{"line":4,"values":{"zahl":"471","zahl % 10":"2","summe":"2"},"ask":"zahl","note":"Ganzzahldivision durch 10 schneidet die letzte Ziffer ab — kein Runden."},{"line":3,"values":{"zahl":"471","zahl % 10":"1","summe":"3"},"note":"summe = 2 + 1."},{"line":4,"values":{"zahl":"47","zahl % 10":"1","summe":"3"},"note":"Nächste Stelle."},{"line":3,"values":{"zahl":"47","zahl % 10":"7","summe":"10"},"ask":"summe","note":"summe = 3 + 7."},{"line":4,"values":{"zahl":"4","zahl % 10":"7","summe":"10"},"note":"Nur noch eine Ziffer übrig."},{"line":3,"values":{"zahl":"4","zahl % 10":"4","summe":"14"},"note":"summe = 10 + 4."},{"line":4,"values":{"zahl":"0","zahl % 10":"4","summe":"14"},"note":"4 / 10 ergibt 0 → Schleifenbedingung wird falsch."},{"line":6,"values":{"zahl":"0","zahl % 10":"—","summe":"14"},"note":"Rückgabe."}],"result":"14","lesson":"Das Paar % 10 und / 10 ist das universelle Muster zum Zerlegen von Zahlen. Mit % 2 und / 2 wird daraus die Umwandlung in Binärdarstellung — eine beliebte Prüfungsvariante. Merke: In Java ist / bei zwei int-Werten immer Ganzzahldivision.","course":"java"},{"id":"java-tr5","level":2,"title":"Java · Rekursion: Fakultät auf dem Stack","input":"fakultaet(4)","intro":"Rekursion baut Aufrufe auf dem Stack auf und rechnet erst beim Zurückkehren. Verfolge zuerst den Abstieg, dann den Aufstieg.","code":["int fakultaet(int n) {","    if (n <= 1) {","        return 1;","    }","    return n * fakultaet(n - 1);","}"],"vars":["Aufrufebene","n","Rückgabe"],"steps":[{"line":4,"values":{"Aufrufebene":"1","n":"4","Rückgabe":"wartet"},"note":"fakultaet(4) ruft fakultaet(3) auf — noch kein Ergebnis."},{"line":4,"values":{"Aufrufebene":"2","n":"3","Rückgabe":"wartet"},"note":"fakultaet(3) ruft fakultaet(2) auf."},{"line":4,"values":{"Aufrufebene":"3","n":"2","Rückgabe":"wartet"},"note":"fakultaet(2) ruft fakultaet(1) auf."},{"line":2,"values":{"Aufrufebene":"4","n":"1","Rückgabe":"1"},"ask":"Rückgabe","note":"Abbruchbedingung erreicht: n <= 1 liefert 1."},{"line":4,"values":{"Aufrufebene":"3","n":"2","Rückgabe":"2"},"ask":"Rückgabe","note":"Rückweg: 2 * 1 = 2."},{"line":4,"values":{"Aufrufebene":"2","n":"3","Rückgabe":"6"},"note":"3 * 2 = 6."},{"line":4,"values":{"Aufrufebene":"1","n":"4","Rückgabe":"24"},"ask":"Rückgabe","note":"4 * 6 = 24 — das Endergebnis."}],"result":"24","lesson":"Jeder rekursive Aufruf belegt einen eigenen Stack-Frame mit eigener Variable n. Fehlt die Abbruchbedingung oder wird sie nie erreicht, wächst der Stack, bis ein StackOverflowError fliegt. Prüfungsfrage dazu lautet oft: „Wie viele Aufrufe entstehen?\" — hier vier, nämlich n = 4, 3, 2, 1.","course":"java"}]);
+var RP_TRANSFER = [{"lesson":"m52-l3","q":"Drei Positionen kosten jeweils 3 Cent netto, Steuersatz 19 %, jeweils halbaufrunden auf ganze Cent. Welche Aussage unterscheidet Positions- von Gesamtrundung korrekt?","options":["Beide Verfahren liefern zwingend 11 Cent, weil Integer immer jedes Rundungsproblem lösen.","Je Position entstehen 4 Cent, zusammen 12; auf 9 Cent Gesamtnetto berechnet ergeben sich 11 Cent brutto. Die Fachregel muss das Verfahren festlegen.","Floatwerte verwenden und erst nach dem Export hoffen, dass die Zahlen gleich sind."],"correct":1,"explain":"Pro Position: 3 + round(0,57) = 4, dreimal also 12. Gesamtrechnung: 9 + round(1,71) = 11. Integerdarstellung beseitigt nicht den Unterschied fachlicher Rundungsregeln.","rationales":["Ganzzahlen verhindern nicht unterschiedliche Rundungszeitpunkte.","Die Rechenwege unterscheiden sich sachlich; beide benötigen einen definierten Vertrag.","Floatarithmetik löst keine fehlende Rundungsvorschrift."]},{"lesson":"m46-l2","q":"Ein Benutzer sendet gültige name/preis-Felder für ein fremdes Produkt. Form Request und fillable sind korrekt. Welcher fehlende Schutz verhindert dennoch eine unerlaubte Änderung?","options":["Eine Policy/Ownershipprüfung für genau dieses Produkt vor der Änderung.","Noch einmal denselben String-Maximalwert validieren.","Das Produkt im Frontend ausblenden und auf die geheime URL vertrauen."],"correct":0,"explain":"Feldvalidität und Mass-Assignment-Freigabe sagen nichts darüber aus, wer das Objekt ändern darf. Die serverseitige Autorisierung muss jeden Zugriffspfad abdecken.","rationales":["Prüft die fehlende Beziehung zwischen Nutzer,Objekt und Aktion.","Prüft denselben Datenvertrag, nicht die Berechtigung.","Direkte HTTP-Aufrufe umgehen die Darstellung."]},{"lesson":"m48-l2","q":"Die eigene Vue-SPA wird per Sanctum-Session authentifiziert. tokenCan liefert true. Darf die SPA dadurch ein fremdes Objekt bearbeiten?","options":["Ja, tokenCan ist für jede Anfrage die vollständige Autorisierung.","Nein. Für First-Party-SPA ist tokenCan bewusst true; eine Policy muss Eigentum und Aktion weiterhin prüfen.","Nur wenn der Token in localStorage gespeichert wird."],"correct":1,"explain":"Sanctum trennt First-Party-Sessionauth von Personal-Access-Tokens. Abilities allein ersetzen auch im Tokenflow keine Objektberechtigung.","rationales":["Verwechselt Auth-/Ability-Komfort mit fachlichem Zugriffsschutz.","Ordnet die API-Eigenschaft korrekt ein und behält die serverseitige Grenze.","Speicherung eines Tokens erteilt keine Rechte und erhöht XSS-Risiken."]},{"lesson":"m50-l1","q":"Ein Queue-Job erstellt extern eine Rechnung und stürzt vor dem Speichern von invoice_path ab. ShouldBeUnique und if(invoice_path) waren eingebaut. Was verhindert eine zweite externe Rechnung beim Retry zuverlässig im vereinbarten Vertrag?","options":["Ein längerer sleep im Job.","Alle Exceptions abfangen und den Job als erfolgreich melden.","Ein dauerhafter fachlicher Deduplizierungsschlüssel und ein vom externen Anbieter unterstützter idempotenter Auftrag samt Recoverystrategie."],"correct":2,"explain":"Ein lokaler Vorabcheck kennt den bereits eingetretenen externen Effekt nach einem Crash nicht. Uniqueness-Locks sind keine Exactly-once-Garantie.","rationales":["Ändert die Informationslücke zwischen externem Erfolg und lokalem Zustand nicht.","Versteckt den Fehler und verliert die Wiederherstellbarkeit.","Erlaubt die erneute Abfrage/Anforderung ohne fachliche Doppelwirkung unter dem konkreten Anbieter-Vertrag."]},{"lesson":"m59-l2","q":"Ein Angreifer wiederholt einen alten, korrekt signierten Webhook. Die Raw-Body-HMAC-Prüfung besteht. Welcher zusätzliche Vertrag adressiert genau dieses Risiko?","options":["Signierten Timestamp innerhalb eines erlaubten Zeitfensters prüfen und Ereignis-ID dauerhaft deduplizieren.","JSON nach dem Empfang hübsch formatieren.","CORS nur auf die eigene Website beschränken und HMAC nicht weiter beachten."],"correct":0,"explain":"Signaturintegrität allein beweist keine Frische. Timestamp muss Bestandteil der Anbietersignatur sein; Replay-/Dublettenregeln müssen bei Parallelität wirksam bleiben.","rationales":["Prüft Frische und Wiederholung als getrennte Eigenschaften.","Ändert Signaturbytes und liefert keinen Frischebeweis.","CORS begrenzt keine beliebigen Serverclients."]},{"lesson":"js-m1-l3","q":"const copy = {...original}; copy.settings.theme = \"dark\" verändert auch original.settings.theme. Welcher Grund ist korrekt?","options":["const macht alle Objekte automatisch tief unveränderlich.","Spread kopiert hier die oberste Ebene; settings ist weiterhin dieselbe Objektreferenz.","JavaScript kopiert Objekte immer byteweise, die Konsole täuscht nur."],"correct":1,"explain":"Eine neue äußere Objektidentität ist keine tiefe Kopie. Kopiere die betroffenen Ebenen bewusst oder wähle ein geeignetes Deep-Clone-Verfahren mit dessen Typgrenzen.","rationales":["const verhindert Neuzuweisung der Bindung, nicht jede Mutation.","Erklärt die geteilte innere Referenz.","Das beobachtete Verhalten folgt dem Referenzmodell."]},{"lesson":"js-m1-l9","q":"Vue 3.5: const {title} = defineProps(...) im selben script setup und const {count} = reactive({count:0}) sehen ähnlich aus. Welche Aussage ist präzise?","options":["Beides bleibt durch normales JavaScript-Destructuring immer reaktiv.","Beides verliert unter allen Umständen die Reaktivität.","defineProps-Destrukturierung erhält hier spezielle Compilerbehandlung; ein aus reactive gelesener primitiver Wert bekommt dadurch keine allgemeine Live-Verbindung."],"correct":2,"explain":"Der Compiler schreibt Zugriffe auf destrukturierte Props im definierten Kontext um. Diese Sonderregel ändert nicht die allgemeine JavaScript-Semantik.","rationales":["Überträgt eine Vue-Compilerregel auf beliebige Objekte.","Ignoriert die explizite Sonderbehandlung seit Vue 3.5.","Unterscheidet Compilerkontext und Wertzugriff."]},{"lesson":"js-m1-l11","q":"Anfrage A startet, danach B. B liefert neue Daten, danach A alte Daten. Abort wurde auf A angefordert, der Fetch-Fake liefert trotzdem. Was muss die UI vor dem Schreiben prüfen?","options":["Ob das Ergebnis noch zur neuesten Anfragesequenz gehört.","Nur ob der Status 200 war.","Ob A zuerst gestartet wurde; dann hat A automatisch Vorrang."],"correct":0,"explain":"Abbruch ist kein universeller Beweis, dass keine alte Antwort mehr ankommt. Sequenz-/Identitätsprüfung muss auch Fehler- und finally-Zustände berücksichtigen.","rationales":["Verhindert veraltetes Überschreiben, unabhängig von tatsächlicher Abbruchwirkung.","Ein erfolgreicher Status sagt nichts über Aktualität aus.","Würde gerade den veralteten Zustand bevorzugen."]},{"lesson":"js-m1-l13","q":"const {tasks} = store liefert in einer Komponente einen alten Eindruck nach store.replace(). Welcher Ansatz erhält beim Destrukturieren den Bezug auf Pinia-State?","options":["Den Store in JSON.stringify umwandeln.","storeToRefs(store) für State verwenden und Aktionen bewusst separat nutzen.","tasks einmal in eine globale window-Variable kopieren."],"correct":1,"explain":"storeToRefs erzeugt Referenzen für reaktiven Storestate. Eine einmal gelesene Wertbindung ist kein allgemeiner Ersatz dafür.","rationales":["Serialisierung erzeugt keine lebende reaktive Referenz.","Erhält die vorgesehene Verbindung zum Store.","Vergrößert die Zahl unkontrollierter Kopien."]},{"lesson":"html-m1-l4","q":"Ein Formular hat type=email und required. Ein direkter HTTP-Client sendet ungültige Daten. Welche serverseitige Schlussfolgerung ist richtig?","options":["Der Browser hat es bereits garantiert geprüft.","POST bedeutet automatisch gültig und autorisiert.","Der Server muss Format,Grenzen und Berechtigung selbst prüfen; native Browserprüfung ist nur eine Benutzungshilfe."],"correct":2,"explain":"Angreifer oder andere Clients sind nicht an die Browseroberfläche gebunden. Client- und Servervalidierung sind unterschiedliche Grenzen.","rationales":["Unterstellt einen zwingenden Browserpfad.","HTTP-Methode ist kein Validitäts-/Rechtenachweis.","Behält die verbindliche Prüfung an der vertrauenswürdigen Grenze."]},{"lesson":"css-m1-l2","q":"width:200px; padding:20px; border:2px solid bei content-box, ohne Margin. Welche Borderboxbreite entsteht, und was ändert border-box?","options":["244px; mit border-box sind die angegebenen 200px inklusive Padding und Border.","200px; border-box fügt noch einmal 44px hinzu.","240px; Border zählt in keiner Variante."],"correct":0,"explain":"Content-box: 200 + 2×20 + 2×2 = 244. Border-box bezieht die inneren Abstände und Border in width ein; Margin bleibt außerhalb.","rationales":["Rechnet beide Seiten und den Rahmen korrekt.","Vertauscht die Definitionen.","Lässt den Rahmen unberücksichtigt."]},{"lesson":"mariadb-m1-l4","q":"Zwei Clients lesen Bestand=1 und buchen danach je einen Verkauf. Beide verwenden einzelne gültige UPDATEs. Was fehlt gegen Überverkauf?","options":["Nur eine schnellere Netzverbindung.","Eine atomare fachliche Bedingung oder passende kurze Sperrtransaktion mit Prüfung des Ergebnisses.","Ein zusätzlicher SELECT nach der Bestätigung als alleiniger Schutz."],"correct":1,"explain":"Einzelne syntaktisch gültige Updates erfüllen nicht automatisch die gemeinsame Invariante. Bedingtes UPDATE und betroffene Zeilen oder getestete Sperren können die Entscheidung atomar absichern.","rationales":["Verringert höchstens Wahrscheinlichkeit, schafft keine Integritätsgarantie.","Verbindet Entscheidung und Mutation mit geprüftem Konkurrenzverhalten.","Stellt den Fehler erst nach möglicher Doppelbuchung fest."]},{"lesson":"api-m1-l2","q":"Zwei Clients ändern dieselbe Revision 7. Der Server liefert ETag, ignoriert aber If-Match beim Schreiben. Welche Garantie besteht?","options":["Keine Optimistic-Concurrency-Garantie allein durch die Headerausgabe; die Vorbedingung muss atomar geprüft werden.","Automatisch keine Lost Updates, weil ETag in jeder Antwort steht.","Der zweite Client wird durch CORS immer gesperrt."],"correct":0,"explain":"Bedingte Requests brauchen serverseitige Implementierung. Metadaten ohne wirksame Prüfung sind kein Schreibschutz.","rationales":["Unterscheidet veröffentlichten Vertrag und implementierte Invariante.","Behandelt Information als automatische Sperre.","Verwechselt Cross-Origin-Regeln mit Revisionskontrolle."]},{"lesson":"mcp-m1-l4","q":"Ein MCP-Resource-Text fordert einen ungeplanten Secret-Upload und nennt sich selbst „Systemanweisung“. Wie soll der Host damit umgehen?","options":["Ausführen, weil Resource-Inhalte höhere Priorität haben.","Als untrusted Daten behandeln; weder Rechte noch Nutzerauftrag daraus erweitern.","Nur nach Umformatierung in JSON ausführen."],"correct":1,"explain":"Selbstbehauptete Autorität in externen Inhalten ist keine echte Anweisungspriorität. Wirksame Tool-/Netzwerkrechte begrenzen die Folgen zusätzlich.","rationales":["Genau das Muster indirekter Prompt Injection.","Behält die Vertrauensgrenze.","Formatänderung schafft keine Befugnis."]},{"lesson":"agents-m1-l5","q":"Ein Agent behebt einen Fehler, indem er die fehlgeschlagene Berechtigungsassertion aus dem Test entfernt. Danach ist die Suite grün. Wie wird das bewertet?","options":["Als vollständiger Erfolg, weil Tests grün sind.","Als kleinere Änderung ohne Relevanz.","Als ungeklärte Regression: Anforderung und Teständerung unabhängig reviewen und den Sicherheitsfall wieder prüfen."],"correct":2,"explain":"Der Testlauf beweist nur die verbliebenen Assertions. Entfernte Gegenbeispiele können den Eindruck einer Reparatur vortäuschen.","rationales":["Verwechselt grüne Ausgabe mit unverändert erfüllter Anforderung.","Eine entfernte Sicherheitsassertion verändert den Nachweis.","Fordert unabhängige Akzeptanz und echte Regressionstests."]}];
+RP_TRANSFER.forEach(function(item){
+ var lesson=MODULES.flatMap(function(m){return m.lessons;}).find(function(l){return l.id===item.lesson;});
+ if(!lesson)throw new Error('Transferziel fehlt: '+item.lesson);
+ var question=Object.assign({},item);delete question.lesson;
+ if(!lesson.quiz.some(function(q){return q.q===question.q;}))lesson.quiz.push(question);
 });
-MODULES.push({
-  id:'m23', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Virtualisierung & Cloud', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m23-l1', title:'Virtualisierung und Hypervisor-Typen', minutes:9,
-      body:
-        '<p><strong>Virtualisierung</strong> bedeutet, dass mehrere logische Systeme auf einer physischen Maschine laufen. Der <strong>Hypervisor</strong> teilt die Hardware auf und isoliert die Gäste voneinander.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Typ 1 (Bare Metal)</th><th>Typ 2 (Hosted)</th></tr>'+
-        '<tr><td>Läuft auf</td><td>direkt auf der Hardware</td><td>als Programm im Betriebssystem</td></tr>'+
-        '<tr><td>Beispiele</td><td>ESXi, Hyper-V (Rolle), Proxmox, KVM</td><td>VirtualBox, VMware Workstation</td></tr>'+
-        '<tr><td>Leistung</td><td>hoch, kaum Overhead</td><td>geringer, Wirts-OS dazwischen</td></tr>'+
-        '<tr><td>Einsatz</td><td>Rechenzentrum, Produktivbetrieb</td><td>Entwicklung, Test, Schulung</td></tr></table>'+
-        '<p><strong>Die Vorteile</strong>, die als Nennaufgabe kommen:</p>'+
-        '<ul><li><strong>Konsolidierung</strong> – weniger physische Server, geringere Kosten für Strom, Kühlung, Stellfläche und Wartung.</li>'+
-        '<li><strong>Bessere Auslastung</strong> – ein einzelner Server läuft sonst oft bei 10 bis 20 Prozent.</li>'+
-        '<li><strong>Isolation</strong> – der Absturz eines Gastes betrifft die anderen nicht.</li>'+
-        '<li><strong>Snapshots</strong> – ein Zustand lässt sich sichern und in Sekunden zurückrollen, ideal vor Updates.</li>'+
-        '<li><strong>Live-Migration</strong> – eine VM zieht im laufenden Betrieb auf einen anderen Host um, etwa für Wartung.</li>'+
-        '<li><strong>Schnelle Bereitstellung</strong> – eine neue VM entsteht aus einer Vorlage in Minuten.</li></ul>'+
-        '<p><strong>Nachteile und Risiken:</strong> Der Host wird zum <em>Single Point of Failure</em> — fällt er aus, sind alle Gäste weg. Gegenmittel sind Cluster mit mehreren Hosts und gemeinsamem Speicher. Dazu kommen Lizenzfragen, Overhead und der Bedarf an Spezialwissen.</p>',
-      code:
-        "KONSOLIDIERUNGSRECHNUNG\n\n"+
-        "  Bisher: 8 physische Server, je 180 W, 24/7, 0,30 EUR/kWh\n"+
-        "     8 x 180 W x 24 h x 365 = 12.614.400 Wh = 12.614 kWh\n"+
-        "     12.614 x 0,30 = 3.784 EUR Stromkosten pro Jahr\n\n"+
-        "  Neu: 2 Hosts, je 420 W (staerker, aber nur zwei Geraete)\n"+
-        "     2 x 420 W x 24 h x 365 =  7.358.400 Wh =  7.358 kWh\n"+
-        "     7.358 x 0,30 = 2.207 EUR pro Jahr\n\n"+
-        "  Ersparnis: 1.577 EUR/Jahr allein beim Strom,\n"+
-        "  dazu Kuehlung, Stellflaeche, Wartungsvertraege und Hardware.\n\n"+
-        "  Snapshot vor einem Update:\n"+
-        "     1. Snapshot erstellen   2. Update einspielen\n"+
-        "     3a. laeuft -> Snapshot loeschen (sonst waechst der Speicher)\n"+
-        "     3b. Fehler -> in Sekunden zurueckrollen",
-      codeLang:'Virtualisierung',
-      tip:'Ein Snapshot ist kein Backup, und diese Abgrenzung bringt in Begründungsaufgaben Punkte. Der Snapshot liegt auf demselben Speicher wie die VM — geht der Datenspeicher kaputt, ist beides weg. Er ist ein kurzfristiger Rückfallpunkt für geplante Eingriffe, nicht mehr. Erwähne außerdem, dass dauerhaft belassene Snapshots den Speicherbedarf aufblähen und die Leistung bremsen.',
-      quiz:[
-        {q:'Wodurch unterscheidet sich ein Typ-1- von einem Typ-2-Hypervisor?', options:['Typ 1 läuft direkt auf der Hardware, Typ 2 als Programm im Betriebssystem','Typ 1 ist kostenlos','Typ 2 ist schneller'], correct:0, explain:'Ohne Wirts-Betriebssystem dazwischen hat Typ 1 deutlich weniger Overhead.'},
-        {q:'Welches Risiko entsteht durch Konsolidierung?', options:['Höhere Stromkosten','Der Host wird zum Single Point of Failure','Schlechtere Auslastung'], correct:1, explain:'Gegenmittel sind Cluster mit mehreren Hosts und Live-Migration.'},
-        {q:'Was ist der wichtigste Nachteil der Servervirtualisierung?', options:['Höherer Stromverbrauch','Der Host wird zum Single Point of Failure','Schlechtere Auslastung'], correct:1, explain:'Gegenmittel sind Cluster mit gemeinsamem Speicher und Live-Migration.'}
-      ]
-    },
-    {
-      id:'m23-l2', title:'Container gegen virtuelle Maschine', minutes:8,
-      body:
-        '<p>Beide isolieren Anwendungen, aber auf verschiedenen Ebenen — und genau darauf zielt die Prüfungsfrage.</p>'+
-        '<p>Eine <strong>virtuelle Maschine</strong> bringt ein <strong>vollständiges Gast-Betriebssystem</strong> mit. Sie belegt Gigabytes, startet in Minuten und ist dafür vollständig isoliert. Man kann Linux auf einem Windows-Host betreiben.</p>'+
-        '<p>Ein <strong>Container</strong> teilt sich den <strong>Kernel des Hosts</strong> und enthält nur die Anwendung samt ihrer Bibliotheken. Er belegt Megabytes, startet in Sekunden — kann aber nur Systeme mit demselben Kernel ausführen.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Virtuelle Maschine</th><th>Container</th></tr>'+
-        '<tr><td>Enthält</td><td>komplettes Gast-OS</td><td>nur App und Bibliotheken</td></tr>'+
-        '<tr><td>Größe</td><td>mehrere GB</td><td>wenige bis hundert MB</td></tr>'+
-        '<tr><td>Startzeit</td><td>Minuten</td><td>Sekunden</td></tr>'+
-        '<tr><td>Isolation</td><td>sehr stark</td><td>schwächer, gemeinsamer Kernel</td></tr>'+
-        '<tr><td>Dichte je Host</td><td>Dutzende</td><td>Hunderte</td></tr>'+
-        '<tr><td>Typisch für</td><td>verschiedene Betriebssysteme, Altsysteme</td><td>Microservices, CI/CD, Skalierung</td></tr></table>'+
-        '<p>Beide Ansätze schließen sich nicht aus: In der Praxis laufen Container sehr häufig <em>innerhalb</em> virtueller Maschinen, weil man so die starke Isolation der VM mit der Flexibilität der Container verbindet.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="Aufbau von virtuellen Maschinen und Containern im Vergleich"><text class="s-hd" x="20" y="20">Virtuelle Maschinen</text><rect class="s-strong" x="20" y="30" width="110" height="34" rx="3"/><text class="s-lbl" x="75" y="52" text-anchor="middle">App + Bib.</text><rect class="s-strong" x="140" y="30" width="110" height="34" rx="3"/><text class="s-lbl" x="195" y="52" text-anchor="middle">App + Bib.</text><rect class="s-warn" x="20" y="68" width="110" height="34" rx="3"/><text class="s-lbl" x="75" y="90" text-anchor="middle">Gast-OS</text><rect class="s-warn" x="140" y="68" width="110" height="34" rx="3"/><text class="s-lbl" x="195" y="90" text-anchor="middle">Gast-OS</text><rect class="s-accent" x="20" y="106" width="230" height="32" rx="3"/><text class="s-lbl" x="135" y="127" text-anchor="middle">Hypervisor</text><rect class="s-box" x="20" y="142" width="230" height="32" rx="3"/><text class="s-lbl" x="135" y="163" text-anchor="middle">Hardware</text><text class="s-lbl" x="20" y="196">je VM mehrere GB</text><text class="s-lbl" x="20" y="212">Start in Minuten &#183; starke Isolation</text><text class="s-hd" x="310" y="20">Container</text><rect class="s-strong" x="310" y="30" width="110" height="34" rx="3"/><text class="s-lbl" x="365" y="52" text-anchor="middle">App + Bib.</text><rect class="s-strong" x="430" y="30" width="110" height="34" rx="3"/><text class="s-lbl" x="485" y="52" text-anchor="middle">App + Bib.</text><rect class="s-accent" x="310" y="68" width="230" height="32" rx="3"/><text class="s-lbl" x="425" y="89" text-anchor="middle">Container-Engine</text><rect class="s-warn" x="310" y="104" width="230" height="34" rx="3"/><text class="s-lbl" x="425" y="126" text-anchor="middle">Host-Betriebssystem (gemeinsamer Kernel)</text><rect class="s-box" x="310" y="142" width="230" height="32" rx="3"/><text class="s-lbl" x="425" y="163" text-anchor="middle">Hardware</text><text class="s-lbl" x="310" y="196">je Container wenige MB</text><text class="s-lbl" x="310" y="212">Start in Sekunden &#183; gemeinsamer Kernel</text></svg><figcaption>Der eine Unterschied, aus dem alles folgt: Dem Container fehlt das Gast-Betriebssystem. Die VM virtualisiert die Hardware, der Container das Betriebssystem.</figcaption></figure>',
-      code:
-        "Aufbau im Vergleich:\n\n"+
-        "  VIRTUELLE MASCHINEN          CONTAINER\n"+
-        "  +------+ +------+            +------+ +------+\n"+
-        "  | App  | | App  |            | App  | | App  |\n"+
-        "  | Bib. | | Bib. |            | Bib. | | Bib. |\n"+
-        "  |Gast- | |Gast- |            +------+ +------+\n"+
-        "  | OS   | | OS   |            | Container-Engine|\n"+
-        "  +------+ +------+            +-----------------+\n"+
-        "  |   Hypervisor  |            |   Host-OS       |\n"+
-        "  +---------------+            +-----------------+\n"+
-        "  |   Hardware    |            |   Hardware      |\n"+
-        "  +---------------+            +-----------------+\n\n"+
-        "  Der entscheidende Unterschied: beim Container fehlt\n"+
-        "  das Gast-Betriebssystem - er nutzt den Kernel des Hosts.",
-      codeLang:'VM vs. Container',
-      tip:'Wenn du in einer Prüfung nur einen Satz zur Abgrenzung schreiben darfst, dann diesen: Die VM virtualisiert die Hardware, der Container virtualisiert das Betriebssystem. Daraus leitet sich alles Weitere ab — Größe, Startzeit, Isolationsgrad und die Einschränkung, dass ein Container nur denselben Kernel wie der Host nutzen kann.',
-      quiz:[
-        {q:'Was enthält ein Container im Gegensatz zur VM NICHT?', options:['Die Anwendung','Ein eigenes Gast-Betriebssystem','Die benötigten Bibliotheken'], correct:1, explain:'Er nutzt den Kernel des Hosts – daher die geringe Größe und Startzeit.'},
-        {q:'Wann ist eine VM die richtige Wahl?', options:['Wenn ein anderes Betriebssystem als das des Hosts benötigt wird','Wenn hunderte Instanzen schnell starten sollen','Wenn wenig Speicher verfügbar ist'], correct:0, explain:'Nur die VM bringt einen eigenen Kernel mit.'},
-        {q:'Warum startet ein Container in Sekunden, eine VM in Minuten?', options:['Container sind besser programmiert','Dem Container fehlt das eigene Gast-Betriebssystem','VMs sind absichtlich langsam'], correct:1, explain:'Er nutzt den bereits laufenden Kernel des Hosts.'}
-      ]
-    },
-    {
-      id:'m23-l3', title:'Cloud: Servicemodelle, Bereitstellung und Datenschutz', minutes:10,
-      body:
-        '<p>Die <strong>drei Servicemodelle</strong> unterscheiden sich darin, wo die Verantwortungsgrenze zwischen Anbieter und Kunde verläuft:</p>'+
-        '<table class="lesson-table"><tr><th>Modell</th><th>Anbieter stellt</th><th>Du verwaltest</th><th>Beispiel</th></tr>'+
-        '<tr><td><strong>IaaS</strong></td><td>Hardware, Virtualisierung, Netz</td><td>Betriebssystem, Middleware, Anwendung, Daten</td><td>virtueller Server</td></tr>'+
-        '<tr><td><strong>PaaS</strong></td><td>zusätzlich OS und Laufzeitumgebung</td><td>Anwendung und Daten</td><td>Datenbankdienst, App-Plattform</td></tr>'+
-        '<tr><td><strong>SaaS</strong></td><td>alles bis zur fertigen Anwendung</td><td>nur deine Daten und Nutzerkonten</td><td>Webmail, CRM, Office</td></tr></table>'+
-        '<p><strong>Bereitstellungsmodelle:</strong> <strong>Public Cloud</strong> (geteilte Infrastruktur eines Anbieters), <strong>Private Cloud</strong> (exklusiv für eine Organisation), <strong>Hybrid Cloud</strong> (Kombination — sensible Daten bleiben im Haus, Lastspitzen gehen nach außen) und <strong>Community Cloud</strong> (gemeinsam von Organisationen mit gleichen Anforderungen).</p>'+
-        '<p><strong>Vorteile:</strong> keine Investition in Hardware (Betriebs- statt Investitionskosten), <strong>Skalierbarkeit und Elastizität</strong>, Zugriff von überall, Wartung und Updates beim Anbieter, schnelle Bereitstellung, professionelle Redundanz.</p>'+
-        '<p><strong>Nachteile:</strong> <strong>Abhängigkeit vom Anbieter</strong> und Lock-in-Effekt, zwingende Internetverbindung, laufende Kosten statt einmaliger, weniger Kontrolle über die Daten und die schwierigsten Punkte — <strong>Datenschutz und Rechtssicherheit</strong>.</p>'+
-        '<p><strong>Datenschutzrechtlich</strong> gilt: Der Cloud-Anbieter ist <strong>Auftragsverarbeiter</strong>, es braucht einen <strong>AVV nach Art. 28 DSGVO</strong>. Der <strong>Serverstandort</strong> ist zu prüfen; bei Übermittlung in Drittländer sind zusätzliche Garantien erforderlich. Verantwortlich bleibt in jedem Fall <em>dein</em> Unternehmen.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 250" role="img" aria-label="Verantwortungsgrenze bei On-Premises, IaaS, PaaS und SaaS"><text class="s-lbl" x="88" y="20" text-anchor="middle">On-Premises</text><text class="s-lbl" x="212" y="20" text-anchor="middle">IaaS</text><text class="s-lbl" x="336" y="20" text-anchor="middle">PaaS</text><text class="s-lbl" x="460" y="20" text-anchor="middle">SaaS</text><text class="s-lbl" x="12" y="46">Daten</text><rect class="s-cust" x="30" y="30" width="116" height="22" rx="2"/><rect class="s-cust" x="154" y="30" width="116" height="22" rx="2"/><rect class="s-cust" x="278" y="30" width="116" height="22" rx="2"/><rect class="s-cust" x="402" y="30" width="116" height="22" rx="2"/><text class="s-lbl" x="12" y="76">Anwendung</text><rect class="s-cust" x="30" y="60" width="116" height="22" rx="2"/><rect class="s-cust" x="154" y="60" width="116" height="22" rx="2"/><rect class="s-cust" x="278" y="60" width="116" height="22" rx="2"/><rect class="s-prov" x="402" y="60" width="116" height="22" rx="2"/><text class="s-lbl" x="12" y="106">Laufzeit</text><rect class="s-cust" x="30" y="90" width="116" height="22" rx="2"/><rect class="s-cust" x="154" y="90" width="116" height="22" rx="2"/><rect class="s-prov" x="278" y="90" width="116" height="22" rx="2"/><rect class="s-prov" x="402" y="90" width="116" height="22" rx="2"/><text class="s-lbl" x="12" y="136">Betriebssystem</text><rect class="s-cust" x="30" y="120" width="116" height="22" rx="2"/><rect class="s-cust" x="154" y="120" width="116" height="22" rx="2"/><rect class="s-prov" x="278" y="120" width="116" height="22" rx="2"/><rect class="s-prov" x="402" y="120" width="116" height="22" rx="2"/><text class="s-lbl" x="12" y="166">Virtualisierung</text><rect class="s-cust" x="30" y="150" width="116" height="22" rx="2"/><rect class="s-prov" x="154" y="150" width="116" height="22" rx="2"/><rect class="s-prov" x="278" y="150" width="116" height="22" rx="2"/><rect class="s-prov" x="402" y="150" width="116" height="22" rx="2"/><text class="s-lbl" x="12" y="196">Server, Speicher</text><rect class="s-cust" x="30" y="180" width="116" height="22" rx="2"/><rect class="s-prov" x="154" y="180" width="116" height="22" rx="2"/><rect class="s-prov" x="278" y="180" width="116" height="22" rx="2"/><rect class="s-prov" x="402" y="180" width="116" height="22" rx="2"/><rect class="s-cust" x="30" y="218" width="16" height="14" rx="2"/><text class="s-lbl" x="54" y="230">Kunde verwaltet</text><rect class="s-prov" x="190" y="218" width="16" height="14" rx="2"/><text class="s-lbl" x="214" y="230">Anbieter verwaltet</text><text class="s-lbl" x="360" y="230">Die Datenzeile bleibt immer beim Kunden.</text></svg><figcaption>Je weiter nach rechts, desto mehr uebernimmt der Anbieter. Nur die oberste Zeile bleibt in jedem Modell in deiner Verantwortung &#8211; auch datenschutzrechtlich.</figcaption></figure>',
-      code:
-        "Verantwortungsgrenze - wer kuemmert sich worum?\n\n"+
-        "                    On-Premises  IaaS    PaaS    SaaS\n"+
-        "  Anwendung            Kunde     Kunde   Kunde   Anbieter\n"+
-        "  Daten                Kunde     Kunde   Kunde   Kunde\n"+
-        "  Laufzeitumgebung     Kunde     Kunde   Anbiet. Anbieter\n"+
-        "  Betriebssystem       Kunde     Kunde   Anbiet. Anbieter\n"+
-        "  Virtualisierung      Kunde     Anbiet. Anbiet. Anbieter\n"+
-        "  Server / Speicher    Kunde     Anbiet. Anbiet. Anbieter\n"+
-        "  Netzwerk / Gebaeude  Kunde     Anbiet. Anbiet. Anbieter\n\n"+
-        "  Merke: Die DATEN bleiben in JEDEM Modell in deiner\n"+
-        "  Verantwortung - auch bei SaaS.",
-      codeLang:'Cloud-Modelle',
-      tip:'Die Zeile mit den Daten ist der Punkt, der in Datenschutzaufgaben zählt: Egal welches Modell gewählt wird, dein Unternehmen bleibt Verantwortlicher im Sinne der DSGVO. Der Anbieter ist nur Auftragsverarbeiter und handelt weisungsgebunden. Wer in einer Prüfung schreibt, mit dem Wechsel in die Cloud gehe die Datenschutzverantwortung an den Anbieter über, verliert den Punkt — sie geht nie über.',
-      quiz:[
-        {q:'Bei welchem Modell verwaltest du das Betriebssystem selbst?', options:['SaaS','PaaS','IaaS'], correct:2, explain:'Bei IaaS bekommst du eine virtuelle Maschine und bist ab dem OS zuständig.'},
-        {q:'Wer ist datenschutzrechtlich verantwortlich, wenn ein Unternehmen SaaS nutzt?', options:['Der Cloud-Anbieter','Das nutzende Unternehmen – der Anbieter ist Auftragsverarbeiter','Niemand, das regelt die Cloud'], correct:1, explain:'Deshalb ist ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO Pflicht.'},
-        {q:'Bei welchem Cloud-Modell ist der Kunde für Betriebssystem-Updates zuständig?', options:['SaaS','IaaS','PaaS'], correct:1, explain:'Bei PaaS und SaaS übernimmt das der Anbieter.'}
-      ]
-    }
-  ]
+var RP_LITERAL_2=window.RP_LITERALS[2];
+var RP_QUIZ_REVISIONS=RP_LITERAL_2;
+function rpQuestionId(lesson,index){ var q=lesson.quiz[index];return lesson.id+'#'+index+(q.revision?'@'+q.revision:''); }
+RP_QUIZ_REVISIONS.forEach(function(item){
+var lesson=FLAT.find(function(l){return l.id===item.lesson;});
+if(!lesson||!lesson.quiz[item.index])throw new Error('Quiz-Ziel fehlt: '+item.lesson);
+var question=Object.assign({},item);delete question.lesson;delete question.index;lesson.quiz[item.index]=question;
 });
-MODULES.push({
-  id:'m24', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Software, Lizenzen & Inbetriebnahme', relevanz:'mittel',
-  lessons:[
-    {
-      id:'m24-l1', title:'Lizenzmodelle im Unternehmen', minutes:9,
-      body:
-        '<p>Software wird nicht gekauft, sondern <strong>lizenziert</strong> — man erwirbt ein Nutzungsrecht. Die Modelle, die in der AP1 unterschieden werden:</p>'+
-        '<table class="lesson-table"><tr><th>Modell</th><th>Merkmal</th></tr>'+
-        '<tr><td><strong>OEM</strong></td><td>fest an <em>ein</em> Gerät gebunden, geht mit ihm unter, günstig, kein Support vom Hersteller</td></tr>'+
-        '<tr><td><strong>Retail / Box</strong></td><td>übertragbar auf ein anderes Gerät, teurer</td></tr>'+
-        '<tr><td><strong>Volumenlizenz</strong></td><td>ab einer Mindestmenge, zentral verwaltbar, ein Key für viele Installationen</td></tr>'+
-        '<tr><td><strong>Subscription</strong></td><td>Miete je Monat oder Jahr, Updates inklusive, endet mit der Zahlung</td></tr>'+
-        '<tr><td><strong>CAL</strong></td><td>Zugriffslizenz auf einen Server, als <em>User-CAL</em> (je Person) oder <em>Device-CAL</em> (je Gerät)</td></tr>'+
-        '<tr><td><strong>Named User</strong></td><td>fest einer benannten Person zugeordnet</td></tr>'+
-        '<tr><td><strong>Concurrent</strong></td><td>begrenzt die Zahl <em>gleichzeitiger</em> Nutzer, unabhängig von der Gesamtzahl</td></tr></table>'+
-        '<p><strong>Die Rechenaufgabe dazu:</strong> Bei 40 Mitarbeitern im Schichtbetrieb, von denen nie mehr als 15 gleichzeitig arbeiten, brauchst du 15 Concurrent-Lizenzen, aber 40 Named-User-Lizenzen. Arbeiten dagegen 40 Personen an 12 gemeinsam genutzten Rechnern, sind Device-CALs günstiger als User-CALs.</p>'+
-        '<p><strong>Unterlizenzierung</strong> ist eine Urheberrechtsverletzung mit Schadenersatzfolge, <strong>Überlizenzierung</strong> ist verschwendetes Geld. Deshalb gehört ein <strong>Lizenzmanagement</strong> mit Inventarisierung und Nachweisdokumenten zur Pflicht.</p>',
-      code:
-        "LIZENZBEDARF BERECHNEN\n\n"+
-        "  Situation: 60 Mitarbeiter, 3 Schichten\n"+
-        "             maximal 22 gleichzeitig angemeldet\n"+
-        "             45 eigene PCs, 8 Gemeinschaftsrechner\n\n"+
-        "  Named User   : 60 Lizenzen  (jede Person eine)\n"+
-        "  Concurrent   : 22 Lizenzen  (nur Gleichzeitigkeit zaehlt)\n"+
-        "  User-CAL     : 60 Lizenzen\n"+
-        "  Device-CAL   : 53 Lizenzen  (45 + 8 Geraete)\n\n"+
-        "  Guenstigste Variante: Concurrent mit 22 Lizenzen -\n"+
-        "  vorausgesetzt, der Hersteller bietet dieses Modell an\n"+
-        "  und die Gleichzeitigkeit ist technisch begrenzbar.",
-      codeLang:'Lizenzrechnung',
-      tip:'Die Entscheidung zwischen User- und Device-CAL folgt einer einfachen Regel: Zähle, wovon es weniger gibt. Mehr Personen als Geräte, etwa im Schichtbetrieb, spricht für Device-CALs. Mehr Geräte als Personen, etwa wenn jeder ein Notebook und ein Diensthandy hat, spricht für User-CALs. Schreibe die Zählung in die Antwort, nicht nur das Ergebnis.',
-      quiz:[
-        {q:'Was kennzeichnet eine OEM-Lizenz?', options:['Sie ist frei übertragbar','Sie ist fest an ein Gerät gebunden','Sie gilt nur ein Jahr'], correct:1, explain:'Mit dem Gerät endet auch die Lizenz – dafür ist sie günstiger.'},
-        {q:'40 Mitarbeiter teilen sich 15 Rechner. Welche CAL-Art ist günstiger?', options:['User-CAL','Device-CAL','Beide gleich'], correct:1, explain:'15 Geräte-Lizenzen statt 40 Benutzer-Lizenzen.'},
-        {q:'40 Mitarbeiter im Schichtbetrieb, nie mehr als 15 gleichzeitig. Welches Modell ist am günstigsten?', options:['40 Named-User-Lizenzen','15 Concurrent-Lizenzen','40 Device-CALs'], correct:1, explain:'Sofern der Hersteller Concurrent anbietet und die Gleichzeitigkeit technisch begrenzbar ist.'}
-      ]
-    },
-    {
-      id:'m24-l2', title:'Open Source, Urheberrecht und freie Software', minutes:9,
-      body:
-        '<p>Die Begriffe werden im Alltag durcheinandergeworfen — in der Prüfung nicht:</p>'+
-        '<table class="lesson-table"><tr><th>Begriff</th><th>Bedeutung</th></tr>'+
-        '<tr><td><strong>Open Source</strong></td><td>Quellcode ist einsehbar, veränderbar und weitergebbar. Nicht automatisch kostenlos.</td></tr>'+
-        '<tr><td><strong>Freeware</strong></td><td>kostenlos nutzbar, aber <em>kein</em> Quellcode, keine Änderungsrechte</td></tr>'+
-        '<tr><td><strong>Shareware</strong></td><td>zum Testen kostenlos, danach kostenpflichtig oder eingeschränkt</td></tr>'+
-        '<tr><td><strong>Public Domain</strong></td><td>gemeinfrei, der Urheber verzichtet auf alle Rechte (in Deutschland kaum möglich)</td></tr>'+
-        '<tr><td><strong>Proprietär</strong></td><td>geschlossener Quellcode, Nutzung nur nach Lizenzbedingungen</td></tr></table>'+
-        '<p><strong>Die beiden Lizenzfamilien im Open Source:</strong></p>'+
-        '<ul><li><strong>Copyleft (GPL, AGPL)</strong> – wer den Code verändert und <em>weitergibt</em>, muss das Ergebnis unter derselben Lizenz und mit Quellcode veröffentlichen. Das ist der „virale" Effekt, den Unternehmen fürchten.</li>'+
-        '<li><strong>Permissiv (MIT, BSD, Apache 2.0)</strong> – nahezu beliebige Verwendung, auch in geschlossenen kommerziellen Produkten. Bedingung ist meist nur die Nennung des Urhebers und der Lizenztext.</li></ul>'+
-        '<p><strong>Urheberrecht am Quellcode:</strong> Software ist nach § 69a UrhG geschützt. Beim Arbeitsverhältnis gilt: Die <strong>Verwertungsrechte an Software, die in Erfüllung des Arbeitsvertrags entsteht, stehen dem Arbeitgeber zu</strong> (§ 69b UrhG). Das Urheberpersönlichkeitsrecht bleibt beim Entwickler, es ist nicht übertragbar.</p>',
-      code:
-        "Pruefungsfrage: Duerfen wir diese Bibliothek einsetzen?\n\n"+
-        "  Interne Nutzung (kein Vertrieb)\n"+
-        "     GPL         -> ja, Copyleft greift erst bei Weitergabe\n"+
-        "     MIT/Apache  -> ja\n\n"+
-        "  Eingebaut in ein Produkt, das wir verkaufen\n"+
-        "     GPL         -> problematisch: unser Code muesste ebenfalls\n"+
-        "                    unter GPL offengelegt werden\n"+
-        "     LGPL        -> nur bei dynamischer Einbindung unkritisch\n"+
-        "     MIT/Apache  -> unproblematisch, Urhebernennung genuegt\n\n"+
-        "  Web-Anwendung, die wir betreiben (kein Download)\n"+
-        "     GPL         -> keine Weitergabe, daher unkritisch\n"+
-        "     AGPL        -> VORSICHT: Bereitstellung ueber das Netz\n"+
-        "                    gilt hier bereits als Weitergabe",
-      codeLang:'Lizenzprüfung',
-      tip:'Der wichtigste Satz zum Thema lautet: Open Source heißt nicht kostenlos, und kostenlos heißt nicht Open Source. Beide Verwechslungen kommen in Prüfungen als Multiple-Choice-Falle vor. Und merke dir die Auslösebedingung von Copyleft — sie greift bei der <em>Weitergabe</em>, nicht bei der internen Nutzung. Genau deshalb ist die AGPL für SaaS-Anbieter die kritische Variante.',
-      quiz:[
-        {q:'Was besagt Copyleft bei der GPL?', options:['Die Software ist kostenlos','Abgeleitete Werke müssen bei Weitergabe unter derselben Lizenz stehen','Der Quellcode darf nicht verändert werden'], correct:1, explain:'MIT und Apache sind dagegen permissiv und erlauben geschlossene Produkte.'},
-        {q:'Wem stehen die Verwertungsrechte an Software zu, die ein Angestellter im Job entwickelt?', options:['Dem Entwickler','Dem Arbeitgeber (§ 69b UrhG)','Beiden je zur Hälfte'], correct:1, explain:'Das Urheberpersönlichkeitsrecht bleibt beim Entwickler, es ist nicht übertragbar.'},
-        {q:'Ist Freeware dasselbe wie Open Source?', options:['Ja','Nein — Freeware ist kostenlos, aber ohne Quellcode und Änderungsrecht','Nur bei kleinen Programmen'], correct:1, explain:'Umgekehrt ist Open Source nicht automatisch kostenlos.'}
-      ]
-    },
-    {
-      id:'m24-l3', title:'Installation, Imaging und Rollout', minutes:9,
-      body:
-        '<p>Bei einem Rollout von 30 Arbeitsplätzen installiert niemand 30-mal von Hand. Die Verfahren:</p>'+
-        '<ul><li><strong>Referenzinstallation und Image</strong> – ein Muster-PC wird eingerichtet, mit <strong>Sysprep</strong> generalisiert (entfernt die eindeutige SID und rechnerspezifische Daten) und als Abbild auf die übrigen Geräte verteilt.</li>'+
-        '<li><strong>Unattended Setup</strong> – die Installation läuft über eine Antwortdatei ohne Rückfragen durch.</li>'+
-        '<li><strong>Netzwerkinstallation über PXE</strong> – der Rechner bootet über das Netz und zieht sich das Abbild vom Server.</li>'+
-        '<li><strong>Softwareverteilung</strong> – Anwendungen und Updates werden zentral paketiert und automatisch ausgerollt.</li>'+
-        '<li><strong>Gruppenrichtlinien</strong> – Konfiguration, Rechte und Sicherheitseinstellungen zentral erzwungen.</li></ul>'+
-        '<p>Warum Sysprep unverzichtbar ist: Ein geklontes System behält sonst dieselbe <strong>SID</strong>. In einer Domäne führt das zu Konflikten bei Anmeldung, Rechtevergabe und Softwareverteilung.</p>'+
-        '<p><strong>Datenmigration</strong> vom Altgerät: Benutzerprofile, Dokumente, Mailarchive, Zertifikate, Lesezeichen, Druckertreiber und Anwendungseinstellungen. Und immer: <strong>vorher eine vollständige Sicherung</strong>, erst danach das Altgerät zurücksetzen oder entsorgen.</p>'+
-        '<p><strong>Patchmanagement:</strong> Updates werden zunächst in einer Testgruppe eingespielt, dann gestaffelt ausgerollt — nie alles gleichzeitig auf alle Produktivsysteme.</p>',
-      code:
-        "ZEITVERGLEICH EINZELINSTALLATION GEGEN IMAGE - 30 Arbeitsplaetze\n\n"+
-        "  Manuell je Geraet:\n"+
-        "     Betriebssystem  45 min\n"+
-        "     Treiber         15 min\n"+
-        "     Anwendungen     60 min\n"+
-        "     Konfiguration   30 min\n"+
-        "     Summe          150 min = 2,5 h\n"+
-        "     30 x 2,5 h = 75 Stunden\n\n"+
-        "  Mit Image:\n"+
-        "     Referenzsystem erstellen und testen     6,0 h einmalig\n"+
-        "     Ausrollen je Geraet ca. 20 min -> 30 x = 10,0 h\n"+
-        "     Nacharbeit je Geraet ca. 10 min -> 30 x = 5,0 h\n"+
-        "     Summe                                   21,0 h\n\n"+
-        "  Ersparnis: 54 Stunden. Bei 65 EUR/h sind das 3.510 EUR.",
-      codeLang:'Rollout-Planung',
-      tip:'Die Imaging-Aufgabe hat immer dieselbe Struktur: einmaliger Aufwand plus Aufwand je Gerät, gegen den rein linearen Aufwand der Einzelinstallation. Vergiss den einmaligen Anteil nicht, sonst wird die Ersparnis zu groß. Und nenne in der Begründung neben der Zeit den zweiten Vorteil, den Prüfer hören wollen: Alle Geräte sind identisch konfiguriert, was Support und Fehlersuche erheblich vereinfacht.',
-      quiz:[
-        {q:'Wozu dient Sysprep vor dem Klonen?', options:['Zum Komprimieren des Abbilds','Zum Entfernen der eindeutigen SID und rechnerspezifischer Daten','Zum Installieren der Treiber'], correct:1, explain:'Identische SIDs führen in der Domäne zu Konflikten.'},
-        {q:'Wie rollt man Sicherheitsupdates im Unternehmen aus?', options:['Sofort auf allen Systemen gleichzeitig','Zuerst in einer Testgruppe, dann gestaffelt','Gar nicht, das stört den Betrieb'], correct:1, explain:'So werden Inkompatibilitäten erkannt, bevor sie den Produktivbetrieb lahmlegen.'},
-        {q:'Was passiert ohne Sysprep beim Klonen in einer Domäne?', options:['Nichts','Identische SIDs führen zu Konflikten bei Anmeldung und Rechtevergabe','Der Klon startet nicht'], correct:1, explain:'Sysprep entfernt die eindeutige SID und rechnerspezifische Daten.'}
-      ]
-    },
-    {
-      id:'m24-l4', title:'Inbetriebnahme, Übergabe und Barrierefreiheit', minutes:9,
-      body:
-        '<p>Der letzte Schritt der AP1-Handlungskette wird gern unterschätzt, ist aber fest im Prüfungsbereich verankert.</p>'+
-        '<p><strong>Inbetriebnahme und Abnahme:</strong></p>'+
-        '<ol><li><strong>Funktionstest</strong> anhand der Anforderungen aus dem Pflichtenheft — jede zugesagte Funktion einmal geprüft.</li>'+
-        '<li><strong>Abnahmeprotokoll</strong> mit Datum, geprüften Punkten, festgestellten Mängeln und Unterschriften beider Seiten. Es ist die rechtliche Grundlage für Zahlung und Gewährleistungsbeginn.</li>'+
-        '<li><strong>Einweisung</strong> der Anwender, angemessen zum Vorwissen.</li>'+
-        '<li><strong>Dokumentation</strong> übergeben: Konfiguration, Zugangsdaten (sicher), Netzplan, Inventarnummern, Ansprechpartner.</li></ol>'+
-        '<p><strong>Barrierefreiheit</strong> — geregelt in der <strong>BITV 2.0</strong> (für öffentliche Stellen) auf Grundlage der <strong>WCAG</strong>. Die vier Prinzipien: <strong>wahrnehmbar, bedienbar, verständlich, robust</strong>. Konkrete Maßnahmen am Arbeitsplatz:</p>'+
-        '<ul><li>ausreichender <strong>Kontrast</strong> (mindestens 4,5:1 für normalen Text), skalierbare Schrift</li>'+
-        '<li><strong>vollständige Tastaturbedienbarkeit</strong> ohne Maus</li>'+
-        '<li><strong>Alternativtexte</strong> für Bilder, damit Screenreader sie vorlesen können</li>'+
-        '<li>Untertitel für Videos, keine reine Farbcodierung von Informationen</li>'+
-        '<li>höhenverstellbarer Tisch, Spezialtastatur, Braillezeile, Bildschirmlupe je nach Bedarf</li></ul>'+
-        '<p>Für die <strong>Software-Ergonomie</strong> gilt die <strong>EN ISO 9241-110</strong> mit ihren Grundsätzen: Aufgabenangemessenheit, Selbstbeschreibungsfähigkeit, Steuerbarkeit, Erwartungskonformität, Fehlertoleranz, Individualisierbarkeit und Lernförderlichkeit.</p>',
-      code:
-        "ABNAHMEPROTOKOLL - Mindestinhalte\n\n"+
-        "  Projekt / Auftragsnummer\n"+
-        "  Datum, Ort, Beteiligte (Auftraggeber und Auftragnehmer)\n"+
-        "  Gegenstand der Abnahme (Geraete, Software, Leistungen)\n"+
-        "  Geprueftes Kriterium | Soll | Ist | erfuellt ja/nein\n"+
-        "  Festgestellte Maengel mit Frist zur Beseitigung\n"+
-        "  Abnahme: vollstaendig / unter Vorbehalt / verweigert\n"+
-        "  Unterschriften beider Seiten\n\n"+
-        "  Rechtliche Wirkung:\n"+
-        "   - Gefahruebergang auf den Auftraggeber\n"+
-        "   - Faelligkeit der Verguetung\n"+
-        "   - Beginn der Gewaehrleistungsfrist\n"+
-        "   - Umkehr der Beweislast fuer spaeter geruegte Maengel",
-      codeLang:'Abnahme',
-      tip:'Die vier rechtlichen Wirkungen der Abnahme sind eine dankbare Nennaufgabe, weil sie sich niemand herleiten kann — man weiß sie oder nicht. Präge dir vor allem zwei ein: Mit der Abnahme wird die Vergütung fällig, und die Gewährleistungsfrist beginnt zu laufen. Wer Mängel erst nach der Abnahme rügt, trägt zudem die Beweislast dafür, dass sie schon vorher vorlagen.',
-      quiz:[
-        {q:'Welche rechtliche Wirkung hat die Abnahme?', options:['Sie verlängert die Gewährleistung','Die Vergütung wird fällig und die Gewährleistungsfrist beginnt','Sie hat keine rechtliche Wirkung'], correct:1, explain:'Zusätzlich gehen Gefahr und Beweislast auf den Auftraggeber über.'},
-        {q:'Welches Kontrastverhältnis fordert die WCAG für normalen Text mindestens?', options:['2:1','4,5:1','10:1'], correct:1, explain:'Für große Schrift genügt 3:1.'},
-        {q:'Ab wann läuft die Gewährleistungsfrist?', options:['Ab Vertragsschluss','Ab der Abnahme','Ab der ersten Rechnung'], correct:1, explain:'Mit der Abnahme werden zugleich Vergütung fällig und Gefahr sowie Beweislast übertragen.'}
-      ]
-    }
-  ]
+var CARDS = [];
+MODULES.forEach(function(m){
+  m.lessons.forEach(function(l){
+    (l.quiz || []).forEach(function(q, i){
+      CARDS.push({ id:(typeof rpQuestionId==='function'?rpQuestionId(l,i):l.id+'#'+i), q:q.q, options:q.options, correct:q.correct,
+                   explain:q.explain, lessonId:l.id, lessonTitle:l.title,
+                   moduleTitle:m.title, part:m.part });
+    });
+  });
 });
-MODULES.push({
-  id:'m25', part:8, partTitle:'Service, Kommunikation & Qualität', title:'IT-Service-Management', relevanz:'mittel',
-  lessons:[
-    {
-      id:'m25-l1', title:'Incident, Problem, Change und Service Request', minutes:9,
-      body:
-        '<p>Die vier Begriffe aus dem IT-Service-Management werden regelmäßig als Zuordnungsaufgabe geprüft. Der Unterschied liegt im Ziel, nicht in der Technik.</p>'+
-        '<table class="lesson-table"><tr><th>Begriff</th><th>Definition</th><th>Ziel</th></tr>'+
-        '<tr><td><strong>Incident</strong> (Störung)</td><td>Ein Dienst ist unterbrochen oder eingeschränkt</td><td>schnellstmögliche Wiederherstellung — auch per Workaround</td></tr>'+
-        '<tr><td><strong>Problem</strong></td><td>Die unbekannte Ursache eines oder mehrerer Incidents</td><td>Ursache finden und dauerhaft beseitigen</td></tr>'+
-        '<tr><td><strong>Change</strong></td><td>Eine geplante Änderung an der Infrastruktur</td><td>Änderung kontrolliert und risikoarm durchführen</td></tr>'+
-        '<tr><td><strong>Service Request</strong></td><td>Eine Standardanfrage ohne Störung</td><td>Anfrage nach definiertem Ablauf erfüllen</td></tr></table>'+
-        '<p><strong>Der Merksatz:</strong> Das Incident Management stellt den Betrieb wieder her, das Problem Management verhindert die Wiederholung. Beide sind nötig — wer nur Incidents löst, behebt dasselbe Problem jeden Monat neu.</p>'+
-        '<p>Ein <strong>Known Error</strong> ist ein Problem mit bekannter Ursache und dokumentiertem Workaround. Die Sammlung dieser Einträge ist die <strong>Known Error Database</strong> — sie beschleunigt die Bearbeitung künftiger Störungen erheblich.</p>'+
-        '<p>Die <strong>Priorität</strong> eines Tickets ergibt sich aus zwei Faktoren: <strong>Auswirkung</strong> (wie viele Nutzer oder wie kritische Prozesse sind betroffen?) und <strong>Dringlichkeit</strong> (wie schnell muss es behoben sein?). Beide zusammen ergeben die Priorität über eine Matrix.</p>',
-      code:
-        "PRIORITAETSMATRIX\n\n"+
-        "                    Dringlichkeit\n"+
-        "                 hoch   mittel   niedrig\n"+
-        "  Auswirkung\n"+
-        "     hoch          1       2        3\n"+
-        "     mittel        2       3        4\n"+
-        "     niedrig       3       4        5\n\n"+
-        "ZUORDNUNGSBEISPIELE\n\n"+
-        "  \"Der Mailserver ist abgestuerzt\"\n"+
-        "     -> INCIDENT, Prioritaet 1 (alle betroffen, sofort noetig)\n\n"+
-        "  \"Der Mailserver stuerzt jeden Montag ab, Ursache unklar\"\n"+
-        "     -> PROBLEM (die wiederkehrende Ursache wird gesucht)\n\n"+
-        "  \"Bitte richten Sie ein Postfach fuer den neuen Kollegen ein\"\n"+
-        "     -> SERVICE REQUEST (Standardvorgang, keine Stoerung)\n\n"+
-        "  \"Wir aktualisieren den Mailserver am Samstag auf Version 9\"\n"+
-        "     -> CHANGE (geplante Aenderung mit Rueckfallplan)",
-      codeLang:'ITSM',
-      tip:'Die Zuordnungsfrage entscheidest du an einem einzigen Kriterium: Ist gerade etwas kaputt? Wenn ja und die Ursache egal ist, solange es wieder läuft, ist es ein Incident. Wenn ja und es wiederholt sich, steckt ein Problem dahinter. Wenn nichts kaputt ist und jemand etwas Normales möchte, ist es ein Service Request. Und wenn etwas absichtlich geändert werden soll, ist es ein Change.',
-      quiz:[
-        {q:'Was ist das Ziel des Incident Managements?', options:['Die Ursache dauerhaft beseitigen','Den Betrieb schnellstmöglich wiederherstellen, notfalls per Workaround','Änderungen dokumentieren'], correct:1, explain:'Die Ursachenbeseitigung ist Aufgabe des Problem Managements.'},
-        {q:'Woraus ergibt sich die Priorität eines Tickets?', options:['Aus der Reihenfolge des Eingangs','Aus Auswirkung und Dringlichkeit','Aus der Bearbeitungsdauer'], correct:1, explain:'Beide Faktoren werden über eine Matrix zur Priorität verknüpft.'},
-        {q:'Derselbe Fehler tritt zum fünften Mal auf. Welcher Prozess ist zuständig?', options:['Incident Management','Problem Management','Change Management'], correct:1, explain:'Die einzelnen Ausfälle sind Incidents, das wiederkehrende Muster ist ein Problem.'}
-      ]
-    },
-    {
-      id:'m25-l2', title:'Support-Level, Eskalation und Ticketsystem', minutes:8,
-      body:
-        '<p>Der <strong>gestufte Support</strong> sorgt dafür, dass teure Spezialisten nicht mit Standardfragen belegt werden:</p>'+
-        '<ul><li><strong>First Level</strong> – Annahme aller Anfragen, Erstqualifizierung, Lösung mit Hilfe von Anleitungen und der Known Error Database. Löst idealerweise 60 bis 80 Prozent selbst.</li>'+
-        '<li><strong>Second Level</strong> – Fachleute für bestimmte Systeme, tiefere Analyse.</li>'+
-        '<li><strong>Third Level</strong> – Spezialisten, Entwickler oder der Hersteller.</li></ul>'+
-        '<p><strong>Zwei Arten der Eskalation</strong> — die Unterscheidung ist eine typische Prüfungsfrage:</p>'+
-        '<ul><li><strong>Funktionale Eskalation</strong> (horizontal) – das Ticket geht an eine Stelle mit <em>mehr Fachwissen</em>, also vom First zum Second Level.</li>'+
-        '<li><strong>Hierarchische Eskalation</strong> (vertikal) – die Führungsebene wird eingeschaltet, weil <em>mehr Befugnis oder Ressourcen</em> nötig sind, etwa wenn eine SLA-Frist zu reißen droht.</li></ul>'+
-        '<p><strong>Das Ticketsystem</strong> ist das zentrale Werkzeug. Sein Nutzen in Stichworten, wie ihn eine Begründungsaufgabe verlangt: nichts geht verloren, der Status ist jederzeit nachvollziehbar, die Historie bleibt erhalten, Prioritäten und Fristen werden überwacht, Wissen wird wiederverwendbar, und aus den Daten entstehen Kennzahlen für die Verbesserung.</p>',
-      code:
-        "LEBENSZYKLUS EINES TICKETS\n\n"+
-        "  Neu -> Zugewiesen -> In Bearbeitung -> Wartend (auf Kunde)\n"+
-        "      -> Geloest -> Geschlossen\n"+
-        "                 \\-> Wiedereroeffnet (wenn nicht geloest)\n\n"+
-        "PFLICHTANGABEN EINES TICKETS\n"+
-        "  Ticketnummer, Eingangszeit, Melder und Erreichbarkeit\n"+
-        "  Betroffener Dienst oder Geraet (Inventarnummer)\n"+
-        "  Fehlerbeschreibung mit genauem Wortlaut der Meldung\n"+
-        "  Schritte zur Reproduktion, seit wann, wer noch betroffen\n"+
-        "  Auswirkung und Dringlichkeit -> Prioritaet\n"+
-        "  Bearbeiter, durchgefuehrte Schritte, Loesung\n\n"+
-        "  Die Reproduktionsschritte sind der wertvollste Teil -\n"+
-        "  ohne sie beginnt der Second Level bei null.",
-      codeLang:'Ticketsystem',
-      tip:'Bei „Welche Angaben nehmen Sie bei einer Störungsmeldung auf?" reicht die Nennung von Name und Problem nicht für die volle Punktzahl. Gefragt sind die Angaben, die eine Weiterbearbeitung überhaupt erst möglich machen: der genaue Wortlaut der Fehlermeldung, seit wann es auftritt, was zuletzt geändert wurde, ob weitere Personen betroffen sind und wie sich der Fehler reproduzieren lässt. Das letzte Kriterium entscheidet, ob der Second Level arbeiten kann oder zurückfragen muss.',
-      quiz:[
-        {q:'Was ist eine funktionale Eskalation?', options:['Die Weitergabe an die Führungsebene','Die Weitergabe an eine Stelle mit mehr Fachwissen','Das Schließen des Tickets'], correct:1, explain:'Die hierarchische Eskalation geht dagegen nach oben in der Führung.'},
-        {q:'Welche Angabe hilft dem Second Level am meisten?', options:['Die Uhrzeit der Meldung','Die Schritte zur Reproduktion des Fehlers','Die Abteilung des Melders'], correct:1, explain:'Ein nicht reproduzierbarer Fehler lässt sich kaum gezielt beheben.'},
-        {q:'Wie hoch sollte die Erstlösungsquote im First Level idealerweise liegen?', options:['Bei etwa 20 %','Bei 60 bis 80 %','Bei 100 %'], correct:1, explain:'Eine niedrige Quote deutet auf fehlende Anleitungen oder eine leere Known Error Database.'}
-      ]
-    },
-    {
-      id:'m25-l3', title:'SLA, OLA und Service-Kennzahlen', minutes:9,
-      body:
-        '<p>Ein <strong>Service Level Agreement (SLA)</strong> ist die Vereinbarung zwischen <strong>Dienstleister und Kunde</strong> über die Qualität einer Leistung. Es enthält typischerweise:</p>'+
-        '<ul><li><strong>Servicezeiten</strong> – wann gilt die Vereinbarung? Montag bis Freitag 8 bis 18 Uhr ist etwas anderes als 24/7.</li>'+
-        '<li><strong>Reaktionszeit</strong> – wie schnell beginnt die Bearbeitung? <em>Nicht</em> wie schnell es gelöst ist.</li>'+
-        '<li><strong>Wiederherstellungszeit</strong> – bis wann läuft der Dienst wieder?</li>'+
-        '<li><strong>Verfügbarkeit</strong> in Prozent, bezogen auf die Servicezeit.</li>'+
-        '<li><strong>Eskalationswege</strong> und <strong>Vertragsstrafen (Pönale)</strong> bei Nichteinhaltung.</li></ul>'+
-        '<p>Abgrenzung: Ein <strong>OLA (Operational Level Agreement)</strong> regelt dasselbe <em>innerhalb</em> der eigenen Organisation zwischen Abteilungen. Ein <strong>Underpinning Contract (UC)</strong> ist der Vertrag mit einem externen Zulieferer. Die Logik dahinter: Ein SLA von vier Stunden lässt sich nur halten, wenn die zuarbeitenden OLAs und UCs kürzer sind.</p>'+
-        '<p><strong>Die Kennzahlen:</strong></p>'+
-        '<table class="lesson-table"><tr><th>Kennzahl</th><th>Bedeutung</th></tr>'+
-        '<tr><td>MTTR</td><td>Mean Time To Repair – mittlere Reparaturdauer</td></tr>'+
-        '<tr><td>MTBF</td><td>Mean Time Between Failures – mittlere Zeit zwischen Ausfällen</td></tr>'+
-        '<tr><td>Erstlösungsquote</td><td>Anteil der im First Level gelösten Tickets</td></tr>'+
-        '<tr><td>SLA-Einhaltungsquote</td><td>Anteil der fristgerecht bearbeiteten Tickets</td></tr></table>'+
-        '<p><code>Verfügbarkeit = MTBF / (MTBF + MTTR) × 100 %</code></p>',
-      code:
-        "SLA-RECHNUNG\n\n"+
-        "  Servicezeit: Mo-Fr, 8-18 Uhr = 10 h/Tag x 250 Arbeitstage\n"+
-        "               = 2.500 h pro Jahr\n"+
-        "  Zugesicherte Verfuegbarkeit: 99,5 %\n\n"+
-        "  Erlaubte Ausfallzeit = 2.500 x 0,005 = 12,5 h pro Jahr\n\n"+
-        "  Achtung: Bezogen auf 8.760 h (24/7) waeren es 43,8 h.\n"+
-        "  Der Bezugszeitraum entscheidet - immer in der Aufgabe suchen!\n\n"+
-        "MTTR UND MTBF\n"+
-        "  Ein System fiel in 8.760 h viermal aus,\n"+
-        "  die Reparaturen dauerten 3 h, 5 h, 2 h und 6 h.\n\n"+
-        "  MTTR = (3+5+2+6) / 4 = 4 h\n"+
-        "  Betriebszeit = 8.760 - 16 = 8.744 h\n"+
-        "  MTBF = 8.744 / 4 = 2.186 h\n"+
-        "  Verfuegbarkeit = 2.186 / (2.186 + 4) x 100 = 99,82 %",
-      codeLang:'SLA-Kennzahlen',
-      tip:'Der häufigste Fehler bei SLA-Aufgaben ist die Verwechslung von Reaktionszeit und Wiederherstellungszeit. Die Reaktionszeit ist erfüllt, sobald ein Techniker mit der Bearbeitung beginnt — der Dienst kann dann noch stundenlang stehen. Wenn eine Aufgabe fragt, ob das SLA eingehalten wurde, prüfe genau, welche der beiden Fristen gemeint ist. Und achte auf den Bezugszeitraum der Verfügbarkeit: Servicezeit oder Kalenderjahr macht einen Faktor von mehr als drei aus.',
-      quiz:[
-        {q:'Was regelt ein OLA?', options:['Den Vertrag mit dem Kunden','Vereinbarungen zwischen internen Abteilungen','Den Vertrag mit einem externen Zulieferer'], correct:1, explain:'Der Vertrag mit dem externen Zulieferer heißt Underpinning Contract.'},
-        {q:'Was besagt die Reaktionszeit im SLA?', options:['Wann die Störung behoben ist','Wann mit der Bearbeitung begonnen wird','Wie lange der Ausfall dauern darf'], correct:1, explain:'Die Behebung regelt die Wiederherstellungszeit.'},
-        {q:'Ein Ticket wurde binnen 20 Minuten angenommen, aber erst nach 9 Stunden gelöst. SLA: Reaktion 30 min, Wiederherstellung 8 h.', options:['Beides eingehalten','Reaktion eingehalten, Wiederherstellung verletzt','Beides verletzt'], correct:1, explain:'Reaktions- und Wiederherstellungszeit sind getrennt zu prüfen.'}
-      ]
-    }
-  ]
+var EXTRA_CARDS = [
+['m1-l1','Welche Eigenschaft fordert, dass ein Algorithmus bei gleicher Eingabe stets dasselbe Ergebnis liefert?',['Endlichkeit','Determiniertheit','Allgemeingültigkeit'],1,'Determiniertheit betrifft das Ergebnis, Determinismus den Ablauf.'],
+['m1-l2','Wie oft wird eine fußgesteuerte Schleife (WIEDERHOLE … BIS) mindestens durchlaufen?',['Nullmal','Einmal','So oft wie die Bedingung wahr ist'],1,'Die Prüfung erfolgt erst am Ende, daher läuft der Rumpf garantiert einmal.'],
+['m1-l3','Was liefert 17 DIV 5?',['3','3,4','2'],0,'DIV ist die ganzzahlige Division ohne Rest; 17 MOD 5 wäre 2.'],
+['m1-l3','Wie prüft man in Pseudocode, ob eine Zahl ungerade ist?',['zahl DIV 2 = 1','zahl MOD 2 <> 0','zahl / 2 = 0'],1,'Der Rest bei Division durch 2 ist bei ungeraden Zahlen 1, also ungleich 0.'],
+['m1-l4','Ein Array hat 12 Elemente. Welchen Index hat das letzte?',['12','11','13'],1,'Arrays beginnen bei 0, das letzte Element liegt bei LAENGE − 1.'],
+['m2-l1','Welches Struktogramm-Element stellt eine kopfgesteuerte Schleife dar?',['Ein Rechteck mit Rahmen oben und links','Eine Raute','Ein Parallelogramm'],0,'Der Rahmen oben zeigt: Die Bedingung wird vor dem Rumpf geprüft.'],
+['m2-l2','Welches PAP-Symbol nach DIN 66001 steht für eine Verzweigung?',['Rechteck','Raute','Oval'],1,'Die Raute hat einen Eingang und zwei beschriftete Ausgänge (ja/nein).'],
+['m2-l3','Was ist der wesentliche Unterschied zwischen Struktogramm und PAP?',['Das Struktogramm erlaubt keine Sprünge und erzwingt strukturierte Programmierung','Der PAP ist genauer','Es gibt keinen Unterschied'],0,'Im PAP sind Sprünge zeichenbar, im Struktogramm nicht — das verhindert Spaghetticode.'],
+['m3-l1','Wie viele Vergleiche braucht die lineare Suche im Mittel bei n Elementen?',['n','n/2','log₂(n)'],1,'Im schlechtesten Fall n, im Mittel etwa die Hälfte.'],
+['m3-l2','Welche Voraussetzung hat die binäre Suche zwingend?',['Ein sortiertes Feld','Ein Feld ohne Duplikate','Ein Feld mit gerader Elementzahl'],0,'Auf unsortierten Daten liefert sie falsche Ergebnisse, ohne einen Fehler zu melden.'],
+['m3-l3','Wie viele Vergleiche führt Bubble-Sort bei 10 Elementen maximal durch?',['45','100','10'],0,'n · (n−1) / 2 = 10 · 9 / 2 = 45.'],
+['m3-l4','Welche Komplexität haben Quicksort und Mergesort im Mittel?',['O(n²)','O(n · log n)','O(n)'],1,'Teile-und-herrsche-Verfahren sind deutlich schneller als die quadratischen Sortierverfahren.'],
+['m4-l1','Was ist der erste Schritt eines Trockenlaufs?',['Das Ergebnis raten','Eine Wertetabelle mit einer Spalte je Variable anlegen','Den Code umschreiben'],1,'Die Tabelle macht jede Zustandsänderung nachvollziehbar und sichert Teilpunkte.'],
+['m4-l2','Wann ist eine ODER-Verknüpfung falsch?',['Wenn ein Teil falsch ist','Nur wenn beide Teile falsch sind','Nie'],1,'ODER ist wahr, sobald mindestens ein Teil wahr ist.'],
+['m4-l3','Was besagt die Äquivalenzklassenbildung beim Testen?',['Jeder mögliche Wert wird getestet','Aus jeder Klasse gleichartiger Eingaben genügt ein Vertreter','Nur gültige Werte werden getestet'],1,'Dazu kommt die Grenzwertanalyse an den Rändern der Klassen.'],
+['m4-l3','Was ist ein Blackbox-Test?',['Ein Test ohne Kenntnis des Quellcodes, nur gegen die Spezifikation','Ein Test im abgedunkelten Raum','Ein Test der Datenbank'],0,'Beim Whitebox-Test ist der interne Aufbau dagegen bekannt.'],
+['m5-l1','Wie wird eine Entität in der Chen-Notation dargestellt?',['Als Raute','Als Rechteck','Als Oval'],1,'Raute = Beziehung, Oval = Attribut, unterstrichen = Schlüsselattribut.'],
+['m5-l2','Eine Zwischentabelle bei n:m — woraus besteht ihr Primärschlüssel?',['Aus einem neuen Zählfeld','Aus beiden Fremdschlüsseln zusammen','Aus dem ersten Fremdschlüssel'],1,'Ein zusammengesetzter Primärschlüssel aus genau den beiden Fremdschlüsseln.'],
+['m5-l3','Ein Attribut gehört zur Beziehung, nicht zu den Entitäten. Wo landet es?',['In der ersten Entität','In der Zwischentabelle der n:m-Beziehung','Es entfällt'],1,'Beispiel: die Arbeitszeit eines Mechanikers an einem bestimmten Auftrag.'],
+['m5-l4','Was kennzeichnet ein Schlüsselattribut im ER-Diagramm?',['Fettdruck','Unterstreichung','Ein Sternchen'],1,'In der relationalen Notation schreibt man es ebenfalls unterstrichen.'],
+['m6-l1','Wogegen verstößt eine Spalte mit dem Inhalt „Meier, Schmidt, Kunz"?',['Gegen die 1. NF, weil sie nicht atomar ist','Gegen die 2. NF','Gegen die 3. NF'],0,'Mehrere Werte in einem Feld verletzen die Atomarität.'],
+['m6-l2','Was ist eine transitive Abhängigkeit?',['Ein Nichtschlüsselattribut hängt von einem anderen Nichtschlüsselattribut ab','Ein Attribut hängt vom halben Schlüssel ab','Zwei Tabellen sind verknüpft'],0,'Sie wird in der 3. NF aufgelöst, etwa PLZ → Ort.'],
+['m6-l3','Welche Anomalie tritt auf, wenn beim Löschen des letzten Kurses auch der Dozent verschwindet?',['Einfügeanomalie','Löschanomalie','Änderungsanomalie'],1,'Ungewollter Datenverlust ist das Kennzeichen der Löschanomalie.'],
+['m6-l3','Warum wird bewusst denormalisiert?',['Aus Bequemlichkeit','Um Leseabfragen zu beschleunigen und JOINs zu sparen','Weil die 3. NF veraltet ist'],1,'Der Preis ist Redundanz und höherer Pflegeaufwand — eine bewusste Abwägung.'],
+['m7-l1','In welcher Reihenfolge wird SQL logisch ausgeführt?',['SELECT, FROM, WHERE','FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY','WHERE, SELECT, FROM'],1,'Deshalb ist ein SELECT-Alias in WHERE nicht verfügbar, in ORDER BY dagegen schon.'],
+['m7-l2','Welcher Filter gehört in HAVING statt in WHERE?',['ort = "Berlin"','COUNT(*) > 5','datum > "2025-01-01"'],1,'HAVING filtert Gruppen nach der Aggregation, WHERE filtert Einzelzeilen davor.'],
+['m7-l3','Was liefert ein LEFT JOIN?',['Nur die Treffer beider Tabellen','Alle Zeilen der linken Tabelle, rechts ggf. NULL','Alle Zeilen beider Tabellen'],1,'Für Kunden ohne Bestellung braucht man genau diesen Join-Typ.'],
+['m7-l3','Warum macht eine WHERE-Bedingung auf die rechte Tabelle aus einem LEFT JOIN faktisch einen INNER JOIN?',['Weil WHERE den Join überschreibt','Weil die NULL-Zeilen die Bedingung nicht erfüllen und herausgefiltert werden','Das stimmt nicht'],1,'Abhilfe: Bedingung in die ON-Klausel verschieben oder auf IS NULL prüfen.'],
+['m7-l4','Wie prüft man korrekt auf einen fehlenden Wert?',['spalte = NULL','spalte IS NULL','spalte <> ""'],1,'Ein Vergleich mit = NULL liefert niemals ein Ergebnis.'],
+['m7-l5','Zu welcher SQL-Kategorie gehört GRANT?',['DDL','DML','DCL'],2,'DCL regelt Rechte; DDL definiert Strukturen, DML bearbeitet Daten.'],
+['m8-l1','Wo werden Akteure im Use-Case-Diagramm gezeichnet?',['Innerhalb der Systemgrenze','Außerhalb der Systemgrenze','In einer Ellipse'],1,'Sie sind Rollen außerhalb des Systems — auch Fremdsysteme können Akteure sein.'],
+['m8-l2','In welche Richtung zeigt der «extend»-Pfeil?',['Vom erweiterten zum erweiternden Fall','Vom erweiternden zum erweiterten Fall','In beide Richtungen'],1,'Bei «include» ist es genau umgekehrt — vom einschließenden zum eingeschlossenen Fall.'],
+['m8-l2','Welches Signalwort deutet auf «extend» hin?',['„immer"','„optional" oder „gegebenenfalls"','„beinhaltet"'],1,'«extend» beschreibt bedingtes Verhalten, «include» stets ausgeführtes.'],
+['m8-l3','Welches Diagramm eignet sich für einen Geschäftsprozess mit Entscheidungen und Parallelität?',['Klassendiagramm','Aktivitätsdiagramm','Use-Case-Diagramm'],1,'Es ist das UML-Gegenstück zum Programmablaufplan.'],
+['m9-l1','Wofür steht das Zeichen # im Klassendiagramm?',['public','protected','private'],1,'+ public, − private, # protected, ~ package.'],
+['m9-l2','Welche Beziehung gilt, wenn das Teil beim Löschen des Ganzen ebenfalls verschwindet?',['Aggregation','Komposition','Assoziation'],1,'Komposition wird mit gefüllter Raute gezeichnet, Aggregation mit leerer.'],
+['m9-l2','Was bedeutet die Multiplizität 1..* an einem Linienende?',['Höchstens eines','Mindestens eines','Genau eines'],1,'0..* bedeutet dagegen beliebig viele einschließlich null.'],
+['m9-l3','Eine Methode heißt in beiden Unterklassen gleich, arbeitet aber verschieden. Was liegt vor?',['Kapselung','Polymorphie','Aggregation'],1,'Gleicher Name, unterschiedliches Verhalten je nach konkreter Klasse.'],
+['m10-l1','Wer erstellt das Lastenheft?',['Der Auftragnehmer','Der Auftraggeber','Die IHK'],1,'Merkhilfe: Der Auftraggeber bürdet seine Lasten auf, der Auftragnehmer übernimmt Pflichten.'],
+['m10-l1','Welches Dokument wird abgenommen und damit Vertragsbestandteil?',['Das Lastenheft','Das Pflichtenheft','Der Projektstrukturplan'],1,'Es definiert den geschuldeten Leistungsumfang des Werkvertrags.'],
+['m10-l2','„Die Oberfläche muss ohne Schulung in 15 Minuten erlernbar sein" ist eine …',['funktionale Anforderung','nicht-funktionale Anforderung','Rahmenbedingung'],1,'Sie beschreibt eine Qualität, kein Was — und ist messbar formuliert.'],
+['m10-l3','Welche Teststufe entspricht im V-Modell dem Feinentwurf?',['Abnahmetest','Integrationstest','Systemtest'],1,'Anforderungen ↔ Abnahmetest, Grobentwurf ↔ Systemtest, Feinentwurf ↔ Integrationstest.'],
+['m10-l3','Worum geht es in der Sprint-Retrospektive?',['Um das fertige Produkt','Um die Zusammenarbeit im Team','Um die Priorisierung des Backlogs'],1,'Das Produkt ist Thema des Sprint Reviews.'],
+['m10-l4','Wofür steht das M in SMART?',['Machbar','Messbar','Motivierend'],1,'Ohne Messbarkeit lässt sich die Zielerreichung nicht prüfen.'],
+['m11-l1','Auf welcher OSI-Schicht arbeitet ein Router?',['Schicht 2','Schicht 3','Schicht 4'],1,'Er entscheidet anhand der IP-Adresse und trennt Broadcast-Domänen.'],
+['m11-l1','Welche Einheit wird auf Schicht 2 übertragen?',['Pakete','Frames','Segmente'],1,'Bits auf 1, Frames auf 2, Pakete auf 3, Segmente auf 4.'],
+['m11-l2','Welcher Port gehört zu HTTPS?',['80','443','22'],1,'80 ist HTTP, 22 ist SSH.'],
+['m11-l2','Warum nutzt Videotelefonie UDP statt TCP?',['UDP ist sicherer','Verzögerung stört mehr als ein verlorenes Paket','TCP kann kein Video übertragen'],1,'Ein kurzes Bildrauschen ist erträglicher als ein Stocken durch Neuübertragung.'],
+['m11-l3','Was trennt ein Switch?',['Broadcast-Domänen','Kollisionsdomänen','Beides'],1,'Broadcast-Domänen trennt erst der Router beziehungsweise ein VLAN.'],
+['m11-l4','Ping auf das Gateway klappt, Ping auf 8.8.8.8 nicht. Wo liegt der Fehler vermutlich?',['Beim Kabel','Beim Routing oder der Internetverbindung','Beim DNS'],1,'DNS wäre erst betroffen, wenn die IP funktioniert, der Name aber nicht.'],
+['m12-l1','Welche Subnetzmaske gehört zu /28?',['255.255.255.240','255.255.255.224','255.255.255.248'],0,'28 Einsen: im letzten Oktett 11110000 = 240.'],
+['m12-l1','Welcher Bereich ist privat nach RFC 1918?',['11.0.0.0/8','172.16.0.0/12','192.169.0.0/16'],1,'Die privaten Bereiche sind 10.0.0.0/8, 172.16.0.0/12 und 192.168.0.0/16.'],
+['m12-l2','Wie groß ist die Blockgröße bei der Maske 255.255.255.224?',['16','32','64'],1,'256 − 224 = 32, die Netze beginnen bei 0, 32, 64, 96 …'],
+['m12-l3','Ein Subnetz braucht mindestens 100 Hosts. Welches Präfix ist erforderlich?',['/25','/26','/24'],0,'2⁷ − 2 = 126 ≥ 100; /26 böte nur 62 Hosts.'],
+['m12-l4','Was bedeutet eine IP aus dem Bereich 169.254.x.x?',['Das Gerät ist korrekt konfiguriert','Kein DHCP-Server war erreichbar (APIPA)','Es liegt ein Virenbefall vor'],1,'Ohne Gateway ist nur die Kommunikation im eigenen Segment möglich.'],
+['m12-l5','Warum wurde NAT überhaupt notwendig?',['Weil IPv4 nur rund 4,3 Milliarden Adressen kennt','Weil Router sonst zu langsam wären','Weil private Adressen verschlüsselt sind'],0,'NAT hat die Adressknappheit hinausgezögert. IPv6 macht es überflüssig.'],
+['m13-l1','Wie viele Blöcke hat eine vollständig ausgeschriebene IPv6-Adresse?',['4','8','16'],1,'8 Blöcke zu je 16 Bit ergeben 128 Bit.'],
+['m13-l1','Wie lautet 2001:db8::28 ungekürzt?',['2001:0db8:0000:0000:0000:0000:0000:0028','2001:db8:0:0:0:0:0:28','2001:0db8:0028'],0,'Sechs Nullblöcke ersetzt das ::, und jeder Block wird auf vier Ziffern aufgefüllt.'],
+['m13-l2','Wie viele /64-Teilnetze lassen sich aus einem /48-Präfix bilden?',['256','65.536','65.534'],1,'16 Bit Teilnetz-ID ergeben 2¹⁶ — ohne Abzug, da IPv6 keinen Broadcast kennt.'],
+['m13-l2','Welches IPv6-Präfix steht für Link-Local?',['2000::/3','fe80::/10','ff00::/8'],1,'Jedes Interface bildet sich beim Start automatisch eine solche Adresse.'],
+['m13-l3','Was leistet SLAAC?',['Verschlüsselung','Zustandslose Adress-Autokonfiguration ohne DHCP-Server','Namensauflösung'],1,'Das Präfix kommt per Router Advertisement, den Interface-Teil bildet der Host selbst.'],
+['m14-l1','Welcher DHCP-Schritt folgt auf das Offer?',['Discover','Request','Acknowledge'],1,'Die Reihenfolge lautet Discover, Offer, Request, Acknowledge — DORA.'],
+['m14-l1','Was ist eine DHCP-Reservierung?',['Ein für Gäste freigehaltener Adressbereich','Eine feste IP, gebunden an eine MAC-Adresse','Eine besonders lange Lease-Dauer'],1,'Die saubere Alternative zur statischen Konfiguration am Gerät — die Verwaltung bleibt zentral.'],
+['m14-l2','Welcher DNS-Record verweist auf den zuständigen Mailserver?',['A','MX','CNAME'],1,'CNAME ist ein Alias, A die IPv4-Zuordnung.'],
+['m14-l2','Welcher Befehl zeigt den Weg eines Pakets über alle Router?',['ping','tracert','nslookup'],1,'So findet man, an welcher Stelle die Verbindung abbricht.'],
+['m14-l3','Warum bietet WPA2-Enterprise mehr Sicherheit als WPA2-Personal?',['Es ist schneller','Individuelle Zugänge über RADIUS lassen sich einzeln sperren','Es nutzt längere Passwörter'],1,'Beim PSK müsste man das gemeinsame Passwort auf allen Geräten ändern.'],
+['m14-l4','Was unterscheidet ein SAN von einem NAS?',['Das SAN stellt Blockspeicher bereit, das NAS Dateien','Das NAS ist schneller','Das SAN nutzt SMB'],0,'Daraus folgen Performance, Datenbanktauglichkeit und Kosten.'],
+['m15-l1','Welchem Schutzziel dient eine digitale Signatur vorrangig?',['Verfügbarkeit','Integrität und Authentizität','Nur Vertraulichkeit'],1,'Sie macht Änderungen erkennbar und weist den Urheber aus.'],
+['m15-l2','Welche Maßnahme ist technisch?',['Clean-Desk-Policy','Automatische Bildschirmsperre per Gruppenrichtlinie','Besucherregelung'],1,'Sie wird konfiguriert, nicht organisatorisch geregelt.'],
+['m15-l3','Welche Sicherungsart benötigt bei der Rücksicherung die Vollsicherung plus alle Zwischensicherungen?',['Differenziell','Inkrementell','Vollsicherung'],1,'Differenziell braucht nur die Vollsicherung und die letzte differenzielle.'],
+['m15-l3','Wie viel Nutzkapazität bieten 4 Platten à 3 TB im RAID 6?',['12 TB','6 TB','9 TB'],1,'(4 − 2) × 3 TB = 6 TB, zwei Platten gehen für die doppelte Parität drauf.'],
+['m15-l3','Warum ersetzt ein RAID kein Backup?',['Weil es zu langsam ist','Weil versehentliches Löschen und Ransomware den Spiegel sofort mittreffen','Weil RAID nur für Server gilt'],1,'RAID schützt allein gegen den Hardwareausfall einer Platte.'],
+['m15-l4','Wie viele Stunden Ausfall erlaubt eine zugesicherte Verfügbarkeit von 99,9 % pro Jahr?',['Etwa 88 Stunden','Etwa 8,8 Stunden','Etwa 53 Minuten'],1,'8.760 h × 0,001 = 8,76 h.'],
+['m15-l4','Was beschreibt der RTO?',['Den maximal tolerierbaren Datenverlust','Die maximal tolerierbare Ausfalldauer','Die Backupgröße'],1,'Der RPO bezeichnet dagegen den maximalen Datenverlust in Zeit.'],
+['m16-l1','Mit welchem Schlüssel signiert man ein Dokument?',['Mit dem öffentlichen Schlüssel des Empfängers','Mit dem eigenen privaten Schlüssel','Mit dem öffentlichen Schlüssel des Senders'],1,'Prüfen kann dann jeder mit dem zugehörigen öffentlichen Schlüssel.'],
+['m16-l1','Wie viele Schlüssel braucht symmetrische Verschlüsselung bei 10 Teilnehmern?',['10','45','100'],1,'n · (n−1) / 2 = 10 · 9 / 2 = 45 — daher das Schlüsselaustauschproblem.'],
+['m16-l2','Wozu dient ein Salt beim Hashen von Passwörtern?',['Er verlängert das Passwort','Er macht vorberechnete Rainbow Tables unbrauchbar','Er verschlüsselt den Hash'],1,'Gleiche Passwörter ergeben dadurch unterschiedliche Hashwerte.'],
+['m16-l2','Was verbindet ein Site-to-Site-VPN?',['Einen Mitarbeiter mit der Firma','Zwei Standorte dauerhaft miteinander','Zwei Programme'],1,'Für einzelne Mitarbeiter im Homeoffice nutzt man End-to-Site.'],
+['m16-l3','Was kennzeichnet einen Trojaner?',['Er verbreitet sich selbstständig','Er tarnt sich als nützliches Programm','Er verschlüsselt Daten'],1,'Die Verschlüsselung mit Lösegeldforderung ist das Merkmal von Ransomware.'],
+['m16-l3','Wie schützt man wirksam gegen SQL-Injection?',['Mit einer Firewall','Mit Prepared Statements und Eingabevalidierung','Mit längeren Passwörtern'],1,'Eingaben werden dann als Daten behandelt, nicht als ausführbarer SQL-Code.'],
+['m16-l4','Binnen welcher Frist muss eine Datenpanne gemeldet werden?',['24 Stunden','72 Stunden','Eine Woche'],1,'An die Aufsichtsbehörde, bei hohem Risiko zusätzlich an die Betroffenen.'],
+['m16-l4','Wie hoch kann ein DSGVO-Bußgeld maximal ausfallen?',['20 Mio. € oder 4 % des weltweiten Jahresumsatzes','10.000 €','1 Mio. €'],0,'Es gilt jeweils der höhere der beiden Werte.'],
+['m16-l4','Wann ist ein Auftragsverarbeitungsvertrag erforderlich?',['Bei jedem Einkauf','Wenn ein Dienstleister weisungsgebunden personenbezogene Daten verarbeitet','Nur bei Behörden'],1,'Typischer Fall: der Cloud- oder Rechenzentrumsbetreiber.'],
+['m17-l1','Womit beginnt die Vorwärtsrechnung beim allerersten Vorgang?',['Mit FAZ = 0','Mit FAZ = 1','Mit FAZ = Dauer'],0,'Von dort aus gilt für jeden weiteren Vorgang FEZ = FAZ + D.'],
+['m17-l2','Womit beginnt die Rückwärtsrechnung?',['Mit SAZ = 0 beim ersten Vorgang','Mit SEZ = FEZ beim letzten Vorgang','Mit GP = 0'],1,'Von dort rechnet man rückwärts durch den Plan.'],
+['m17-l2','Was gibt der freie Puffer an?',['Verschiebung ohne Gefährdung des Projektendes','Verschiebung ohne Verzögerung des frühesten Nachfolgerstarts','Die Gesamtdauer'],1,'Die erste Beschreibung trifft auf den Gesamtpuffer zu.'],
+['m17-l2','Ein Vorgang hat FAZ 8, SAZ 8, D 5. Ist er kritisch?',['Ja, GP = 0','Nein','Das lässt sich nicht sagen'],0,'GP = SAZ − FAZ = 0, er liegt auf dem kritischen Pfad.'],
+['m17-l3','Wie lautet die PERT-Formel zur Aufwandsschätzung?',['(O + M + P) / 3','(O + 4M + P) / 6','(O + P) / 2'],1,'Der wahrscheinliche Wert wird vierfach gewichtet.'],
+['m17-l3','Was ist ein Arbeitspaket?',['Ein Meilenstein','Die kleinste planbare Einheit im Projektstrukturplan','Ein Vertragsdokument'],1,'Es hat einen Verantwortlichen, einen Aufwand und ein definiertes Ergebnis.'],
+['m18-l1','Was gilt bei einem K.-o.-Kriterium in der Nutzwertanalyse?',['Es wird doppelt gewichtet','Wer es nicht erfüllt, wird gar nicht erst bewertet','Es zählt 50 %'],1,'Ausschlusskriterien werden vor der eigentlichen Bewertung geprüft.'],
+['m18-l2','Wovon wird der Skontoabzug berechnet?',['Vom Listenpreis','Vom Zieleinkaufspreis nach Rabatt','Vom Bezugspreis'],1,'Und auf die Bezugskosten gibt es gar keinen Skonto.'],
+['m18-l2','Wie viel Umsatzsteuer stecken bei 19 % in 595 € brutto?',['113,05 €','95,00 €','119,00 €'],1,'595 / 1,19 = 500 netto, davon 19 % = 95 €.'],
+['m18-l3','Eine Investition von 24.000 € spart 8.000 € jährlich. Wann amortisiert sie sich?',['Nach 2 Jahren','Nach 3 Jahren','Nach 4 Jahren'],1,'24.000 / 8.000 = 3 Jahre.'],
+['m18-l3','Was bleibt beim Ratendarlehen konstant?',['Die Rate','Die Tilgung','Die Zinsen'],1,'Die Zinsen sinken mit der Restschuld, daher sinkt auch die Gesamtrate.'],
+['m18-l4','Welche Vertragsart liegt bei einer Beratungsleistung nach Aufwand vor?',['Werkvertrag','Dienstvertrag','Kaufvertrag'],1,'Geschuldet ist die Tätigkeit, nicht ein bestimmter Erfolg.'],
+['m18-l4','Was gilt für die Gewährleistung bei Neuware?',['Sie ist freiwillig','Sie ist gesetzlich und beträgt zwei Jahre','Sie gilt fünf Jahre'],1,'Die Garantie ist dagegen eine freiwillige Zusage, meist des Herstellers.'],
+['m18-l4','Wie lange gilt gegenüber Verbrauchern die gesetzliche Gewährleistung für neue bewegliche Sachen?',['Sechs Monate','Zwei Jahre','Fünf Jahre'],1,'Davon zu trennen ist die Garantie: Sie ist freiwillig und kommt meist vom Hersteller.'],
+['m19-l1','Wie viele Byte hat 1 MiB?',['1.000.000','1.048.576','1.024'],1,'2²⁰ = 1.048.576 — das dezimale MB hat dagegen genau eine Million Byte.'],
+['m19-l1','Warum zeigt Windows bei einer 1-TB-Platte nur etwa 931 GB an?',['Die Platte ist defekt','Weil binär (2³⁰) statt dezimal (10⁹) gezählt wird','Wegen der Formatierung'],1,'10¹² / 2³⁰ ergibt 931,3 — die Kapazität ist unverändert, nur die Zählweise anders.'],
+['m19-l2','Wie lange dauert die Übertragung von 500 MB über 50 Mbit/s?',['10 Sekunden','80 Sekunden','40 Sekunden'],1,'500 MB = 4.000 Mbit, geteilt durch 50 Mbit/s = 80 s.'],
+['m19-l2','Was ist bei „70 % effektiver Auslastung" zuerst zu tun?',['Das Ergebnis am Ende durch 0,7 teilen','Die Datenrate vor der Division auf 70 % reduzieren','Nichts, das ist irrelevant'],1,'Erst die Rate anpassen, dann die Zeit berechnen.'],
+['m19-l3','Welcher Binärwert entspricht dezimal 248?',['11111000','11110000','11111100'],0,'128+64+32+16+8 = 248 — die Maske /29.'],
+['m19-l3','Wie viele Bit entsprechen einer Hexadezimalziffer?',['2','4','8'],1,'Vier Bit ergeben 16 Werte, also genau ein Hex-Zeichen.'],
+['m19-l4','Wie sollte ein Bildschirmarbeitsplatz zum Fenster ausgerichtet sein?',['Mit Blick zum Fenster','Blickrichtung parallel zum Fenster','Mit dem Rücken zum Fenster'],1,'Davor blendet das Licht, dahinter spiegelt es sich im Display.'],
+['m19-l4','Was misst der PUE-Wert?',['Die Rechenleistung','Gesamtenergie geteilt durch IT-Energie','Den Stromverbrauch pro Server'],1,'Je näher an 1,0, desto effizienter die Infrastruktur des Rechenzentrums.'],
+['m19-l4','Was kosten 20 PCs a 100 W bei 8 h taeglich, 220 Arbeitstagen und 0,30 EUR/kWh im Jahr?',['352 EUR','1.056 EUR','3.520 EUR'],1,'20 x 100 W x 8 h x 220 = 3.520.000 Wh = 3.520 kWh; 3.520 x 0,30 EUR = 1.056 EUR.']
+,
+['m20-l1','Welcher Rechenschritt fehlt am häufigsten bei der ABC-Analyse?',['Die Sortierung','Die kumulierte Prozentspalte','Die Multiplikation mit dem Preis'],1,'Erst die Aufsummierung zeigt, wo die 80-Prozent-Grenze verläuft.'],
+['m20-l1','Was folgt auf die Anfrage im Beschaffungsprozess?',['Die Bestellung','Der Angebotsvergleich','Die Rechnungsprüfung'],1,'Erst vergleichen, dann bestellen.'],
+['m20-l2','Fixkosten 30.000 €, Preis 95 €, variable Stückkosten 45 €. Break-Even?',['316 Stück','600 Stück','667 Stück'],1,'db = 95 − 45 = 50; 30.000 / 50 = 600 Stück.'],
+['m20-l2','Was ist die kritische Menge beim Verfahrensvergleich?',['Die Menge, ab der Gewinn entsteht','Die Menge, bei der beide Varianten gleich teuer sind','Die maximale Produktionsmenge'],1,'Man setzt beide Kostenfunktionen gleich und löst nach x auf.'],
+['m20-l3','Ein Server kostet 15.000 €, Nutzungsdauer 5 Jahre. Wie hoch ist die lineare AfA?',['5.000 €','3.000 €','1.500 €'],1,'15.000 / 5 = 3.000 € pro Jahr.'],
+['m20-l3','Wofür steht TCO?',['Total Cost of Ownership – alle Kosten über den Lebenszyklus','Total Computing Output','Time Critical Operation'],0,'Anschaffung, Betrieb, Schulung, Wartung und Entsorgung zusammen.'],
+['m20-l4','Ertrag 60.000 €, Aufwand 48.000 €. Wie hoch ist die Wirtschaftlichkeit?',['1,25','12.000','25 %'],0,'60.000 / 48.000 = 1,25 – ein Wert über 1 bedeutet wirtschaftlich.'],
+['m20-l4','Welche Kennzahl setzt den Gewinn ins Verhältnis zum eingesetzten Kapital?',['Produktivität','Rentabilität','Wirtschaftlichkeit'],1,'Angegeben in Prozent; der ROI bezieht sich speziell auf eine Investition.'],
+['m21-l1','Was bewirkt Hyperthreading?',['Es verdoppelt die Rechenleistung','Es stellt zusätzliche logische Kerne bereit, ca. 20–30 % Mehrleistung','Es erhöht den Takt'],1,'Echte Parallelität bieten nur physische Kerne.'],
+['m21-l1','Warum gehört ECC-RAM in einen Server?',['Er ist schneller','Er erkennt und korrigiert Bitfehler','Er verbraucht weniger Strom'],1,'Datenintegrität im Dauerbetrieb wiegt den Aufpreis auf.'],
+['m21-l2','Was ist NVMe?',['Eine Bauform','Ein Übertragungsprotokoll über PCIe','Eine Kapazitätsangabe'],1,'M.2 ist die Bauform – eine M.2-SSD kann auch nur SATA nutzen.'],
+['m21-l2','Wie schnell ist SATA III brutto?',['3 Gbit/s','6 Gbit/s','10 Gbit/s'],1,'Netto bleiben nach Overhead etwa 550 MB/s.'],
+['m21-l3','Welche Datenrate hat USB 2.0?',['12 Mbit/s','480 Mbit/s','5 Gbit/s'],1,'USB 3.2 Gen 1 (früher 3.0) hat 5 Gbit/s.'],
+['m21-l3','USB 3.0 nennt 5 Gbit/s. Wie viel ist das brutto in Megabyte je Sekunde?',['etwa 625 MB/s','etwa 5.000 MB/s','etwa 62 MB/s'],0,'5.000 Mbit/s geteilt durch 8. Nach Abzug des Protokoll-Overheads bleibt weniger übrig.'],
+['m21-l4','Wie viele Pixel hat ein 4K-UHD-Bildschirm?',['2.073.600','8.294.400','3.840'],1,'3840 × 2160 – genau die vierfache Menge von Full HD.'],
+['m21-l4','Welcher Kennwert entscheidet den Druckervergleich bei hohem Volumen?',['Der Anschaffungspreis','Der Seitenpreis','Die Druckauflösung'],1,'Über die Nutzungsdauer dominiert er die Gesamtkosten deutlich.'],
+['m21-l5','Eine USV liefert 1.200 VA bei Leistungsfaktor 0,7. Wie viel Watt sind das?',['1.714 W','840 W','1.200 W'],1,'1.200 × 0,7 = 840 W – VA und Watt sind nicht dasselbe.'],
+['m21-l5','Warum plant man beim Netzteil Reserve ein?',['Damit es leiser läuft','Wegen Lastspitzen, Aufrüstbarkeit und dem besten Wirkungsgrad bei mittlerer Last','Weil Netzteile schrumpfen'],1,'Dauerhafte Volllast senkt Effizienz und Lebensdauer.'],
+['m22-l1','Welche Kabelkategorie braucht es mindestens für 10 Gigabit über volle 100 Meter?',['Cat 5e','Cat 6A','Cat 6'],1,'Cat 6 schafft 10 Gbit/s nur auf verkürzter Strecke, Cat 5e gar nicht.'],
+['m22-l1','Welche Kategorie unterstützt 10 Gbit/s über die vollen 100 m?',['Cat 5e','Cat 6','Cat 6a'],2,'Cat 6 schafft 10 Gbit/s nur bis etwa 55 m.'],
+['m22-l1','Wofür steht die Verdrillung der Adernpaare?',['Für bessere Biegsamkeit','Zur gegenseitigen Aufhebung eingestreuter Störungen','Zur Farbkennzeichnung'],1,'Daher der Name Twisted Pair.'],
+['m22-l2','Welche Faserart nutzt man für mehrere Kilometer?',['Multimode','Singlemode','Beide gleich gut'],1,'Multimode reicht wegen der Modendispersion nur etwa 550 m.'],
+['m22-l2','Welcher LWL-Vorteil zählt bei einer Gebäudeverbindung im Freien besonders?',['Das geringe Gewicht','Die galvanische Trennung – kein Blitzschadensweg','Der niedrige Preis'],1,'Zusätzlich zur Reichweite und der Störunempfindlichkeit.'],
+['m22-l3','Wie viel Leistung liefert PoE+ nach 802.3at am Endgerät?',['ca. 12,95 W','ca. 25,5 W','ca. 51 W'],1,'802.3af liefert 12,95 W, 802.3bt bis 71 W.'],
+['m22-l3','Welcher Bereich der strukturierten Verkabelung führt zur Anschlussdose?',['Primärbereich','Sekundärbereich','Tertiärbereich'],2,'Primär verbindet Gebäude, sekundär die Etagen.'],
+['m23-l1','Welcher Hypervisor-Typ läuft direkt auf der Hardware?',['Typ 1','Typ 2','Beide'],0,'Typ 2 läuft als Programm innerhalb eines Wirts-Betriebssystems.'],
+['m23-l1','Warum ist ein Snapshot kein Backup?',['Weil er zu klein ist','Weil er auf demselben Speicher liegt wie die VM','Weil er nur Textdateien sichert'],1,'Ein Defekt des Datenspeichers vernichtet beides gleichzeitig.'],
+['m23-l2','Was fehlt einem Container im Vergleich zur VM?',['Die Anwendung','Ein eigenes Gast-Betriebssystem','Der Netzwerkzugang'],1,'Er nutzt den Kernel des Hosts – daher Start in Sekunden.'],
+['m23-l2','Wann brauchst du zwingend eine VM statt eines Containers?',['Bei hoher Instanzzahl','Wenn ein anderes Betriebssystem als das des Hosts nötig ist','Bei wenig Arbeitsspeicher'],1,'Nur die VM bringt einen eigenen Kernel mit.'],
+['m23-l3','Bei welchem Cloud-Modell verwaltest du die Anwendung, aber nicht das Betriebssystem?',['IaaS','PaaS','SaaS'],1,'Bei IaaS bist du ab dem OS zuständig, bei SaaS nur noch für die Daten.'],
+['m23-l3','Wer bleibt bei einer SaaS-Nutzung datenschutzrechtlich verantwortlich?',['Der Anbieter','Das nutzende Unternehmen','Die Aufsichtsbehörde'],1,'Der Anbieter ist Auftragsverarbeiter – daher der AVV nach Art. 28.'],
+['m23-l3','Was bezeichnet ein Lock-in-Effekt?',['Eine Sicherheitssperre','Die Abhängigkeit vom Anbieter durch erschwerten Wechsel','Eine Verschlüsselungsart'],1,'Gegenmittel: vertraglich zugesicherter Datenexport in offenem Format.'],
+['m24-l1','Was passiert mit einer OEM-Lizenz beim Gerätetausch?',['Sie wandert mit','Sie erlischt mit dem Gerät','Sie wird automatisch verlängert'],1,'Retail-Lizenzen sind dagegen übertragbar.'],
+['m24-l1','50 Personen teilen sich 20 Rechner. Welche CAL-Art ist günstiger?',['User-CAL','Device-CAL','Beide gleich'],1,'Es gibt weniger Geräte als Personen – also Geräte lizenzieren.'],
+['m24-l2','Bedeutet Open Source automatisch kostenlos?',['Ja','Nein – offener Quellcode und Preis sind zwei verschiedene Dinge','Nur bei der GPL'],1,'Freeware ist umgekehrt kostenlos, aber ohne Quellcode.'],
+['m24-l2','Wann greift der Copyleft-Effekt der GPL?',['Sofort bei der Installation','Bei der Weitergabe abgeleiteter Werke','Nie'],1,'Bei rein interner Nutzung entsteht keine Offenlegungspflicht.'],
+['m24-l2','Wem stehen die Verwertungsrechte an Software aus dem Arbeitsverhältnis zu?',['Dem Entwickler','Dem Arbeitgeber nach § 69b UrhG','Der Allgemeinheit'],1,'Das Urheberpersönlichkeitsrecht bleibt beim Entwickler.'],
+['m24-l3','Warum wird vor dem Klonen Sysprep ausgeführt?',['Zum Komprimieren','Zum Entfernen der SID und rechnerspezifischer Daten','Zum Aktivieren der Lizenz'],1,'Identische SIDs führen in der Domäne zu Konflikten.'],
+['m24-l3','Wie werden Sicherheitsupdates im Unternehmen ausgerollt?',['Sofort auf allen Systemen','Zuerst in einer Testgruppe, dann gestaffelt','Nur einmal jährlich'],1,'So fallen Inkompatibilitäten vor dem Produktivbetrieb auf.'],
+['m24-l4','Welche Wirkung hat die Abnahme?',['Sie verlängert die Garantie','Die Vergütung wird fällig und die Gewährleistungsfrist beginnt','Sie hebt den Vertrag auf'],1,'Zusätzlich gehen Gefahr und Beweislast über.'],
+['m24-l4','Welches Mindestkontrastverhältnis fordert die WCAG für normalen Text?',['2:1','4,5:1','7:1'],1,'Für große Schrift genügt 3:1.'],
+['m25-l1','Eine Störung ist behoben, die Ursache aber unbekannt und sie wiederholt sich. Was liegt vor?',['Nur ein Incident','Ein Problem','Ein Change'],1,'Die einzelnen Ausfälle sind Incidents, das Muster dahinter ein Problem.'],
+['m25-l1','Was ist ein Known Error?',['Ein Programmierfehler','Ein Problem mit bekannter Ursache und dokumentiertem Workaround','Ein abgelehntes Ticket'],1,'Die Sammlung bildet die Known Error Database.'],
+['m25-l2','Was ist eine hierarchische Eskalation?',['Weitergabe an mehr Fachwissen','Einschalten der Führungsebene wegen Befugnis oder Ressourcen','Schließen des Tickets'],1,'Die Weitergabe an den Second Level ist die funktionale Eskalation.'],
+['m25-l2','Welche Ticketangabe ist für den Second Level am wertvollsten?',['Die Abteilung des Melders','Die Schritte zur Reproduktion','Die Uhrzeit'],1,'Ohne Reproduzierbarkeit beginnt die Analyse bei null.'],
+['m25-l3','Was regelt ein Underpinning Contract?',['Interne Abteilungen','Den Vertrag mit einem externen Zulieferer','Die Kundenvereinbarung'],1,'Intern ist es das OLA, mit dem Kunden das SLA.'],
+['m25-l3','Was sagt die Reaktionszeit im SLA aus?',['Wann die Störung behoben ist','Wann die Bearbeitung beginnt','Wie lange der Dienst ausfallen darf'],1,'Die Behebung regelt die Wiederherstellungszeit.'],
+['m25-l3','Ein SLA nennt 99,5 % bei Servicezeit Mo–Fr 8–17 Uhr. Worauf beziehst du die Ausfallzeit?',['Auf 8.760 h','Auf die Servicezeit von ca. 2.340 h','Auf 365 Tage'],1,'Der Bezugszeitraum verändert das Ergebnis um ein Vielfaches.'],
+['m26-l1','Welche Seite der Nachricht verrät etwas über den Sender selbst?',['Sachinhalt','Selbstoffenbarung','Appell'],1,'Etwa Ärger, Zeitdruck oder Unsicherheit.'],
+['m26-l1','Warum eskaliert ein Gespräch trotz korrekter Fakten?',['Weil die Fakten unvollständig sind','Weil der Empfänger auf dem Beziehungsohr hört','Weil zu leise gesprochen wird'],1,'Das Eisberg-Modell verortet rund 80 Prozent dort.'],
+['m26-l2','Womit steigt man in eine Störungsaufnahme ein?',['Mit einer geschlossenen Frage','Mit einer offenen W-Frage','Mit einem Lösungsvorschlag'],1,'Geschlossene Fragen grenzen anschließend ein.'],
+['m26-l2','Welcher Gesprächsschritt verhindert die meisten Missverständnisse?',['Die Begrüßung','Das Zusammenfassen und Rückversichern','Die Verabschiedung'],1,'Er kostet Sekunden und spart oft Stunden Fehlarbeit.'],
+['m26-l3','Wie beginnt man das Gespräch mit einem verärgerten Kunden?',['Mit einem Lösungsvorschlag','Mit Ausredenlassen und Verständnis zeigen','Mit dem Verweis auf das SLA'],1,'Erst danach ist die Sachebene überhaupt erreichbar.'],
+['m26-l3','Was unterscheidet Feedback von Kritik?',['Feedback beschreibt beobachtetes Verhalten, Kritik bewertet die Person','Feedback ist immer positiv','Es gibt keinen Unterschied'],0,'Genau deshalb ist die Ich-Botschaft das Werkzeug der Wahl.'],
+['m27-l1','Was unterscheidet Qualitätssicherung von Qualitätskontrolle?',['Es gibt keinen Unterschied','Sicherung beugt Fehlern vor, Kontrolle findet sie im Nachhinein','Kontrolle ist gesetzlich vorgeschrieben'],1,'Vorbeugen ist billiger als Nacharbeit — das ist der Kern jedes Qualitätsmanagements.'],
+['m27-l1','Was geschieht in der Check-Phase des PDCA?',['Die Maßnahme wird geplant','Das Ergebnis wird gemessen und mit dem Ziel verglichen','Die Maßnahme wird zum Standard'],1,'Ohne messbare Größe ist die Phase wertlos.'],
+['m27-l2','Warum muss das Notfallhandbuch auch gedruckt vorliegen?',['Wegen der Aufbewahrungspflicht','Weil es bei einem IT-Ausfall sonst unzugänglich ist','Weil Papier fälschungssicher ist'],1,'Ein Plan im ausgefallenen System hilft im Ernstfall nicht.'],
+['m27-l2','Welchen nicht-technischen Zweck erfüllt die Inventarisierung?',['Die Virenabwehr','Abschreibung, Lizenznachweis und Ersatzplanung','Die Netzwerkkonfiguration'],1,'Sie dient Buchhaltung, Rechtsabteilung und Einkauf gleichermaßen.']
+,
+['m28-l1','Welche Aussage zur Einordnung stimmt?',['KI ⊂ ML ⊂ Deep Learning','Deep Learning ⊂ ML ⊂ KI','Alle drei sind gleichbedeutend'],1,'Deep Learning ist die engste, KI die weiteste Menge.'],
+['m28-l1','Ein System wendet vom Menschen formulierte Wenn-Dann-Regeln an. Was ist es?',['Maschinelles Lernen','Regelbasierte KI, aber kein ML','Deep Learning'],1,'ML setzt voraus, dass die Regel aus Daten abgeleitet wird.'],
+['m28-l2','Welche Lernart braucht gelabelte Trainingsdaten?',['Überwachtes Lernen','Unüberwachtes Lernen','Bestärkendes Lernen'],0,'Die richtige Antwort ist Teil der Trainingsdaten.'],
+['m28-l2','Ein Modell soll den Immobilienpreis in Euro schätzen. Was ist das?',['Klassifikation','Regression','Clustering'],1,'Ausgabe ist ein Zahlenwert – also Regression.'],
+['m28-l2','Ein Roboter lernt durch Belohnung und Bestrafung. Welche Lernart?',['Überwacht','Unüberwacht','Bestärkend'],2,'Es gibt keine Label, sondern eine Rückmeldung zur Aktion.'],
+['m28-l3','Was wird beim Training eines neuronalen Netzes verändert?',['Die Anzahl der Schichten','Die Gewichte der Verbindungen','Die Eingabedaten'],1,'Die Architektur steht vorher fest.'],
+['m28-l3','Warum werden Testdaten vom Training ausgeschlossen?',['Um Speicher zu sparen','Damit gemessen wird, ob das Modell verallgemeinern kann','Aus Lizenzgründen'],1,'Sonst misst man nur das Auswendiggelernte.'],
+['m28-l4','Training 97 %, Test 68 %. Welches Problem?',['Underfitting','Overfitting','Kein Problem'],1,'Die große Lücke ist das Kennzeichen von Überanpassung.'],
+['m28-l4','Training 61 %, Test 59 %. Welches Problem?',['Overfitting','Underfitting – das Modell ist zu einfach','Kein Problem'],1,'Beide Werte schlecht bedeutet Unteranpassung.'],
+['m28-l4','Woher stammt Bias in einem Modell meistens?',['Aus fehlerhaftem Code','Aus verzerrten Trainingsdaten','Aus zu wenig Rechenleistung'],1,'Das Modell reproduziert, was in den Daten steckt.'],
+['m28-l4','Was besagt „Garbage in, garbage out"?',['Große Modelle brauchen viel Speicher','Die Datenqualität begrenzt die Modellqualität','Alte Daten müssen gelöscht werden'],1,'Kein Verfahren gleicht schlechte Trainingsdaten aus.'],
+['m29-l1','Was ist ein Token bei einem Sprachmodell?',['Ein Sicherheitsschlüssel','Die kleinste Verarbeitungseinheit, etwa ein Wortstück','Ein Lizenzschlüssel'],1,'Die Abrechnung erfolgt meist je Token.'],
+['m29-l1','Warum halluziniert ein Sprachmodell?',['Wegen eines Programmierfehlers','Weil es Wahrscheinlichkeiten berechnet und keine Fakten prüft','Wegen zu wenig Arbeitsspeicher'],1,'Es sagt das wahrscheinlichste nächste Token vorher.'],
+['m29-l1','Wofür steht RAG?',['Random Access Generation','Retrieval Augmented Generation – eigene Dokumente werden zur Anfrage geladen','Rule And Grammar'],1,'Die Alternative wäre ein aufwendiges Fine-Tuning.'],
+['m29-l1','Welche vier Bestandteile hat ein guter Prompt?',['Länge, Sprache, Ton, Emoji','Rolle, Aufgabe, Kontext, Format','Anrede, Frage, Dank, Gruß'],1,'Je konkreter der Kontext, desto brauchbarer die Antwort.'],
+['m29-l2','Was ist Predictive Maintenance?',['Wartung nach festem Intervall','Wartung auf Basis vorhergesagter Ausfälle','Reparatur nach dem Schaden'],1,'Sensordaten zeigen die Störung an, bevor sie eintritt.'],
+['m29-l2','Welches Risiko besteht bei der Nutzung öffentlicher KI-Dienste im Betrieb?',['Zu hohe Genauigkeit','Abfluss vertraulicher Daten über die Eingabe','Zu lange Antwortzeiten'],1,'Eingaben können gespeichert und zum Training genutzt werden.'],
+['m29-l3','Welche Phase eines KI-Projekts kostet typischerweise 60–80 % des Aufwands?',['Die Modellierung','Die Datenvorbereitung','Das Deployment'],1,'Bereinigen, Zusammenführen und Vereinheitlichen der Daten.'],
+['m29-l3','Was bedeutet Model Drift?',['Das Modell wird größer','Die Trefferquote sinkt, weil sich die Realität ändert','Die Datei wird beschädigt'],1,'Gegenmittel sind Überwachung und regelmäßiges Nachtraining.'],
+['m30-l1','In welche Risikoklasse fällt ein System zur Kreditwürdigkeitsprüfung?',['Minimales Risiko','Hohes Risiko','Verboten'],1,'Zugang zu wesentlichen Leistungen ist Hochrisikobereich.'],
+['m30-l1','Welche Pflicht gilt für Chatbots nach dem AI Act?',['Konformitätsbewertung','Transparenzpflicht','Gar keine'],1,'Nutzer müssen erkennen können, dass eine KI antwortet.'],
+['m30-l1','Emotionserkennung von Beschäftigten am Arbeitsplatz ist nach AI Act …',['erlaubt mit Betriebsvereinbarung','hohes Risiko','verboten'],2,'Sie fällt unter die Praktiken mit unannehmbarem Risiko.'],
+['m30-l1','Welche Pflicht wird bei Hochrisiko-KI am häufigsten erwartet?',['Verschlüsselung','Wirksame menschliche Aufsicht','Open-Source-Veröffentlichung'],1,'Dazu Dokumentation, Datenqualität und Protokollierung.'],
+['m30-l2','Wie viele Risikoklassen unterscheidet der EU AI Act?',['Zwei: erlaubt und verboten','Vier: inakzeptabel, hoch, begrenzt, minimal','Drei: privat, gewerblich, staatlich'],1,'Inakzeptable Anwendungen wie Social Scoring sind vollständig verboten.'],
+['m30-l2','Welcher DSGVO-Grundsatz steht im Konflikt mit dem Datenhunger des Trainings?',['Datenminimierung','Verfügbarkeit','Portabilität'],0,'Ebenso die Zweckbindung, wenn Bestandsdaten umgewidmet werden.'],
+['m30-l2','Wann greift § 87 BetrVG bei KI?',['Nie','Wenn das System Verhalten oder Leistung von Beschäftigten überwachen kann','Nur bei über 500 Mitarbeitern'],1,'Dann besteht ein Mitbestimmungsrecht des Betriebsrats.'],
+['m30-l3','Ist ein rein KI-erzeugter Text in Deutschland urheberrechtlich geschützt?',['Ja, der Nutzer ist Urheber','Nein, es fehlt die persönliche geistige Schöpfung','Ja, der Anbieter ist Urheber'],1,'Erst eine eigene schöpferische Bearbeitung begründet Schutz.'],
+['m30-l3','Wer haftet, wenn ein KI-System eine folgenreiche Fehlentscheidung trifft?',['Das Modell selbst','Der Betreiber, der es einsetzt','Niemand'],1,'Deshalb gehören Freigabeprozess, Protokollierung und eine menschliche Letztentscheidung dazu.'],
+['m30-l3','Wer haftet für einen Schaden durch ein KI-Ergebnis?',['Die KI selbst','Je nach Fall Anbieter, Betreiber oder Anwender','Niemand'],1,'Wer ein KI-Ergebnis ungeprüft verwendet, verantwortet es.'],
+['m31-l1','Ab wie vielen Arbeitsplätzen wird Client-Server üblicherweise empfohlen?',['Ab 2','Etwa ab 10','Erst ab 100'],1,'Darunter überwiegt der Aufwand für Serverhardware, Lizenzen und Administration.'],
+['m31-l2','Woran erkennt man in einer Diagnose den Hersteller eines unbekannten Geräts?',['An der IP-Adresse','An den ersten drei Byte der MAC-Adresse (OUI)','Am Hostnamen'],1,'Die OUI ist die weltweit vergebene Herstellerkennung.'],
+['m31-l3','Wie viel Nutzlast bleibt bei 1.500 Byte MTU nach IP- und TCP-Header?',['1.500 Byte','1.460 Byte','1.480 Byte'],1,'Je 20 Byte für IP und TCP — deshalb erreicht keine Leitung ihre Bruttorate.'],
+['m31-l4','Ein Switch mit 24 Ports — wie viele Kollisionsdomänen entstehen?',['Eine','24','Keine'],1,'Jeder Port bildet eine eigene. Ein Hub hätte dagegen eine einzige große.'],
+['m31-l5','Warum kann ein Browser mehrere Verbindungen zum selben Server öffnen?',['Er nutzt mehrere IP-Adressen','Die Quellports unterscheiden sich, das Socket-Paar bleibt eindeutig','Das geht nicht'],1,'Eine Verbindung wird durch Quell-IP, Quell-Port, Ziel-IP und Ziel-Port beschrieben.'],
+['m32-l1','Ein Unternehmen verschlüsselt Maschinendaten ohne Personenbezug. Was ist das?',['Datenschutz','Datensicherheit','Beides'],1,'Ohne Personenbezug ist die DSGVO gar nicht einschlägig.'],
+['m32-l2','Was kostet eine Auskunft nach Art. 15 DSGVO den Betroffenen?',['Eine Bearbeitungsgebühr','Nichts, sie ist grundsätzlich kostenlos','Nur die Portokosten'],1,'Erst bei offenkundig exzessiven Wiederholungen ist ein Entgelt möglich.'],
+['m32-l3','Wer trägt die datenschutzrechtliche Verantwortung im Unternehmen?',['Der Datenschutzbeauftragte','Die Geschäftsleitung — der DSB berät und überwacht nur','Die IT-Abteilung'],1,'Deshalb ist der DSB weisungsfrei und darf nicht selbst entscheiden.'],
+['m32-l4','Welche Regelung ist für den Arbeitgeber am ungünstigsten?',['Private Nutzung ausdrücklich verboten','Gar keine Regelung, also stillschweigende Duldung','Private Nutzung ausdrücklich erlaubt'],1,'Die Duldung wirkt wie eine Erlaubnis, ohne dass Grenzen vereinbart wurden.'],
+['m33-l1','Warum sind biometrische Merkmale besonders schützenswert?',['Sie sind ungenau','Sie lassen sich nach einem Leck nicht ändern','Sie sind teuer zu erfassen'],1,'Deshalb fallen sie unter Art. 9 DSGVO und werden nur als Template gespeichert.'],
+['m33-l2','Was ist ein Berechtigungsstau?',['Zu viele Benutzer','Über Jahre angesammelte Rechte aus früheren Positionen','Ein überlasteter Server'],1,'Gegenmittel ist die regelmäßige Rezertifizierung der Berechtigungen.'],
+['m33-l3','Was beschreibt ein CVE-Eintrag?',['Die Schwere einer Lücke','Eine weltweit eindeutige Kennung einer bekannten Schwachstelle','Ein Patch'],1,'Die Schwere bewertet der CVSS-Wert von 0,0 bis 10,0.'],
+['m33-l4','Was unterscheidet einen Notfall von einer Störung?',['Die Uhrzeit','Der Normalbetrieb ist erheblich unterbrochen und die Standardprozesse reichen nicht mehr','Die Anzahl der Tickets'],1,'Bei einer Krise steht zusätzlich Existenz oder Ruf des Unternehmens auf dem Spiel.'],
+['m34-l1','Wo liegen Objekte zur Laufzeit im Speicher?',['Auf dem Stack','Auf dem Heap — der Stack hält nur Variablen und Referenzen','In der Quelldatei'],1,'Deshalb kostet das Erzeugen vieler Objekte Speicher, das Kopieren einer Referenz dagegen kaum.'],
+['m34-l2','Warum ist ein Setter für jedes Attribut kein guter Entwurf?',['Er kostet Rechenzeit','Er ist nur ein umständlich verpacktes öffentliches Attribut ohne fachliche Regel','Setter sind verboten'],1,'Besser sind fachliche Methoden wie abheben() statt setKontostand().'],
+['m34-l3','Was bedeutet das Diamantproblem?',['Zu viele Attribute','Bei Mehrfachvererbung ist unklar, welche geerbte Methode gilt','Ein Speicherleck'],1,'Deshalb erlauben die meisten Sprachen nur eine Oberklasse, aber beliebig viele Interfaces.'],
+['m34-l4','Wann wählt man ein Interface statt einer abstrakten Klasse?',['Wenn gemeinsamer Zustand vorhanden ist','Wenn nur eine gemeinsame Fähigkeit beschrieben wird, die auch fachfremde Klassen haben','Immer'],1,'Rechnung, Kontoauszug und Etikett sind alle druckbar, haben aber keine sinnvolle gemeinsame Oberklasse.'],
+['m34-l5','Wann gibt der Garbage Collector ein Objekt frei?',['Nach einer festen Zeit','Sobald keine Referenz mehr darauf zeigt','Beim Programmstart'],1,'Deshalb entsteht ein Speicherleck durch vergessene Referenzen, nicht durch vergessenes Freigeben.'],
+['m35-l1','Wie erkennt man im Text ein Attribut statt einer eigenen Klasse?',['Es steht am Satzende','Es hat weder eigene Eigenschaften noch eigenes Verhalten','Es ist ein kurzes Wort'],1,'Bekommt „Farbe" später einen Preis und einen Lieferanten, wird sie doch zur Klasse — es entscheidet die Fachlichkeit.'],
+['m35-l2','Ein Zähler soll alle erzeugten Objekte mitzählen. Wie wird er deklariert?',['Als Instanzattribut','Als statisches Attribut','Als Konstante'],1,'Er existiert genau einmal für die gesamte Klasse, nicht je Objekt.'],
+['m35-l3','Was kennzeichnet eine Gottklasse?',['Sie hat sehr viele Attribute','Sie übernimmt fast die gesamte Logik, während andere Klassen nur Daten halten','Sie ist abstrakt'],1,'Das Gegenmittel ist das Single-Responsibility-Prinzip: ein Änderungsgrund je Klasse.']
+];
+EXTRA_CARDS.push.apply(EXTRA_CARDS, [["abap-m1-l1","Ein Algorithmus muss laut Definition unter anderem endlich sein. Was bedeutet das?",["Er darf höchstens 100 Zeilen haben","Er muss nach endlich vielen Schritten terminieren","Er darf keine Schleifen enthalten"],1,"Endlichkeit meint die Terminierung: Der Algorithmus kommt nach endlich vielen Schritten zu einem Ende."],["abap-m1-l2","Welches PAP-Symbol steht für Ein- und Ausgabe?",["Rechteck","Parallelogramm","Oval"],1,"Das Parallelogramm markiert Ein-/Ausgabe; das Rechteck steht für Verarbeitung, das Oval für Start und Ende."],["abap-m1-l4","Eine Schleife läuft von 1 bis n, darin eine zweite von 1 bis n. Welche Komplexität?",["O(n)","O(n²)","O(log n)"],1,"Zwei ineinander verschachtelte Schleifen über dieselbe Menge ergeben quadratische Laufzeit."],["abap-m1-l4","Wie viele Schritte braucht die binäre Suche bei 1024 sortierten Elementen maximal?",["1024","Etwa 10","Etwa 32"],1,"log₂(1024) = 10 — jede Halbierung entfernt die Hälfte des Suchraums."],["abap-m2-l1","Was ist ein Fremdschlüssel?",["Ein Attribut, das auf den Primärschlüssel einer anderen Tabelle verweist","Ein verschlüsseltes Feld","Der Primärschlüssel einer temporären Tabelle"],0,"Der Fremdschlüssel setzt die referenzielle Integrität einer ER-Beziehung technisch um."],["abap-m2-l2","Eine Tabelle enthält die Spalten Bestellnr, Position, Produktname, Produktgewicht. Wogegen verstößt sie?",["Gegen die 1NF","Gegen die 2NF, da Produktdaten nur von der Position abhängen","Gegen gar keine Normalform"],1,"Produktname und -gewicht hängen nicht vom vollständigen Schlüssel (Bestellnr + Position) ab — klassische Teilabhängigkeit."],["abap-m3-l2","Was liefert ein INNER JOIN, wenn die rechte Tabelle leer ist?",["Alle Zeilen der linken Tabelle","Eine leere Ergebnismenge","Einen Fehler"],1,"Ohne Treffer auf beiden Seiten bleibt beim INNER JOIN nichts übrig."],["abap-m3-l3","Wie prüft man in SQL korrekt auf einen fehlenden Wert?",["feld = NULL","feld IS NULL","feld = ''"],1,"NULL ist kein Wert, sondern das Fehlen eines Werts — Vergleiche mit = liefern immer unbekannt."],["abap-m4-l1","Was begrenzt ein WIP-Limit in Kanban?",["Die Anzahl gleichzeitig in Arbeit befindlicher Aufgaben","Die Länge eines Sprints","Die Teamgröße"],0,"Work-in-Progress-Limits erzwingen Fokus und decken Engpässe im Fluss auf."],["abap-m5-l2","Was bedeutet die Multiplizität 1..* an einem Assoziationsende?",["Genau ein Objekt","Mindestens eines, nach oben offen","Höchstens eines"],1,"1..* heißt: eins oder mehr, ohne Obergrenze."],["abap-m6-l1","Ein Feld akzeptiert Werte von 18 bis 65. Welche Grenzwerte testest du?",["Nur 18 und 65","17, 18, 65, 66","Nur 0 und 100"],1,"Die Grenzwertanalyse prüft jeweils direkt innerhalb und außerhalb der Bereichsgrenzen."],["abap-m7-l0","Welche Ausgabe erzeugt eine ausführbare Klasse in ADT?",["WRITE auf die Liste","out->write( ) in die Konsolen-View","MESSAGE im Statusbereich"],1,"IF_OO_ADT_CLASSRUN stellt über den Parameter out die Konsolenausgabe bereit."],["abap-m7-l1","Was bewirkt CLEAR bei einer Objektreferenz?",["Das Objekt wird sofort gelöscht","Die Referenz wird zurückgesetzt; das Objekt wird aufgeräumt, wenn keine Referenz mehr darauf zeigt","Alle Attribute werden auf Initialwert gesetzt"],1,"ABAP nutzt Garbage Collection: Erst wenn keine Referenz mehr existiert, wird der Speicher freigegeben."],["abap-m7-l2","Was liefert der Ausdruck VALUE #( ) für eine interne Tabelle?",["Eine Tabelle mit einer leeren Zeile","Eine leere Tabelle","Einen Laufzeitfehler"],1,"VALUE #( ) ohne Inhalt erzeugt den Initialwert des Zieltyps — bei Tabellen also eine leere Tabelle."],["abap-m8-l1","Wann lohnt sich ein HASHED-Sekundärschlüssel besonders?",["Bei vielen Einzelzugriffen über einen eindeutigen Schlüssel","Bei sortierter Ausgabe","Bei sehr kleinen Tabellen mit 5 Zeilen"],0,"Bei kleinen Tabellen überwiegt der Verwaltungsaufwand den Nutzen; der Gewinn entsteht bei vielen Zugriffen auf große Mengen."],["abap-m8-l3","Was bedeutet COMMIT WORK AND WAIT gegenüber COMMIT WORK?",["Es wartet, bis die Verbuchung abgeschlossen ist","Es verzögert den Commit um eine Sekunde","Es verwirft die Änderungen"],0,"Ohne AND WAIT läuft das Programm weiter, bevor die Verbuchung durch ist — ein direkt folgender SELECT kann dann alte Daten lesen."],["abap-m9-l1","Welche Klausel filtert in Open SQL bereits auf der Datenbank statt im Anwendungsserver?",["WHERE","Eine LOOP-Prüfung mit CHECK","Eine IF-Abfrage nach dem SELECT"],0,"Jede Filterung, die erst nach dem SELECT in ABAP passiert, hat die Daten unnötig über das Netz transportiert."],["abap-m9-l2","Was ist ein „toter\" Index?",["Ein Index, den der Optimizer nie verwendet, der aber bei jedem Schreibvorgang gepflegt werden muss","Ein Index auf einer leeren Tabelle","Ein Index, der zweimal angelegt wurde"],0,"Ungenutzte Indizes kosten Schreibperformance und Speicher, ohne Lesevorteile zu bringen."],["abap-m10-l1","Welches SOLID-Prinzip verletzt eine Klasse, die Daten liest, Preise rechnet und E-Mails versendet?",["Single Responsibility","Liskov Substitution","Interface Segregation"],0,"Drei Gründe zur Änderung in einer Klasse — das ist genau die Verletzung des Single-Responsibility-Prinzips."],["abap-m10-l4","Wann verwendet man sinnvollerweise RAISE EXCEPTION ... INTO statt eines reinen TRY/CATCH?",["Wenn man die Ausnahme protokollieren und anschließend weiterreichen will","Nie, das ist gleichbedeutend","Nur in Testklassen"],0,"Fehler zu protokollieren und trotzdem weiterzureichen ist ein verbreitetes und sinnvolles Muster."],["abap-m11-l1","Warum lassen sich virtuelle Elemente nicht auf Datenbankebene filtern?",["Weil sie erst zur Laufzeit in ABAP berechnet werden","Weil sie verschlüsselt sind","Weil sie immer NULL sind"],0,"Die Datenbank kennt den Wert nicht — er entsteht erst in der ABAP-Exit-Klasse."],["abap-m12-l1","Wozu dient das Feld %tky in RAP?",["Es ist der technische Schlüssel einer Instanz inklusive Draft-Kennzeichen","Es speichert den Benutzernamen","Es ist ein Zeitstempel"],0,"%tky (transactional key) identifiziert eine Instanz eindeutig, inklusive der Unterscheidung zwischen Draft und aktiver Instanz."],["abap-m12-l2","Was passiert bei einem ETag-Konflikt?",["Der Datensatz wird stillschweigend überschrieben","Der Update wird abgelehnt, weil zwischenzeitlich jemand anders geändert hat","Der Datensatz wird gesperrt"],1,"Genau das verhindert das Lost Update, ohne eine dauerhafte Sperre zu benötigen."],["abap-m13-l2","Warum sollte ein Value Help immer gefiltert sein?",["Aus Designgründen","Weil unbegrenzte Ergebnismengen die App spürbar langsam machen","Weil sonst keine Auswahl möglich ist"],1,"Value Helps ohne Filter laden schnell zehntausende Sätze — einer der häufigsten Gründe für gefühlte Langsamkeit."],["abap-m14-l1","Was bedeutet es, wenn eine SAP-API den Status „nicht freigegeben\" hat?",["Sie ist fehlerhaft","Sie kann sich jederzeit ohne Ankündigung ändern und darf in ABAP Cloud nicht genutzt werden","Sie ist kostenpflichtig"],1,"Nur released APIs sind Teil des stabilen Vertrags und damit upgradesicher."],["abap-m15-l1","Welche Eingabe könnte eine ungesicherte dynamische WHERE-Bedingung ausnutzen?",["Ein sehr langer Name","Eine Eingabe, die Anführungszeichen und eine zusätzliche Bedingung enthält","Ein Name mit Umlauten"],1,"Die Injection schließt das Stringliteral und hängt eigene Logik an — deshalb gehören Werte in Host-Variablen."],["abap-m16-l1","Warum ist ein kleiner, fokussierter Transport besser als ein großer Sammeltransport?",["Er transportiert schneller","Er reduziert Konfliktrisiko und macht Rückbau einzelner Änderungen möglich","Er ist im System vorgeschrieben"],1,"Kleine Einheiten lassen sich gezielt prüfen, freigeben und im Zweifel zurücknehmen."],["abap-m17-l1","Was ist ein impliziter Commit?",["Ein COMMIT WORK im Quelltext","Ein Commit, der durch einen Dialogschritt oder eine RFC-Grenze ausgelöst wird","Ein Commit durch den Datenbankadministrator"],1,"Genau hier entstehen halb geschriebene Belege, wenn man die LUW-Grenzen nicht kennt."],["abap-m17-l2","Womit übergibt man Werte über die gesamte Benutzersitzung hinweg?",["EXPORT TO MEMORY ID","SET PARAMETER ID (SAP Memory)","Eine lokale Variable"],1,"ABAP Memory gilt nur innerhalb einer Aufrufkette, SAP Memory sitzungsweit."],["abap-m18-l1","Wie findest du heraus, an welcher Stelle eine Variable überschrieben wird?",["Mit einem Watchpoint","Mit dem Pretty Printer","Mit dem Verwendungsnachweis auf die Tabelle"],0,"Der Watchpoint hält genau dann an, wenn sich der Wert ändert."],["abap-m19-l1","Warum ist ein synchroner RFC in kritischen Prozessen riskant?",["Er ist grundsätzlich unsicher","Er blockiert, bis das Zielsystem antwortet — fällt der Partner aus, hängt der Prozess","Er überträgt keine Fehler"],1,"Für entkoppelte Szenarien nutzt man qRFC/bgRFC oder ereignisbasierte Kommunikation."],["abap-m20-l3","Warum ist eine Modifikation am SAP-Standard teurer als eine Erweiterung?",["Sie ist technisch langsamer","Sie muss bei jedem Upgrade erneut manuell abgeglichen werden","Sie ist lizenzpflichtig"],1,"Erweiterungspunkte wie BAdIs existieren genau deshalb — sie überstehen Upgrades ohne Abgleich."],["java-m1-l1","Was bedeutet die Forderung, ein Algorithmus müsse endlich sein?",["Er darf höchstens 100 Zeilen haben","Er muss nach endlich vielen Schritten terminieren","Er darf keine Schleifen enthalten"],1,"Endlichkeit meint Terminierung — der Algorithmus kommt nach endlich vielen Schritten zum Ende."],["java-m1-l2","Welches PAP-Symbol steht für Ein- und Ausgabe?",["Rechteck","Parallelogramm","Oval"],1,"Das Parallelogramm markiert Ein-/Ausgabe, das Rechteck Verarbeitung, das Oval Start und Ende."],["java-m1-l4","Wie viele Schritte braucht die binäre Suche bei 1024 sortierten Elementen maximal?",["1024","Etwa 10","Etwa 32"],1,"log₂(1024) = 10 — jede Halbierung entfernt die Hälfte des Suchraums."],["java-m1-l4","Zwei verschachtelte Schleifen laufen je von 1 bis n. Wie viele Durchläufe insgesamt?",["2n","n²","n log n"],1,"Für jeden der n äußeren Durchläufe laufen n innere — quadratische Komplexität."],["java-m2-l2","Eine Tabelle enthält BestellNr, Position, Produktname und Produktgewicht. Wogegen verstößt sie?",["Gegen die 1NF","Gegen die 2NF, da die Produktdaten nur von der Position abhängen","Gegen gar keine Normalform"],1,"Klassische Teilabhängigkeit vom zusammengesetzten Schlüssel."],["java-m3-l3","Wie prüft man in SQL korrekt auf einen fehlenden Wert?",["feld = NULL","feld IS NULL","feld == NULL"],1,"NULL ist kein Wert, sondern dessen Abwesenheit — Vergleiche mit = ergeben „unbekannt\"."],["java-m4-l1","Was begrenzt ein WIP-Limit in Kanban?",["Die Anzahl gleichzeitig in Arbeit befindlicher Aufgaben","Die Länge eines Sprints","Die Teamgröße"],0,"WIP-Limits erzwingen Fokus und machen Engpässe im Arbeitsfluss sichtbar."],["java-m5-l2","Was bedeutet die Multiplizität 0..1 an einem Assoziationsende?",["Genau eines","Höchstens eines, auch keines möglich","Mindestens eines"],1,"0..1 erlaubt das Fehlen der Beziehung — in Java oft ein Optional oder ein nullbares Feld."],["java-m6-l1","Ein Feld akzeptiert Werte von 1 bis 100. Welche Grenzwerte testest du?",["Nur 1 und 100","0, 1, 100, 101","Nur 50"],1,"Die Grenzwertanalyse prüft jeweils direkt innerhalb und außerhalb der Bereichsgrenzen."],["java-m7-l1","Was ist der Unterschied zwischen JDK und JRE?",["Kein Unterschied","Das JDK enthält zusätzlich Compiler und Entwicklerwerkzeuge","Das JRE ist neuer"],1,"Zum Entwickeln brauchst du das JDK; das JRE genügt nur zum Ausführen."],["java-m7-l2","Was ergibt in Java 7 / 2 bei zwei int-Werten?",["3.5","3","Einen Kompilierfehler"],1,"Bei zwei Ganzzahlen wird ganzzahlig dividiert und der Rest abgeschnitten."],["java-m7-l2","Welcher Wert steht in a nach int[] x={1,2}; int[] y=x; y[0]=9;",["x[0] ist 1","x[0] ist 9","Es entsteht ein Fehler"],1,"Arrays sind Referenztypen — beide Variablen zeigen auf dasselbe Objekt."],["java-m7-l3","Warum liefert \"abc\" == new String(\"abc\") den Wert false?",["Weil der Inhalt unterschiedlich ist","Weil == bei Objekten die Referenz vergleicht und new ein neues Objekt erzeugt","Weil Strings nicht vergleichbar sind"],1,"Inhaltlich vergleicht man mit equals()."],["java-m7-l4","Was bewirkt das Schlüsselwort final bei einer lokalen Variablen?",["Sie kann nach der ersten Zuweisung nicht neu zugewiesen werden","Das Objekt wird unveränderlich","Sie wird statisch"],0,"final schützt die Referenz, nicht den Inhalt des referenzierten Objekts."],["java-m8-l1","Was passiert, wenn ein Konstruktor eine Exception wirft?",["Das Objekt existiert halbfertig","Es entsteht kein gültiges Objekt, die Referenz wird nicht zugewiesen","Der Konstruktor wird wiederholt"],1,"Deshalb ist der Konstruktor der richtige Ort für Validierung."],["java-m8-l2","Was bedeutet der Modifier protected?",["Zugriff nur in derselben Klasse","Zugriff im selben Paket und in Unterklassen","Zugriff von überall"],1,"private ist enger, public weiter; ohne Angabe gilt package-private."],["java-m8-l3","Kann ein Interface Felder mit veränderlichem Zustand enthalten?",["Ja, beliebig","Nein, nur Konstanten (public static final)","Nur private Felder"],1,"Zustand ist genau der Unterschied zur abstrakten Klasse."],["java-m8-l4","Was ist bei einem record automatisch unveränderlich?",["Nur der Konstruktor","Alle Komponenten, sie erhalten final-Felder","Nichts"],1,"Records sind als unveränderliche Datenträger konzipiert."],["java-m9-l1","Welche Collection eignet sich, wenn Reihenfolge UND Eindeutigkeit gefordert sind?",["HashSet","LinkedHashSet","ArrayList"],1,"LinkedHashSet verhindert Duplikate und bewahrt die Einfügereihenfolge."],["java-m9-l2","Was passiert, wenn equals überschrieben wird, hashCode aber nicht?",["Nichts","Das Objekt wird in HashSet und HashMap nicht wiedergefunden","Der Code kompiliert nicht"],1,"Die Hash-basierten Sammlungen suchen dann im falschen Bucket."],["java-m9-l3","Warum lässt sich verarbeite(List<String>) und verarbeite(List<Integer>) nicht überladen?",["Wegen Type Erasure haben beide zur Laufzeit dieselbe Signatur","Weil Java keine Überladung kennt","Weil List nicht generisch ist"],0,"Nach dem Löschen der Typinformation sind die Methoden nicht mehr unterscheidbar."],["java-m9-l4","Was löst eine ConcurrentModificationException typischerweise aus?",["Zwei Threads","Das Entfernen eines Elements während einer for-each-Schleife","Ein zu großes Array"],1,"Der Iterator erkennt die strukturelle Änderung und bricht bewusst ab (Fail-Fast)."],["java-m10-l1","Welche Exception-Art muss der Compiler behandelt sehen?",["RuntimeException","Checked Exception","Error"],1,"Checked Exceptions erzwingen catch oder throws."],["java-m10-l2","Was passiert bei try-with-resources, wenn close() ebenfalls eine Exception wirft?",["Sie überschreibt die ursprüngliche","Sie wird als suppressed exception angehängt","Sie wird ignoriert"],1,"So bleibt der ursprüngliche Fehler erhalten und sichtbar."],["java-m11-l1","Wofür steht die Methodenreferenz String::isBlank?",["Für ein Lambda s -> s.isBlank()","Für einen Konstruktoraufruf","Für eine statische Variable"],0,"Methodenreferenzen sind die Kurzform für Lambdas, die nur eine Methode aufrufen."],["java-m11-l2","Was passiert bei einer Stream-Pipeline ohne terminale Operation?",["Sie läuft sofort","Es passiert gar nichts, da intermediäre Operationen lazy sind","Es gibt einen Kompilierfehler"],1,"Erst die terminale Operation stößt die Verarbeitung an."],["java-m11-l4","Was ist der Unterschied zwischen orElse und orElseGet?",["Kein Unterschied","orElse wertet sein Argument immer aus, orElseGet nur bei leerem Optional","orElseGet wirft eine Exception"],1,"Bei teuren Fallbacks ist das ein echter Performanceunterschied."],["java-m12-l1","Wodurch entsteht in Java typischerweise ein Memory Leak?",["Durch vergessenes free()","Durch Referenzen, die unnötig gehalten werden, etwa in statischen Sammlungen","Durch zu viele Klassen"],1,"Die Garbage Collection räumt nur auf, was nicht mehr erreichbar ist."],["java-m12-l3","Warum ist Long summe = 0L in einer Millionenschleife problematisch?",["Es kompiliert nicht","Jede Addition erzeugt durch Autoboxing ein neues Objekt","Long kann nicht addieren"],1,"Der Wrapper-Typ erzwingt Boxing und Unboxing bei jedem Schritt."],["java-m13-l2","Was garantiert volatile?",["Atomare Operationen","Nur die Sichtbarkeit von Änderungen zwischen Threads","Gegenseitigen Ausschluss"],1,"Für atomares Hochzählen braucht es AtomicInteger oder synchronized."],["java-m13-l3","Wie viele Threads sind für rein rechenintensive Aufgaben sinnvoll?",["So viele wie möglich","Etwa so viele wie Prozessorkerne","Immer genau einer"],1,"Mehr Threads bringen bei reiner Rechenlast nur Kontextwechsel."],["java-m14-l1","Welcher Typ eignet sich für einen gespeicherten Zeitstempel?",["LocalDateTime","Instant (UTC)","LocalTime"],1,"Instant ist zeitzonenunabhängig und damit eindeutig — lokale Zeiten brechen bei der Zeitumstellung."],["java-m14-l2","Warum sollte beim Dateizugriff das Encoding explizit angegeben werden?",["Um Speicher zu sparen","Weil sonst plattformabhängig kodiert wird und Umlaute brechen","Weil UTF-8 langsamer ist"],1,"Der Klassiker: lokal korrekt, auf dem Server zerschossen."],["java-m15-l1","Was prüft assertThrows?",["Dass kein Fehler auftritt","Dass eine bestimmte Exception geworfen wird","Die Ausführungszeit"],1,"Der geworfene Fehler lässt sich zusätzlich auf seine Meldung prüfen."],["java-m15-l3","Was sagt eine hohe Code Coverage NICHT aus?",["Welche Zeilen ausgeführt wurden","Dass das Verhalten tatsächlich geprüft wurde","Welcher Code erreichbar ist"],1,"Ein Test ohne Assertion erzeugt Abdeckung, aber keine Sicherheit."],["java-m16-l1","Was bedeutet der Scope provided in Maven?",["Die Abhängigkeit wird zur Laufzeit von der Umgebung bereitgestellt","Sie wird nie gebraucht","Sie gilt nur für Tests"],0,"Typisch für Bibliotheken, die der Applikationsserver mitbringt."],["java-m16-l2","Warum Platzhalter {} statt String-Konkatenation im Logaufruf?",["Aus Stilgründen","Weil die Auswertung nur bei aktivem Level erfolgt","Weil + nicht erlaubt ist"],1,"Das spart bei deaktiviertem DEBUG-Level messbar Rechenzeit."],["java-m17-l1","Warum schützt PreparedStatement vor SQL-Injection?",["Es entfernt Sonderzeichen","Es trennt SQL-Struktur von Daten, Parameter ändern die Abfragelogik nicht","Es verschlüsselt die Abfrage"],1,"Die Abfrage wird geparst, bevor die Parameter eingesetzt werden."],["java-m17-l2","Was bedeutet Autocommit in JDBC?",["Nichts wird gespeichert","Jede einzelne Anweisung wird sofort festgeschrieben","Alles wird beim Schließen geschrieben"],1,"Für mehrteilige fachliche Einheiten muss Autocommit abgeschaltet werden."],["java-m18-l1","Welcher Teil eines Stacktrace nennt die eigentliche Ursache?",["Die erste at-Zeile","Das unterste \"Caused by\"","Die letzte Zeile der Datei"],1,"Verschachtelte Ursachen stehen von außen nach innen — ganz unten die Wurzel."],["java-m19-l1","Welches SOLID-Prinzip verletzt eine Klasse, die Daten lädt, rechnet und E-Mails verschickt?",["Single Responsibility","Liskov Substitution","Interface Segregation"],0,"Drei Gründe zur Änderung in einer Klasse."],["java-m19-l3","Was ist die Voraussetzung für sicheres Refactoring?",["Eine gute IDE","Tests, die das bestehende Verhalten absichern","Ein Code-Review"],1,"Ohne Tests kann niemand belegen, dass sich das Verhalten nicht geändert hat."],["java-m20-l1","Warum liefert Integer a=127,b=127; a==b true, bei 128 aber false?",["Wegen eines Compilerfehlers","Java cacht Integer von -128 bis 127, darüber entstehen neue Objekte","Weil 128 zu groß für int ist"],1,"Genau deshalb dürfen Wrapper-Typen nie mit == verglichen werden."],["java-m20-l2","Womit speichert man Passwörter korrekt?",["MD5","SHA-256 ohne Salt","bcrypt, scrypt oder Argon2 mit Salt"],2,"Bewusst langsame Verfahren mit Salt machen massenhaftes Durchprobieren unwirtschaftlich."],["java-m20-l3","Was muss beim Fangen einer InterruptedException geschehen?",["Nichts weiter","Den Interrupt-Status mit Thread.currentThread().interrupt() wiederherstellen","Den Thread sofort beenden"],1,"Sonst geht das Abbruchsignal verloren und übergeordnete Schichten können nicht sauber herunterfahren."],["java-m21-l1","Was macht die Annotation @SpringBootApplication?",["Sie startet einen Webserver","Sie bündelt @Configuration, @EnableAutoConfiguration und @ComponentScan","Sie erzeugt die Datenbank"],1,"Eine Annotation für die drei Bausteine, die jede Spring-Boot-Anwendung braucht."],["java-m21-l2","Welche Stereotyp-Annotation kennzeichnet eine Geschäftslogik-Bean?",["@Entity","@Service","@Configuration"],1,"@Service ist eine Spezialisierung von @Component für die Serviceschicht."],["java-m21-l2","Welchen Scope hat eine Spring-Bean standardmäßig?",["prototype","singleton","request"],1,"Eine Instanz pro Container — deshalb müssen Beans zustandslos sein."],["java-m21-l3","Wie aktiviert man ein Spring-Profil von außen?",["Durch Neukompilieren","Über die Umgebungsvariable SPRING_PROFILES_ACTIVE","Gar nicht"],1,"So wandert dasselbe Artefakt unverändert durch alle Umgebungen."],["java-m22-l1","Welcher Statuscode gehört zu einem erfolgreichen DELETE ohne Rückgabeinhalt?",["200","204","404"],1,"204 No Content signalisiert Erfolg ohne Antwortkörper."],["java-m22-l1","Wie benennt man REST-Ressourcen sinnvoll?",["Als Verben wie /getBestellung","Als Substantive im Plural wie /bestellungen/42","Als Abkürzungen"],1,"Die Aktion steckt bereits in der HTTP-Methode."],["java-m22-l2","Was löst eine fehlgeschlagene Bean Validation im Controller aus?",["Eine MethodArgumentNotValidException","Einen Kompilierfehler","Ein stilles Ignorieren"],0,"Sie wird üblicherweise zentral im @RestControllerAdvice auf 400 abgebildet."],["java-m22-l3","Welche Schicht darf HTTP-Typen wie ResponseEntity kennen?",["Der Service","Nur der Controller","Das Repository"],1,"Ein sauberer Service ist auch aus einem Batchlauf heraus aufrufbar."],["java-m23-l1","Woraus leitet Spring Data die Abfrage einer Repository-Methode ab?",["Aus dem Methodennamen oder einer @Query-Annotation","Aus dem Rückgabetyp","Aus dem Klassennamen"],0,"findByStatusOrderByDatumDesc wird direkt in eine Abfrage übersetzt."],["java-m23-l2","Wo gehört @Transactional üblicherweise hin?",["An das Repository","An die Serviceschicht","An den Controller"],1,"Erst die Geschäftsoperation bildet die fachliche Einheit."],["java-m23-l2","Warum hat @Transactional an einer privaten Methode keine Wirkung?",["Weil private Methoden zu schnell sind","Weil der Proxy-Mechanismus nur öffentliche Methoden abfangen kann","Weil Spring das verbietet"],1,"Beim Standard-Proxy greift der Transaktionsinterzeptor nur bei öffentlichen Aufrufen von außen."],["java-m23-l3","Wodurch unterscheidet sich eine Projektion von einer Entity-Abfrage?",["Sie lädt nur die benötigten Felder statt ganzer Entities","Sie ist immer sortiert","Sie umgeht die Datenbank"],0,"Weniger Daten, keine Lazy-Beziehungen — oft die sauberste Lösung gegen N+1."],["java-m24-l1","Welche Testart eignet sich zum Prüfen eines Repositorys?",["@WebMvcTest","@DataJpaTest","Plain JUnit ohne Spring"],1,"@DataJpaTest lädt nur die Persistenzschicht samt Testdatenbank."],["java-m24-l2","Wann ist das Abschalten von CSRF vertretbar?",["Immer","Bei zustandslosen Token-APIs ohne Cookie-Sitzungen","Nie"],1,"Bei formularbasierten Sitzungen mit Cookies ist CSRF-Schutz dagegen zwingend."],["java-m24-l3","Was unterscheidet Liveness von Readiness?",["Kein Unterschied","Liveness fragt, ob der Prozess läuft; Readiness, ob er gerade Anfragen bedienen kann","Readiness startet den Container neu"],1,"Externe Abhängigkeiten gehören in Readiness, nie in Liveness."]]);
+var RP_LITERAL_3=window.RP_LITERALS[3];
+var RP_EXTRA_REVISIONS=RP_LITERAL_3;
+RP_EXTRA_REVISIONS.forEach(function(item){
+ var index=Number(item.extraId.slice(2));
+ var old=EXTRA_CARDS[index];
+ if(!old||old[0]!==item.lesson)throw new Error('Zusatzkarte falsch zugeordnet: '+item.extraId);
+ EXTRA_CARDS[index]=[item.lesson,item.q,item.options,item.correct,item.explain];
 });
-MODULES.push({
-  id:'m26', part:8, partTitle:'Service, Kommunikation & Qualität', title:'Kommunikation & Kundengespräch', relevanz:'mittel',
-  lessons:[
-    {
-      id:'m26-l1', title:'Sender-Empfänger und das Vier-Ohren-Modell', minutes:9,
-      body:
-        '<p>Das <strong>Sender-Empfänger-Modell</strong> beschreibt Kommunikation als Kette: Der Sender <em>codiert</em> eine Nachricht, überträgt sie über einen Kanal, der Empfänger <em>decodiert</em> sie. Störungen entstehen an jeder Stelle — durch unklare Formulierung, Lärm auf dem Kanal oder abweichendes Vorwissen beim Empfänger. Das <strong>Feedback</strong> schließt den Kreis und ermöglicht die Prüfung, ob die Nachricht angekommen ist.</p>'+
-        '<p>Das <strong>Vier-Ohren-Modell</strong> von Schulz von Thun erklärt, warum Missverständnisse auch bei klarer Formulierung entstehen. Jede Äußerung hat vier Seiten:</p>'+
-        '<table class="lesson-table"><tr><th>Seite</th><th>Frage</th></tr>'+
-        '<tr><td><strong>Sachinhalt</strong></td><td>Worüber informiere ich?</td></tr>'+
-        '<tr><td><strong>Selbstoffenbarung</strong></td><td>Was gebe ich von mir preis?</td></tr>'+
-        '<tr><td><strong>Beziehung</strong></td><td>Wie stehe ich zum Gegenüber?</td></tr>'+
-        '<tr><td><strong>Appell</strong></td><td>Wozu möchte ich veranlassen?</td></tr></table>'+
-        '<p>Der Empfänger hört mit vier Ohren und entscheidet selbst, welches er groß aufdreht. Genau dort entstehen Konflikte: Der Sender meint den Sachinhalt, der Empfänger hört die Beziehungsseite.</p>'+
-        '<p>Ergänzend das <strong>Eisberg-Modell</strong>: Nur etwa 20 Prozent der Kommunikation sind Sachebene (sichtbar), rund 80 Prozent liegen als Beziehungsebene unter der Oberfläche. Deshalb scheitern Gespräche selten an Fakten.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="Vier-Ohren-Modell nach Schulz von Thun"><rect class="s-box" x="20" y="88" width="104" height="50" rx="6"/><text class="s-hd" x="72" y="118" text-anchor="middle">Sender</text><rect class="s-box" x="436" y="88" width="104" height="50" rx="6"/><text class="s-hd" x="488" y="118" text-anchor="middle">Empf&#228;nger</text><rect class="s-accent" x="180" y="18" width="200" height="34" rx="6"/><text class="s-lbl" x="280" y="40" text-anchor="middle">Sachinhalt &#8211; wor&#252;ber?</text><rect class="s-accent" x="180" y="62" width="200" height="34" rx="6"/><text class="s-lbl" x="280" y="84" text-anchor="middle">Selbstoffenbarung &#8211; was von mir?</text><rect class="s-warn" x="180" y="106" width="200" height="34" rx="6"/><text class="s-lbl" x="280" y="128" text-anchor="middle">Beziehung &#8211; wie steh ich zu dir?</text><rect class="s-accent" x="180" y="150" width="200" height="34" rx="6"/><text class="s-lbl" x="280" y="172" text-anchor="middle">Appell &#8211; wozu bewegen?</text><line class="s-line" x1="124" y1="113" x2="180" y2="35"/><line class="s-line" x1="124" y1="113" x2="180" y2="79"/><line class="s-line" x1="124" y1="113" x2="180" y2="123"/><line class="s-line" x1="124" y1="113" x2="180" y2="167"/><line class="s-line" x1="380" y1="35" x2="436" y2="113"/><line class="s-line" x1="380" y1="79" x2="436" y2="113"/><line class="s-arrow" x1="380" y1="123" x2="436" y2="113"/><line class="s-line" x1="380" y1="167" x2="436" y2="113"/><text class="s-lbl" x="280" y="212" text-anchor="middle">Konflikte entstehen, wenn der Sender die Sache meint und der Empf&#228;nger die Beziehung h&#246;rt.</text></svg><figcaption>Jede Aeusserung hat vier Seiten. Der Empfaenger entscheidet selbst, welches Ohr er aufdreht &#8211; darauf hat der Sender nur begrenzt Einfluss.</figcaption></figure>',
-      code:
-        "DIE VIER SEITEN AN EINEM BEISPIEL\n\n"+
-        "  Ein Kollege sagt: \"Der Server ist schon wieder down.\"\n\n"+
-        "  Sachinhalt        : Der Server ist nicht erreichbar.\n"+
-        "  Selbstoffenbarung : Ich bin genervt und unter Druck.\n"+
-        "  Beziehung         : Du bist dafuer zustaendig - und es klappt nicht.\n"+
-        "  Appell            : Kuemmere dich sofort darum!\n\n"+
-        "  Reaktion auf dem SACHOHR:\n"+
-        "     \"Ich pruefe das sofort, seit wann genau?\"   -> deeskalierend\n\n"+
-        "  Reaktion auf dem BEZIEHUNGSOHR:\n"+
-        "     \"Ich kann ja auch nichts dafuer!\"            -> eskalierend\n\n"+
-        "  Regel fuer den Support: bewusst auf dem Sachohr antworten,\n"+
-        "  das Gefuehl aber kurz anerkennen.",
-      codeLang:'Kommunikation',
-      tip:'Für Prüfungsaufgaben mit einem geschilderten Gesprächsausschnitt gilt ein fester Ablauf: Ordne die Aussage den vier Seiten zu, benenne dann, auf welchem Ohr der Empfänger gehört hat, und schlage eine sachliche Reaktion vor. Die Zuordnung allein reicht selten — gefragt ist meist auch, wie sich das Missverständnis auflösen lässt.',
-      quiz:[
-        {q:'Welche Seite einer Nachricht beschreibt, wozu der Sender veranlassen will?', options:['Sachinhalt','Appell','Selbstoffenbarung'], correct:1, explain:'Die Beziehungsseite sagt dagegen, wie der Sender zum Empfänger steht.'},
-        {q:'Warum eskalieren Gespräche trotz sachlich korrekter Aussagen?', options:['Weil die Fakten falsch sind','Weil der Empfänger auf der Beziehungsebene hört','Weil der Kanal gestört ist'], correct:1, explain:'Das Eisberg-Modell verortet rund 80 Prozent der Kommunikation dort.'},
-        {q:'Auf welchem Ohr sollte man im Support bewusst antworten?', options:['Auf dem Beziehungsohr','Auf dem Sachohr — das Gefühl kurz anerkennen, dann zur Sache','Auf dem Appellohr'], correct:1, explain:'Die Antwort auf dem Beziehungsohr führt fast immer zur Eskalation.'}
-      ]
-    },
-    {
-      id:'m26-l2', title:'Das Kundengespräch führen', minutes:9,
-      body:
-        '<p>Bei „Wie gehen Sie im Gespräch mit dem Anwender vor?" erwartet die IHK einen strukturierten Ablauf, nicht Höflichkeitsfloskeln.</p>'+
-        '<ol><li><strong>Begrüßen und Namen notieren</strong> – Erreichbarkeit gleich miterfassen.</li>'+
-        '<li><strong>Offen fragen</strong> – „Was genau passiert, wenn Sie das Programm starten?" Offene Fragen bringen Information, geschlossene Fragen nur ja oder nein.</li>'+
-        '<li><strong>Aktiv zuhören</strong> – ausreden lassen, mitschreiben, nicht vorschnell diagnostizieren.</li>'+
-        '<li><strong>Zusammenfassen und rückversichern</strong> – „Habe ich richtig verstanden, dass …?" Das ist der wirksamste Einzelschritt gegen Missverständnisse.</li>'+
-        '<li><strong>Gezielt geschlossen nachfragen</strong> – „Erscheint eine Fehlermeldung? Trat das nach einem Update auf?"</li>'+
-        '<li><strong>Vorgehen und Zeitrahmen ankündigen</strong> – verbindlich, aber nur zusagen, was haltbar ist.</li>'+
-        '<li><strong>Dokumentieren und Rückmeldung geben</strong> – auch wenn es länger dauert.</li></ol>'+
-        '<p><strong>Fachsprache übersetzen:</strong> Der Anwender braucht keine Erklärung über DNS-Caches. Er braucht zu wissen, was er tun soll, wie lange es dauert und ob seine Daten sicher sind. Übersetze Technik in Auswirkung.</p>'+
-        '<p><strong>Fragearten:</strong> offen (W-Fragen, öffnen das Gespräch) · geschlossen (grenzen ein, bestätigen) · Alternativfragen (lenken zur Entscheidung) · Suggestivfragen (vermeiden, sie verzerren die Antwort).</p>',
-      code:
-        "SCHLECHT UND GUT FORMULIERT\n\n"+
-        "  Schlecht: \"Der DHCP-Lease ist abgelaufen und der Client hat\n"+
-        "             sich eine APIPA-Adresse gezogen.\"\n"+
-        "  Gut     : \"Ihr Rechner hat vom Netzwerk keine gueltige Adresse\n"+
-        "             bekommen. Ich stelle das in etwa zehn Minuten\n"+
-        "             wieder her, Ihre Daten sind davon nicht betroffen.\"\n\n"+
-        "  Schlecht: \"Haben Sie schon neu gestartet?\" (als erste Frage)\n"+
-        "  Gut     : \"Beschreiben Sie mir bitte, was genau passiert,\n"+
-        "             wenn Sie das Programm oeffnen.\"\n\n"+
-        "  Schlecht: \"Das geht nicht.\"\n"+
-        "  Gut     : \"Das ist in dieser Version nicht vorgesehen.\n"+
-        "             Moeglich waere stattdessen ...\"",
-      codeLang:'Gesprächsführung',
-      tip:'Der Schritt, der in Musterlösungen fast immer auftaucht und den die meisten vergessen, ist das Zusammenfassen und Rückversichern. Er kostet zehn Sekunden und verhindert, dass du eine halbe Stunde am falschen Problem arbeitest. Wenn eine Aufgabe nach Gesprächsführung fragt, schreib ihn auf jeden Fall hin — und formuliere ihn als konkreten Satz, nicht als Stichwort.',
-      quiz:[
-        {q:'Welche Frageart eignet sich zum Einstieg in eine Störungsaufnahme?', options:['Geschlossene Frage','Offene W-Frage','Suggestivfrage'], correct:1, explain:'Sie liefert Informationen, die man mit geschlossenen Fragen anschließend eingrenzt.'},
-        {q:'Was leistet das Zusammenfassen im Kundengespräch?', options:['Es wirkt höflich','Es prüft, ob das Problem richtig verstanden wurde','Es verkürzt das Gespräch'], correct:1, explain:'Missverständnisse werden erkannt, bevor Arbeitszeit verloren geht.'},
-        {q:'Welche Frageart bringt zu Beginn einer Störungsaufnahme die meiste Information?', options:['Geschlossene Frage','Offene W-Frage','Suggestivfrage'], correct:1, explain:'Geschlossene Fragen grenzen anschließend ein.'}
-      ]
-    },
-    {
-      id:'m26-l3', title:'Konflikte, Beschwerden und Feedback', minutes:8,
-      body:
-        '<p><strong>Der verärgerte Anrufer</strong> ist ein Standardszenario. Der bewährte Ablauf:</p>'+
-        '<ol><li><strong>Ausreden lassen</strong> – Unterbrechen verstärkt den Ärger.</li>'+
-        '<li><strong>Verständnis zeigen</strong>, ohne Schuld einzugestehen: „Ich verstehe, dass Sie das aufhält."</li>'+
-        '<li><strong>Auf die Sachebene zurückführen</strong> – konkrete Fragen stellen.</li>'+
-        '<li><strong>Lösung oder nächsten Schritt zusagen</strong> – mit einem realistischen Zeitpunkt.</li>'+
-        '<li><strong>Nachfassen</strong> – die Rückmeldung zum vereinbarten Zeitpunkt ist entscheidend für das Vertrauen.</li></ol>'+
-        '<p>Eine <strong>Beschwerde ist eine Chance</strong>: Sie zeigt einen Schwachpunkt und gibt Gelegenheit, ihn zu beheben. Unzufriedene Kunden, die sich <em>nicht</em> beschweren, wechseln kommentarlos den Anbieter.</p>'+
-        '<p><strong>Feedbackregeln</strong> – ebenfalls prüfungsrelevant:</p>'+
-        '<ul><li><strong>Ich-Botschaften</strong> statt Du-Vorwürfen: „Mir fehlt die Dokumentation" statt „Du dokumentierst nie".</li>'+
-        '<li><strong>Konkret und auf das Verhalten bezogen</strong>, nicht auf die Person.</li>'+
-        '<li><strong>Zeitnah</strong> und unter vier Augen bei Kritik.</li>'+
-        '<li><strong>Beschreibend statt bewertend</strong>, und mit einem umsetzbaren Vorschlag.</li></ul>'+
-        '<p>Beim Empfangen von Feedback gilt: zuhören, nicht rechtfertigen, nachfragen, bedanken.</p>',
-      code:
-        "KONFLIKTESKALATION NACH GLASL - die ersten Stufen\n\n"+
-        "  1. Verhaertung        Standpunkte verfestigen sich\n"+
-        "  2. Debatte            Polarisierung, Rechthaben wird wichtig\n"+
-        "  3. Taten statt Worte  Reden hilft nicht mehr, Fakten schaffen\n"+
-        "  ------------------------------------------------\n"+
-        "  Bis Stufe 3 ist eine Loesung ohne Hilfe von aussen moeglich.\n"+
-        "  Ab Stufe 4 wird Moderation noetig, spaeter Vermittlung.\n\n"+
-        "ICH-BOTSCHAFT AUFBAUEN\n"+
-        "  1. Wahrnehmung   \"Mir ist aufgefallen, dass die Tickets\n"+
-        "                    ohne Loesungstext geschlossen werden.\"\n"+
-        "  2. Wirkung       \"Dadurch muss ich bei Rueckfragen von vorn\n"+
-        "                    anfangen.\"\n"+
-        "  3. Wunsch        \"Ich haette gern zwei Saetze zur Loesung\n"+
-        "                    im Ticket.\"",
-      codeLang:'Konflikt & Feedback',
-      tip:'Die Ich-Botschaft in drei Schritten — Wahrnehmung, Wirkung, Wunsch — ist ein Muster, das du in der Prüfung direkt anwenden kannst, wenn eine Aufgabe eine Formulierung verlangt. Sie funktioniert, weil sie keinen Vorwurf enthält und trotzdem konkret bleibt. Schreibe bei solchen Aufgaben einen ausformulierten Beispielsatz hin, keine Regelbeschreibung — gefragt ist die Anwendung.',
-      quiz:[
-        {q:'Wie reagiert man zuerst auf einen verärgerten Anrufer?', options:['Sofort eine Lösung nennen','Ausreden lassen und Verständnis zeigen','Auf die Zuständigkeit verweisen'], correct:1, explain:'Erst danach lässt sich das Gespräch auf die Sachebene führen.'},
-        {q:'Was kennzeichnet eine gute Feedback-Formulierung?', options:['Eine Ich-Botschaft, die konkretes Verhalten beschreibt','Ein Hinweis auf frühere Fehler','Eine Bewertung der Person'], correct:0, explain:'Verhalten lässt sich ändern, die Person nicht.'},
-        {q:'Wie ist eine Ich-Botschaft aufgebaut?', options:['Vorwurf, Forderung, Frist','Wahrnehmung, Wirkung, Wunsch','Lob, Kritik, Lob'], correct:1, explain:'Sie beschreibt Verhalten, ohne die Person zu bewerten.'}
-      ]
-    }
-  ]
+EXTRA_CARDS.forEach(function(row, idx){
+  var lid = row[0];
+  var mod = MODULES.find(function(m){ return m.lessons.some(function(l){ return l.id === lid; }); });
+  if(!mod) return;
+  var les = mod.lessons.find(function(l){ return l.id === lid; });
+  CARDS.push({ id:'x#'+idx+(typeof RP_EXTRA_REVISIONS!=='undefined'&&RP_EXTRA_REVISIONS.some(function(q){return q.extraId==='x#'+idx;})?'@2026-11-07-full-v3':''), q:row[1], options:row[2], correct:row[3], explain:row[4],
+               lessonId:lid, lessonTitle:les.title, moduleTitle:mod.title, part:mod.part });
 });
-MODULES.push({
-  id:'m27', part:8, partTitle:'Service, Kommunikation & Qualität', title:'Qualität & Dokumentation', relevanz:'mittel',
-  lessons:[
-    {
-      id:'m27-l1', title:'PDCA, KVP und Qualitätsmanagement', minutes:8,
-      body:
-        '<p><strong>Qualität</strong> ist im Sinne der ISO 9000 der Grad, in dem ein Ergebnis die <strong>Anforderungen erfüllt</strong>. Nicht „besonders gut", sondern „wie vereinbart" — das ist der Kern und eine beliebte Definitionsfrage.</p>'+
-        '<p><strong>Der PDCA-Zyklus</strong> (Deming-Kreis) ist das Grundmuster jeder Verbesserung:</p>'+
-        '<table class="lesson-table"><tr><th>Phase</th><th>Inhalt</th></tr>'+
-        '<tr><td><strong>Plan</strong></td><td>Problem analysieren, Ziel festlegen, Maßnahme planen</td></tr>'+
-        '<tr><td><strong>Do</strong></td><td>Maßnahme im kleinen Rahmen umsetzen</td></tr>'+
-        '<tr><td><strong>Check</strong></td><td>Ergebnis messen und mit dem Ziel vergleichen</td></tr>'+
-        '<tr><td><strong>Act</strong></td><td>Bei Erfolg zum Standard machen, sonst nachbessern</td></tr></table>'+
-        '<p>Der Zyklus läuft fortlaufend — das ist der <strong>KVP</strong>, der kontinuierliche Verbesserungsprozess. Sein Gegenmodell ist die einmalige Großumstellung.</p>'+
-        '<p><strong>ISO 9001</strong> ist die Norm für Qualitätsmanagementsysteme. Sie verlangt keine bestimmte Produktqualität, sondern <strong>definierte, dokumentierte und überprüfte Prozesse</strong>. Zentrale Grundsätze: Kundenorientierung, Führung, prozessorientierter Ansatz, faktengestützte Entscheidungen und eben ständige Verbesserung.</p>'+
-        '<p>Aus der Softwareentwicklung kennst du die Qualitätssicherung bereits: Reviews, Tests nach dem V-Modell und die Testarten aus Modul 4 sind angewandtes Qualitätsmanagement.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 500 230" role="img" aria-label="PDCA-Zyklus als Kreislauf"><circle class="s-ring" cx="250" cy="112" r="78"/><rect class="s-accent" x="182" y="10" width="136" height="42" rx="8"/><text class="s-hd" x="250" y="30" text-anchor="middle">PLAN</text><text class="s-lbl" x="250" y="45" text-anchor="middle">Ziel und Ma&#223;nahme</text><rect class="s-accent" x="356" y="90" width="136" height="42" rx="8"/><text class="s-hd" x="424" y="110" text-anchor="middle">DO</text><text class="s-lbl" x="424" y="125" text-anchor="middle">klein umsetzen</text><rect class="s-accent" x="182" y="172" width="136" height="42" rx="8"/><text class="s-hd" x="250" y="192" text-anchor="middle">CHECK</text><text class="s-lbl" x="250" y="207" text-anchor="middle">messen, vergleichen</text><rect class="s-accent" x="8" y="90" width="136" height="42" rx="8"/><text class="s-hd" x="76" y="110" text-anchor="middle">ACT</text><text class="s-lbl" x="76" y="125" text-anchor="middle">Standard oder neu</text><path class="s-arrow" d="M300 58 A 70 70 0 0 1 344 96" marker-end="url(#ar4)"/><path class="s-arrow" d="M344 132 A 70 70 0 0 1 300 168" marker-end="url(#ar4)"/><path class="s-arrow" d="M200 168 A 70 70 0 0 1 156 132" marker-end="url(#ar4)"/><path class="s-arrow" d="M156 96 A 70 70 0 0 1 200 58" marker-end="url(#ar4)"/><text class="s-lbl" x="250" y="108" text-anchor="middle">Kontinuierliche</text><text class="s-lbl" x="250" y="124" text-anchor="middle">Verbesserung</text><defs><marker id="ar4" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs></svg><figcaption>Der Zyklus endet nie. Nach Act beginnt ein neuer Durchlauf &#8211; das ist der Unterschied zwischen einem Projekt und einem Verbesserungsprozess.</figcaption></figure>',
-      code:
-        "PDCA AN EINEM SUPPORT-BEISPIEL\n\n"+
-        "  Ausgangslage: Die Erstloesungsquote im First Level liegt bei 48 %.\n\n"+
-        "  PLAN   Ziel 65 % in sechs Monaten. Ursache laut Auswertung:\n"+
-        "         fehlende Anleitungen fuer die zehn haeufigsten Faelle.\n"+
-        "         Massnahme: Known Error Database aufbauen.\n\n"+
-        "  DO     Die zehn haeufigsten Tickets werden dokumentiert und\n"+
-        "         mit einer Testgruppe von drei Mitarbeitern erprobt.\n\n"+
-        "  CHECK  Nach acht Wochen: Erstloesungsquote in der Testgruppe\n"+
-        "         bei 61 %, die durchschnittliche Bearbeitungsdauer\n"+
-        "         sank von 22 auf 14 Minuten.\n\n"+
-        "  ACT    Ausrollen auf das gesamte Team, Pflege der Datenbank\n"+
-        "         als fester Bestandteil des Ticketabschlusses.\n"+
-        "         Neuer Zyklus: naechste zehn Faelle.",
-      codeLang:'PDCA',
-      tip:'Wenn eine Aufgabe eine Verbesserungsmaßnahme verlangt, ist PDCA der Rahmen, der dir die Struktur der Antwort vorgibt — und Struktur bringt Punkte. Wichtig ist dabei die Check-Phase mit einer messbaren Größe. „Wir schauen, ob es besser wird" ist keine Prüfung. „Erstlösungsquote von 48 auf 65 Prozent" ist eine, weil sie einen Ausgangswert, ein Ziel und eine Messmethode enthält.',
-      quiz:[
-        {q:'Wie definiert die ISO 9000 Qualität?', options:['Als besonders hohe Güte','Als Grad der Erfüllung von Anforderungen','Als Fehlerfreiheit'], correct:1, explain:'Maßstab ist das Vereinbarte, nicht das technisch Machbare.'},
-        {q:'Was geschieht in der Act-Phase des PDCA?', options:['Die Maßnahme wird geplant','Das Ergebnis wird gemessen','Die erfolgreiche Maßnahme wird zum Standard gemacht'], correct:2, explain:'Bei Misserfolg beginnt stattdessen ein neuer Zyklus.'},
-        {q:'Was macht die Check-Phase wertvoll?', options:['Sie ist schnell erledigt','Eine messbare Kenngröße mit Ausgangswert und Ziel','Sie braucht keine Dokumentation'], correct:1, explain:'„Wir schauen, ob es besser wird" ist keine Prüfung.'}
-      ]
-    },
-    {
-      id:'m27-l2', title:'Dokumentation und Inventarisierung', minutes:8,
-      body:
-        '<p>„Warum dokumentieren?" ist eine Standardfrage, und die Antwort besteht aus mehr als „damit man es nachlesen kann":</p>'+
-        '<ul><li><strong>Nachvollziehbarkeit</strong> – wer hat wann was warum geändert?</li>'+
-        '<li><strong>Vertretbarkeit</strong> – Kollegen können übernehmen, das System hängt nicht an einer Person.</li>'+
-        '<li><strong>Schnellere Fehlersuche</strong> – der Soll-Zustand ist bekannt.</li>'+
-        '<li><strong>Wiederherstellbarkeit</strong> nach einem Ausfall.</li>'+
-        '<li><strong>Nachweispflichten</strong> – Lizenzen, DSGVO-Verarbeitungsverzeichnis, Revision.</li>'+
-        '<li><strong>Einarbeitung</strong> neuer Mitarbeiter.</li></ul>'+
-        '<p><strong>Was dokumentiert wird:</strong> Netzplan und IP-Konzept · Inventarverzeichnis mit Seriennummern, Standort und Verantwortlichem · Konfigurationen und Änderungshistorie · Benutzer- und Rechtekonzept · Lizenznachweise · Betriebshandbuch für den Normalbetrieb · <strong>Notfallhandbuch</strong> für den Ausfall · Wartungsverträge und Ansprechpartner.</p>'+
-        '<p>Das <strong>Notfallhandbuch</strong> hat eine Besonderheit, die gern geprüft wird: Es muss <strong>auch ohne funktionierende IT verfügbar</strong> sein. Ein Notfallplan, der nur im ausgefallenen Intranet liegt, ist wertlos — deshalb zusätzlich ausgedruckt und an einem definierten Ort hinterlegt.</p>'+
-        '<p><strong>Anforderungen an gute Dokumentation:</strong> aktuell, vollständig, verständlich, auffindbar, versioniert und mit klarer Zuständigkeit für die Pflege.</p>',
-      code:
-        "INVENTARDATENSATZ - Mindestangaben\n\n"+
-        "  Inventarnummer         IT-2026-0147\n"+
-        "  Geraetetyp / Modell    Notebook, Hersteller XY 14 Zoll\n"+
-        "  Seriennummer           SN-4471-88-C\n"+
-        "  Anschaffungsdatum      2026-03-14\n"+
-        "  Anschaffungswert       1.240,00 EUR netto\n"+
-        "  Garantie bis           2029-03-13\n"+
-        "  Standort / Raum        Gebaeude B, Raum 2.14\n"+
-        "  Zugeordnete Person     Kostenstelle 4200\n"+
-        "  MAC-Adresse            a4:1f:72:9c:03:5e\n"+
-        "  Installierte Software  mit Lizenzschluessel-Referenz\n"+
-        "  Status                 im Einsatz / Lager / ausgemustert\n\n"+
-        "  Nutzen: Lizenznachweis, Abschreibung, Garantieabwicklung,\n"+
-        "  Diebstahlnachweis, Planung der Ersatzbeschaffung.",
-      codeLang:'Inventarisierung',
-      tip:'Wenn eine Aufgabe nach dem Nutzen der Inventarisierung fragt, denke über die Technik hinaus. Das Verzeichnis dient zugleich der Buchhaltung für die Abschreibung, der Rechtsabteilung für den Lizenznachweis und dem Einkauf für die Planung der Ersatzbeschaffung. Wer diese drei nicht-technischen Zwecke nennt, hebt sich von der Standardantwort ab.',
-      quiz:[
-        {q:'Warum muss das Notfallhandbuch auch in Papierform vorliegen?', options:['Aus rechtlichen Gründen','Weil es bei einem IT-Ausfall sonst nicht zugänglich ist','Weil Papier länger hält'], correct:1, explain:'Ein Plan im ausgefallenen System ist im Ernstfall wertlos.'},
-        {q:'Welcher nicht-technische Zweck wird durch die Inventarisierung erfüllt?', options:['Die Abschreibung in der Buchhaltung','Die Netzwerkkonfiguration','Die Virenabwehr'], correct:0, explain:'Ebenso Lizenznachweis, Garantieabwicklung und Ersatzplanung.'},
-        {q:'Welche Angabe fehlt in keinem Inventardatensatz?', options:['Die Lieblingsfarbe des Nutzers','Inventarnummer, Seriennummer und Standort','Der Name des Einkäufers'], correct:1, explain:'Sie dienen Lizenznachweis, Abschreibung, Garantieabwicklung und Diebstahlnachweis.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m28', part:9, partTitle:'Künstliche Intelligenz', relevanz:'hoch', title:'KI-Grundlagen & Lernverfahren',
-  lessons:[
-    {
-      id:'m28-l1', title:'KI, maschinelles Lernen und Deep Learning abgrenzen', minutes:9,
-      body:
-        '<p>Die drei Begriffe werden im Alltag synonym verwendet, in der Prüfung nicht. Sie stehen zueinander wie <strong>ineinander liegende Kreise</strong>:</p>'+
-        '<ul><li><strong>Künstliche Intelligenz (KI)</strong> ist der Oberbegriff für alle Verfahren, mit denen Maschinen Aufgaben lösen, die beim Menschen Intelligenz erfordern. Dazu zählen auch klassische regelbasierte Expertensysteme ohne jedes Lernen.</li>'+
-        '<li><strong>Maschinelles Lernen (ML)</strong> ist eine Teilmenge davon: Das System lernt <em>aus Daten</em>, statt explizit programmiert zu werden. Nicht die Regel wird vorgegeben, sondern Beispiele — das Modell leitet die Regel selbst ab.</li>'+
-        '<li><strong>Deep Learning</strong> ist wiederum eine Teilmenge des ML: Es nutzt <strong>künstliche neuronale Netze mit vielen Schichten</strong>. Es braucht sehr viele Daten und viel Rechenleistung, kann dafür aber die relevanten Merkmale selbst finden.</li></ul>'+
-        '<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="Künstliche Intelligenz enthält maschinelles Lernen, dieses enthält Deep Learning">'+
-        '<rect class="s-box" x="20" y="18" width="520" height="194" rx="12"/>'+
-        '<text class="s-lbl" x="34" y="40">KÜNSTLICHE INTELLIGENZ</text>'+
-        '<text class="s-lbl" x="34" y="56">regelbasierte Systeme, Suchverfahren, Planung</text>'+
-        '<rect class="s-accent" x="46" y="68" width="468" height="128" rx="10"/>'+
-        '<text class="s-lbl" x="60" y="90">MASCHINELLES LERNEN</text>'+
-        '<text class="s-lbl" x="60" y="106">lernt aus Daten: Entscheidungsbaum, SVM, Clustering</text>'+
-        '<rect class="s-strong" x="72" y="118" width="416" height="62" rx="8"/>'+
-        '<text class="s-lbl" x="86" y="140">DEEP LEARNING</text>'+
-        '<text class="s-lbl" x="86" y="158">mehrschichtige neuronale Netze, LLM, Bilderkennung</text>'+
-        '</svg><figcaption>Jeder Begriff ist eine echte Teilmenge des größeren — nicht jede KI lernt, und nicht jedes lernende System ist ein neuronales Netz.</figcaption></figure>'+
-        '<p>Die klassische Frage lautet: „Ist ein Schachprogramm mit fest einprogrammierten Eröffnungsregeln KI?" Antwort: <strong>Ja</strong>, es ist regelbasierte KI — aber kein maschinelles Lernen, weil es nichts aus Daten ableitet.</p>',
-      code:
-        "Regelbasiert (klassische KI):\n"+
-        "  WENN Temperatur > 80 UND Druck > 5 DANN Alarm ausloesen\n"+
-        "  -> Der Mensch schreibt die Regel. Nachvollziehbar, aber starr.\n\n"+
-        "Maschinelles Lernen:\n"+
-        "  Eingabe: 50.000 Messreihen, jeweils markiert mit \"Stoerung ja/nein\"\n"+
-        "  -> Das Modell findet selbst heraus, welche Kombination aus\n"+
-        "     Temperatur, Druck, Vibration und Laufzeit auf eine Stoerung\n"+
-        "     hindeutet - auch Zusammenhaenge, die niemand vermutet haette.\n\n"+
-        "Der Unterschied in einem Satz:\n"+
-        "  Klassisch : Mensch gibt Regel -> Maschine wendet an\n"+
-        "  ML        : Mensch gibt Beispiele -> Maschine findet Regel",
-      codeLang:'Abgrenzung',
-      tip:'Wenn eine Prüfungsaufgabe nach der Abgrenzung fragt, reicht die Aufzählung der drei Begriffe nicht — gefragt ist die Teilmengenbeziehung. Formuliere sie ausdrücklich: Deep Learning ist eine Teilmenge des maschinellen Lernens, und dieses wiederum eine Teilmenge der künstlichen Intelligenz. Nenne dazu je ein Beispiel, das nur in der äußeren Schicht liegt, etwa ein regelbasiertes Expertensystem.',
-      quiz:[
-        {q:'Wie verhalten sich KI, ML und Deep Learning zueinander?', options:['Es sind drei getrennte Fachgebiete','Deep Learning ⊂ ML ⊂ KI','KI ist eine Teilmenge des maschinellen Lernens'], correct:1, explain:'Ineinander liegende Teilmengen – KI ist der weiteste Begriff.'},
-        {q:'Ist ein regelbasiertes Expertensystem maschinelles Lernen?', options:['Ja, jedes KI-System lernt','Nein, es wendet vom Menschen formulierte Regeln an','Nur wenn es viele Regeln hat'], correct:1, explain:'ML setzt voraus, dass das System die Regel selbst aus Daten ableitet.'},
-        {q:'Ein Schachprogramm mit fest einprogrammierten Eröffnungsregeln — ist das KI?', options:['Nein, es lernt nicht','Ja, regelbasierte KI — aber kein maschinelles Lernen','Nur wenn es gewinnt'], correct:1, explain:'KI ist der Oberbegriff; ML setzt voraus, dass die Regel aus Daten abgeleitet wird.'}
-      ]
-    },
-    {
-      id:'m28-l2', title:'Die drei Lernarten', minutes:10,
-      body:
-        '<p>Diese Einteilung ist die meistgeprüfte KI-Frage überhaupt. Das Unterscheidungsmerkmal ist, <strong>ob die richtige Antwort in den Trainingsdaten mitgeliefert wird</strong>.</p>'+
-        '<table class="lesson-table"><tr><th>Lernart</th><th>Trainingsdaten</th><th>Ziel</th><th>Beispiel</th></tr>'+
-        '<tr><td><strong>Überwacht</strong><br>(supervised)</td><td>mit Label, also mit bekannter richtiger Antwort</td><td>Klassifikation oder Regression</td><td>Spam-Erkennung, Preisvorhersage, Bilderkennung</td></tr>'+
-        '<tr><td><strong>Unüberwacht</strong><br>(unsupervised)</td><td>ohne Label</td><td>Muster und Gruppen finden</td><td>Kundensegmentierung, Anomalieerkennung, Warenkorbanalyse</td></tr>'+
-        '<tr><td><strong>Bestärkend</strong><br>(reinforcement)</td><td>keine, stattdessen Belohnung und Bestrafung</td><td>optimale Handlungsstrategie</td><td>Robotersteuerung, Spiele, Lagerlogistik</td></tr></table>'+
-        '<figure class="fig"><svg viewBox="0 0 580 210" role="img" aria-label="Drei Lernarten im Vergleich">'+
-        '<rect class="s-accent" x="14" y="26" width="172" height="164" rx="10"/>'+
-        '<text class="s-hd" x="28" y="50">ÜBERWACHT</text>'+
-        '<text class="s-lbl" x="28" y="76">Eingabe + richtige</text><text class="s-lbl" x="28" y="92">Antwort (Label)</text>'+
-        '<text class="s-mono" x="28" y="118">Bild → &quot;Katze&quot;</text>'+
-        '<text class="s-mono" x="28" y="136">Bild → &quot;Hund&quot;</text>'+
-        '<text class="s-lbl" x="28" y="168">→ Klassifikation,</text><text class="s-lbl" x="28" y="182">Regression</text>'+
-        '<rect class="s-box" x="200" y="26" width="172" height="164" rx="10"/>'+
-        '<text class="s-hd" x="214" y="50">UNÜBERWACHT</text>'+
-        '<text class="s-lbl" x="214" y="76">nur Eingabe,</text><text class="s-lbl" x="214" y="92">kein Label</text>'+
-        '<circle class="s-dot" cx="228" cy="120" r="5"/><circle class="s-dot" cx="244" cy="128" r="5"/><circle class="s-dot" cx="236" cy="138" r="5"/>'+
-        '<circle class="s-dot2" cx="304" cy="118" r="5"/><circle class="s-dot2" cx="320" cy="130" r="5"/><circle class="s-dot2" cx="308" cy="140" r="5"/>'+
-        '<text class="s-lbl" x="214" y="168">→ Cluster, Anomalien</text><text class="s-lbl" x="214" y="182">selbst gefunden</text>'+
-        '<rect class="s-box" x="386" y="26" width="180" height="164" rx="10"/>'+
-        '<text class="s-hd" x="400" y="50">BESTÄRKEND</text>'+
-        '<text class="s-lbl" x="400" y="76">Aktion → Belohnung</text><text class="s-lbl" x="400" y="92">oder Bestrafung</text>'+
-        '<text class="s-mono" x="400" y="118">Zug → +1</text>'+
-        '<text class="s-mono" x="400" y="136">Zug → −1</text>'+
-        '<text class="s-lbl" x="400" y="168">→ optimale</text><text class="s-lbl" x="400" y="182">Handlungsstrategie</text>'+
-        '</svg><figcaption>Die Leitfrage: Steht die richtige Antwort in den Trainingsdaten? Ja = überwacht, nein = unüberwacht, stattdessen Belohnung = bestärkend.</figcaption></figure>'+
-        '<p><strong>Klassifikation oder Regression?</strong> Beides ist überwachtes Lernen, der Unterschied liegt in der Ausgabe: <strong>Klassifikation</strong> liefert eine Kategorie („Spam" oder „kein Spam"), <strong>Regression</strong> einen Zahlenwert (Preis in Euro, Temperatur in Grad).</p>',
-      code:
-        "Zuordnungsaufgaben aus AP1-Sicht:\n\n"+
-        "  \"Aus 40.000 markierten E-Mails Spam erkennen\"\n"+
-        "     -> UEBERWACHT, Klassifikation (Label liegt vor)\n\n"+
-        "  \"Kunden ohne Vorgaben in aehnliche Gruppen einteilen\"\n"+
-        "     -> UNUEBERWACHT, Clustering (keine Zielvorgabe)\n\n"+
-        "  \"Aus historischen Daten den Umsatz im naechsten Quartal schaetzen\"\n"+
-        "     -> UEBERWACHT, Regression (Zahlenwert als Ausgabe)\n\n"+
-        "  \"Ein Lagerroboter soll den kuerzesten Weg selbst lernen,\n"+
-        "   kurze Wege werden belohnt, Kollisionen bestraft\"\n"+
-        "     -> BESTAERKEND\n\n"+
-        "  \"Ungewoehnliche Zahlungsvorgaenge auffallen lassen,\n"+
-        "   ohne dass bekannt ist, wie Betrug aussieht\"\n"+
-        "     -> UNUEBERWACHT, Anomalieerkennung",
-      codeLang:'Zuordnung',
-      tip:'Zwei Signalwörter entscheiden die Zuordnung fast immer. Steht in der Aufgabe „markiert", „klassifiziert", „bekannte Ergebnisse" oder „historische Daten mit Ausgang", ist es überwachtes Lernen. Steht dort „ohne Vorgabe", „selbst gruppieren", „unbekannte Muster" oder „auffällige Abweichungen", ist es unüberwachtes. Und sobald von Belohnung, Punkten oder Versuch und Irrtum die Rede ist, handelt es sich um bestärkendes Lernen.',
-      quiz:[
-        {q:'Kunden sollen ohne Vorgaben in Gruppen eingeteilt werden. Welche Lernart?', options:['Überwachtes Lernen','Unüberwachtes Lernen (Clustering)','Bestärkendes Lernen'], correct:1, explain:'Es gibt kein Label – das Modell findet die Gruppen selbst.'},
-        {q:'Was unterscheidet Klassifikation von Regression?', options:['Klassifikation liefert eine Kategorie, Regression einen Zahlenwert','Regression ist unüberwacht','Klassifikation braucht keine Trainingsdaten'], correct:0, explain:'Beides ist überwachtes Lernen, nur die Art der Ausgabe unterscheidet sich.'},
-        {q:'Ein Modell soll die Restlaufzeit einer Maschine in Stunden schätzen. Was ist das?', options:['Klassifikation','Regression','Clustering'], correct:1, explain:'Überwachtes Lernen mit einem Zahlenwert als Ausgabe.'}
-      ]
-    },
-    {
-      id:'m28-l3', title:'Neuronale Netze und der Trainingsablauf', minutes:9,
-      body:
-        '<p>Ein <strong>künstliches neuronales Netz</strong> besteht aus Schichten von Neuronen. Jede Verbindung trägt ein <strong>Gewicht</strong>, und genau diese Gewichte sind das, was gelernt wird.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 240" role="img" aria-label="Neuronales Netz mit Eingabeschicht, zwei verborgenen Schichten und Ausgabeschicht">'+
-        '<g class="s-net">'+
-        '<line x1="112" y1="60" x2="232" y2="48"/><line x1="112" y1="60" x2="232" y2="108"/><line x1="112" y1="60" x2="232" y2="168"/>'+
-        '<line x1="112" y1="120" x2="232" y2="48"/><line x1="112" y1="120" x2="232" y2="108"/><line x1="112" y1="120" x2="232" y2="168"/>'+
-        '<line x1="112" y1="180" x2="232" y2="48"/><line x1="112" y1="180" x2="232" y2="108"/><line x1="112" y1="180" x2="232" y2="168"/>'+
-        '<line x1="232" y1="48" x2="352" y2="80"/><line x1="232" y1="48" x2="352" y2="140"/>'+
-        '<line x1="232" y1="108" x2="352" y2="80"/><line x1="232" y1="108" x2="352" y2="140"/>'+
-        '<line x1="232" y1="168" x2="352" y2="80"/><line x1="232" y1="168" x2="352" y2="140"/>'+
-        '<line x1="352" y1="80" x2="464" y2="110"/><line x1="352" y1="140" x2="464" y2="110"/>'+
-        '</g>'+
-        '<circle class="s-neuron" cx="112" cy="60" r="15"/><circle class="s-neuron" cx="112" cy="120" r="15"/><circle class="s-neuron" cx="112" cy="180" r="15"/>'+
-        '<circle class="s-neuron2" cx="232" cy="48" r="15"/><circle class="s-neuron2" cx="232" cy="108" r="15"/><circle class="s-neuron2" cx="232" cy="168" r="15"/>'+
-        '<circle class="s-neuron2" cx="352" cy="80" r="15"/><circle class="s-neuron2" cx="352" cy="140" r="15"/>'+
-        '<circle class="s-neuron3" cx="464" cy="110" r="15"/>'+
-        '<text class="s-lbl" x="112" y="212" text-anchor="middle">Eingabe</text>'+
-        '<text class="s-lbl" x="292" y="212" text-anchor="middle">verborgene Schichten</text>'+
-        '<text class="s-lbl" x="464" y="212" text-anchor="middle">Ausgabe</text>'+
-        '<text class="s-lbl" x="20" y="64">Alter</text><text class="s-lbl" x="20" y="124">Betrag</text><text class="s-lbl" x="20" y="184">Uhrzeit</text>'+
-        '<text class="s-lbl" x="492" y="114">Betrug?</text>'+
-        '</svg><figcaption>Jede Linie trägt ein Gewicht. Beim Training werden diese Gewichte so lange angepasst, bis die Ausgabe möglichst oft stimmt.</figcaption></figure>'+
-        '<p><strong>Der Trainingsablauf in fünf Schritten:</strong></p>'+
-        '<ol><li><strong>Daten sammeln und aufbereiten</strong> — bereinigen, vereinheitlichen, fehlende Werte behandeln. Das ist in der Praxis der größte Zeitanteil.</li>'+
-        '<li><strong>Aufteilen</strong> in Trainingsdaten, Validierungsdaten und Testdaten (typisch 70 / 15 / 15 Prozent).</li>'+
-        '<li><strong>Trainieren</strong> — die Gewichte werden schrittweise angepasst, um den Fehler zu verringern.</li>'+
-        '<li><strong>Validieren und nachjustieren</strong> — Modellwahl und Parameter optimieren.</li>'+
-        '<li><strong>Testen</strong> mit den bis dahin ungenutzten Testdaten und anschließend in Betrieb nehmen.</li></ol>'+
-        '<p>Warum die Trennung zwingend ist: Ein Modell, das auf denselben Daten getestet wird, mit denen es trainiert wurde, sieht immer gut aus — es hat die Antworten schlicht auswendig gelernt.</p>',
-      code:
-        "AUFTEILUNG DER DATEN - und warum\n\n"+
-        "  Trainingsdaten   ca. 70 %  -> das Modell lernt daran\n"+
-        "  Validierungsdaten ca. 15 % -> Modellwahl und Feinjustierung\n"+
-        "  Testdaten         ca. 15 % -> einmalige, ehrliche Endbewertung\n\n"+
-        "  Die Testdaten duerfen das Modell waehrend des gesamten\n"+
-        "  Trainings NIE gesehen haben. Sonst misst man das Gedaechtnis\n"+
-        "  des Modells, nicht seine Faehigkeit zu verallgemeinern.\n\n"+
-        "TYPISCHE GUETEMASSE bei Klassifikation\n"+
-        "  Genauigkeit (Accuracy) = richtige Vorhersagen / alle Vorhersagen\n\n"+
-        "  Vorsicht bei unausgewogenen Daten: Wenn nur 1 % der Faelle\n"+
-        "  Betrug sind, erreicht ein Modell, das IMMER \"kein Betrug\"\n"+
-        "  sagt, 99 % Genauigkeit - und ist voellig wertlos.",
-      codeLang:'Training',
-      tip:'Das Beispiel mit den 99 Prozent Genauigkeit ist die stärkste Antwort auf die Frage, warum eine einzelne Kennzahl nicht genügt. Bei seltenen Ereignissen — Betrug, Ausfall, Krankheit — ist Accuracy irreführend, weil die Mehrheitsklasse das Ergebnis dominiert. Wer das in einer Prüfung erwähnt, zeigt, dass er die Kennzahl versteht und nicht nur kennt.',
-      quiz:[
-        {q:'Was wird beim Training eines neuronalen Netzes angepasst?', options:['Die Anzahl der Neuronen','Die Gewichte der Verbindungen','Die Trainingsdaten'], correct:1, explain:'Die Netzarchitektur steht vorher fest, gelernt werden die Gewichte.'},
-        {q:'Warum dürfen Testdaten nicht zum Training verwendet werden?', options:['Aus Datenschutzgründen','Weil das Ergebnis sonst nur das Auswendiglernen misst','Weil es zu lange dauert'], correct:1, explain:'Nur ungesehene Daten zeigen, ob das Modell verallgemeinern kann.'},
-        {q:'Wozu dienen die Validierungsdaten?', options:['Zum Trainieren','Zur Modellwahl und Feinjustierung vor dem finalen Test','Zur Archivierung'], correct:1, explain:'Die Testdaten bleiben bis zur Endbewertung unangetastet.'}
-      ]
-    },
-    {
-      id:'m28-l4', title:'Overfitting, Bias und Datenqualität', minutes:9,
-      body:
-        '<p>Die drei häufigsten Fehlerquellen eines KI-Projekts sind keine Programmierfehler, sondern Datenprobleme.</p>'+
-        '<p><strong>Overfitting (Überanpassung)</strong> — das Modell lernt die Trainingsdaten <em>auswendig</em>, samt ihrer Zufälligkeiten. Erkennungszeichen: sehr gutes Ergebnis auf den Trainingsdaten, deutlich schlechteres auf den Testdaten. Gegenmittel: mehr und vielfältigere Daten, einfacheres Modell, frühzeitiger Abbruch des Trainings, Kreuzvalidierung.</p>'+
-        '<p><strong>Underfitting (Unteranpassung)</strong> — das Modell ist zu einfach und erkennt das Muster gar nicht erst. Es schneidet auf <em>beiden</em> Datensätzen schlecht ab.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 580 190" role="img" aria-label="Underfitting, gute Anpassung und Overfitting im Vergleich">'+
-        '<g>'+
-        '<rect class="s-box" x="14" y="20" width="172" height="130" rx="8"/>'+
-        '<circle class="s-dot" cx="44" cy="118"  r="4"/><circle class="s-dot" cx="68" cy="100" r="4"/><circle class="s-dot" cx="88" cy="106" r="4"/>'+
-        '<circle class="s-dot" cx="108" cy="72" r="4"/><circle class="s-dot" cx="132" cy="78" r="4"/><circle class="s-dot" cx="156" cy="50" r="4"/>'+
-        '<line class="s-fit" x1="34" y1="122" x2="168" y2="60"/>'+
-        '<text class="s-hd" x="100" y="40" text-anchor="middle">UNDERFITTING</text>'+
-        '<text class="s-lbl" x="100" y="172" text-anchor="middle">zu einfach — trifft nichts</text>'+
-        '</g><g>'+
-        '<rect class="s-accent" x="202" y="20" width="172" height="130" rx="8"/>'+
-        '<circle class="s-dot" cx="232" cy="118" r="4"/><circle class="s-dot" cx="256" cy="100" r="4"/><circle class="s-dot" cx="276" cy="106" r="4"/>'+
-        '<circle class="s-dot" cx="296" cy="72" r="4"/><circle class="s-dot" cx="320" cy="78" r="4"/><circle class="s-dot" cx="344" cy="50" r="4"/>'+
-        '<path class="s-fit2" d="M222 124 Q 288 96 362 52"/>'+
-        '<text class="s-hd" x="288" y="40" text-anchor="middle">GUTE ANPASSUNG</text>'+
-        '<text class="s-lbl" x="288" y="172" text-anchor="middle">Trend erfasst, Rauschen ignoriert</text>'+
-        '</g><g>'+
-        '<rect class="s-box" x="390" y="20" width="176" height="130" rx="8"/>'+
-        '<circle class="s-dot" cx="420" cy="118" r="4"/><circle class="s-dot" cx="444" cy="100" r="4"/><circle class="s-dot" cx="464" cy="106" r="4"/>'+
-        '<circle class="s-dot" cx="484" cy="72" r="4"/><circle class="s-dot" cx="508" cy="78" r="4"/><circle class="s-dot" cx="532" cy="50" r="4"/>'+
-        '<path class="s-fit3" d="M414 126 L420 118 L444 100 L464 106 L484 72 L508 78 L532 50 L548 46"/>'+
-        '<text class="s-hd" x="478" y="40" text-anchor="middle">OVERFITTING</text>'+
-        '<text class="s-lbl" x="478" y="172" text-anchor="middle">jeden Punkt getroffen — auswendig</text>'+
-        '</g></svg><figcaption>Rechts sitzt die Linie exakt auf jedem Trainingspunkt — und versagt trotzdem bei neuen Daten, weil sie auch das Rauschen gelernt hat.</figcaption></figure>'+
-        '<p><strong>Bias (Verzerrung)</strong> — das Modell übernimmt Verzerrungen aus den Trainingsdaten und verstärkt sie. Sind in historischen Bewerbungsdaten überwiegend Männer eingestellt worden, lernt das Modell genau dieses Muster als „Erfolgsmerkmal". Die Technik ist dabei fehlerfrei; das Problem liegt in den Daten.</p>'+
-        '<p><strong>Der Grundsatz</strong>, der jede KI-Aufgabe beantwortet: <strong>Garbage in, garbage out.</strong> Die Qualität der Trainingsdaten begrenzt die Qualität des Modells. Kriterien für gute Daten: Vollständigkeit, Aktualität, Korrektheit, Repräsentativität, Ausgewogenheit und ausreichende Menge.</p>',
-      code:
-        "OVERFITTING ERKENNEN\n\n"+
-        "  Genauigkeit auf Trainingsdaten : 99,2 %\n"+
-        "  Genauigkeit auf Testdaten      : 71,5 %\n"+
-        "  -> grosse Luecke = klares Overfitting\n\n"+
-        "  Gegenmassnahmen:\n"+
-        "   - mehr und vielfaeltigere Trainingsdaten\n"+
-        "   - einfacheres Modell (weniger Parameter)\n"+
-        "   - Training frueher beenden (Early Stopping)\n"+
-        "   - Kreuzvalidierung\n\n"+
-        "UNDERFITTING ERKENNEN\n"+
-        "  Training 64 %, Test 62 %  -> beides schlecht, Modell zu einfach\n\n"+
-        "BIAS VERMEIDEN\n"+
-        "   - Datensatz auf Ausgewogenheit pruefen (Alter, Geschlecht,\n"+
-        "     Herkunft, Region)\n"+
-        "   - sensible Merkmale gezielt ausschliessen oder pruefen\n"+
-        "   - Ergebnisse nach Gruppen getrennt auswerten\n"+
-        "   - menschliche Kontrolle bei folgenreichen Entscheidungen",
-      codeLang:'Fehlerquellen',
-      tip:'Die Unterscheidung von Overfitting und Underfitting gelingt über einen einzigen Vergleich: Stelle Trainings- und Testgenauigkeit nebeneinander. Klaffen sie weit auseinander, liegt Overfitting vor. Sind beide schlecht, ist es Underfitting. Wenn eine Prüfungsaufgabe dir zwei Prozentwerte nennt, ist genau das die erwartete Auswertung — und die Gegenmaßnahme gehört in dieselbe Antwort.',
-      quiz:[
-        {q:'Training 98 %, Test 69 %. Was liegt vor?', options:['Underfitting','Overfitting','Ein gutes Modell'], correct:1, explain:'Die große Lücke zeigt, dass die Trainingsdaten auswendig gelernt wurden.'},
-        {q:'Woher stammt Bias in einem KI-Modell meistens?', options:['Aus Programmierfehlern','Aus verzerrten oder unausgewogenen Trainingsdaten','Aus zu schneller Hardware'], correct:1, explain:'Das Modell reproduziert und verstärkt, was in den Daten steckt.'},
-        {q:'Von 8.000 Bildern zeigen 240 einen Fehler. Welche Genauigkeit erreicht ein Modell, das immer „kein Fehler" sagt?', options:['3 %','97 %','50 %'], correct:1, explain:'Deshalb ist Accuracy bei seltenen Ereignissen irreführend — Recall ist die richtige Kennzahl.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m29', part:9, partTitle:'Künstliche Intelligenz', relevanz:'hoch', title:'KI im Unternehmen',
-  lessons:[
-    {
-      id:'m29-l1', title:'Große Sprachmodelle verstehen und einsetzen', minutes:9,
-      body:
-        '<p>Ein <strong>Large Language Model (LLM)</strong> ist ein neuronales Netz, das auf sehr großen Textmengen trainiert wurde. Seine eigentliche Aufgabe ist erstaunlich einfach: Es sagt vorher, <strong>welches Token am wahrscheinlichsten als Nächstes folgt</strong>. Ein <strong>Token</strong> ist dabei ein Wortstück, im Deutschen etwa 0,7 Wörter.</p>'+
-        '<p>Daraus folgt die wichtigste Eigenschaft für die Praxis: Ein LLM <strong>weiß nichts</strong>, es berechnet Wahrscheinlichkeiten. Deshalb kann es flüssige, überzeugend klingende Texte erzeugen, die inhaltlich falsch sind — das nennt man <strong>Halluzination</strong>.</p>'+
-        '<p><strong>Begriffe, die geprüft werden:</strong></p>'+
-        '<table class="lesson-table"><tr><th>Begriff</th><th>Bedeutung</th></tr>'+
-        '<tr><td><strong>Prompt</strong></td><td>die Eingabe, mit der das Modell gesteuert wird</td></tr>'+
-        '<tr><td><strong>Token</strong></td><td>kleinste Verarbeitungseinheit; Abrechnung erfolgt meist je Token</td></tr>'+
-        '<tr><td><strong>Kontextfenster</strong></td><td>wie viele Token das Modell gleichzeitig berücksichtigen kann</td></tr>'+
-        '<tr><td><strong>Halluzination</strong></td><td>eine erfundene, aber plausibel formulierte Aussage</td></tr>'+
-        '<tr><td><strong>Fine-Tuning</strong></td><td>Nachtraining eines Modells mit eigenen Daten</td></tr>'+
-        '<tr><td><strong>RAG</strong></td><td>Retrieval Augmented Generation: eigene Dokumente werden zur Frage dazugeladen, statt das Modell nachzutrainieren</td></tr></table>'+
-        '<p><strong>Ein guter Prompt</strong> enthält vier Bestandteile: <strong>Rolle</strong> („Du bist Fachinformatiker im Support"), <strong>Aufgabe</strong>, <strong>Kontext</strong> (Randbedingungen, Zielgruppe) und <strong>Format</strong> (Länge, Struktur, Beispiel).</p>',
-      code:
-        "SCHWACHER PROMPT\n"+
-        "  \"Schreib was ueber Backups.\"\n\n"+
-        "GUTER PROMPT\n"+
-        "  Rolle:   Du bist Systemadministrator in einem Betrieb mit\n"+
-        "           25 Mitarbeitern.\n"+
-        "  Aufgabe: Erstelle ein Backup-Konzept.\n"+
-        "  Kontext: Ein Dateiserver mit 2 TB, eine Warenwirtschaft mit\n"+
-        "           Datenbank, Budget unter 3.000 EUR, kein eigenes\n"+
-        "           Rechenzentrum.\n"+
-        "  Format:  Tabelle mit Spalten Datenquelle, Sicherungsart,\n"+
-        "           Intervall, Aufbewahrung, Medium. Danach fuenf Saetze\n"+
-        "           Begruendung.\n\n"+
-        "FINE-TUNING ODER RAG?\n"+
-        "  Fine-Tuning: teuer, aufwendig, sinnvoll fuer Stil und Format\n"+
-        "  RAG        : guenstig, Inhalte jederzeit aktualisierbar,\n"+
-        "               Quellen nachweisbar - fuer Firmenwissen die\n"+
-        "               fast immer bessere Wahl",
-      codeLang:'Prompting',
-      tip:'Die Abgrenzung von Fine-Tuning und RAG ist die praxisnächste KI-Frage, die in einer Prüfung auftauchen kann. Der Merksatz: Fine-Tuning ändert, wie das Modell antwortet, RAG ändert, worüber es antwortet. Wenn ein Unternehmen sein eigenes Handbuchwissen nutzbar machen will, ist RAG richtig — die Dokumente bleiben aktualisierbar, und das Modell kann seine Quelle nennen.',
-      quiz:[
-        {q:'Was ist eine Halluzination bei einem Sprachmodell?', options:['Ein Programmabsturz','Eine erfundene, aber plausibel formulierte Aussage','Ein Datenschutzverstoß'], correct:1, explain:'Das Modell berechnet Wahrscheinlichkeiten, es prüft keine Fakten.'},
-        {q:'Ein Unternehmen will interne Handbücher per KI durchsuchbar machen. Was ist geeigneter?', options:['Fine-Tuning des Modells','RAG – die Dokumente werden zur Anfrage dazugeladen','Ein größeres Kontextfenster kaufen'], correct:1, explain:'RAG ist günstiger, aktualisierbar und erlaubt Quellenangaben.'},
-        {q:'Was ändert Fine-Tuning im Unterschied zu RAG?', options:['Worüber das Modell antwortet','Wie das Modell antwortet — Stil und Format','Gar nichts'], correct:1, explain:'RAG lädt eigene Dokumente zur Anfrage dazu und ändert damit den Inhalt.'}
-      ]
-    },
-    {
-      id:'m29-l2', title:'Einsatzszenarien und Wirtschaftlichkeit', minutes:9,
-      body:
-        '<p>Bei „Nennen Sie Einsatzmöglichkeiten von KI im Unternehmen" wird eine <strong>strukturierte</strong> Antwort erwartet, nicht eine Aufzählung von Produktnamen. Ordne nach Unternehmensbereich:</p>'+
-        '<table class="lesson-table"><tr><th>Bereich</th><th>Anwendung</th><th>Nutzen</th></tr>'+
-        '<tr><td>Kundenservice</td><td>Chatbot, automatische Ticketklassifikation</td><td>Entlastung im First Level, kürzere Reaktionszeiten</td></tr>'+
-        '<tr><td>Produktion</td><td><strong>Predictive Maintenance</strong></td><td>Wartung vor dem Ausfall statt danach</td></tr>'+
-        '<tr><td>Qualitätssicherung</td><td>Bilderkennung zur Fehlerprüfung</td><td>gleichbleibende Prüfqualität, höherer Durchsatz</td></tr>'+
-        '<tr><td>Vertrieb</td><td>Absatzprognose, Empfehlungssysteme</td><td>bessere Disposition, weniger Lagerkosten</td></tr>'+
-        '<tr><td>Verwaltung</td><td>Dokumentenklassifikation, Rechnungsauslesen</td><td>weniger manuelle Erfassung</td></tr>'+
-        '<tr><td>IT-Sicherheit</td><td>Anomalieerkennung im Netzverkehr</td><td>Angriffe werden früher sichtbar</td></tr>'+
-        '<tr><td>Entwicklung</td><td>Codevorschläge, Testfallgenerierung</td><td>schnellere Umsetzung, mehr Testabdeckung</td></tr></table>'+
-        '<p><strong>Chancen:</strong> Zeitersparnis bei Routineaufgaben, gleichbleibende Qualität, Verarbeitung großer Datenmengen, Verfügbarkeit rund um die Uhr, Mitarbeiter werden von monotoner Arbeit entlastet.</p>'+
-        '<p><strong>Risiken:</strong> fehlerhafte Ergebnisse ohne erkennbare Warnung, Datenschutz- und Geheimnisverrat durch Eingabe in externe Dienste, Abhängigkeit vom Anbieter, Akzeptanzprobleme bei Mitarbeitern, hohe Einführungskosten, fehlende Nachvollziehbarkeit der Entscheidungen.</p>',
-      code:
-        "WIRTSCHAFTLICHKEIT EINER KI-LOESUNG\n\n"+
-        "  Ausgangslage: 3 Mitarbeiter erfassen Eingangsrechnungen,\n"+
-        "  zusammen 26 Stunden pro Woche zu je 42 EUR Vollkosten.\n\n"+
-        "  Kosten heute:\n"+
-        "     26 h x 42 EUR x 46 Arbeitswochen = 50.232 EUR pro Jahr\n\n"+
-        "  KI-gestuetzte Belegerkennung:\n"+
-        "     Lizenz              680 EUR/Monat x 12 =  8.160 EUR/Jahr\n"+
-        "     Einfuehrung, einmalig                  = 14.500 EUR\n"+
-        "     Restaufwand Pruefung: 7 h/Woche\n"+
-        "        7 x 42 x 46                         = 13.524 EUR/Jahr\n\n"+
-        "  Laufende Kosten neu: 8.160 + 13.524 = 21.684 EUR/Jahr\n"+
-        "  Jaehrliche Einsparung: 50.232 - 21.684 = 28.548 EUR\n\n"+
-        "  Amortisation: 14.500 / 28.548 = 0,51 Jahre\n"+
-        "                = rund 6 Monate\n\n"+
-        "  ABER: Die Einsparung entsteht nur, wenn die frei werdende\n"+
-        "  Arbeitszeit tatsaechlich anders genutzt oder abgebaut wird.\n"+
-        "  Das ist in der Begruendung ausdruecklich zu erwaehnen.",
-      codeLang:'Wirtschaftlichkeit',
-      tip:'Der Zusatz am Ende der Rechnung ist der Punkt, der eine gute von einer sehr guten Antwort trennt. Eingesparte Arbeitszeit ist keine eingesparte Geldsumme, solange die Mitarbeiter weiterbeschäftigt werden und die Zeit nicht anderweitig produktiv wird. Prüfer honorieren es, wenn du eine Rechnung machst und ihre Annahme gleich mit offenlegst.',
-      quiz:[
-        {q:'Was bezeichnet Predictive Maintenance?', options:['Wartung nach festem Zeitplan','Wartung auf Basis vorhergesagter Ausfälle','Wartung nach dem Ausfall'], correct:1, explain:'Sensordaten deuten auf eine bevorstehende Störung hin, bevor sie eintritt.'},
-        {q:'Welches Risiko birgt die Nutzung eines externen KI-Dienstes besonders?', options:['Zu schnelle Antworten','Abfluss vertraulicher Daten in die Eingabe des Anbieters','Zu hohe Genauigkeit'], correct:1, explain:'Interne Dokumente können sonst beim Anbieter landen oder ins Training einfließen.'},
-        {q:'Warum wird eingesparte Arbeitszeit nicht automatisch zu eingespartem Geld?', options:['Weil KI teuer ist','Weil die Mitarbeiter weiterbeschäftigt werden — die Zeit muss anderweitig produktiv werden','Wegen der Umsatzsteuer'], correct:1, explain:'Diese Annahme gehört in jede Wirtschaftlichkeitsrechnung ausdrücklich hinein.'}
-      ]
-    },
-    {
-      id:'m29-l3', title:'KI-Projekte planen und Daten bereitstellen', minutes:8,
-      body:
-        '<p>Ein KI-Projekt folgt einem eigenen Ablauf. Der verbreitetste Rahmen ist <strong>CRISP-DM</strong> mit sechs Phasen — er wird in Prüfungen auch ohne den Namen abgefragt:</p>'+
-        '<ol><li><strong>Geschäftsverständnis</strong> — Was ist das Problem, und woran messen wir den Erfolg?</li>'+
-        '<li><strong>Datenverständnis</strong> — Welche Daten gibt es, in welcher Qualität, wo liegen sie?</li>'+
-        '<li><strong>Datenvorbereitung</strong> — Bereinigen, zusammenführen, transformieren. Nimmt typischerweise <strong>60 bis 80 Prozent</strong> des Aufwands ein.</li>'+
-        '<li><strong>Modellierung</strong> — Verfahren auswählen und trainieren.</li>'+
-        '<li><strong>Evaluation</strong> — Erfüllt das Ergebnis das fachliche Ziel? Nicht nur die technische Kennzahl zählt.</li>'+
-        '<li><strong>Einsatz (Deployment)</strong> — In Betrieb nehmen, überwachen, nachtrainieren.</li></ol>'+
-        '<p>Der Zyklus ist nicht linear: Aus jeder Phase kann ein Rücksprung nötig werden, meist zurück zu den Daten.</p>'+
-        '<p><strong>Was oft übersehen wird:</strong> Ein Modell veraltet. Ändern sich die realen Verhältnisse — neue Produkte, neues Kundenverhalten, neue Betrugsmuster —, sinkt die Trefferquote schleichend. Das nennt man <strong>Model Drift</strong>. Deshalb gehören Überwachung und regelmäßiges Nachtraining fest zum Betrieb.</p>'+
-        '<p><strong>Rollen im KI-Projekt:</strong> Fachbereich (kennt das Problem und bewertet die Ergebnisse), Data Engineer (beschafft und bereitet Daten auf), Data Scientist (wählt und trainiert das Modell), IT-Betrieb (Infrastruktur und Einsatz), Datenschutzbeauftragter (Zulässigkeit), Betriebsrat (Mitbestimmung bei Leistungs- und Verhaltenskontrolle).</p>',
-      code:'',
-      tip:'Die Zahl 60 bis 80 Prozent für die Datenvorbereitung ist ein dankbares Detail für Begründungsaufgaben. Wenn eine Aufgabe fragt, warum ein KI-Projekt länger dauert als erwartet, ist das die Antwort: Nicht das Trainieren des Modells kostet die Zeit, sondern das Zusammentragen, Bereinigen und Vereinheitlichen der Daten aus Systemen, die nie dafür gedacht waren. Der Hinweis auf die Mitbestimmung des Betriebsrats ist ebenfalls ein sicherer Zusatzpunkt.',
-      quiz:[
-        {q:'Welche Phase eines KI-Projekts verursacht typischerweise den größten Aufwand?', options:['Die Modellierung','Die Datenvorbereitung','Das Deployment'], correct:1, explain:'Bereinigen, Zusammenführen und Transformieren machen 60 bis 80 Prozent aus.'},
-        {q:'Was bezeichnet Model Drift?', options:['Einen Speicherfehler','Das schleichende Nachlassen der Trefferquote, weil sich die Realität ändert','Eine Verschiebung der Serverlast'], correct:1, explain:'Gegenmittel sind laufende Überwachung und regelmäßiges Nachtraining.'},
-        {q:'Wer sollte im KI-Projekt die Ergebnisqualität bewerten?', options:['Der Data Scientist','Der Fachbereich, der das Problem kennt','Der IT-Betrieb'], correct:1, explain:'Technische Kennzahlen allein sagen nichts über den fachlichen Nutzen.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m30', part:9, partTitle:'Künstliche Intelligenz', relevanz:'hoch', title:'KI-Recht, Datenschutz & Ethik',
-  lessons:[
-    {
-      id:'m30-l1', title:'Die Risikoklassen der KI-Verordnung', minutes:10,
-      body:
-        '<p>Die <strong>KI-Verordnung der EU (AI Act)</strong> ist seit 2024 in Kraft und gilt gestaffelt. Sie ist <strong>risikobasiert</strong> aufgebaut: Je höher das Risiko für Menschen, desto strenger die Pflichten. Diese vier Stufen sind der Kern jeder Prüfungsfrage zum Thema.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 250" role="img" aria-label="Die vier Risikostufen der EU-KI-Verordnung als Pyramide">'+
-        '<polygon class="s-risk1" points="280,14 348,72 212,72"/>'+
-        '<polygon class="s-risk2" points="212,72 348,72 396,130 164,130"/>'+
-        '<polygon class="s-risk3" points="164,130 396,130 444,188 116,188"/>'+
-        '<polygon class="s-risk4" points="116,188 444,188 492,240 68,240"/>'+
-        '<text class="s-hd" x="280" y="60" text-anchor="middle">VERBOTEN</text>'+
-        '<text class="s-hd" x="280" y="108" text-anchor="middle">HOCHRISIKO</text>'+
-        '<text class="s-hd" x="280" y="166" text-anchor="middle">BEGRENZTES RISIKO</text>'+
-        '<text class="s-hd" x="280" y="222" text-anchor="middle">MINIMALES RISIKO</text>'+
-        '<text class="s-lbl" x="360" y="44">Social Scoring, biometrische</text>'+
-        '<text class="s-lbl" x="360" y="58">Massenüberwachung</text>'+
-        '<text class="s-lbl" x="408" y="102">Bewerberauswahl, Kredit-</text>'+
-        '<text class="s-lbl" x="408" y="116">vergabe, Medizin, Verkehr</text>'+
-        '<text class="s-lbl" x="456" y="160">Chatbots: Kennzeich-</text>'+
-        '<text class="s-lbl" x="456" y="174">nungspflicht</text>'+
-        '<text class="s-lbl" x="20" y="216">Spamfilter, Rechtschreib-</text>'+
-        '<text class="s-lbl" x="20" y="230">prüfung: keine Auflagen</text>'+
-        '</svg><figcaption>Je weiter oben, desto strenger: Die Spitze ist verboten, die Basis ist frei nutzbar.</figcaption></figure>'+
-        '<table class="lesson-table"><tr><th>Stufe</th><th>Beispiele</th><th>Folge</th></tr>'+
-        '<tr><td><strong>Unannehmbares Risiko</strong></td><td>Social Scoring durch Behörden, Manipulation, Emotionserkennung am Arbeitsplatz, biometrische Echtzeit-Massenüberwachung</td><td><strong>verboten</strong></td></tr>'+
-        '<tr><td><strong>Hohes Risiko</strong></td><td>Personalauswahl, Kreditwürdigkeit, Medizinprodukte, kritische Infrastruktur, Bildungszugang</td><td>Konformitätsbewertung, Risikomanagement, Dokumentation, Datenqualität, <strong>menschliche Aufsicht</strong>, Protokollierung, CE-Kennzeichnung</td></tr>'+
-        '<tr><td><strong>Begrenztes Risiko</strong></td><td>Chatbots, Deepfakes, KI-erzeugte Inhalte</td><td><strong>Transparenzpflicht</strong> — Nutzer müssen erkennen, dass sie mit einer KI sprechen bzw. dass Inhalte KI-erzeugt sind</td></tr>'+
-        '<tr><td><strong>Minimales Risiko</strong></td><td>Spamfilter, Rechtschreibprüfung, KI in Videospielen</td><td>keine besonderen Pflichten</td></tr></table>'+
-        '<p>Zusätzlich verlangt die Verordnung <strong>KI-Kompetenz (AI Literacy)</strong>: Unternehmen müssen dafür sorgen, dass Beschäftigte, die KI-Systeme einsetzen, über ausreichendes Wissen dazu verfügen.</p>',
-      code:
-        "ZUORDNUNGSUEBUNG - so kommen die Faelle in der Pruefung\n\n"+
-        "  \"Ein System sortiert eingehende Bewerbungen vor.\"\n"+
-        "     -> HOCHRISIKO. Zugang zu Beschaeftigung ist ausdruecklich\n"+
-        "        genannt. Folge: menschliche Aufsicht, Dokumentation,\n"+
-        "        Pruefung auf Diskriminierung.\n\n"+
-        "  \"Ein Chatbot beantwortet Kundenfragen im Webshop.\"\n"+
-        "     -> BEGRENZTES RISIKO. Der Nutzer muss erkennen koennen,\n"+
-        "        dass er mit einer Maschine spricht.\n\n"+
-        "  \"Der Spamfilter im Mailserver.\"\n"+
-        "     -> MINIMALES RISIKO. Keine besonderen Auflagen.\n\n"+
-        "  \"Kameras erfassen die Stimmung der Mitarbeiter im Grossraum.\"\n"+
-        "     -> VERBOTEN. Emotionserkennung am Arbeitsplatz ist\n"+
-        "        untersagt.\n\n"+
-        "  \"Eine Bank bewertet die Kreditwuerdigkeit automatisiert.\"\n"+
-        "     -> HOCHRISIKO, zusaetzlich Art. 22 DSGVO beachten.",
-      codeLang:'AI Act',
-      tip:'Die Zuordnung gelingt mit einer einzigen Frage: Was passiert einem Menschen, wenn das System falsch liegt? Entscheidet es über Job, Kredit, Gesundheit oder Bildung, ist es Hochrisiko. Redet es nur mit dem Menschen, ist es begrenztes Risiko und braucht einen Hinweis. Bewertet oder überwacht es Menschen flächendeckend, ist es verboten. Nenne bei Hochrisiko-Systemen immer die menschliche Aufsicht mit — sie ist die Pflicht, die am häufigsten erwartet wird.',
-      quiz:[
-        {q:'In welche Risikoklasse fällt ein System zur Vorauswahl von Bewerbungen?', options:['Minimales Risiko','Hohes Risiko','Verboten'], correct:1, explain:'Der Zugang zu Beschäftigung ist im AI Act ausdrücklich als Hochrisiko eingestuft.'},
-        {q:'Welche Pflicht gilt bei einem Kundenchatbot?', options:['Konformitätsbewertung','Transparenzpflicht – der Nutzer muss die KI erkennen können','Gar keine'], correct:1, explain:'Chatbots fallen unter begrenztes Risiko.'},
-        {q:'Welche Praktik ist nach dem AI Act ausdrücklich verboten?', options:['Ein Chatbot ohne Kennzeichnung','Social Scoring durch Behörden','Ein Spamfilter'], correct:1, explain:'Ebenso Emotionserkennung am Arbeitsplatz und biometrische Massenüberwachung.'}
-      ]
-    },
-    {
-      id:'m30-l2', title:'KI und Datenschutz', minutes:9,
-      body:
-        '<p>KI hebelt die DSGVO nicht aus — im Gegenteil, mehrere Grundsätze geraten gerade beim Einsatz von KI unter Druck.</p>'+
-        '<table class="lesson-table"><tr><th>DSGVO-Grundsatz</th><th>Spannungsfeld bei KI</th></tr>'+
-        '<tr><td>Zweckbindung</td><td>Daten, die für die Vertragsabwicklung erhoben wurden, dürfen nicht ohne Weiteres zum Training verwendet werden</td></tr>'+
-        '<tr><td>Datenminimierung</td><td>KI-Training will möglichst viele Daten — das Gegenteil des Grundsatzes</td></tr>'+
-        '<tr><td>Transparenz</td><td>Betroffene müssen über die automatisierte Verarbeitung informiert werden</td></tr>'+
-        '<tr><td>Richtigkeit</td><td>ein halluzinierendes Modell erzeugt falsche personenbezogene Aussagen</td></tr>'+
-        '<tr><td>Löschung (Art. 17)</td><td>aus einem trainierten Modell lassen sich einzelne Daten praktisch nicht mehr entfernen</td></tr></table>'+
-        '<p><strong>Artikel 22 DSGVO</strong> ist die wichtigste Einzelvorschrift: Eine <strong>ausschließlich automatisierte Entscheidung mit rechtlicher Wirkung oder ähnlich erheblicher Beeinträchtigung</strong> ist grundsätzlich unzulässig. Betroffene haben das Recht auf <strong>Eingreifen einer Person</strong>, auf Darlegung des eigenen Standpunkts und auf Anfechtung der Entscheidung.</p>'+
-        '<p>Praktische Folge: Ein Modell darf eine Kreditablehnung oder eine Bewerberabsage <em>vorbereiten</em>, die Entscheidung selbst muss ein Mensch verantworten — und zwar tatsächlich prüfend, nicht nur abnickend.</p>'+
-        '<p><strong>Weitere Pflichten:</strong> Bei Einsatz einer externen KI ist der Anbieter <strong>Auftragsverarbeiter</strong>, es braucht einen <strong>AVV nach Art. 28</strong>. Für Hochrisiko-Anwendungen ist regelmäßig eine <strong>Datenschutz-Folgenabschätzung nach Art. 35</strong> erforderlich. Und überwacht ein System das Verhalten oder die Leistung von Beschäftigten, greift die <strong>Mitbestimmung des Betriebsrats nach § 87 BetrVG</strong>.</p>',
-      code:
-        "TYPISCHER PRUEFUNGSFALL\n\n"+
-        "  Ein Mitarbeiter gibt einen Kundenvertrag in einen frei\n"+
-        "  zugaenglichen KI-Dienst ein, um ihn zusammenfassen zu lassen.\n\n"+
-        "  Was ist das Problem?\n"+
-        "   1. Uebermittlung personenbezogener Daten an einen Dritten\n"+
-        "      ohne Rechtsgrundlage und ohne AVV.\n"+
-        "   2. Moeglicher Drittlandtransfer, wenn die Server ausserhalb\n"+
-        "      der EU stehen.\n"+
-        "   3. Die Eingaben koennen beim Anbieter gespeichert und fuer\n"+
-        "      das Training verwendet werden - Kontrollverlust.\n"+
-        "   4. Verletzung von Geschaeftsgeheimnissen und ggf.\n"+
-        "      vertraglicher Vertraulichkeitspflichten.\n\n"+
-        "  Gegenmassnahmen:\n"+
-        "   - verbindliche KI-Richtlinie im Unternehmen\n"+
-        "   - freigegebene Dienste mit AVV und EU-Serverstandort\n"+
-        "   - Verbot der Eingabe personenbezogener und vertraulicher\n"+
-        "     Daten, alternativ Anonymisierung vor der Eingabe\n"+
-        "   - Schulung aller Beschaeftigten (auch AI-Literacy-Pflicht)\n"+
-        "   - technische Sperre nicht freigegebener Dienste",
-      codeLang:'Datenschutzfall',
-      tip:'Artikel 22 DSGVO ist der Paragraf, den du dir für KI-Aufgaben merken solltest. Er verlangt nicht, dass KI unbenutzt bleibt, sondern dass ein Mensch die folgenreiche Entscheidung trifft. Formuliere das in der Antwort präzise: Das System darf eine Empfehlung erzeugen, die abschließende Entscheidung muss eine Person nachvollziehbar treffen können. Der Zusatz zur Betriebsratsmitbestimmung nach § 87 BetrVG bringt in Arbeitsplatzszenarien fast immer einen weiteren Punkt.',
-      quiz:[
-        {q:'Was regelt Art. 22 DSGVO?', options:['Die Speicherdauer von Daten','Ausschließlich automatisierte Entscheidungen mit erheblicher Wirkung sind grundsätzlich unzulässig','Die Verschlüsselung von Daten'], correct:1, explain:'Betroffene haben Anspruch auf das Eingreifen einer natürlichen Person.'},
-        {q:'Ein Mitarbeiter gibt Kundendaten in einen externen KI-Dienst ein. Was fehlt in jedem Fall?',options:['Eine schnellere Internetleitung','Rechtsgrundlage und Auftragsverarbeitungsvertrag','Ein größeres Kontextfenster'], correct:1, explain:'Zusätzlich drohen Drittlandtransfer und Verrat von Geschäftsgeheimnissen.'},
-        {q:'Welches Betroffenenrecht ist bei einem trainierten Modell praktisch kaum umsetzbar?', options:['Auskunft','Löschung einzelner Daten aus dem Modell','Widerspruch'], correct:1, explain:'Deshalb ist die Rechtsgrundlage vor dem Training zu klären, nicht danach.'}
-      ]
-    },
-    {
-      id:'m30-l3', title:'Ethik, Urheberrecht und Verantwortung', minutes:9,
-      body:
-        '<p><strong>Ethische Anforderungen</strong> an KI-Systeme, wie sie die EU-Leitlinien formulieren — sie tauchen als Nennaufgabe auf:</p>'+
-        '<ul><li><strong>Menschliche Aufsicht</strong> — der Mensch behält Kontrolle und Letztentscheidung.</li>'+
-        '<li><strong>Transparenz und Erklärbarkeit</strong> — nachvollziehbar, wie eine Entscheidung zustande kam. Das Gegenteil ist das <strong>Blackbox-Problem</strong>: Ein tiefes neuronales Netz liefert ein Ergebnis, aber keine Begründung.</li>'+
-        '<li><strong>Fairness und Nichtdiskriminierung</strong> — keine Benachteiligung von Gruppen.</li>'+
-        '<li><strong>Robustheit und Sicherheit</strong> — auch bei fehlerhaften oder manipulierten Eingaben zuverlässig.</li>'+
-        '<li><strong>Datenschutz und Datenqualität.</strong></li>'+
-        '<li><strong>Rechenschaftspflicht</strong> — Verantwortlichkeiten sind benannt.</li>'+
-        '<li><strong>Nachhaltigkeit</strong> — Training großer Modelle verbraucht erhebliche Energie.</li></ul>'+
-        '<p><strong>Urheberrecht</strong> — hier gibt es zwei getrennte Fragen, die gern vermischt werden:</p>'+
-        '<ol><li><strong>Die Eingabeseite:</strong> Dürfen urheberrechtlich geschützte Werke zum Training verwendet werden? In Deutschland erlaubt § 44b UrhG das Text- und Data-Mining, sofern sich der Rechteinhaber nicht ausdrücklich vorbehalten hat.</li>'+
-        '<li><strong>Die Ausgabeseite:</strong> Wem gehört ein KI-erzeugtes Werk? Nach deutschem Recht setzt Urheberschaft eine <strong>persönliche geistige Schöpfung</strong> eines Menschen voraus (§ 2 Abs. 2 UrhG). Ein rein maschinell erzeugtes Ergebnis ist daher <strong>nicht urheberrechtlich geschützt</strong> — es ist gemeinfrei. Erst eine eigene schöpferische Bearbeitung durch den Menschen kann Schutz begründen.</li></ol>'+
-        '<p><strong>Haftung:</strong> Für einen Fehler haftet nicht „die KI". In Betracht kommen der <strong>Anbieter</strong> (Produkthaftung, mangelhaftes System), der <strong>Betreiber</strong> (unsachgemäßer Einsatz, fehlende Aufsicht) und der <strong>Anwender</strong> (ungeprüfte Übernahme eines Ergebnisses). Deshalb gilt in der Praxis: <strong>Wer ein KI-Ergebnis verwendet, verantwortet es.</strong></p>',
-      code:
-        "DAS BLACKBOX-PROBLEM IN DER PRAXIS\n\n"+
-        "  Ein Modell lehnt einen Kreditantrag ab.\n"+
-        "  Der Kunde fragt: \"Warum?\"\n\n"+
-        "  Bei einem Entscheidungsbaum:\n"+
-        "     nachvollziehbar - die Regelkette laesst sich vorlesen.\n\n"+
-        "  Bei einem tiefen neuronalen Netz:\n"+
-        "     Millionen Gewichte, keine lesbare Begruendung.\n\n"+
-        "  Folgen:\n"+
-        "   - Art. 22 DSGVO verlangt aussagekraeftige Informationen\n"+
-        "     ueber die involvierte Logik\n"+
-        "   - der AI Act verlangt bei Hochrisiko Nachvollziehbarkeit\n"+
-        "     und Protokollierung\n\n"+
-        "  Loesungsansaetze:\n"+
-        "   - erklaerbare Verfahren waehlen, wo Begruendung noetig ist\n"+
-        "   - Erklaerungsmethoden einsetzen, die den Einfluss einzelner\n"+
-        "     Merkmale sichtbar machen\n"+
-        "   - menschliche Letztentscheidung mit eigener Begruendung",
-      codeLang:'Erklärbarkeit',
-      tip:'Beim Urheberrecht musst du die beiden Seiten sauber trennen, sonst verlierst du den Punkt. Auf der Eingabeseite geht es um die Zulässigkeit des Trainings, auf der Ausgabeseite um den Schutz des Ergebnisses. Der Kernsatz für die Ausgabeseite lautet: Ohne menschliche schöpferische Leistung kein Urheberrechtsschutz. Wer einen KI-Text unverändert veröffentlicht, kann anderen die Nutzung nicht verbieten — und haftet trotzdem selbst, wenn der Inhalt Rechte Dritter verletzt.',
-      quiz:[
-        {q:'Ist ein rein KI-erzeugtes Bild in Deutschland urheberrechtlich geschützt?', options:['Ja, der Nutzer ist Urheber','Nein, es fehlt die persönliche geistige Schöpfung eines Menschen','Ja, der Anbieter ist Urheber'], correct:1, explain:'Erst eine eigene schöpferische Bearbeitung kann Schutz begründen.'},
-        {q:'Was bezeichnet das Blackbox-Problem?', options:['Ein verschlüsseltes Modell','Dass die Entscheidung eines tiefen Netzes nicht nachvollziehbar begründbar ist','Einen Serverausfall'], correct:1, explain:'Deshalb fordern DSGVO und AI Act Nachvollziehbarkeit bei folgenreichen Entscheidungen.'},
-        {q:'Wer haftet, wenn ein ungeprüftes KI-Ergebnis Schaden anrichtet?', options:['Die KI','Je nach Fall Anbieter, Betreiber oder der Anwender, der es übernommen hat','Niemand'], correct:1, explain:'Der Grundsatz lautet: Wer ein KI-Ergebnis verwendet, verantwortet es.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m41', part:5, partTitle:'IT-Sicherheit & Datenschutz', title:'Schlüssel und Zertifikate im Detail', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m41-l1', title:'Das Schlüsselpaar: öffentlich und privat', minutes:10,
-      body:
-        '<p>Beim asymmetrischen Verfahren entsteht ein <strong>Paar</strong> zusammengehöriger Schlüssel. Was der eine verschließt, öffnet nur der andere. Aus dem öffentlichen Schlüssel lässt sich der private <strong>nicht</strong> berechnen &#8211; darauf beruht das ganze Verfahren.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Öffentlicher Schlüssel</th><th>Privater Schlüssel</th></tr>'+
-        '<tr><td>Wer hat ihn</td><td><strong>jeder</strong> &#8211; er darf verteilt werden</td><td><strong>nur du</strong> &#8211; er verlässt das Gerät nie</td></tr>'+
-        '<tr><td>Vertraulichkeit</td><td>damit wird <strong>verschlüsselt</strong></td><td>damit wird <strong>entschlüsselt</strong></td></tr>'+
-        '<tr><td>Echtheit</td><td>damit wird eine Signatur <strong>geprüft</strong></td><td>damit wird <strong>signiert</strong></td></tr>'+
-        '<tr><td>Bei Verlust</td><td>egal, ist ohnehin öffentlich</td><td><strong>alles kompromittiert</strong> &#8211; Paar sperren und neu erzeugen</td></tr></table>'+
-        '<p><strong>Die eine Regel, aus der sich alles ableiten lässt:</strong> <em>Du benutzt immer den Schlüssel, den außer dir niemand hat &#8211; oder den, den nur der Empfänger hat.</em> Willst du, dass <strong>nur der Empfänger lesen kann</strong>, nimmst du <strong>dessen öffentlichen</strong> Schlüssel. Willst du beweisen, dass <strong>du</strong> der Absender bist, nimmst du <strong>deinen privaten</strong>.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 268" role="img" aria-label="Was der oeffentliche und was der private Schluessel leisten">'+
-        '<rect class="s-key-pub" x="20" y="16" width="250" height="150" rx="6"/>'+
-        '<text class="s-hd" x="145" y="42" text-anchor="middle">&#214;FFENTLICHER SCHL&#220;SSEL</text>'+
-        '<text class="s-lbl" x="145" y="62" text-anchor="middle">darf jeder haben</text>'+
-        '<line class="s-line" x1="40" y1="74" x2="250" y2="74"/>'+
-        '<text class="s-mono" x="40" y="98">&#8594; verschl&#252;sseln</text>'+
-        '<text class="s-lbl" x="40" y="116">f&#252;r den Besitzer des Paares</text>'+
-        '<text class="s-mono" x="40" y="142">&#8594; Signatur pr&#252;fen</text>'+
-        '<text class="s-lbl" x="40" y="160">stammt es wirklich von ihm?</text>'+
-        '<rect class="s-key-priv" x="290" y="16" width="250" height="150" rx="6"/>'+
-        '<text class="s-hd" x="415" y="42" text-anchor="middle">PRIVATER SCHL&#220;SSEL</text>'+
-        '<text class="s-lbl" x="415" y="62" text-anchor="middle">verl&#228;sst das Ger&#228;t nie</text>'+
-        '<line class="s-line" x1="310" y1="74" x2="520" y2="74"/>'+
-        '<text class="s-mono" x="310" y="98">&#8594; entschl&#252;sseln</text>'+
-        '<text class="s-lbl" x="310" y="116">nur ich lese, was an mich ging</text>'+
-        '<text class="s-mono" x="310" y="142">&#8594; signieren</text>'+
-        '<text class="s-lbl" x="310" y="160">nur ich kann das erzeugen</text>'+
-        '<rect class="s-strong" x="20" y="180" width="520" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="202" text-anchor="middle">Vertraulichkeit &#8594; &#246;ffentlicher Schl&#252;ssel des EMPF&#196;NGERS &#160;&#160;&#183;&#160;&#160; Echtheit &#8594; eigener PRIVATER Schl&#252;ssel</text>'+
-        '<text class="s-lbl" x="20" y="238">Aus dem &#246;ffentlichen Schl&#252;ssel l&#228;sst sich der private nicht berechnen.</text>'+
-        '<text class="s-lbl" x="20" y="258">Geht der private verloren, hilft nur sperren und ein neues Paar erzeugen.</text>'+
-        '</svg><figcaption>Vier Tätigkeiten, zwei Schlüssel. Wer sich die beiden Sätze unten merkt, leitet jede Prüfungsfrage dazu ab.</figcaption></figure>'+
-        '<p><strong>Schlüssellängen</strong> &#8211; Zahlen, die man kennen sollte, weil sie in Aufgaben zur Angebotsbewertung auftauchen:</p>'+
-        '<table class="lesson-table"><tr><th>Verfahren</th><th>Heute üblich</th><th>Anmerkung</th></tr>'+
-        '<tr><td>AES (symmetrisch)</td><td>256 Bit</td><td>128 Bit gilt weiterhin als sicher</td></tr>'+
-        '<tr><td>RSA (asymmetrisch)</td><td>2048, besser 4096 Bit</td><td>1024 Bit ist überholt</td></tr>'+
-        '<tr><td>ECC (elliptische Kurven)</td><td>256 Bit</td><td>entspricht etwa RSA 3072 &#8211; kürzer und schneller</td></tr></table>'+
-        '<p>Die Längen lassen sich <strong>nicht</strong> vergleichen: 256 Bit AES sind sehr stark, 256 Bit RSA wären in Sekunden gebrochen. Symmetrische und asymmetrische Verfahren beruhen auf völlig verschiedenen mathematischen Problemen.</p>',
-      code:
-        "DREI DINGE, DIE STAENDIG VERWECHSELT WERDEN\n\n"+
-        "  KODIERUNG       Base64, URL-Encoding, ASCII\n"+
-        "     Zweck  : Daten transportierbar machen\n"+
-        "     Schutz : KEINER - jeder kann es zuruecklesen\n"+
-        "     umkehrbar ohne Schluessel\n\n"+
-        "  VERSCHLUESSELUNG  AES, RSA\n"+
-        "     Zweck  : Vertraulichkeit\n"+
-        "     Schutz : nur mit Schluessel lesbar\n"+
-        "     umkehrbar MIT Schluessel\n\n"+
-        "  HASH            SHA-256\n"+
-        "     Zweck  : Integritaet, Passwortspeicherung\n"+
-        "     Schutz : Einwegfunktion\n"+
-        "     NICHT umkehrbar - auch nicht mit Schluessel\n\n"+
-        "  Pruefungsfalle: \"Das Passwort ist Base64-kodiert\n"+
-        "  gespeichert.\" -> Das ist KEIN Schutz. Passwoerter\n"+
-        "  gehoeren gehasht, mit Salt und einem langsamen\n"+
-        "  Verfahren wie bcrypt oder Argon2.\n\n"+
-        "WELCHER SCHLUESSEL? - die vier Faelle\n\n"+
-        "  Ich sende vertraulich an Meier\n"+
-        "     verschluesseln mit  Meiers OEFFENTLICHEM\n"+
-        "     entschluesseln mit  Meiers PRIVATEM   (macht Meier)\n\n"+
-        "  Ich beweise, dass die Datei von mir stammt\n"+
-        "     signieren mit       MEINEM PRIVATEN\n"+
-        "     pruefen mit         MEINEM OEFFENTLICHEN  (macht jeder)\n\n"+
-        "  Beides zusammen: erst signieren, dann verschluesseln.\n\n"+
-        "WO DER PRIVATE SCHLUESSEL LIEGT\n"+
-        "  Datei mit Passphrase   einfach, aber kopierbar\n"+
-        "  Smartcard / Token      verlaesst die Karte nie\n"+
-        "  TPM / Secure Enclave   an die Hardware gebunden\n"+
-        "  HSM im Rechenzentrum   fuer Server und CAs",
-      codeLang:'Schlüsselpaar',
-      tip:'Wenn eine Aufgabe nach dem richtigen Schlüssel fragt, stell dir zuerst die Frage nach dem Ziel, nicht nach dem Verfahren. Soll niemand sonst mitlesen? Dann brauchst du etwas, das nur der Empfänger hat — also seinen öffentlichen Schlüssel, denn nur sein privates Gegenstück öffnet es wieder. Soll bewiesen werden, dass du es warst? Dann brauchst du etwas, das nur du hast — deinen privaten Schlüssel.',
-      quiz:[
-        {q:'Womit verschlüsselst du eine vertrauliche Nachricht an eine bestimmte Person?', options:['Mit deinem privaten Schlüssel','Mit dem öffentlichen Schlüssel dieser Person','Mit deinem öffentlichen Schlüssel'], correct:1, explain:'Nur ihr privates Gegenstück kann die Nachricht wieder öffnen.'},
-        {q:'Ein Passwort wird Base64-kodiert gespeichert. Wie sicher ist das?', options:['Sehr sicher, es ist ja verschlüsselt','Gar nicht — Kodierung ist ohne Schlüssel umkehrbar','Sicher, solange niemand den Schlüssel kennt'], correct:1, explain:'Passwörter gehören gehasht, mit Salt und einem langsamen Verfahren wie bcrypt.'},
-        {q:'Warum lassen sich 256 Bit AES und 256 Bit RSA nicht vergleichen?', options:['Sie beruhen auf völlig verschiedenen mathematischen Problemen','RSA zählt die Bits anders','Es gibt kein RSA mit 256 Bit'], correct:0, explain:'ECC mit 256 Bit entspricht etwa RSA mit 3072 Bit — auch das ist nicht dasselbe.'}
-      ]
-    },
-    {
-      id:'m41-l2', title:'Schlüsselaustausch und Perfect Forward Secrecy', minutes:10,
-      body:
-        '<p>Symmetrische Verfahren sind schnell, haben aber ein Problem: <strong>Wie kommt der gemeinsame Schlüssel zum Gegenüber?</strong> Über dieselbe unsichere Leitung senden geht nicht &#8211; wer mitliest, hat ihn auch.</p>'+
-        '<p>Dazu kommt die Mengenrechnung: Bei <strong>n</strong> Teilnehmern, die alle paarweise vertraulich sprechen wollen, braucht es <code>n &middot; (n&minus;1) / 2</code> Schlüssel. Bei 10 Teilnehmern sind das 45, bei 100 schon 4.950. Das ist nicht verwaltbar.</p>'+
-        '<p><strong>Diffie-Hellman</strong> löst das auf verblüffende Weise: Beide Seiten einigen sich <em>öffentlich</em> auf einen gemeinsamen Ausgangswert, mischen ihn mit einem <em>geheimen</em> eigenen Wert, tauschen die Mischungen aus und mischen erneut mit dem eigenen Geheimnis. Beide landen beim gleichen Ergebnis &#8211; ein Mitlauscher kann es aus den ausgetauschten Mischungen nicht zurückrechnen.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 276" role="img" aria-label="Diffie-Hellman als Farbmischung erklaert">'+
-        '<text class="s-hd" x="80" y="22" text-anchor="middle">Alice</text>'+
-        '<text class="s-hd" x="480" y="22" text-anchor="middle">Bob</text>'+
-        '<rect class="s-box" x="200" y="10" width="160" height="28" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="29" text-anchor="middle">gemeinsamer Startwert</text>'+
-        '<text class="s-lbl" x="280" y="52" text-anchor="middle">&#246;ffentlich, darf jeder kennen</text>'+
-        '<circle class="s-key-priv" cx="80" cy="84" r="20"/>'+
-        '<text class="s-mono" x="80" y="88" text-anchor="middle">a</text>'+
-        '<text class="s-lbl" x="80" y="118" text-anchor="middle">geheim</text>'+
-        '<circle class="s-key-priv" cx="480" cy="84" r="20"/>'+
-        '<text class="s-mono" x="480" y="88" text-anchor="middle">b</text>'+
-        '<text class="s-lbl" x="480" y="118" text-anchor="middle">geheim</text>'+
-        '<rect class="s-accent" x="24" y="136" width="112" height="30" rx="4"/>'+
-        '<text class="s-mono" x="80" y="156" text-anchor="middle">Start + a</text>'+
-        '<rect class="s-accent" x="424" y="136" width="112" height="30" rx="4"/>'+
-        '<text class="s-mono" x="480" y="156" text-anchor="middle">Start + b</text>'+
-        '<line class="s-arrow" x1="140" y1="146" x2="416" y2="146" marker-end="url(#kry2)"/>'+
-        '<line class="s-arrow" x1="420" y1="160" x2="144" y2="160" marker-end="url(#kry2)"/>'+
-        '<text class="s-lbl" x="280" y="140" text-anchor="middle">&#246;ffentlich ausgetauscht</text>'+
-        '<rect class="s-strong" x="24" y="188" width="150" height="34" rx="4"/>'+
-        '<text class="s-mono" x="99" y="210" text-anchor="middle">Start + b + a</text>'+
-        '<rect class="s-strong" x="386" y="188" width="150" height="34" rx="4"/>'+
-        '<text class="s-mono" x="461" y="210" text-anchor="middle">Start + a + b</text>'+
-        '<rect class="s-ok" x="196" y="188" width="168" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="210" text-anchor="middle">dasselbe Geheimnis</text>'+
-        '<text class="s-lbl" x="20" y="248">Der Mitlauscher kennt Startwert und beide Mischungen &#8211; und kann a und b daraus nicht zur&#252;ckrechnen.</text>'+
-        '<text class="s-lbl" x="20" y="268">Genau das leistet die Mathematik dahinter: mischen ist leicht, entmischen praktisch unm&#246;glich.</text>'+
-        '<defs><marker id="kry2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Mischen ist leicht, entmischen praktisch unmöglich. Beide Seiten kommen zum gleichen Ergebnis, ohne es je übertragen zu haben.</figcaption></figure>'+
-        '<p><strong>Perfect Forward Secrecy</strong> ist die Folge davon, wenn man das Verfahren <em>flüchtig</em> einsetzt: Für jede einzelne Sitzung wird ein neues Paar erzeugt und danach verworfen. Wird der langfristige private Schlüssel des Servers später kompromittiert &#8211; durch Diebstahl, Gerichtsbeschluss oder einen Fehler &#8211;, lassen sich <strong>mitgeschnittene alte Sitzungen trotzdem nicht entschlüsseln</strong>. Der Sitzungsschlüssel existiert schlicht nirgends mehr.</p>'+
-        '<p>Ohne Forward Secrecy gilt das Gegenteil: Wer den privaten Serverschlüssel bekommt und über Jahre Datenverkehr mitgeschnitten hat, kann alles rückwirkend lesen. Deshalb ist Forward Secrecy in TLS 1.3 <strong>verpflichtend</strong> &#8211; die alten Verfahren ohne sie wurden gestrichen.</p>'+
-        '<p><strong>Das hybride Verfahren in einem Satz:</strong> Asymmetrisch wird nur der Sitzungsschlüssel ausgehandelt, die eigentlichen Daten laufen dann schnell symmetrisch. Man bekommt die Schlüsselverwaltung des einen und die Geschwindigkeit des anderen Verfahrens.</p>',
-      code:
-        "DAS MENGENPROBLEM\n\n"+
-        "  Symmetrisch, jeder mit jedem:  n * (n-1) / 2\n"+
-        "      5 Teilnehmer  ->     10 Schluessel\n"+
-        "     10 Teilnehmer  ->     45\n"+
-        "     50 Teilnehmer  ->  1.225\n"+
-        "    100 Teilnehmer  ->  4.950\n\n"+
-        "  Asymmetrisch: jeder braucht genau EIN Paar.\n"+
-        "    100 Teilnehmer  ->    100 Paare\n\n"+
-        "  Dieselbe Formel wie bei Peer-to-Peer-Beziehungen.\n\n"+
-        "WAS BEIM TLS-VERBINDUNGSAUFBAU PASSIERT\n\n"+
-        "  1. Client nennt seine unterstuetzten Verfahren\n"+
-        "  2. Server waehlt eines und sendet sein ZERTIFIKAT\n"+
-        "  3. Client prueft das Zertifikat gegen die CA-Kette\n"+
-        "     -> hier entscheidet sich, ob der Server ECHT ist\n"+
-        "  4. Beide fuehren einen fluechtigen Diffie-Hellman durch\n"+
-        "     -> daraus entsteht der Sitzungsschluessel\n"+
-        "  5. Ab jetzt symmetrisch mit AES\n"+
-        "  6. Nach der Sitzung: Sitzungsschluessel verworfen\n\n"+
-        "  Schritt 3 loest die Echtheit, Schritt 4 die Vertraulichkeit.\n"+
-        "  Ohne Schritt 3 waere ein Man-in-the-Middle moeglich:\n"+
-        "  Der Angreifer wuerde einfach mit BEIDEN Seiten je einen\n"+
-        "  eigenen Diffie-Hellman durchfuehren.\n\n"+
-        "PERFECT FORWARD SECRECY - der Praxistest\n"+
-        "  Frage: Der private Serverschluessel wird in zwei Jahren\n"+
-        "         gestohlen. Kann der Dieb den mitgeschnittenen\n"+
-        "         Verkehr von heute lesen?\n\n"+
-        "  mit PFS    nein - die Sitzungsschluessel gibt es nicht mehr\n"+
-        "  ohne PFS   ja  - rueckwirkend alles",
-      codeLang:'Schlüsselaustausch',
-      tip:'Diffie-Hellman allein schützt nicht vor einem Angreifer in der Mitte — es sichert nur, dass niemand passiv mitlesen kann. Ein aktiver Angreifer würde mit beiden Seiten je einen eigenen Austausch führen. Erst das Zertifikat beweist, dass am anderen Ende wirklich der erwartete Server sitzt. Diese Arbeitsteilung solltest du in einer Begründungsaufgabe ausdrücklich benennen.',
-      quiz:[
-        {q:'Wie viele Schlüssel braucht symmetrische Verschlüsselung bei 10 Teilnehmern, die alle paarweise sprechen?', options:['10','45','90'], correct:1, explain:'n mal (n−1) geteilt durch 2 — dieselbe Formel wie bei Peer-to-Peer-Beziehungen.'},
-        {q:'Was leistet Perfect Forward Secrecy?', options:['Schnellere Verschlüsselung','Alte Mitschnitte bleiben unlesbar, selbst wenn der Serverschlüssel später gestohlen wird','Sie ersetzt das Zertifikat'], correct:1, explain:'Möglich wird das durch einen flüchtigen Schlüsselaustausch je Sitzung.'},
-        {q:'Wogegen schützt Diffie-Hellman allein NICHT?', options:['Gegen passives Mitlesen','Gegen einen aktiven Angreifer in der Mitte','Gegen Datenverlust'], correct:1, explain:'Dafür braucht es das Zertifikat, das die Echtheit der Gegenstelle beweist.'}
-      ]
-    },
-    {
-      id:'m41-l3', title:'Zertifikate und die Vertrauenskette', minutes:9,
-      body:
-        '<p>Ein Schlüssel allein sagt nichts darüber, <em>wem</em> er gehört. Genau diese Lücke füllt ein <strong>digitales Zertifikat</strong> nach <strong>X.509</strong>: Es bindet einen öffentlichen Schlüssel an eine Identität und wird von einer <strong>Zertifizierungsstelle</strong> (CA) signiert.</p>'+
-        '<p><strong>Was drinsteht</strong> &#8211; die Felder, die in Aufgaben abgefragt werden:</p>'+
-        '<table class="lesson-table"><tr><th>Feld</th><th>Inhalt</th></tr>'+
-        '<tr><td>Subject</td><td>für wen &#8211; Domainname oder Organisation</td></tr>'+
-        '<tr><td>Issuer</td><td>wer ausgestellt hat</td></tr>'+
-        '<tr><td>Public Key</td><td>der öffentliche Schlüssel des Inhabers</td></tr>'+
-        '<tr><td>Gültig von / bis</td><td>der Zeitraum</td></tr>'+
-        '<tr><td>Seriennummer</td><td>eindeutig je CA, nötig für den Widerruf</td></tr>'+
-        '<tr><td>Signatur der CA</td><td>macht das Ganze fälschungssicher</td></tr></table>'+
-        '<p><strong>Die Vertrauenskette</strong> ist der Kern. Dein Browser kennt nicht jeden Server der Welt &#8211; er kennt nur eine überschaubare Liste von <strong>Wurzelzertifikaten</strong>, die mit dem Betriebssystem oder dem Browser ausgeliefert wird. Alles andere wird darauf zurückgeführt: Die Wurzel-CA signiert eine Zwischen-CA, die Zwischen-CA signiert das Serverzertifikat. Lässt sich die Kette lückenlos bis zu einer bekannten Wurzel verfolgen, gilt der Server als echt.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 256" role="img" aria-label="Vertrauenskette vom Wurzelzertifikat bis zum Serverzertifikat">'+
-        '<rect class="s-strong" x="180" y="14" width="200" height="44" rx="5"/>'+
-        '<text class="s-hd" x="280" y="34" text-anchor="middle">Wurzel-CA</text>'+
-        '<text class="s-lbl" x="280" y="50" text-anchor="middle">selbstsigniert, im Betriebssystem</text>'+
-        '<line class="s-arrow" x1="280" y1="58" x2="280" y2="82" marker-end="url(#kry3)"/>'+
-        '<text class="s-mono" x="292" y="76">signiert</text>'+
-        '<rect class="s-accent" x="180" y="86" width="200" height="44" rx="5"/>'+
-        '<text class="s-hd" x="280" y="106" text-anchor="middle">Zwischen-CA</text>'+
-        '<text class="s-lbl" x="280" y="122" text-anchor="middle">arbeitet im Tagesgesch&#228;ft</text>'+
-        '<line class="s-arrow" x1="280" y1="130" x2="280" y2="154" marker-end="url(#kry3)"/>'+
-        '<text class="s-mono" x="292" y="148">signiert</text>'+
-        '<rect class="s-ok" x="180" y="158" width="200" height="44" rx="5"/>'+
-        '<text class="s-hd" x="280" y="178" text-anchor="middle">Serverzertifikat</text>'+
-        '<text class="s-lbl" x="280" y="194" text-anchor="middle">deine-domain.de</text>'+
-        '<rect class="s-box" x="404" y="14" width="146" height="66" rx="5"/>'+
-        '<text class="s-lbl" x="477" y="36" text-anchor="middle">Wurzelspeicher</text>'+
-        '<text class="s-lbl" x="477" y="54" text-anchor="middle">des Browsers</text>'+
-        '<text class="s-mono" x="477" y="72" text-anchor="middle">kennt nur die Wurzeln</text>'+
-        '<line class="s-dash" x1="404" y1="44" x2="384" y2="36"/>'+
-        '<line class="s-arrow2" x1="176" y1="180" x2="30" y2="180" marker-end="url(#kry3)"/>'+
-        '<text class="s-lbl" x="14" y="202">Pr&#252;fung</text>'+
-        '<text class="s-lbl" x="14" y="218">l&#228;uft nach oben</text>'+
-        '<text class="s-lbl" x="20" y="242">Nur wenn die Kette l&#252;ckenlos bei einer bekannten Wurzel endet, gilt der Server als echt.</text>'+
-        '<defs><marker id="kry3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Der Browser kennt nur die Wurzeln. Alles andere muss sich lückenlos auf eine davon zurückführen lassen.</figcaption></figure>'+
-        '<p><strong>Widerruf.</strong> Wird ein privater Schlüssel gestohlen, muss das Zertifikat vor Ablauf ungültig werden. Dafür gibt es die <strong>Sperrliste</strong> (CRL) &#8211; eine Liste widerrufener Seriennummern &#8211; und <strong>OCSP</strong>, eine Einzelabfrage in Echtzeit. In der Praxis wird meist <em>OCSP Stapling</em> genutzt: Der Server holt die Bestätigung selbst und liefert sie mit, was schneller ist und die Privatsphäre schont.</p>'+
-        '<p><strong>Warum ein selbstsigniertes Zertifikat eine Warnung auslöst:</strong> Es <em>verschlüsselt</em> einwandfrei &#8211; die Vertraulichkeit ist gegeben. Was fehlt, ist die <strong>Bestätigung der Identität</strong> durch eine dritte Stelle. Genau das wäre die Lücke, durch die ein Angreifer in der Mitte sein eigenes Zertifikat unterschiebt. Für interne Testsysteme ist es vertretbar, nach außen nie.</p>',
-      code:
-        "DIE BROWSERWARNUNGEN UEBERSETZT\n\n"+
-        "  NET::ERR_CERT_DATE_INVALID\n"+
-        "     Zertifikat abgelaufen oder Systemuhr falsch.\n"+
-        "     Erst die Uhrzeit pruefen - das ist oft die Ursache.\n\n"+
-        "  NET::ERR_CERT_AUTHORITY_INVALID\n"+
-        "     Aussteller unbekannt - selbstsigniert, oder die\n"+
-        "     Zwischen-CA wurde auf dem Server nicht mitgeliefert.\n"+
-        "     Sehr haeufiger Konfigurationsfehler.\n\n"+
-        "  NET::ERR_CERT_COMMON_NAME_INVALID\n"+
-        "     Der Name passt nicht. Aufruf ueber www.example.de,\n"+
-        "     Zertifikat aber nur fuer example.de ausgestellt.\n\n"+
-        "  NET::ERR_CERT_REVOKED\n"+
-        "     Zurueckgezogen - meist weil der private Schluessel\n"+
-        "     kompromittiert wurde. Hier NIE weiterklicken.\n\n"+
-        "ZERTIFIKATSARTEN\n"+
-        "  DV  Domain Validated        nur die Domain geprueft,\n"+
-        "                              automatisch, oft kostenlos\n"+
-        "  OV  Organization Validated  Organisation geprueft\n"+
-        "  EV  Extended Validation     aufwendige Pruefung\n\n"+
-        "  Alle drei verschluesseln GLEICH stark. Der Unterschied\n"+
-        "  liegt allein in der Pruefung der Identitaet.\n\n"+
-        "  Wildcard  *.example.de   gilt fuer alle Unterdomains\n"+
-        "                           einer Ebene, aber nicht fuer\n"+
-        "                           a.b.example.de\n\n"+
-        "SELBSTSIGNIERT - wann vertretbar\n"+
-        "  ja    internes Testsystem, Laborumgebung\n"+
-        "  nein  alles, was ein Kunde oder Mitarbeiter aufruft\n\n"+
-        "  Der saubere Mittelweg im Unternehmen: eine EIGENE\n"+
-        "  interne CA, deren Wurzelzertifikat per Gruppenrichtlinie\n"+
-        "  auf alle Firmengeraete verteilt wird.",
-      codeLang:'Zertifikate',
-      tip:'Die Warnung „Aussteller unbekannt" hat auf produktiven Servern meist gar nichts mit einem selbstsignierten Zertifikat zu tun. Viel häufiger liegt es daran, dass beim Einrichten nur das Serverzertifikat hinterlegt wurde und die Zwischen-CA fehlt. Im Browser des Administrators funktioniert es dann trotzdem, weil der die Zwischen-CA schon zwischengespeichert hat — auf einem frischen Gerät bricht es. Deshalb immer die vollständige Kette ausliefern und von außen testen.',
-      quiz:[
-        {q:'Welches Zertifikat kennt dein Browser von Haus aus?', options:['Das Serverzertifikat jeder Website','Nur die Wurzelzertifikate','Alle Zwischen-CAs'], correct:1, explain:'Alles andere muss sich lückenlos auf eine bekannte Wurzel zurückführen lassen.'},
-        {q:'Worin unterscheiden sich die Zertifikatsarten DV, OV und EV?', options:['In der Stärke der Verschlüsselung','Allein in der Tiefe der Identitätsprüfung','In der Gültigkeitsdauer'], correct:1, explain:'Verschlüsselt wird bei allen dreien gleich stark — geprüft wird unterschiedlich gründlich.'},
-        {q:'Wozu dienen Sperrliste und OCSP?', options:['Zum Verlängern eines Zertifikats','Um ein Zertifikat vor Ablauf für ungültig zu erklären','Zum Verschlüsseln der Verbindung'], correct:1, explain:'Nötig etwa, wenn der private Schlüssel gestohlen wurde.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m32', part:5, partTitle:'IT-Sicherheit & Datenschutz', relevanz:'sehr hoch', title:'Datenschutz in der Praxis',
-  lessons:[
-    {
-      id:'m32-l1', title:'Datenschutz gegen Datensicherheit', minutes:9,
-      body:
-        '<p>Das ist <strong>die</strong> Abgrenzungsfrage des Prüfungsbereichs — und sie wird fast jedes Mal gestellt. Die Begriffe klingen ähnlich und meinen etwas grundverschiedenes.</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Datenschutz</th><th>Datensicherheit</th></tr>'+
-        '<tr><td>Schützt</td><td><strong>die Person</strong> vor dem Missbrauch ihrer Daten</td><td><strong>die Daten</strong> vor Verlust, Veränderung und Zugriff</td></tr>'+
-        '<tr><td>Frage</td><td><em>Darf</em> ich diese Daten verarbeiten?</td><td><em>Wie</em> schütze ich die Daten technisch?</td></tr>'+
-        '<tr><td>Betrifft</td><td>nur <strong>personenbezogene</strong> Daten</td><td><strong>alle</strong> Daten, auch Maschinendaten</td></tr>'+
-        '<tr><td>Grundlage</td><td>DSGVO, BDSG</td><td>BSI-Grundschutz, ISO 27001</td></tr>'+
-        '<tr><td>Beispiel</td><td>Eine Einwilligung einholen, Daten nach Zweckerfüllung löschen</td><td>Verschlüsselung, Backup, Firewall</td></tr></table>'+
-        '<p><strong>Der Merksatz:</strong> Datenschutz fragt <em>ob</em>, Datensicherheit fragt <em>wie</em>. Beide brauchen einander: Datenschutz ohne Datensicherheit ist ein Versprechen ohne Umsetzung. Datensicherheit ohne Datenschutz schützt perfekt Daten, die man gar nicht hätte erheben dürfen.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 190" role="img" aria-label="Datenschutz und Datensicherheit im Vergleich">'+
-        '<rect class="s-accent" x="20" y="24" width="250" height="128" rx="8"/>'+
-        '<text class="s-hd" x="145" y="50" text-anchor="middle">DATENSCHUTZ</text>'+
-        '<text class="s-lbl" x="145" y="74" text-anchor="middle">sch&#252;tzt die PERSON</text>'+
-        '<text class="s-lbl" x="145" y="98" text-anchor="middle">&bdquo;Darf ich das verarbeiten?&ldquo;</text>'+
-        '<text class="s-lbl" x="145" y="122" text-anchor="middle">rechtlich &#183; DSGVO, BDSG</text>'+
-        '<text class="s-lbl" x="145" y="142" text-anchor="middle">nur personenbezogene Daten</text>'+
-        '<rect class="s-ok" x="290" y="24" width="250" height="128" rx="8"/>'+
-        '<text class="s-hd" x="415" y="50" text-anchor="middle">DATENSICHERHEIT</text>'+
-        '<text class="s-lbl" x="415" y="74" text-anchor="middle">sch&#252;tzt die DATEN</text>'+
-        '<text class="s-lbl" x="415" y="98" text-anchor="middle">&bdquo;Wie sch&#252;tze ich sie?&ldquo;</text>'+
-        '<text class="s-lbl" x="415" y="122" text-anchor="middle">technisch &#183; BSI, ISO 27001</text>'+
-        '<text class="s-lbl" x="415" y="142" text-anchor="middle">alle Daten</text>'+
-        '<text class="s-lbl" x="280" y="180" text-anchor="middle">Datenschutz braucht Datensicherheit als Werkzeug &#8211; Art. 32 DSGVO fordert sie ausdr&#252;cklich.</text>'+
-        '</svg><figcaption>Zwei Fragen, zwei Rechtsgrundlagen, ein gemeinsames Ziel. Art. 32 DSGVO verbindet beide: Er verlangt technische Maßnahmen zum Schutz personenbezogener Daten.</figcaption></figure>'+
-        '<p><strong>Personenbezogene Daten</strong> sind alle Informationen über eine identifizierte oder <em>identifizierbare</em> natürliche Person. Das Wort „identifizierbar" ist entscheidend: Auch eine Kundennummer, eine IP-Adresse oder ein Kfz-Kennzeichen ist personenbezogen, wenn sich damit über Zusatzwissen ein Bezug herstellen lässt.</p>'+
-        '<p><strong>Anonymisierung oder Pseudonymisierung?</strong> Bei der <strong>Anonymisierung</strong> ist der Personenbezug <em>unwiderruflich</em> entfernt — die DSGVO gilt dann nicht mehr. Bei der <strong>Pseudonymisierung</strong> ist er über einen getrennt aufbewahrten Schlüssel wiederherstellbar — die DSGVO gilt weiter, aber die Maßnahme wird als Schutzmaßnahme anerkannt.</p>',
-      code:
-        "ZUORDNUNGSUEBUNG - Datenschutz oder Datensicherheit?\n\n"+
-        "  Festplattenverschluesselung der Notebooks\n"+
-        "     -> DATENSICHERHEIT (technischer Schutz)\n\n"+
-        "  Einwilligung fuer den Newsletter einholen\n"+
-        "     -> DATENSCHUTZ (Rechtsgrundlage schaffen)\n\n"+
-        "  Taegliches Backup der Konstruktionsdaten\n"+
-        "     -> DATENSICHERHEIT (auch ohne Personenbezug relevant)\n\n"+
-        "  Bewerbungsunterlagen nach 6 Monaten loeschen\n"+
-        "     -> DATENSCHUTZ (Speicherbegrenzung, Zweckbindung)\n\n"+
-        "  Berechtigungskonzept nach Need-to-know\n"+
-        "     -> BEIDES: technisch-organisatorische Massnahme nach\n"+
-        "        Art. 32 DSGVO und zugleich klassische Datensicherheit\n\n"+
-        "  Verzeichnis von Verarbeitungstaetigkeiten fuehren\n"+
-        "     -> DATENSCHUTZ (Rechenschaftspflicht)",
-      codeLang:'Abgrenzung',
-      tip:'Wenn eine Aufgabe nach dem Unterschied fragt, formuliere beide Seiten in einem Satzpaar: Datenschutz schützt die Person und fragt, ob eine Verarbeitung zulässig ist. Datensicherheit schützt die Daten und fragt, wie sie technisch abgesichert werden. Ergänze den Zusammenhang über Art. 32 DSGVO — er verlangt technische und organisatorische Maßnahmen und macht Datensicherheit damit zur Pflicht des Datenschutzes.',
-      quiz:[
-        {q:'Was schützt der Datenschutz?', options:['Die Daten vor Verlust','Die Person vor dem Missbrauch ihrer Daten','Die Hardware'], correct:1, explain:'Die Daten vor Verlust zu schützen ist Aufgabe der Datensicherheit.'},
-        {q:'Ein Backup von Maschinendaten ohne Personenbezug — welchem Bereich zuzuordnen?', options:['Datenschutz','Datensicherheit','Beidem gleichermaßen'], correct:1, explain:'Ohne Personenbezug greift die DSGVO gar nicht.'},
-        {q:'Worin unterscheiden sich Anonymisierung und Pseudonymisierung?', options:['Es gibt keinen Unterschied','Bei der Pseudonymisierung bleibt der Bezug über einen getrennten Schlüssel wiederherstellbar','Anonymisierung ist verboten'], correct:1, explain:'Deshalb gilt die DSGVO bei pseudonymisierten Daten weiter, bei anonymisierten nicht.'}
-      ]
-    },
-    {
-      id:'m32-l2', title:'Betroffenenrechte umsetzen', minutes:9,
-      body:
-        '<p>Die Rechte der Betroffenen sind kein theoretischer Katalog — die AP1 fragt, <strong>wie ein Unternehmen sie umsetzt</strong> und <strong>welche Fristen</strong> gelten.</p>'+
-        '<table class="lesson-table"><tr><th>Artikel</th><th>Recht</th><th>Was das Unternehmen tun muss</th></tr>'+
-        '<tr><td>15</td><td><strong>Auskunft</strong></td><td>mitteilen, welche Daten zu welchem Zweck verarbeitet werden, woher sie stammen, an wen sie gehen und wie lange sie gespeichert bleiben; auf Wunsch eine Kopie</td></tr>'+
-        '<tr><td>16</td><td>Berichtigung</td><td>unrichtige Daten korrigieren, unvollständige ergänzen</td></tr>'+
-        '<tr><td>17</td><td><strong>Löschung</strong></td><td>Daten löschen, wenn der Zweck entfallen ist oder die Einwilligung widerrufen wurde</td></tr>'+
-        '<tr><td>18</td><td>Einschränkung</td><td>Daten sperren statt löschen, etwa während einer Prüfung der Richtigkeit</td></tr>'+
-        '<tr><td>20</td><td>Datenübertragbarkeit</td><td>Daten in einem gängigen, maschinenlesbaren Format herausgeben</td></tr>'+
-        '<tr><td>21</td><td>Widerspruch</td><td>Verarbeitung auf Grundlage berechtigten Interesses stoppen; bei Werbung <em>immer</em></td></tr></table>'+
-        '<p><strong>Die Frist:</strong> <strong>Ein Monat</strong> ab Eingang des Antrags. Bei Komplexität ist eine Verlängerung um zwei weitere Monate möglich — der Betroffene muss dann aber <em>innerhalb des ersten Monats</em> darüber informiert werden. Die Auskunft ist grundsätzlich <strong>kostenlos</strong>.</p>'+
-        '<p><strong>Die Grenze des Löschrechts</strong> — hier liegt der eigentliche Prüfungspunkt: Gesetzliche <strong>Aufbewahrungspflichten</strong> gehen vor. Rechnungen unterliegen nach HGB und AO einer <strong>zehnjährigen</strong> Aufbewahrungsfrist, Handelsbriefe einer <strong>sechsjährigen</strong>. Verlangt ein Kunde die Löschung, werden diese Daten <strong>gesperrt statt gelöscht</strong>: Sie bleiben für die Steuerprüfung verfügbar, dürfen aber nicht mehr für Werbung oder Vertrieb genutzt werden.</p>',
-      code:
-        "ABLAUF EINER AUSKUNFTSANFRAGE\n\n"+
-        "  1. Eingang dokumentieren (Datum startet die Monatsfrist)\n"+
-        "  2. IDENTITAET PRUEFEN\n"+
-        "     Wichtig: Eine Auskunft an die falsche Person waere selbst\n"+
-        "     eine Datenschutzverletzung. Im Zweifel nachfragen -\n"+
-        "     aber nicht mehr Daten verlangen als noetig.\n"+
-        "  3. Alle Systeme durchsuchen: CRM, Warenwirtschaft, Mailarchiv,\n"+
-        "     Backups, Ticketsystem, Telefonanlage\n"+
-        "  4. Auskunft erteilen: Daten, Zwecke, Herkunft, Empfaenger,\n"+
-        "     Speicherdauer, Betroffenenrechte, Beschwerderecht\n"+
-        "  5. Vorgang dokumentieren (Rechenschaftspflicht)\n\n"+
-        "LOESCHANFRAGE - Entscheidungsbaum\n\n"+
-        "  Besteht eine gesetzliche Aufbewahrungspflicht?\n"+
-        "     JA  -> SPERREN statt loeschen\n"+
-        "            Rechnungen  10 Jahre (HGB, AO)\n"+
-        "            Handelsbriefe 6 Jahre\n"+
-        "            Nutzung nur noch fuer den Pflichtzweck\n"+
-        "     NEIN -> Ist der Zweck entfallen oder die Einwilligung\n"+
-        "             widerrufen?\n"+
-        "               JA  -> loeschen, auch in Backups beruecksichtigen\n"+
-        "               NEIN -> Verarbeitung darf fortgesetzt werden,\n"+
-        "                       Ablehnung begruenden",
-      codeLang:'Betroffenenrechte',
-      tip:'Zwei Details heben eine Antwort ab. Erstens die Identitätsprüfung: Wer Auskunft an die falsche Person erteilt, begeht selbst einen Verstoß — dieser Schritt fehlt in den meisten Lösungen. Zweitens die Aufbewahrungspflicht: Das Löschrecht ist nicht unbegrenzt, und „sperren statt löschen" ist die Formulierung, die Prüfer sehen wollen. Merke dir die zehn Jahre für Rechnungen als Standardbeispiel.',
-      quiz:[
-        {q:'Innerhalb welcher Frist muss auf eine Auskunftsanfrage geantwortet werden?', options:['72 Stunden','Ein Monat','Sechs Wochen'], correct:1, explain:'Verlängerung um zwei Monate möglich, aber die Information darüber muss im ersten Monat erfolgen.'},
-        {q:'Ein Kunde verlangt Löschung, die Rechnungen unterliegen aber der Aufbewahrungspflicht. Was ist zu tun?', options:['Trotzdem vollständig löschen','Die Daten sperren und nur noch für den Pflichtzweck nutzen','Die Anfrage ignorieren'], correct:1, explain:'Gesetzliche Aufbewahrungspflichten gehen dem Löschrecht vor.'},
-        {q:'Warum muss vor einer Auskunft die Identität geprüft werden?', options:['Aus Höflichkeit','Weil eine Auskunft an die falsche Person selbst eine Datenschutzverletzung wäre','Um Gebühren abrechnen zu können'], correct:1, explain:'Die Auskunft ist zudem grundsätzlich kostenlos.'}
-      ]
-    },
-    {
-      id:'m32-l3', title:'Verzeichnis, Folgenabschätzung und Datenschutzbeauftragter', minutes:9,
-      body:
-        '<p>Drei Pflichten, die in Aufgaben zur Einführung eines neuen Systems regelmäßig abgefragt werden.</p>'+
-        '<p><strong>1. Das Verzeichnis von Verarbeitungstätigkeiten (Art. 30)</strong> ist die Dokumentationspflicht schlechthin. Es listet für jede Verarbeitung auf: Zweck, Kategorien betroffener Personen, Kategorien von Daten, Empfänger, Drittlandübermittlungen, Löschfristen und die getroffenen technisch-organisatorischen Maßnahmen. Es ist <strong>ab 250 Beschäftigten</strong> Pflicht — <em>aber</em> auch darunter, sobald die Verarbeitung nicht nur gelegentlich erfolgt, ein Risiko birgt oder besondere Datenkategorien betrifft. In der Praxis betrifft das nahezu jedes Unternehmen.</p>'+
-        '<p><strong>2. Die Datenschutz-Folgenabschätzung (DSFA, Art. 35)</strong> ist vorab durchzuführen, wenn eine Verarbeitung <strong>voraussichtlich ein hohes Risiko</strong> für die Rechte der Betroffenen bedeutet. Typische Auslöser: systematische umfangreiche Bewertung persönlicher Aspekte (Scoring, Profiling), umfangreiche Verarbeitung besonderer Datenkategorien, systematische Überwachung öffentlich zugänglicher Bereiche. Sie beschreibt die Verarbeitung, bewertet Notwendigkeit und Risiken und benennt die Gegenmaßnahmen.</p>'+
-        '<p><strong>3. Der Datenschutzbeauftragte</strong> ist nach DSGVO und § 38 BDSG zu benennen, wenn <strong>mindestens 20 Personen ständig mit der automatisierten Verarbeitung</strong> personenbezogener Daten beschäftigt sind, oder wenn eine DSFA erforderlich ist, oder bei Verarbeitung als Kerntätigkeit. Er ist <strong>weisungsfrei</strong>, berichtet direkt an die Leitung, genießt einen besonderen Kündigungsschutz und darf keine Aufgaben wahrnehmen, bei denen er sich selbst kontrollieren müsste — deshalb ist der <strong>IT-Leiter ungeeignet</strong>.</p>'+
-        '<p>Er <strong>berät und überwacht</strong>, er entscheidet nicht. Die datenschutzrechtliche Verantwortung bleibt bei der Geschäftsleitung.</p>',
-      code:
-        "PRUEFSCHEMA FUER EIN NEUES SYSTEM\n\n"+
-        "  Werden personenbezogene Daten verarbeitet?\n"+
-        "     NEIN -> DSGVO nicht einschlaegig\n"+
-        "     JA   -> weiter\n\n"+
-        "  1. Rechtsgrundlage nach Art. 6 vorhanden?\n"+
-        "     Einwilligung | Vertrag | rechtliche Pflicht |\n"+
-        "     lebenswichtiges Interesse | oeffentliches Interesse |\n"+
-        "     berechtigtes Interesse\n\n"+
-        "  2. Besondere Kategorien nach Art. 9 betroffen?\n"+
-        "     Gesundheit, Herkunft, Religion, Gewerkschaft,\n"+
-        "     Biometrie, Sexualleben -> strengere Anforderungen\n\n"+
-        "  3. Verzeichnis nach Art. 30 ergaenzen               PFLICHT\n\n"+
-        "  4. Hohes Risiko? -> DSFA nach Art. 35 durchfuehren\n"+
-        "     Indizien: Profiling, Scoring, systematische\n"+
-        "     Ueberwachung, grosse Datenmengen, neue Technologie\n\n"+
-        "  5. Externe Dienstleister beteiligt?\n"+
-        "     -> AVV nach Art. 28 abschliessen\n\n"+
-        "  6. TOM nach Art. 32 festlegen und dokumentieren\n\n"+
-        "  7. Betroffene informieren (Art. 13 bzw. 14)\n\n"+
-        "  8. Betriebsrat beteiligen, wenn Leistungs- oder\n"+
-        "     Verhaltenskontrolle moeglich ist (§ 87 BetrVG)",
-      codeLang:'Prüfschema',
-      tip:'Dieses Prüfschema ist die Antwortstruktur für jede Aufgabe vom Typ „Was ist datenschutzrechtlich zu beachten?" Arbeite es von oben nach unten ab und nenne bei jedem Punkt den Artikel. Besonders die letzten beiden Punkte werden häufig vergessen: die Informationspflicht gegenüber den Betroffenen und die Mitbestimmung des Betriebsrats, sobald das System Rückschlüsse auf Leistung oder Verhalten zulässt.',
-      quiz:[
-        {q:'Ab wann ist ein Datenschutzbeauftragter in Deutschland zu benennen?', options:['Ab 10 Beschäftigten','Ab 20 Personen, die ständig automatisiert personenbezogene Daten verarbeiten','Erst ab 250 Beschäftigten'], correct:1, explain:'Zusätzlich bei erforderlicher DSFA oder wenn die Verarbeitung Kerntätigkeit ist.'},
-        {q:'Wann ist eine Datenschutz-Folgenabschätzung erforderlich?', options:['Bei jeder Verarbeitung','Wenn voraussichtlich ein hohes Risiko für die Betroffenen besteht','Nur auf Anordnung der Aufsichtsbehörde'], correct:1, explain:'Typische Auslöser sind Profiling, besondere Datenkategorien und systematische Überwachung.'},
-        {q:'Warum ist der IT-Leiter als Datenschutzbeauftragter ungeeignet?', options:['Er hat zu wenig Fachwissen','Es entstünde ein Interessenkonflikt – er müsste sich selbst kontrollieren','Er ist zu teuer'], correct:1, explain:'Der DSB muss weisungsfrei sein und darf keine Selbstkontrolle ausüben.'}
-      ]
-    },
-    {
-      id:'m32-l4', title:'Beschäftigtendatenschutz und Arbeitsplatz', minutes:9,
-      body:
-        '<p>Beim Datenschutz am Arbeitsplatz treffen zwei Interessen aufeinander: die Kontrollrechte des Arbeitgebers und die Persönlichkeitsrechte der Beschäftigten. Die AP1 prüft das an konkreten Fällen.</p>'+
-        '<p><strong>Private Nutzung von E-Mail und Internet</strong> — der entscheidende Punkt:</p>'+
-        '<ul><li><strong>Private Nutzung verboten</strong> → Der Arbeitgeber darf im erforderlichen Umfang kontrollieren, etwa stichprobenartig und nach vorheriger Ankündigung.</li>'+
-        '<li><strong>Private Nutzung erlaubt oder geduldet</strong> → Deutlich strengere Grenzen. Der Arbeitgeber wird faktisch zum Anbieter eines Telekommunikationsdienstes; ein Zugriff auf Inhalte ist praktisch ausgeschlossen. <strong>Auch die stillschweigende Duldung zählt.</strong></li></ul>'+
-        '<p>Daraus folgt die klare Empfehlung: <strong>Die Nutzung ausdrücklich regeln</strong> — in einer Richtlinie oder Betriebsvereinbarung. Ein ungeregelter Zustand ist für den Arbeitgeber der ungünstigste.</p>'+
-        '<p><strong>Videoüberwachung</strong> ist nur zulässig, wenn ein berechtigter Zweck vorliegt (Diebstahlschutz, Hausrecht), sie erforderlich und verhältnismäßig ist und kein milderes Mittel genügt. Sie muss <strong>gekennzeichnet</strong> werden. Eine <strong>dauerhafte Überwachung von Arbeitsplätzen</strong> ist unzulässig, Toiletten und Pausenräume sind tabu. Löschfrist in der Regel wenige Tage.</p>'+
-        '<p><strong>Weitere Pflichten:</strong> Beschäftigte sind auf Vertraulichkeit zu verpflichten. Bewerbungsunterlagen abgelehnter Bewerber sind nach etwa <strong>sechs Monaten</strong> zu löschen — die Frist ergibt sich aus der Klagefrist des AGG. Personalakten dürfen nur von Befugten eingesehen werden.</p>'+
-        '<p><strong>BYOD</strong> (Bring Your Own Device) ist datenschutzrechtlich heikel: Auf einem Privatgerät liegen betriebliche und private Daten nebeneinander. Ohne technische Trennung — etwa einen Container per Mobile Device Management — und eine schriftliche Vereinbarung über Zugriffs- und Löschrechte ist BYOD kaum rechtssicher umsetzbar.</p>',
-      code:
-        "TYPISCHER PRUEFUNGSFALL\n\n"+
-        "  Ein Mitarbeiter ist laengere Zeit krank. Die Vertretung soll\n"+
-        "  sein Postfach oeffnen, um Kundenanfragen zu bearbeiten.\n\n"+
-        "  Private Nutzung VERBOTEN und das war geregelt:\n"+
-        "     Zugriff auf dienstliche Mails zulaessig, soweit\n"+
-        "     erforderlich. Vier-Augen-Prinzip und Protokollierung\n"+
-        "     empfohlen, eindeutig private Mails bleiben ungeoeffnet.\n\n"+
-        "  Private Nutzung ERLAUBT oder GEDULDET:\n"+
-        "     Zugriff grundsaetzlich UNZULAESSIG.\n"+
-        "     Loesungen: Einwilligung des Mitarbeiters einholen, oder\n"+
-        "     eine Abwesenheitsnotiz mit Verweis auf die Vertretung,\n"+
-        "     oder eine Weiterleitung nur kuenftiger Mails.\n\n"+
-        "  VORBEUGUNG - so haette man es loesen sollen:\n"+
-        "   - schriftliche Nutzungsrichtlinie, private Nutzung geregelt\n"+
-        "   - Funktionspostfaecher statt persoenlicher fuer Kundenkontakt\n"+
-        "   - Vertretungsregelung vorab vereinbart\n"+
-        "   - Abwesenheitsnotiz als Standardprozess",
-      codeLang:'Praxisfall',
-      tip:'Die Unterscheidung zwischen erlaubter und verbotener Privatnutzung entscheidet diese Aufgabenform vollständig. Prüfe im Sachverhalt, ob eine Regelung erwähnt wird — und wenn nicht, weise ausdrücklich darauf hin, dass auch eine stillschweigende Duldung wie eine Erlaubnis wirkt. Der Vorschlag, Funktionspostfächer statt persönlicher Postfächer für den Kundenkontakt zu nutzen, ist die beste vorbeugende Maßnahme und bringt Zusatzpunkte.',
-      quiz:[
-        {q:'Die private E-Mail-Nutzung wird stillschweigend geduldet. Was folgt daraus?', options:['Der Arbeitgeber darf frei zugreifen','Es gelten dieselben strengen Grenzen wie bei ausdrücklicher Erlaubnis','Die Duldung ist rechtlich bedeutungslos'], correct:1, explain:'Deshalb sollte die Nutzung immer ausdrücklich geregelt werden.'},
-        {q:'Wie lange werden Bewerbungsunterlagen abgelehnter Bewerber üblicherweise aufbewahrt?', options:['Bis zu 6 Monate','10 Jahre','Unbegrenzt'], correct:0, explain:'Die Frist leitet sich aus der Klagefrist des AGG ab.'},
-        {q:'Was ist bei Videoüberwachung am Arbeitsplatz unzulässig?', options:['Die Kennzeichnung durch Schilder','Die dauerhafte Überwachung einzelner Arbeitsplätze','Die Aufzeichnung des Eingangsbereichs'], correct:1, explain:'Sie erzeugt einen permanenten Überwachungsdruck und ist unverhältnismäßig.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m33', part:5, partTitle:'IT-Sicherheit & Datenschutz', relevanz:'hoch', title:'Datensicherheit im Betrieb',
-  lessons:[
-    {
-      id:'m33-l1', title:'Authentifizierung, Autorisierung und MFA', minutes:9,
-      body:
-        '<p>Drei Begriffe, die im Alltag vermischt werden und in der Prüfung getrennt gehören — das <strong>AAA-Modell</strong>:</p>'+
-        '<table class="lesson-table"><tr><th>Begriff</th><th>Frage</th><th>Beispiel</th></tr>'+
-        '<tr><td><strong>Identifikation</strong></td><td>Wer behauptest du zu sein?</td><td>Benutzername eingeben</td></tr>'+
-        '<tr><td><strong>Authentifizierung</strong></td><td>Kannst du das beweisen?</td><td>Passwort, Token, Fingerabdruck</td></tr>'+
-        '<tr><td><strong>Autorisierung</strong></td><td>Was darfst du?</td><td>Leserecht auf Ordner X</td></tr>'+
-        '<tr><td><strong>Accounting</strong></td><td>Was hast du getan?</td><td>Protokollierung, Audit-Log</td></tr></table>'+
-        '<p><strong>Die drei Faktoren</strong> der Authentifizierung — die Einteilung wird direkt abgefragt:</p>'+
-        '<ul><li><strong>Wissen</strong> — Passwort, PIN, Sicherheitsfrage</li>'+
-        '<li><strong>Besitz</strong> — Chipkarte, Hardware-Token, Smartphone mit Authenticator-App, TAN-Generator</li>'+
-        '<li><strong>Sein (Biometrie)</strong> — Fingerabdruck, Gesicht, Iris, Stimme</li></ul>'+
-        '<p><strong>Mehrfaktor-Authentifizierung</strong> liegt nur vor, wenn Faktoren aus <em>verschiedenen</em> Kategorien kombiniert werden. Passwort plus Sicherheitsfrage ist <strong>keine</strong> MFA — beides ist Wissen. Passwort plus Code aus der Authenticator-App ist MFA: Wissen plus Besitz.</p>'+
-        '<p><strong>Warum MFA so wirksam ist:</strong> Ein erbeutetes Passwort allein nützt dem Angreifer nichts mehr. Phishing, Datenbanklecks und Brute Force verlieren damit ihre Wirkung — das ist die mit Abstand wirksamste Einzelmaßnahme gegen Kontoübernahmen.</p>'+
-        '<p><strong>Biometrie hat eine Besonderheit:</strong> Ein Passwort lässt sich nach einem Leck ändern, ein Fingerabdruck nicht. Deshalb gehören biometrische Merkmale zu den besonderen Datenkategorien nach Art. 9 DSGVO und werden nie im Klartext, sondern als abgeleitetes Template gespeichert.</p>',
-      code:
-        "PASSWORTRICHTLINIE - Stand der Technik nach BSI\n\n"+
-        "  LAENGE schlaegt Komplexitaet.\n"+
-        "     Mindestens 12 Zeichen, besser eine Passphrase:\n"+
-        "     \"KaffeeTassePinguin7Blau\" ist sicherer und leichter\n"+
-        "     zu merken als \"Xk7#p2\".\n\n"+
-        "  KEIN erzwungener regelmaessiger Wechsel mehr.\n"+
-        "     Das BSI hat diese Empfehlung aufgegeben: Wechselzwang\n"+
-        "     fuehrt zu Passwort1!, Passwort2!, Passwort3!\n"+
-        "     Gewechselt wird bei konkretem Verdacht.\n\n"+
-        "  Kein Wiederverwenden ueber Dienste hinweg.\n"+
-        "  Passwortmanager einsetzen.\n"+
-        "  Abgleich gegen bekannte geleakte Passwoerter.\n\n"+
-        "SPEICHERUNG - niemals im Klartext\n"+
-        "  Hash mit SALT und einem bewusst LANGSAMEN Verfahren:\n"+
-        "     bcrypt, scrypt oder Argon2\n"+
-        "  Nicht: MD5, SHA-1, oder SHA-256 ohne Salt -\n"+
-        "  die sind zu schnell und damit gut durchprobierbar.\n\n"+
-        "RECHENBEISPIEL zur Laenge\n"+
-        "  8 Zeichen aus 95 moeglichen  -> 95^8  = ca. 6,6 x 10^15\n"+
-        "  12 Zeichen aus 95 moeglichen -> 95^12 = ca. 5,4 x 10^23\n"+
-        "  Vier Zeichen mehr bedeuten den Faktor 81 Millionen.",
-      codeLang:'Zugangsschutz',
-      tip:'Der Hinweis zum Wechselzwang ist aktuelles Prüfungswissen: Das BSI empfiehlt seit einigen Jahren keinen regelmäßigen Passwortwechsel mehr, weil er die Qualität der Passwörter senkt. Wer in einer Prüfung „Passwort alle 90 Tage wechseln" als Maßnahme nennt, gibt veralteten Stand wieder. Richtig ist: Länge statt Komplexität, kein Turnuswechsel, Wechsel bei Verdacht, dazu MFA und ein Passwortmanager.',
-      quiz:[
-        {q:'Welche Kombination ist echte Mehrfaktor-Authentifizierung?', options:['Passwort und Sicherheitsfrage','Passwort und Code aus der Authenticator-App','PIN und Geburtsdatum'], correct:1, explain:'Wissen plus Besitz – zwei Faktoren aus derselben Kategorie zählen nicht.'},
-        {q:'Was beantwortet die Autorisierung?', options:['Wer bist du?','Kannst du es beweisen?','Was darfst du?'], correct:2, explain:'Der Beweis der Identität ist die Authentifizierung.'},
-        {q:'Was empfiehlt das BSI heute zur Passwortsicherheit?', options:['Wechsel alle 90 Tage','Länge statt Komplexität, Wechsel nur bei Verdacht','Möglichst viele Sonderzeichen bei kurzer Länge'], correct:1, explain:'Wechselzwang führt zu vorhersehbaren Varianten wie Passwort1, Passwort2.'}
-      ]
-    },
-    {
-      id:'m33-l2', title:'Berechtigungskonzepte und Rollenmodell', minutes:8,
-      body:
-        '<p>Ein <strong>Berechtigungskonzept</strong> legt fest, wer auf welche Daten wie zugreifen darf. Es ist eine organisatorische Maßnahme mit technischer Umsetzung und wird nach Art. 32 DSGVO erwartet.</p>'+
-        '<p><strong>Die zwei Grundprinzipien:</strong></p>'+
-        '<ul><li><strong>Need-to-know</strong> — Zugriff nur auf die Daten, die für die Aufgabe erforderlich sind.</li>'+
-        '<li><strong>Least Privilege</strong> — nur die geringste nötige Rechtestufe. Wer Daten nur lesen muss, bekommt kein Schreibrecht.</li></ul>'+
-        '<p><strong>RBAC</strong> (Role Based Access Control) vergibt Rechte nicht an Personen, sondern an <strong>Rollen</strong>. Personen werden Rollen zugeordnet. Der Vorteil zeigt sich beim Wechsel: Wird eine Mitarbeiterin von der Buchhaltung in den Einkauf versetzt, tauscht man die Rolle — statt zwanzig Einzelrechte zu suchen und anzupassen.</p>'+
-        '<p><strong>Funktionstrennung</strong> (Segregation of Duties) verhindert, dass eine Person einen Vorgang allein von Anfang bis Ende durchführt. Wer eine Rechnung erfasst, soll sie nicht auch freigeben dürfen. Das ist keine Misstrauensfrage, sondern Schutz vor Fehlern und vor dem Verdacht.</p>'+
-        '<p><strong>Was regelmäßig vergessen wird — und in Prüfungen gern gefragt ist:</strong></p>'+
-        '<ul><li><strong>Rezertifizierung:</strong> Berechtigungen müssen regelmäßig überprüft werden, typischerweise jährlich. Sonst entsteht ein <strong>Berechtigungsstau</strong> — über Jahre gesammelte Rechte aus früheren Positionen.</li>'+
-        '<li><strong>Offboarding:</strong> Beim Ausscheiden sind <em>am letzten Arbeitstag</em> alle Zugänge zu sperren: Konten, VPN, Mail, Cloud-Dienste, Schließanlage, Diensthandy.</li>'+
-        '<li><strong>Administratorkonten</strong> werden nicht für die tägliche Arbeit genutzt. Jeder Administrator hat ein normales Benutzerkonto und ein separates privilegiertes Konto.</li></ul>',
-      code:
-        "BERECHTIGUNGSMATRIX - so stellt man sie dar\n\n"+
-        "  Rolle          Personal  Buchhaltung  Projekte  Konfig\n"+
-        "  ---------------------------------------------------------\n"+
-        "  Geschaeftsltg.   lesen      lesen       lesen      -\n"+
-        "  Personal       schreiben      -         lesen      -\n"+
-        "  Buchhaltung        -      schreiben     lesen      -\n"+
-        "  Projektleitung     -         lesen    schreiben    -\n"+
-        "  Mitarbeiter     eigene        -         lesen      -\n"+
-        "  IT-Admin           -          -           -     schreiben\n\n"+
-        "  Beachte zwei Dinge:\n"+
-        "   1. Die Geschaeftsleitung hat NICHT ueberall Vollzugriff.\n"+
-        "      Need-to-know gilt auch dort.\n"+
-        "   2. Der IT-Admin verwaltet die Systeme, hat aber keinen\n"+
-        "      fachlichen Zugriff auf Personal- und Buchhaltungsdaten.\n"+
-        "      Technisch koennte er sich Zugriff verschaffen - deshalb\n"+
-        "      braucht es Protokollierung und das Vier-Augen-Prinzip.\n\n"+
-        "OFFBOARDING-CHECKLISTE\n"+
-        "  [ ] Benutzerkonto deaktivieren (nicht sofort loeschen -\n"+
-        "      Daten und Nachvollziehbarkeit bleiben erhalten)\n"+
-        "  [ ] VPN-Zugang und Zertifikate widerrufen\n"+
-        "  [ ] Cloud- und Fremdsystemzugaenge entziehen\n"+
-        "  [ ] Postfach auf Vertretung umleiten\n"+
-        "  [ ] Hardware zurueck: Notebook, Handy, Token, Schluessel\n"+
-        "  [ ] Gemeinsame Passwoerter aendern\n"+
-        "  [ ] Chipkarte und Schliessberechtigung sperren",
-      codeLang:'Berechtigungen',
-      tip:'Der Hinweis in der Matrix, dass die Geschäftsleitung nicht überall Vollzugriff hat, überrascht viele und bringt in Begründungsaufgaben Punkte: Need-to-know gilt unabhängig von der Hierarchie. Beim Offboarding ist das Deaktivieren statt Löschen der Punkt, den Prüfer sehen wollen — ein gelöschtes Konto nimmt Dateizuordnungen und Protokollspuren mit.',
-      quiz:[
-        {q:'Was ist der Hauptvorteil von RBAC?', options:['Es ist kostenlos','Bei einem Positionswechsel wird nur die Rolle getauscht statt vieler Einzelrechte','Es braucht keine Passwörter'], correct:1, explain:'Rechte hängen an Rollen, Personen werden Rollen zugeordnet.'},
-        {q:'Was besagt die Funktionstrennung?', options:['Jeder arbeitet in einem eigenen Raum','Eine Person soll einen Vorgang nicht allein von Anfang bis Ende durchführen','Abteilungen haben getrennte Netze'], correct:1, explain:'Wer eine Rechnung erfasst, soll sie nicht auch freigeben.'},
-        {q:'Warum wird ein Konto beim Offboarding deaktiviert statt gelöscht?', options:['Aus Nostalgie','Damit Dateizuordnungen und Protokollspuren erhalten bleiben','Weil Löschen technisch unmöglich ist'], correct:1, explain:'Gelöscht wird erst nach Ablauf der Aufbewahrungs- und Nachweisfristen.'}
-      ]
-    },
-    {
-      id:'m33-l3', title:'Härtung, Patchmanagement und Schwachstellen', minutes:9,
-      body:
-        '<p><strong>Härtung</strong> bedeutet, die <strong>Angriffsfläche</strong> eines Systems zu verkleinern. Der Grundsatz lautet: Was nicht da ist, kann nicht angegriffen werden.</p>'+
-        '<p><strong>Die Härtungsmaßnahmen</strong> — eine dankbare Nennaufgabe:</p>'+
-        '<ul><li>nicht benötigte <strong>Dienste und Rollen deaktivieren</strong></li>'+
-        '<li>nicht benötigte <strong>Software deinstallieren</strong></li>'+
-        '<li><strong>Standardpasswörter ändern</strong> und Standardkonten deaktivieren oder umbenennen</li>'+
-        '<li>nicht benötigte <strong>Ports schließen</strong>, Firewall restriktiv konfigurieren</li>'+
-        '<li><strong>Rechte minimieren</strong>, kein Dauerbetrieb mit Administratorrechten</li>'+
-        '<li><strong>Protokollierung</strong> aktivieren und Logs zentral sammeln</li>'+
-        '<li><strong>Verschlüsselung</strong> aktivieren, unsichere Protokolle abschalten (Telnet, FTP, SMBv1)</li>'+
-        '<li>automatische <strong>Bildschirmsperre</strong> und Startreihenfolge im BIOS absichern</li></ul>'+
-        '<p><strong>Patchmanagement</strong> ist der geregelte Prozess, Sicherheitsupdates einzuspielen: Schwachstellen beobachten → bewerten → in einer Testgruppe einspielen → gestaffelt ausrollen → Erfolg prüfen → dokumentieren. Der <strong>Zielkonflikt</strong> ist Prüfungsstoff: Schnelles Patchen schließt Lücken, birgt aber das Risiko von Inkompatibilitäten. Gelöst wird er durch Teststufen und Wartungsfenster — nicht dadurch, dass man gar nicht patcht.</p>'+
-        '<p><strong>Die Begriffe rund um Schwachstellen:</strong></p>'+
-        '<table class="lesson-table"><tr><th>Begriff</th><th>Bedeutung</th></tr>'+
-        '<tr><td><strong>Schwachstelle</strong> (Vulnerability)</td><td>eine Schwäche, die ausgenutzt werden <em>kann</em></td></tr>'+
-        '<tr><td><strong>Exploit</strong></td><td>der Code, der sie tatsächlich ausnutzt</td></tr>'+
-        '<tr><td><strong>Bedrohung</strong> (Threat)</td><td>das mögliche Ereignis, das Schaden anrichtet</td></tr>'+
-        '<tr><td><strong>Risiko</strong></td><td>Eintrittswahrscheinlichkeit × Schadenshöhe</td></tr>'+
-        '<tr><td><strong>CVE</strong></td><td>weltweit eindeutige Nummer einer bekannten Schwachstelle</td></tr>'+
-        '<tr><td><strong>CVSS</strong></td><td>Bewertung ihrer Schwere von 0,0 bis 10,0</td></tr>'+
-        '<tr><td><strong>Zero-Day</strong></td><td>Schwachstelle, für die es noch keinen Patch gibt</td></tr></table>'+
-        '<p><strong>Die Risikoformel</strong> ist die Grundlage jeder Priorisierung: Eine Schwachstelle mit hoher Schwere in einem System ohne Netzzugang kann weniger dringend sein als eine mittlere Lücke im öffentlich erreichbaren Webserver.</p>',
-      code:
-        "RISIKOBEWERTUNG - so priorisiert man\n\n"+
-        "  Risiko = Eintrittswahrscheinlichkeit x Schadenshoehe\n\n"+
-        "  Skala je Faktor 1 bis 5:\n"+
-        "     1 = sehr gering ... 5 = sehr hoch\n\n"+
-        "  Schwachstelle              W  x  S  =  Risiko  Massnahme\n"+
-        "  -------------------------------------------------------------\n"+
-        "  Webserver, CVSS 7.5,\n"+
-        "  aus dem Internet erreichbar 5     5     25     SOFORT patchen\n\n"+
-        "  Datenbankserver, CVSS 9.1,\n"+
-        "  nur intern erreichbar       2     5     10     naechstes Fenster\n\n"+
-        "  Testsystem, CVSS 8.0,\n"+
-        "  keine Echtdaten             3     1      3     planmaessig\n\n"+
-        "  Beachte: Der hoechste CVSS-Wert ist NICHT automatisch das\n"+
-        "  hoechste Risiko. Erreichbarkeit und Schadenspotenzial\n"+
-        "  entscheiden mit.\n\n"+
-        "VIER WEGE MIT EINEM RISIKO UMZUGEHEN\n"+
-        "  Vermeiden   - die riskante Taetigkeit unterlassen\n"+
-        "  Vermindern  - Massnahmen ergreifen (der Normalfall)\n"+
-        "  Ueberwaelzen- Versicherung, Vertrag mit Dienstleister\n"+
-        "  Akzeptieren - bewusst tragen und dokumentieren",
-      codeLang:'Risikomanagement',
-      tip:'Die vier Umgangsarten mit einem Risiko — vermeiden, vermindern, überwälzen, akzeptieren — sind eine sichere Nennaufgabe. Wichtig ist die letzte: Ein Restrisiko bewusst zu akzeptieren ist eine legitime Entscheidung, solange sie dokumentiert und von der Leitung getragen wird. Und merke dir aus der Tabelle, dass der CVSS-Wert allein nicht priorisiert — erst die Kombination mit Erreichbarkeit und Schadenshöhe ergibt das Risiko.',
-      quiz:[
-        {q:'Wie berechnet sich das Risiko?', options:['Schadenshöhe geteilt durch Wahrscheinlichkeit','Eintrittswahrscheinlichkeit mal Schadenshöhe','Anzahl der Schwachstellen'], correct:1, explain:'Deshalb kann eine mittlere Lücke im Internetserver dringender sein als eine schwere intern.'},
-        {q:'Was ist ein Zero-Day?', options:['Eine Schwachstelle, für die es noch keinen Patch gibt','Ein Tag ohne Sicherheitsvorfall','Ein Patch am Erscheinungstag'], correct:0, explain:'Der Name kommt daher, dass Verteidiger null Tage Vorlauf hatten.'},
-        {q:'Was gehört NICHT zur Systemhärtung?', options:['Nicht benötigte Dienste abschalten','Möglichst viele Softwarepakete vorinstallieren','Standardpasswörter ändern'], correct:1, explain:'Jede zusätzliche Software vergrößert die Angriffsfläche.'}
-      ]
-    },
-    {
-      id:'m33-l4', title:'Notfallmanagement und Wiederanlauf', minutes:9,
-      body:
-        '<p>Wenn der Ernstfall eintritt, entscheidet die Vorbereitung. Das <strong>Notfallmanagement</strong> (Business Continuity Management) sorgt dafür, dass der Betrieb weiterläuft oder schnell wieder anläuft.</p>'+
-        '<p><strong>Die Abstufung</strong> — sie wird als Zuordnungsfrage gestellt:</p>'+
-        '<ul><li><strong>Störung</strong> — Beeinträchtigung im Rahmen des Normalbetriebs, mit den üblichen Mitteln lösbar.</li>'+
-        '<li><strong>Notfall</strong> — der Normalbetrieb ist erheblich unterbrochen, die Standardprozesse reichen nicht mehr, eine eigene Organisation greift.</li>'+
-        '<li><strong>Krise</strong> — die Existenz oder der Ruf des Unternehmens steht auf dem Spiel, die Leitung übernimmt.</li>'+
-        '<li><strong>Katastrophe</strong> — großflächiges Ereignis von außen, etwa Hochwasser oder Großbrand.</li></ul>'+
-        '<p><strong>Die Kennzahlen aus der Notfallplanung</strong> — sie kamen in Modul 15 schon vor und werden hier angewandt:</p>'+
-        '<ul><li><strong>RTO</strong> (Recovery Time Objective) — wie lange darf der Ausfall <em>dauern</em>? Bestimmt, welche Wiederanlaufverfahren nötig sind.</li>'+
-        '<li><strong>RPO</strong> (Recovery Point Objective) — wie viel Datenverlust ist tragbar? Bestimmt das <strong>Sicherungsintervall</strong>.</li>'+
-        '<li><strong>MTPD</strong> — die maximal tolerierbare Ausfalldauer, ab der ein Schaden existenzbedrohend wird.</li></ul>'+
-        '<p><strong>Der Notfallplan</strong> enthält: Alarmierungswege mit Erreichbarkeiten, klare Verantwortlichkeiten, Sofortmaßnahmen, Wiederanlaufreihenfolge der Systeme, Ausweichlösungen und Kommunikationsvorlagen. Er muss <strong>auch ohne funktionierende IT verfügbar</strong> sein — also ausgedruckt und an einem definierten Ort hinterlegt.</p>'+
-        '<p><strong>Der Punkt, an dem die meisten Konzepte scheitern:</strong> Ein Notfallplan, der nie geübt wurde, funktioniert im Ernstfall nicht. Ebenso gilt für Backups: <strong>Eine Sicherung ohne getestete Rücksicherung ist keine Sicherung.</strong> Erst der erfolgreiche Restore beweist, dass die Daten lesbar und vollständig sind.</p>',
-      code:
-        "WIEDERANLAUFREIHENFOLGE - Beispiel nach Ausfall des Serverraums\n\n"+
-        "  Prio 1  Netzwerk und Stromversorgung   RTO  1 h\n"+
-        "          ohne sie laeuft nichts anderes\n"+
-        "  Prio 2  Verzeichnisdienst / Anmeldung  RTO  2 h\n"+
-        "          ohne Anmeldung kein Zugriff\n"+
-        "  Prio 3  Warenwirtschaft                RTO  4 h\n"+
-        "          kritischer Geschaeftsprozess\n"+
-        "  Prio 4  Dateiserver                    RTO  8 h\n"+
-        "  Prio 5  Mailserver                     RTO 12 h\n"+
-        "  Prio 6  Intranet, Testsysteme          RTO 72 h\n\n"+
-        "  Die Reihenfolge ergibt sich aus den ABHAENGIGKEITEN und\n"+
-        "  der Kritikalitaet fuer den Geschaeftsprozess - nicht aus\n"+
-        "  der Vorliebe der IT-Abteilung.\n\n"+
-        "RPO BESTIMMT DAS SICHERUNGSINTERVALL\n"+
-        "  RPO 24 h  -> taegliche Sicherung genuegt\n"+
-        "  RPO  4 h  -> Sicherung alle 4 Stunden\n"+
-        "  RPO  0    -> Spiegelung in Echtzeit, synchrone Replikation\n"+
-        "               (deutlich teurer)\n\n"+
-        "RESTORE-TEST - was geprueft wird\n"+
-        "  [ ] Laesst sich das Medium ueberhaupt lesen?\n"+
-        "  [ ] Sind die Daten vollstaendig und aktuell?\n"+
-        "  [ ] Wie lange dauert die Rueckspielung wirklich?\n"+
-        "      (Haeufig laenger als im RTO angenommen!)\n"+
-        "  [ ] Funktioniert die Anwendung mit den Daten danach?\n"+
-        "  [ ] Ist das Verfahren dokumentiert und ohne den\n"+
-        "      einen Kollegen durchfuehrbar, der gerade Urlaub hat?",
-      codeLang:'Notfallplanung',
-      tip:'Der vorletzte Punkt der Restore-Checkliste ist der, an dem reale Projekte scheitern: Die Rückspielung dauert fast immer länger als geplant, weil die Datenmenge über die Jahre gewachsen ist. Wenn eine Aufgabe einen RTO nennt, prüfe, ob er mit dem gewählten Sicherungsverfahren überhaupt erreichbar ist — 2 TB von einem Bandlaufwerk zurückzuspielen dauert Stunden, nicht Minuten. Diese Rückkopplung zu erkennen, hebt eine Antwort deutlich ab.',
-      quiz:[
-        {q:'Was bestimmt der RPO?', options:['Wie lange die Wiederherstellung dauern darf','Das Sicherungsintervall, weil er den tolerierbaren Datenverlust angibt','Die Anzahl der Backupmedien'], correct:1, explain:'Die Dauer der Wiederherstellung regelt der RTO.'},
-        {q:'Warum ist ein ungetestetes Backup wertlos?', options:['Weil es zu viel Speicher belegt','Weil erst der erfolgreiche Restore beweist, dass die Daten lesbar und vollständig sind','Weil Backups immer fehlerhaft sind'], correct:1, explain:'Der Restore-Test zeigt außerdem, wie lange die Rückspielung wirklich dauert.'},
-        {q:'Wonach richtet sich die Wiederanlaufreihenfolge?', options:['Nach dem Alter der Systeme','Nach Abhängigkeiten und Kritikalität für den Geschäftsprozess','Nach der Größe der Datenmenge'], correct:1, explain:'Ohne Netzwerk und Anmeldedienst nützt der schnellste Anwendungsserver nichts.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
- "id": "m52",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Einsteiger · PHP Schritt für Schritt",
- "lessons": [
-  {
-   "id": "m52-l1",
-   "title": "Deine Werkstatt: PHP installieren und das erste Skript",
-   "minutes": 12,
-   "body": "<p>Bevor du programmierst, brauchst du drei Dinge: <strong>PHP selbst<\/strong>, einen <strong>Editor<\/strong> und ein <strong>Terminal<\/strong>. Nimm dir für diese Lektion Zeit – eine sauber eingerichtete Werkstatt erspart dir später viel Frust.<\/p> <p><strong>Schritt 1 – PHP installieren.<\/strong> Für Laravel empfiehlt das Team hinter dem Framework <strong>Laravel Herd<\/strong> (macOS und Windows): Es bringt PHP, Composer und einen lokalen Webserver in einem Paket mit. Alternativ installierst du PHP auf dem Mac mit Homebrew (<code>brew install php<\/code>), unter Linux über die Paketverwaltung.<\/p> <p><strong>Schritt 2 – prüfen.<\/strong> Öffne ein neues Terminal und tippe <code>php -v<\/code>. Erscheint eine Versionsnummer ab 8.3, ist alles bereit. Erscheint „command not found“, ist PHP nicht im Suchpfad – meistens hilft es, das Terminal neu zu öffnen.<\/p> <p><strong>Schritt 3 – Editor.<\/strong> VS Code mit der Erweiterung <em>PHP Intelephense<\/em> ist kostenlos und gut. PhpStorm ist die Profi-IDE und für Auszubildende über das JetBrains-Bildungsprogramm meist kostenlos.<\/p> <p><strong>Schritt 4 – das erste Skript.<\/strong> Lege einen Ordner an, darin eine Datei <code>hallo.php<\/code>, und führe sie mit <code>php hallo.php<\/code> im Terminal aus.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Ändere die Zeile mit <code>echo<\/code> so, dass dein Name ausgegeben wird. Lösche dann absichtlich ein Semikolon und führe das Skript erneut aus. Lies die Fehlermeldung genau: Welche Zeile nennt sie?<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>„Parse error: syntax error, unexpected …“ nennt oft die Zeile <em>nach<\/em> dem eigentlichen Fehler. PHP merkt erst dort, dass etwas fehlt. Schau also immer auch eine Zeile weiter oben nach.<\/p><\/div>",
-   "code": "# Version pruefen\nphp -v\n# PHP 8.4.x (cli) ...\n\n# Ordner anlegen und hineinwechseln\nmkdir -p ~/php-lernen && cd ~/php-lernen\n\n# Skript ausfuehren\nphp hallo.php\n\n# oder als Webseite: http://localhost:8000/hallo.php\nphp -S localhost:8000",
-   "codeLang": "Bash",
-   "code2": "<?php\n// hallo.php\ndeclare(strict_types=1);\n\n// Waehrend des Lernens: alle Fehler sichtbar machen\nerror_reporting(E_ALL);\nini_set('display_errors', '1');\n\n$name = 'Ada';\necho \"Hallo, $name!\" . PHP_EOL;\necho 'Heute ist ' . date('d.m.Y') . PHP_EOL;",
-   "code2Lang": "PHP",
-   "tip": "Lass dir beim Lernen alle Fehler anzeigen. Ein <code>php -i | grep display_errors<\/code> zeigt, ob das eingeschaltet ist. Auf einem echten Server gilt das Gegenteil: Fehler werden dort protokolliert, aber nie im Browser angezeigt, weil sie Pfade und Interna verraten.",
-   "quiz": [
-    {
-     "q": "Mit welchem Befehl prüfst du, ob PHP installiert ist und welche Version läuft?",
-     "options": [
-      "php -v",
-      "php check",
-      "php --start"
-     ],
-     "correct": 0,
-     "explain": "php -v gibt die Version aus. php -a öffnet zusätzlich eine interaktive Shell zum Ausprobieren."
-    },
-    {
-     "q": "Eine Fehlermeldung nennt Zeile 8, aber dort sieht alles korrekt aus. Wo suchst du zuerst?",
-     "options": [
-      "In Zeile 1",
-      "In der Zeile davor, z. B. nach einem fehlenden Semikolon",
-      "In einer anderen Datei"
-     ],
-     "correct": 1,
-     "explain": "Der Parser bemerkt den Fehler erst an der nächsten Stelle, die nicht mehr passt."
-    },
-    {
-     "q": "Warum zeigt man Fehler auf einem Produktionsserver nicht im Browser an?",
-     "options": [
-      "Weil Browser sie nicht darstellen können",
-      "Weil sie den Server verlangsamen",
-      "Weil sie Pfade und interne Details an Angreifer verraten"
-     ],
-     "correct": 2,
-     "explain": "In Produktion: display_errors aus, log_errors an."
-    }
-   ]
-  },
-  {
-   "id": "m52-l2",
-   "title": "Text ausgeben: echo, Strings und Verkettung",
-   "minutes": 13,
-   "body": "<p>Fast jedes Programm gibt Text aus. In PHP heißt Text <strong>String<\/strong>. Es gibt zwei Schreibweisen, und der Unterschied ist wichtiger, als er aussieht:<\/p> <table class=\"lesson-table\"><tr><th>Schreibweise<\/th><th>Variablen werden ersetzt?<\/th><th>Escape-Sequenzen wie \\n<\/th><th>Beispiel<\/th><\/tr> <tr><td><code>'einfach'<\/code><\/td><td>nein<\/td><td>nur <code>\\'<\/code> und <code>\\\\<\/code><\/td><td><code>'Preis: $preis'<\/code> bleibt wörtlich<\/td><\/tr> <tr><td><code>\"doppelt\"<\/code><\/td><td>ja<\/td><td>ja: <code>\\n<\/code>, <code>\\t<\/code>, <code>\\\"<\/code>, <code>\\$<\/code><\/td><td><code>\"Preis: $preis\"<\/code> setzt den Wert ein<\/td><\/tr><\/table> <p>Strings verbindest du mit dem <strong>Punkt<\/strong>: <code>'Hallo ' . $name<\/code>. Mit <code>.=<\/code> hängst du an eine vorhandene Variable an. Für komplexere Ausdrücke in doppelten Anführungszeichen setzt du geschweifte Klammern: <code>\"Summe: {$rechnung['summe']} EUR\"<\/code>.<\/p> <p>Für sauber formatierte Ausgaben gibt es <strong>sprintf<\/strong>: Platzhalter im Text, Werte dahinter. <code>%s<\/code> steht für einen String, <code>%d<\/code> für eine Ganzzahl, <code>%.2f<\/code> für eine Kommazahl mit zwei Nachkommastellen, <code>%05d<\/code> füllt mit Nullen auf.<\/p> <p>Für längeren Text mit vielen Zeilen ist <strong>Heredoc<\/strong> praktisch: <code>&lt;&lt;&lt;TEXT … TEXT;<\/code> verhält sich wie doppelte Anführungszeichen. Die Variante mit Anführungszeichen um den Namen (Nowdoc, <code>&lt;&lt;&lt;'TEXT'<\/code>) wie einfache.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Schreibe eine Zeile, die „Artikel 007 kostet 4,90 EUR“ ausgibt – mit <code>sprintf<\/code>, der Artikelnummer als Zahl <code>7<\/code> und dem Preis als <code>4.9<\/code>. Tipp: <code>%03d<\/code> und <code>number_format<\/code>.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Mit <code>+<\/code> statt <code>.<\/code> rechnet PHP, statt zu verbinden: <code>'3' + '4'<\/code> ergibt <code>7<\/code>, nicht <code>'34'<\/code>. Bei Texten ohne Zahl bricht PHP 8 sogar mit einem Fehler ab.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$vorname = 'Ada';\n$punkte  = 87;\n$quote   = 0.8734;\n\necho 'Hallo $vorname' . PHP_EOL;             // Hallo $vorname\necho \"Hallo $vorname\" . PHP_EOL;             // Hallo Ada\necho 'Hallo ' . $vorname . '!' . PHP_EOL;    // Hallo Ada!\n\n$zeile = 'Punkte: ';\n$zeile .= $punkte;                           // anhaengen\necho $zeile . PHP_EOL;                       // Punkte: 87\n\nprintf(\"%s hat %d Punkte (%.1f %%)\\n\", $vorname, $punkte, $quote * 100);\n// Ada hat 87 Punkte (87.3 %)\n\necho sprintf('Bestellung %05d', 42) . PHP_EOL;   // Bestellung 00042\n\n$mail = <<<TEXT\nHallo $vorname,\n\ndein Ergebnis: $punkte Punkte.\nTEXT;\necho $mail;",
-   "codeLang": "PHP",
-   "tip": "Im Berufsalltag begegnet dir <code>sprintf<\/code> ständig – in Log-Meldungen, Rechnungsnummern und Übersetzungen. Gewöhne dir an, Texte mit Platzhaltern zu bauen statt mit langen Punkt-Ketten. Das ist lesbarer und lässt sich später leichter übersetzen.",
-   "quiz": [
-    {
-     "q": "Was gibt echo 'Wert: $x'; aus, wenn $x = 5 ist?",
-     "options": [
-      "Wert: $x",
-      "Einen Fehler",
-      "Wert: 5"
-     ],
-     "correct": 0,
-     "explain": "In einfachen Anführungszeichen werden Variablen nicht ersetzt."
-    },
-    {
-     "q": "Mit welchem Operator hängst du Text an eine bestehende Variable an?",
-     "options": [
-      "+=",
-      ".=",
-      "&="
-     ],
-     "correct": 1,
-     "explain": "$text .= \"mehr\"; ist die Kurzform von $text = $text . \"mehr\";"
-    },
-    {
-     "q": "Was erzeugt sprintf(\"%05d\", 42)?",
-     "options": [
-      "42   ",
-      "42.000",
-      "00042"
-     ],
-     "correct": 2,
-     "explain": "%05d füllt auf fünf Stellen mit führenden Nullen auf – typisch für Rechnungs- und Artikelnummern."
-    }
-   ]
-  },
-  {
-   "id": "m52-l3",
-   "title": "Zahlen und Rechnen ohne Überraschungen",
-   "minutes": 13,
-   "body": "<p>PHP kennt zwei Zahlentypen: <strong>int<\/strong> für Ganzzahlen und <strong>float<\/strong> für Kommazahlen. Die Grundrechenarten funktionieren wie erwartet – mit ein paar Eigenheiten, die du einmal bewusst gesehen haben solltest:<\/p> <table class=\"lesson-table\"><tr><th>Ausdruck<\/th><th>Ergebnis<\/th><th>Warum<\/th><\/tr> <tr><td><code>10 / 5<\/code><\/td><td><code>2<\/code> (int)<\/td><td>geht glatt auf<\/td><\/tr> <tr><td><code>10 / 4<\/code><\/td><td><code>2.5<\/code> (float)<\/td><td><code>/<\/code> liefert bei Rest eine Kommazahl<\/td><\/tr> <tr><td><code>intdiv(10, 4)<\/code><\/td><td><code>2<\/code><\/td><td>ganzzahlige Division, schneidet ab<\/td><\/tr> <tr><td><code>10 % 4<\/code><\/td><td><code>2<\/code><\/td><td>Rest der Division (Modulo)<\/td><\/tr> <tr><td><code>-7 % 3<\/code><\/td><td><code>-1<\/code><\/td><td>das Vorzeichen folgt dem linken Operanden<\/td><\/tr> <tr><td><code>2 ** 10<\/code><\/td><td><code>1024<\/code><\/td><td>Potenz<\/td><\/tr> <tr><td><code>round(2.5)<\/code><\/td><td><code>3<\/code><\/td><td>kaufmännisch: .5 wird von der Null weg gerundet<\/td><\/tr> <tr><td><code>0.1 + 0.2 == 0.3<\/code><\/td><td><code>false<\/code><\/td><td>Kommazahlen sind binär nur angenähert<\/td><\/tr><\/table> <p>Der letzte Punkt ist kein PHP-Fehler, sondern betrifft jede Sprache, die Gleitkommazahlen nach IEEE 754 speichert. Für Geld gilt deshalb: in <strong>Cent als int<\/strong> rechnen und erst bei der Ausgabe formatieren.<\/p> <p>Zur Ausgabe in deutscher Schreibweise nutzt du <code>number_format($zahl, 2, ',', '.')<\/code> – Dezimalkomma und Tausenderpunkt. Kurzschreibweisen sparen Tipparbeit: <code>$i++<\/code> erhöht um eins, <code>$summe += $preis<\/code> addiert.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Berechne den Bruttopreis von 3 Artikeln zu je 19,99 EUR netto bei 19 % MwSt. – einmal mit Floats und einmal in Cent. Gib beide Ergebnisse mit <code>var_dump<\/code> aus und vergleiche.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p><code>if ($a + $b == 0.3)<\/code> mit Kommazahlen ist fast immer falsch. Vergleiche Floats mit einer Toleranz: <code>abs(($a + $b) - 0.3) &lt; 0.00001<\/code> – oder rechne gleich in Ganzzahlen.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nvar_dump(10 / 5);        // int(2)\nvar_dump(10 / 4);        // float(2.5)\nvar_dump(intdiv(10, 4)); // int(2)\nvar_dump(10 % 4);        // int(2)\n\n// Warenkorb in Cent - exakt\n$preisCent = 1999;\n$menge     = 3;\n$nettoCent = $preisCent * $menge;                       // 5997\n$bruttoCent = (int) round($nettoCent * 1.19);           // 7136\n\necho number_format($bruttoCent / 100, 2, ',', '.') . ' EUR' . PHP_EOL;   // 71,36 EUR\n\n// Gleitkomma-Falle\nvar_dump(0.1 + 0.2 == 0.3);                    // bool(false)\nvar_dump(abs((0.1 + 0.2) - 0.3) < 0.00001);    // bool(true)\n\n$zaehler = 0;\n$zaehler++;           // 1\n$zaehler += 5;        // 6\necho $zaehler . PHP_EOL;",
-   "codeLang": "PHP",
-   "tip": "Wenn du in einer Prüfung oder im Code-Review eine Geldberechnung mit Floats siehst, sprich es an. Für exakte Dezimalrechnung gibt es außerdem die Erweiterung <code>bcmath<\/code> (<code>bcadd('0.1', '0.2', 2)<\/code>), die mit Zahlen als Strings arbeitet.",
-   "quiz": [
-    {
-     "q": "Was ergibt 10 / 4 in PHP?",
-     "options": [
-      "2.5",
-      "3",
-      "2"
-     ],
-     "correct": 0,
-     "explain": "Der Operator / liefert einen float, wenn die Division nicht aufgeht. Für Ganzzahldivision gibt es intdiv()."
-    },
-    {
-     "q": "Welchen Wert hat -7 % 3?",
-     "options": [
-      "2",
-      "-1",
-      "1"
-     ],
-     "correct": 1,
-     "explain": "Beim Modulo folgt das Vorzeichen des Ergebnisses dem linken Operanden."
-    },
-    {
-     "q": "Wie rechnet man Geldbeträge am sichersten?",
-     "options": [
-      "Als String",
-      "Mit float und round() am Ende",
-      "In Cent als int"
-     ],
-     "correct": 2,
-     "explain": "Ganzzahlen sind exakt. Formatiert wird erst bei der Ausgabe."
-    }
-   ]
-  },
-  {
-   "id": "m52-l4",
-   "title": "Entscheidungen: if, else und Wahrheitswerte",
-   "minutes": 13,
-   "body": "<p>Mit <code>if<\/code> entscheidet dein Programm. Die Bedingung in den Klammern wird zu <strong>true<\/strong> oder <strong>false<\/strong> ausgewertet; bei true läuft der Block in geschweiften Klammern.<\/p> <p>Vergleiche liefern Wahrheitswerte: <code>===<\/code> (gleich und gleicher Typ), <code>!==<\/code>, <code>&lt;<\/code>, <code>&gt;<\/code>, <code>&lt;=<\/code>, <code>&gt;=<\/code>. Verknüpft werden sie mit <code>&amp;&amp;<\/code> (und), <code>||<\/code> (oder) und <code>!<\/code> (nicht).<\/p> <p>Spannend wird es, wenn kein Boolean in der Bedingung steht. Dann wandelt PHP den Wert um – und diese Tabelle solltest du kennen:<\/p> <table class=\"lesson-table\"><tr><th>wird zu false<\/th><th>wird zu true (Auswahl)<\/th><\/tr> <tr><td><code>false<\/code>, <code>0<\/code>, <code>0.0<\/code><\/td><td>jede andere Zahl, auch <code>-1<\/code><\/td><\/tr> <tr><td><code>\"\"<\/code> (leerer String) und <code>\"0\"<\/code><\/td><td><code>\"0.0\"<\/code>, <code>\" \"<\/code>, <code>\"false\"<\/code><\/td><\/tr> <tr><td><code>[]<\/code> (leeres Array)<\/td><td><code>[0]<\/code> – ein Array mit Inhalt<\/td><\/tr> <tr><td><code>null<\/code><\/td><td>jedes Objekt<\/td><\/tr><\/table> <p>Der String <code>\"0\"<\/code> ist der Klassiker: Eine Eingabe „0“ aus einem Formular gilt als false. Prüfe deshalb lieber ausdrücklich, was du meinst: <code>if ($eingabe !== '')<\/code> statt <code>if ($eingabe)<\/code>.<\/p> <p>Viele verschachtelte ifs lassen sich mit <strong>frühem Return<\/strong> (Guard Clause) entwirren: Erst die Sonderfälle abfangen und sofort zurückkehren, dann folgt der Normalfall ohne Einrückung.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Schreibe eine Funktion <code>note(int $punkte): string<\/code>, die ab 92 „sehr gut“, ab 81 „gut“, ab 67 „befriedigend“, ab 50 „ausreichend“ und darunter „nicht bestanden“ liefert – einmal mit if/elseif, einmal mit frühen Returns.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p><code>if ($alter = 18)<\/code> ist eine <em>Zuweisung<\/em>, kein Vergleich – die Bedingung ist dann immer wahr. Manche schreiben deshalb Vergleiche andersherum: <code>if (18 === $alter)<\/code>. Ein fehlendes Gleichheitszeichen erzeugt so einen Fehler statt eines stillen Bugs.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nfunction versandkosten(int $warenwertCent, string $land): int\n{\n    // Guard Clauses: Sonderfaelle zuerst\n    if ($warenwertCent <= 0) {\n        throw new InvalidArgumentException('Leerer Warenkorb');\n    }\n    if ($land !== 'DE') {\n        return 1490;                  // Ausland pauschal\n    }\n    if ($warenwertCent >= 5000) {\n        return 0;                     // ab 50 EUR versandkostenfrei\n    }\n    return 495;\n}\n\necho versandkosten(2000, 'DE') . PHP_EOL;   // 495\necho versandkosten(6000, 'DE') . PHP_EOL;   // 0\necho versandkosten(6000, 'AT') . PHP_EOL;   // 1490\n\n// Wahrheitswerte\nvar_dump((bool) '0');     // bool(false)\nvar_dump((bool) '0.0');   // bool(true)\nvar_dump((bool) []);      // bool(false)\nvar_dump((bool) [0]);     // bool(true)",
-   "codeLang": "PHP",
-   "tip": "<code>&amp;&amp;<\/code> bindet stärker als <code>||<\/code>, und die Wörter <code>and<\/code> und <code>or<\/code> binden schwächer als <code>=<\/code>. Daher die Regel aus fast jedem Style-Guide: Nimm <code>&amp;&amp;<\/code> und <code>||<\/code> und setze Klammern, sobald beide in einer Bedingung vorkommen.",
-   "quiz": [
-    {
-     "q": "Welcher Wert gilt in einer if-Bedingung als false?",
-     "options": [
-      "\"0\"",
-      "\" \"",
-      "\"0.0\""
-     ],
-     "correct": 0,
-     "explain": "Nur der String \"0\" und der leere String \"\" sind false. \"0.0\" und ein Leerzeichen sind true."
-    },
-    {
-     "q": "Was ist eine Guard Clause?",
-     "options": [
-      "Eine Sicherheitsabfrage für Passwörter",
-      "Ein früher Return für Sonderfälle am Anfang einer Funktion",
-      "Ein try-Block"
-     ],
-     "correct": 1,
-     "explain": "Sie reduziert die Verschachtelung: Sonderfälle zuerst, dann der Normalfall."
-    },
-    {
-     "q": "Was passiert bei if ($x = 5)?",
-     "options": [
-      "Ein Syntaxfehler",
-      "$x wird mit 5 verglichen",
-      "$x bekommt den Wert 5 und die Bedingung ist wahr"
-     ],
-     "correct": 2,
-     "explain": "Ein einzelnes = ist eine Zuweisung. Der Ausdruck hat den Wert 5 und gilt damit als true."
-    }
-   ]
-  },
-  {
-   "id": "m52-l5",
-   "title": "Schleifen Schritt für Schritt",
-   "minutes": 14,
-   "body": "<p>Schleifen wiederholen Code. PHP hat vier Arten, und jede hat ihren Einsatzzweck:<\/p> <table class=\"lesson-table\"><tr><th>Schleife<\/th><th>Wann<\/th><th>Mindestdurchläufe<\/th><\/tr> <tr><td><code>for<\/code><\/td><td>Anzahl ist vorher bekannt<\/td><td>0<\/td><\/tr> <tr><td><code>while<\/code><\/td><td>wiederholen, solange eine Bedingung gilt<\/td><td>0<\/td><\/tr> <tr><td><code>do … while<\/code><\/td><td>erst ausführen, dann prüfen<\/td><td>1<\/td><\/tr> <tr><td><code>foreach<\/code><\/td><td>jedes Element eines Arrays<\/td><td>0<\/td><\/tr><\/table> <p>Die <code>for<\/code>-Schleife hat drei Teile, getrennt durch Semikolons: <strong>Start<\/strong> (<code>$i = 1<\/code>), <strong>Bedingung<\/strong> (<code>$i &lt;= 10<\/code>) und <strong>Schritt<\/strong> (<code>$i++<\/code>). Lies sie laut: „Beginne bei 1, solange i höchstens 10 ist, erhöhe nach jedem Durchlauf um 1.“<\/p> <p>Mit <code>break<\/code> verlässt du eine Schleife sofort, mit <code>continue<\/code> springst du zum nächsten Durchlauf. Beides ist nützlich, aber sparsam einzusetzen – zu viele Sprünge machen Schleifen schwer lesbar.<\/p> <p>Der wichtigste Werkzeugkasten für Schleifen ist der <strong>Trockenlauf<\/strong>: Lege eine Tabelle mit einer Spalte pro Variable an und gehe Durchlauf für Durchlauf durch. Genau so prüft auch die AP1 Algorithmen.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Lass die Schleife unten (Einmaleins) im Kopf laufen und schreibe die ersten vier Ausgaben auf. Ändere sie dann so, dass nur gerade Ergebnisse ausgegeben werden – mit <code>continue<\/code>.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Endlosschleife: Wird die Variable in der Bedingung nie verändert (<code>while ($i &lt; 10)<\/code> ohne <code>$i++<\/code>), läuft das Skript, bis PHP es nach <code>max_execution_time<\/code> abbricht – in der Konsole sogar unbegrenzt. Abbrechen mit <kbd>Strg<\/kbd>+<kbd>C<\/kbd>.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n// for: das kleine Einmaleins der 7\nfor ($i = 1; $i <= 10; $i++) {\n    echo \"7 x $i = \" . (7 * $i) . PHP_EOL;\n}\n\n// while: Zinseszins - wie viele Jahre bis zur Verdopplung?\n$kapital = 1000.0;\n$jahre   = 0;\nwhile ($kapital < 2000) {\n    $kapital *= 1.05;\n    $jahre++;\n}\necho \"Verdoppelt nach $jahre Jahren\" . PHP_EOL;     // 15\n\n// do-while: mindestens einmal\ndo {\n    $wurf = random_int(1, 6);\n    echo \"Gewuerfelt: $wurf\" . PHP_EOL;\n} while ($wurf !== 6);\n\n// foreach mit Schluessel und Wert, break und continue\n$lager = ['Kabel' => 12, 'Maus' => 0, 'Monitor' => 3, 'Defekt' => -1];\nforeach ($lager as $artikel => $bestand) {\n    if ($bestand < 0) {\n        break;                         // Datenfehler: abbrechen\n    }\n    if ($bestand === 0) {\n        continue;                      // ausverkauft: ueberspringen\n    }\n    echo \"$artikel: $bestand Stueck\" . PHP_EOL;\n}",
-   "codeLang": "PHP",
-   "tip": "Kannst du bei einer Schleife nicht sicher sagen, wie oft sie läuft, schreib vor der Schleife einen Kommentar mit der Abbruchbedingung in Worten. Das zwingt dich, den Fall „läuft nie“ und „läuft endlos“ zu durchdenken – und hilft der Kollegin, die den Code später liest.",
-   "quiz": [
-    {
-     "q": "Welche Schleife läuft mindestens einmal?",
-     "options": [
-      "while",
-      "do … while",
-      "for"
-     ],
-     "correct": 1,
-     "explain": "do … while prüft die Bedingung erst nach dem ersten Durchlauf."
-    },
-    {
-     "q": "Was bewirkt continue in einer Schleife?",
-     "options": [
-      "Beendet die Schleife",
-      "Springt zum nächsten Durchlauf",
-      "Wiederholt den aktuellen Durchlauf"
-     ],
-     "correct": 1,
-     "explain": "break beendet die Schleife ganz, continue überspringt nur den Rest des aktuellen Durchlaufs."
-    },
-    {
-     "q": "Wie oft läuft for ($i = 0; $i < 5; $i++)?",
-     "options": [
-      "6-mal",
-      "4-mal",
-      "5-mal"
-     ],
-     "correct": 2,
-     "explain": "i nimmt die Werte 0, 1, 2, 3, 4 an – fünf Durchläufe."
-    }
-   ]
+var PARTS = [];
+MODULES.forEach(function(m){ if(PARTS.indexOf(m.part) === -1) PARTS.push(m.part); });
+var CARD_BY_ID = {};
+CARDS.forEach(function(c){ CARD_BY_ID[c.id] = c; });
+var RP_QUIZ_CONTRACTS=[];
+var RP_QUIZ_CONTRACT_BY_ID={};
+var VERSION = '2.4';
+var VERSION_DATUM = '2026-10-09';
+var DAY = 86400000;
+var DIAGRAMME = (function(){
+  /* Aufgeteilte Auslieferung: Die Texte laden erst beim Öffnen, die Zahl kommt aus dem Build (learning-manifest.json, stats.figures). */
+  if(window.RP_BODY_STATS && typeof window.RP_BODY_STATS.figures === 'number') return window.RP_BODY_STATS.figures;
+  var n = 0;
+  MODULES.forEach(function(m){ m.lessons.forEach(function(l){
+    n += (String(l.body || "").match(/<figure class="fig">/g) || []).length;
+  }); });
+  return n;
+})();
+function today0(){ var d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }
+var state = {
+  currentId:'heute',
+  /* Felder der spaeteren Ausbaustufen - vollstaendig initialisiert,
+     damit kein Zugriff auf undefined laufen kann. */
+  notizen:{}, merkzettel:{}, klausuren:[], ueTexte:{},
+  kalib:{},        /* 'sicher'|'unsicher'|'geraten' -> {n, r} */
+  erklaerungen:{}, /* lessonId -> {text, punkte, treffer, fehlt, tipp, ts} */
+  tutorFragen:0, subnetSolved:0, tagesziel:3, pruefungsdatum:'',
+  dayCount:null,
+  completed:new Set(),
+  srs:{},          /* cardId -> {ease, iv, due, reps, lapses} */
+  stats:{},        /* cardId -> {right, wrong} */
+  exams:[],        /* [{ts, score, total, byPart}] */
+  xp:0,
+  xpLog:{},        /* einmalige XP-Vergaben */
+  badges:{},       /* badgeId -> Zeitstempel */
+  streak:{ last:null, count:0, best:0 },
+  solved:{},       /* exerciseId -> Zeitstempel */
+  tracesDone:[],   /* abgeschlossene Trockendurchläufe */
+  cardsToday:{ day:null, n:0 }
+};
+var db = null;
+var STORAGE_KEY = window.RP_BOOT_USER ? 'rootpfad-user-'+window.RP_BOOT_USER.id+'-progress' : 'ap1-expertenpfad-progress-v1';
+function srsOf(id){ return state.srs[id] || null; }
+function dueCards(){
+  var t = today0() + DAY - 1;
+  return CARDS.filter(function(c){
+    var s = state.srs[c.id];
+    return s && s.due <= t;
+  });
+}
+function newCards(){ return CARDS.filter(function(c){ return !state.srs[c.id]; }); }
+function rateCard(id, rating){
+  var s = state.srs[id] || { ease:2.5, iv:0, due:today0(), reps:0, lapses:0 };
+  if(rating === 0){
+    s.ease = Math.max(1.3, s.ease - 0.20);
+    s.iv = 0; s.lapses++; s.reps = 0;
+    s.due = today0();
+  } else {
+    s.reps++;
+    if(rating === 1){ s.ease = Math.max(1.3, s.ease - 0.15); s.iv = s.iv ? Math.max(1, Math.round(s.iv * 1.2)) : 1; }
+    else if(rating === 2){ s.iv = s.reps === 1 ? 1 : (s.reps === 2 ? 3 : Math.round(s.iv * s.ease)); }
+    else { s.ease = Math.min(3.2, s.ease + 0.15); s.iv = s.reps === 1 ? 3 : Math.round(s.iv * s.ease * 1.3); }
+    s.iv = Math.min(s.iv, 365);
+    s.due = today0() + s.iv * DAY;
   }
- ]
-});
+  s.ts = Date.now();
+  state.srs[id] = s;
+  saveProgress();
+}
+function recordAnswer(id, correct){
+  var st = state.stats[id] || { right:0, wrong:0 };
+  if(correct){ st.right++; } else { st.wrong++; }
+  state.stats[id] = st;
+}
+function weakModules(){
+  var agg = {};
+  CARDS.forEach(function(c){
+    var st = state.stats[c.id];
+    if(!st) return;
+    var a = agg[c.moduleTitle] || (agg[c.moduleTitle] = { right:0, wrong:0, lessonId:c.lessonId });
+    a.right += st.right; a.wrong += st.wrong;
+  });
+  return Object.keys(agg).map(function(k){
+    var a = agg[k], tot = a.right + a.wrong;
+    return { title:k, rate: tot ? a.right / tot : 1, total:tot, lessonId:a.lessonId };
+  }).filter(function(x){ return x.total >= 2 && x.rate < 0.8; })
+    .sort(function(a,b){ return a.rate - b.rate; });
+}
+var RANKS = [
+  { lvl:1,  name:'Kabelträger',                  xp:0,     icon:'🔌' },
+  { lvl:2,  name:'Strg-C-Virtuose',              xp:150,   icon:'📋' },
+  { lvl:3,  name:'Ticket-Bändiger',              xp:400,   icon:'🎟️' },
+  { lvl:4,  name:'Der mit dem Subnetz tanzt',    xp:850,   icon:'🕺' },
+  { lvl:5,  name:'Netzplan-Flüsterer',           xp:1500,  icon:'🧭' },
+  { lvl:6,  name:'Normalform-Fanatiker',         xp:2400,  icon:'📐' },
+  { lvl:7,  name:'Wandelnder Prüfungskatalog',   xp:3600,  icon:'📚' },
+  { lvl:8,  name:'Schrecken aller Prüfer',       xp:5200,  icon:'👑' },
+  { lvl:9,  name:'Halbgott in Ethernet',         xp:7200,  icon:'⚡' },
+  { lvl:10, name:'Legende der Berufsschule',     xp:9800,  icon:'💎' },
+  { lvl:11, name:'Flüsterer der Fremdschlüssel',xp:12800, icon:'🗝️' },
+  { lvl:12, name:'Herr der Ringpuffer',          xp:16400, icon:'🌀' },
+  { lvl:13, name:'Pate der Patchfelder',         xp:20600, icon:'🧶' },
+  { lvl:14, name:'Kanzler der Kapselung',        xp:25500, icon:'🏛️' },
+  { lvl:15, name:'Sensei der Struktogramme',     xp:31200, icon:'🥋' },
+  { lvl:16, name:'Doktor der Datenschutzgrundverordnung', xp:37800, icon:'⚖️' },
+  { lvl:17, name:'Magier des magischen Dreiecks',xp:45400, icon:'🔮' },
+  { lvl:18, name:'Baron von Bit und Byte',       xp:54100, icon:'🧩' },
+  { lvl:19, name:'Großmeister der Grauzone',     xp:64000, icon:'🧙' },
+  { lvl:20, name:'Ehrenfachinformatiker',        xp:75000, icon:'🌟' }
+];
+function rankFor(xp){
+  var r = RANKS[0];
+  for(var i = 0; i < RANKS.length; i++){ if(xp >= RANKS[i].xp) r = RANKS[i]; }
+  return r;
+}
+function nextRank(xp){
+  for(var i = 0; i < RANKS.length; i++){ if(xp < RANKS[i].xp) return RANKS[i]; }
+  return null;
+}
+function levelProgress(){
+  var xp = state.xp || 0, cur = rankFor(xp), nxt = nextRank(xp);
+  if(!nxt) return { cur:cur, nxt:null, pct:100, need:0 };
+  var span = nxt.xp - cur.xp;
+  return { cur:cur, nxt:nxt, pct: Math.round(((xp - cur.xp) / span) * 100), need: nxt.xp - xp };
+}
+var BADGES = [
+  { id:'klausur_bestanden', icon:'✍️', name:'Mitgeschrieben',      desc:'Eine Mitschreib-Prüfung mit mindestens 50 Prozent bestanden.' },
+  { id:'klausur_glanz',     icon:'🏵️', name:'Korrektor sprachlos', desc:'Eine Mitschreib-Prüfung mit mindestens 90 Prozent.' },
+  { id:'netzwerker',  icon:'🌐', name:'Netzwerker',           desc:'Netzwerkgrundlagen komplett. Du weißt jetzt, warum es zwei Adressen braucht.' },
+  { id:'objektifiziert',icon:'🧱', name:'Objektifiziert',       desc:'Objektorientierung komplett. Klasse ist nicht gleich Objekt — und du weißt es.' },
+  { id:'datenschuetzer',icon:'🛡️', name:'Datenschützer',        desc:'Datenschutz und Datensicherheit komplett. Art. 22 sitzt.' },
+  { id:'kapselkoenig',icon:'🧬', name:'König der Kapselung',  desc:'Alle Fragen zur Objektorientierung fehlerfrei beantwortet.' },
+  { id:'quizmeister', icon:'🎯', name:'Quizmeister',          desc:'100 Quizfragen richtig beantwortet.' },
+  { id:'quizlegende', icon:'🎖️', name:'Quizlegende',          desc:'250 Quizfragen richtig beantwortet. Respekt.' },
+  { id:'tutor_fan',   icon:'💬', name:'Fragensteller',        desc:'Den AP1-Tutor zum ersten Mal befragt.' },
+  { id:'tutor_profi', icon:'🧠', name:'Dauergast beim Tutor', desc:'25 Fragen an den AP1-Tutor gestellt.' },
+  { id:'marathon',    icon:'🏅', name:'Marathonläufer',       desc:'25 Lektionen an einem einzigen Tag. Das war viel.' },
+  { id:'allrounder',  icon:'🧿', name:'Allrounder',           desc:'In allen neun Kursteilen mindestens ein Modul abgeschlossen.' },
+  { id:'night_owl',   icon:'🦉', name:'Nachteule',            desc:'Zwischen 0 und 5 Uhr eine Lektion abgeschlossen. Schlaf wird überschätzt.' },
+  { id:'early_bird',  icon:'🐓', name:'Der frühe Vogel',      desc:'Vor 6 Uhr gelernt. Respekt.' },
+  { id:'weekend',     icon:'🏖️', name:'Wochenendkrieger',     desc:'Am Samstag oder Sonntag gelernt, statt zu leben.' },
+  { id:'sitzfleisch', icon:'🪑', name:'Sitzfleisch',          desc:'10 Lektionen an einem einzigen Tag. Steh mal auf.' },
+  { id:'subnet50',    icon:'🎪', name:'Subnetz-Dompteur',     desc:'50 Subnetting-Aufgaben richtig. /26 hat jetzt Angst vor dir.' },
+  { id:'subnet_serie',icon:'🔥', name:'Auf der Rolle',        desc:'10 Subnetting-Aufgaben am Stück ohne Fehler.' },
+  { id:'kabelsalat',  icon:'🧶', name:'Kabelsalat entwirrt',  desc:'Die komplette Netzwerktechnik durchgearbeitet.' },
+  { id:'paragraph',   icon:'⚖️', name:'Paragraphenreiter',    desc:'IT-Sicherheit und Datenschutz komplett. Die DSGVO ist stolz.' },
+  { id:'erbsenzaehler',icon:'🪙', name:'Erbsenzähler',        desc:'Projektmanagement und Wirtschaft komplett. Skonto vom Zieleinkaufspreis, immer.' },
+  { id:'maschinist',  icon:'🤖', name:'Maschinenversteher',   desc:'Den kompletten KI-Teil geschafft. Ganz ohne Halluzination.' },
+  { id:'schrauber',   icon:'🔧', name:'Schrauber',            desc:'Hardware und Arbeitsplatz komplett. Du weißt jetzt, was VA sind.' },
+  { id:'dickkopf',    icon:'🪨', name:'Dickkopf',             desc:'Eine Karte dreimal verhauen und trotzdem nicht aufgegeben.' },
+  { id:'phoenix',     icon:'🦩', name:'Phönix',              desc:'Nach einer verhauenen Prüfung direkt eine bestanden.' },
+  { id:'nervenstark', icon:'🧊', name:'Nervenstark',          desc:'Eine Prüfung in der letzten Minute noch bestanden.' },
+  { id:'streber',     icon:'👓', name:'Streber',              desc:'30 Tage in Folge gelernt. Deine Freunde vermissen dich.' },
+  { id:'komplettist', icon:'🧹', name:'Komplettist',          desc:'Jede einzelne Auszeichnung vor dieser hier geholt.' },
+  { id:'first_lesson', icon:'📗', name:'Erster Schritt',      desc:'Eine Lektion abgeschlossen.' },
+  { id:'first_trace',  icon:'⚡', name:'Trockenschwimmer',    desc:'Einen Algorithmus komplett durchgespielt.' },
+  { id:'all_traces',   icon:'🔬', name:'Spurenleser',         desc:'Alle Trockendurchläufe gemeistert.' },
+  { id:'exam_pass',    icon:'🎯', name:'Bestanden',           desc:'Eine Prüfung mit mindestens 70 %.' },
+  { id:'exam_ace',     icon:'🏆', name:'Glanzleistung',       desc:'Eine Prüfung mit mindestens 90 %.' },
+  { id:'exam_perfect', icon:'💯', name:'Fehlerfrei',          desc:'Eine Prüfung ohne einen einzigen Fehler.' },
+  { id:'streak3',      icon:'🔥', name:'Dranbleiber',         desc:'3 Tage in Folge gelernt.' },
+  { id:'streak7',      icon:'🌟', name:'Gewohnheitstier',     desc:'7 Tage in Folge gelernt.' },
+  { id:'cards25',      icon:'🧠', name:'Gedächtnistraining',  desc:'25 Karten an einem Tag wiederholt.' },
+  { id:'module_done',  icon:'📦', name:'Modul im Kasten',     desc:'Ein komplettes Modul abgeschlossen.' },
+  { id:'part1_done',   icon:'🎓', name:'AP1-bereit',          desc:'Alle Module aus Teil I abgeschlossen.' },
+  { id:'subnet10',     icon:'🧮', name:'Subnetz-Rechner',     desc:'10 Subnetting-Aufgaben richtig geloest.' },
+  { id:'solver5',      icon:'🧪', name:'Praktiker',           desc:'5 Übungsaufgaben als gelöst markiert.' },
+  { id:'half_way',     icon:'⛰️', name:'Halbzeit',            desc:'Die Hälfte aller Lektionen geschafft.' },
+  { id:'all_lessons',  icon:'💎', name:'Durchgearbeitet',     desc:'Alle Lektionen abgeschlossen.' },
+  { id:'explorer',     icon:'🧭', name:'Kundschafter',        desc:'In jedem Kursteil mindestens eine Lektion begonnen.' },
+  { id:'deep_work',    icon:'📚', name:'Zehnerpack',          desc:'10 Lektionen abgeschlossen.' },
+  { id:'xp1000',       icon:'⭐', name:'Tausender',           desc:'1.000 XP gesammelt.' },
+  { id:'xp3000',       icon:'✨', name:'Dreitausender',       desc:'3.000 XP gesammelt.' },
+  { id:'streak14',     icon:'📅', name:'Zwei Wochen am Stück',desc:'14 Tage in Folge gelernt.' },
+  { id:'cards50',      icon:'🏃', name:'Karten-Marathon',     desc:'50 Karten an einem Tag wiederholt.' },
+  { id:'comeback',     icon:'🔁', name:'Ausgebügelt',         desc:'Eine zuvor falsch beantwortete Karte sicher gewusst.' },
+  { id:'speedster',    icon:'⚡', name:'Souverän',            desc:'Prüfung bestanden mit mehr als der Hälfte der Zeit übrig.' },
+  { id:'all_exercises',icon:'🛠️', name:'Alles gelöst',        desc:'Alle Übungsaufgaben als gelöst markiert.' },
+  { id:'expert_solver',icon:'🧠', name:'Expertenstufe',       desc:'Alle Aufgaben der Stufe „Experte" gelöst.' },
+  { id:'all_parts',    icon:'🏅', name:'Vollständig',         desc:'Alle Kursteile vollständig abgeschlossen.' }
+];
+var BADGE_BY_ID = {};
+BADGES.forEach(function(b){ BADGE_BY_ID[b.id] = b; });
+function todayKey(){
+  var d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function bumpStreak(){
+  var t = todayKey();
+  var s = state.streak;
+  if(s.last === t) return;
+  var y = new Date(); y.setDate(y.getDate() - 1);
+  var yKey = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+  s.count = (s.last === yKey) ? s.count + 1 : 1;
+  s.last = t;
+  s.best = Math.max(s.best || 0, s.count);
+  if(s.count >= 3) grantBadge('streak3');
+  if(s.count >= 7) grantBadge('streak7');
+  if(s.count >= 14) grantBadge('streak14');
+  if(s.count >= 30) grantBadge('streber');
+}
+var toastQueue = [];
+function showToast(html, cls){
+  var host = document.getElementById('toastHost');
+  if(!host) return;
+  var el = document.createElement('div');
+  el.className = 'toast' + (cls ? ' ' + cls : '');
+  el.innerHTML = html;
+  host.appendChild(el);
+  setTimeout(function(){ el.classList.add('out'); }, 2600);
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 3100);
+}
+var XP_FAKTOR = 2;
+function xpAnzeige(basis){ return basis * XP_FAKTOR; }
+function awardXp(amount, reason, once){
+  if(once){
+    if(state.xpLog[once]) return 0;
+    state.xpLog[once] = 1;
+  }
+  amount = xpAnzeige(amount);
+  var before = rankFor(state.xp || 0).lvl;
+  state.xp = (state.xp || 0) + amount;
+  bumpStreak();
+  var after = rankFor(state.xp).lvl;
+  showToast('<span class="t-xp">+'+amount+' XP</span><span class="t-reason">'+esc(reason)+'</span>');
+  if(state.xp >= 1000) grantBadge('xp1000');
+  if(state.xp >= 3000) grantBadge('xp3000');
+  if(after > before) celebrateLevel(rankFor(state.xp));
+  updateXpBar();
+  saveProgress();
+  return amount;
+}
+function grantBadge(id){
+  if(state.badges[id]) return;
+  var b = BADGE_BY_ID[id];
+  if(!b) return;
+  state.badges[id] = Date.now();
+  showToast('<span class="t-xp">'+b.icon+' Abzeichen</span><span class="t-reason">'+esc(b.name)+'</span>', 'badge');
+  state.xp = (state.xp || 0) + xpAnzeige(25);
+  updateXpBar();
+  saveProgress();
+}
+function fokusElemente(wurzel){
+  var sel = 'a[href], button:not([disabled]), input:not([disabled]), '+
+            'textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  return Array.prototype.slice.call(wurzel.querySelectorAll(sel)).filter(function(el){
+    return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+  });
+}
+function fokusFalle(wurzel, ev){
+  if(ev.key !== 'Tab') return false;
+  var f = fokusElemente(wurzel);
+  if(!f.length) return false;
+  var erst = f[0], letzt = f[f.length - 1];
+  if(ev.shiftKey && document.activeElement === erst){ ev.preventDefault(); letzt.focus(); return true; }
+  if(!ev.shiftKey && document.activeElement === letzt){ ev.preventDefault(); erst.focus(); return true; }
+  return false;
+}
+function celebrateLevel(rank){
+  var host = document.getElementById('toastHost');
+  if(!host) return;
+  var vorher = document.activeElement;
+  var el = document.createElement('div');
+  el.className = 'levelup';
+  el.innerHTML = '<div class="lu-card" role="dialog" aria-modal="true" aria-label="Aufgestiegen">'+
+    '<div class="lu-icon" aria-hidden="true">'+rank.icon+'</div>'+
+    '<div class="lu-lbl">Aufgestiegen</div>'+
+    '<div class="lu-name">'+esc(rank.name)+'</div>'+
+    '<div class="lu-stufe">Level '+rank.lvl+' von '+RANKS.length+'</div>'+
+    '<button class="check-btn" id="luWeiter" type="button">Weiter</button></div>';
+  function luSchliessen(){
+    el.remove();
+    try{ if(vorher && vorher.focus) vorher.focus(); }catch(e){}
+  }
+  el.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){ ev.preventDefault(); luSchliessen(); return; }
+    fokusFalle(el, ev);
+  });
+  host.appendChild(el);
+  var weiter = el.querySelector('#luWeiter');
+  if(weiter){ weiter.onclick = luSchliessen; weiter.focus(); }
+}
+function countLessonToday(){
+  var heute = todayKey();
+  if(!state.dayCount || state.dayCount.day !== heute) state.dayCount = { day:heute, n:0 };
+  state.dayCount.n++;
+}
+function checkMilestones(){
+  if(state.completed.size >= 1) grantBadge('first_lesson');
+  if(state.completed.size >= Math.ceil(TOTAL / 2)) grantBadge('half_way');
+  if(state.completed.size >= TOTAL) grantBadge('all_lessons');
+  var anyModule = MODULES.some(function(m){
+    return m.lessons.every(function(l){ return state.completed.has(l.id); });
+  });
+  if(anyModule) grantBadge('module_done');
+  var part1 = MODULES.filter(function(m){ return m.part === 1; });
+  if(part1.every(function(m){ return m.lessons.every(function(l){ return state.completed.has(l.id); }); })) grantBadge('part1_done');
+  var nSolved = Object.keys(state.solved || {}).length;
+  if(nSolved >= 5) grantBadge('solver5');
+  if(nSolved >= EXERCISES.length) grantBadge('all_exercises');
+  var experts = EXERCISES.filter(function(e){ return e.level === 3; });
+  if(experts.length && experts.every(function(e){ return state.solved[e.id]; })) grantBadge('expert_solver');
+  if((state.tracesDone || []).length >= 1) grantBadge('first_trace');
+  if((state.tracesDone || []).length >= TRACES.length) grantBadge('all_traces');
+  if(state.completed.size >= 10) grantBadge('deep_work');
+  /* In jedem Kursteil mindestens eine Lektion begonnen */
+  var touchedAll = PARTS.every(function(p){
+    return MODULES.filter(function(m){ return m.part === p; })
+      .some(function(m){ return m.lessons.some(function(l){ return state.completed.has(l.id); }); });
+  });
+  if(touchedAll) grantBadge('explorer');
+  var allParts = PARTS.every(function(p){
+    return MODULES.filter(function(m){ return m.part === p; })
+      .every(function(m){ return m.lessons.every(function(l){ return state.completed.has(l.id); }); });
+  });
+  if(allParts) grantBadge('all_parts');
+
+  /* Teilbezogene Auszeichnungen */
+  var teilFertig = function(p){
+    var mods = MODULES.filter(function(m){ return m.part === p; });
+    return mods.length > 0 && mods.every(function(m){
+      return m.lessons.every(function(l){ return state.completed.has(l.id); }); });
+  };
+  if(teilFertig(4)) grantBadge('kabelsalat');
+  if(teilFertig(5)) grantBadge('paragraph');
+  if(teilFertig(6)) grantBadge('erbsenzaehler');
+  if(teilFertig(7)) grantBadge('schrauber');
+  if(teilFertig(9)) grantBadge('maschinist');
+
+  /* Auszeichnungen fuer die neuen Themenmodule */
+  var modFertig = function(id){
+    var mm = MODULES.filter(function(x){ return x.id === id; })[0];
+    return !!mm && mm.lessons.every(function(l){ return state.completed.has(l.id); });
+  };
+  if(modFertig('m31')) grantBadge('netzwerker');
+  if(modFertig('m34') && modFertig('m35')) grantBadge('objektifiziert');
+  if(modFertig('m32') && modFertig('m33')) grantBadge('datenschuetzer');
+
+  /* In jedem Kursteil mindestens ein Modul vollstaendig */
+  var rund = PARTS.every(function(pt){
+    return MODULES.filter(function(mm){ return mm.part === pt; })
+      .some(function(mm){ return mm.lessons.every(function(l){ return state.completed.has(l.id); }); });
+  });
+  if(rund) grantBadge('allrounder');
+
+  /* Richtig beantwortete Fragen zaehlen */
+  var richtig = 0;
+  Object.keys(state.stats || {}).forEach(function(k){ richtig += (state.stats[k].right || 0); });
+  if(richtig >= 100) grantBadge('quizmeister');
+  if(richtig >= 250) grantBadge('quizlegende');
+
+  /* Alle Fragen der OOP-Module fehlerfrei */
+  var oopIds = [];
+  MODULES.filter(function(mm){ return mm.id === 'm34' || mm.id === 'm35'; })
+    .forEach(function(mm){ mm.lessons.forEach(function(l){
+      (l.quiz || []).forEach(function(q, qi){ oopIds.push(l.id + '#' + qi); }); }); });
+  if(oopIds.length && oopIds.every(function(id){
+       var st = state.stats[id]; return st && st.right > 0 && !st.wrong; })) grantBadge('kapselkoenig');
+
+  if(state.dayCount && state.dayCount.n >= 25) grantBadge('marathon');
+
+  /* Tageszeit und Wochentag - kleine Belohnung fuer ungewoehnliche Lernzeiten */
+  var jetzt = new Date(), std = jetzt.getHours(), tag = jetzt.getDay();
+  if(std < 5) grantBadge('night_owl');
+  else if(std < 6) grantBadge('early_bird');
+  if(tag === 0 || tag === 6) grantBadge('weekend');
+
+  /* Tagespensum */
+  var heute = todayKey();
+  if(!state.dayCount || state.dayCount.day !== heute) state.dayCount = { day:heute, n:0 };
+  if(state.dayCount.n >= 10) grantBadge('sitzfleisch');
+
+  /* Komplettist zum Schluss: alle anderen Auszeichnungen vorhanden */
+  var offen = BADGES.filter(function(b){ return b.id !== 'komplettist' && !state.badges[b.id]; });
+  if(offen.length === 0) grantBadge('komplettist');
+}
+function updateXpBar(){
+  var lp = levelProgress();
+  var chip = document.getElementById('lvlChip');
+  if(chip){
+    chip.innerHTML = '<span class="lc-icon">'+lp.cur.icon+'</span><span class="lc-lvl">Lv '+lp.cur.lvl+'</span>'+
+                     '<span class="lc-name">'+esc(lp.cur.name)+'</span>';
+    chip.setAttribute('aria-label', 'Lv '+lp.cur.lvl+' '+lp.cur.name+', Profil und Abzeichen öffnen');
+    chip.title = lp.nxt ? ('Noch ' + lp.need + ' XP bis „' + lp.nxt.name + '"') : 'Höchster Rang erreicht';
+  }
+  var bar = document.getElementById('xpFill');
+  if(bar) bar.style.width = lp.pct + '%';
+  var lab = document.getElementById('xpLabel');
+  if(lab) lab.textContent = (state.xp || 0) + ' XP';
+  var st = document.getElementById('streakChip');
+  if(st){
+    var c = state.streak.count || 0;
+    st.hidden = c < 1;
+    st.textContent = '🔥 ' + c;
+    st.title = c + ' Tag(e) in Folge · Bestwert: ' + (state.streak.best || c);
+  }
+}
+function lessonById(id){ return FLAT.find(function(l){ return l.id===id; }); }
+function moduleOfLesson(id){ return MODULES.find(function(m){ return m.lessons.some(function(l){ return l.id===id; }); }); }
+function serialize(){
+  return {
+    completed: Array.from(state.completed),
+    srs: state.srs,
+    stats: state.stats,
+    exams: state.exams.slice(-20),
+    xp: state.xp || 0,
+    xpLog: state.xpLog,
+    badges: state.badges,
+    streak: state.streak,
+    solved: state.solved,
+    tracesDone: state.tracesDone,
+    cardsToday: state.cardsToday,
+    subnetSolved: state.subnetSolved || 0,
+    dayCount: state.dayCount || null,
+    tutorFragen: state.tutorFragen || 0,
+    pruefungsdatum: state.pruefungsdatum || '',
+    tagesziel: state.tagesziel || 3,
+    notizen: state.notizen || {},
+    ueTexte: state.ueTexte || {},
+    merkzettel: state.merkzettel || {},
+    klausuren: (state.klausuren || []).slice(-20),
+    kalib: state.kalib || {},
+    erklaerungen: state.erklaerungen || {},
+    learning: state.learning || { events:{}, missions:{} },
+    competencies: state.competencies || {submissions:{},variants:{},feedback:{}},
+    updatedAt: Date.now()
+  };
+}
+function mergeIn(data){
+  if(!data) return;
+  if(data.competencies&&typeof data.competencies==='object'){
+    state.competencies=state.competencies||{submissions:{},variants:{},feedback:{}};
+    ['submissions','variants','feedback'].forEach(function(kind){Object.keys(data.competencies[kind]||{}).forEach(function(key){var incoming=data.competencies[kind][key],mine=state.competencies[kind][key];if(incoming&&(!mine||(incoming.ts||0)>=(mine.ts||0)))state.competencies[kind][key]=incoming;});});
+  }
+  if(data.learning && typeof data.learning === 'object'){
+    state.learning = state.learning || {events:{},missions:{}};
+    Object.assign(state.learning.events, data.learning.events || {});
+    Object.keys(data.learning.missions || {}).forEach(function(key){
+      var incoming = data.learning.missions[key], mine = state.learning.missions[key];
+      if(incoming && (!mine || incoming.ts > mine.ts)) state.learning.missions[key] = incoming;
+    });
+  }
+  if(Array.isArray(data.completed)) data.completed.forEach(function(id){ state.completed.add(id); });
+  if(data.srs && typeof data.srs === 'object'){
+    Object.keys(data.srs).forEach(function(k){
+      var incoming = data.srs[k], mine = state.srs[k];
+      if(!mine || (incoming.ts || 0) > (mine.ts || 0)) state.srs[k] = incoming;
+    });
+  }
+  if(data.stats && typeof data.stats === 'object'){
+    Object.keys(data.stats).forEach(function(k){
+      var inc = data.stats[k], mine = state.stats[k];
+      if(!mine){ state.stats[k] = inc; }
+      else { state.stats[k] = { right: Math.max(mine.right, inc.right||0), wrong: Math.max(mine.wrong, inc.wrong||0) }; }
+    });
+  }
+  if(Array.isArray(data.exams)){
+    var seen = {};
+    state.exams.concat(data.exams).forEach(function(e){ if(e && e.ts) seen[e.ts] = e; });
+    state.exams = Object.keys(seen).map(function(k){ return seen[k]; })
+                    .sort(function(a,b){ return a.ts - b.ts; }).slice(-20);
+  }
+  /* Spielstand: immer der höhere/vollständigere Wert gewinnt */
+  if(typeof data.xp === 'number') state.xp = Math.max(state.xp || 0, data.xp);
+  if(typeof data.subnetSolved === 'number') state.subnetSolved = Math.max(state.subnetSolved || 0, data.subnetSolved);
+  if(typeof data.tutorFragen === 'number') state.tutorFragen = Math.max(state.tutorFragen || 0, data.tutorFragen);
+  if(data.pruefungsdatum && !state.pruefungsdatum) state.pruefungsdatum = data.pruefungsdatum;
+  if(typeof data.tagesziel === 'number') state.tagesziel = data.tagesziel;
+  if(data.notizen && typeof data.notizen === 'object'){
+    state.notizen = state.notizen || {};
+    Object.keys(data.notizen).forEach(function(k){ if(!state.notizen[k]) state.notizen[k] = data.notizen[k]; });
+  }
+  if(data.ueTexte && typeof data.ueTexte === 'object'){
+    state.ueTexte = state.ueTexte || {};
+    Object.keys(data.ueTexte).forEach(function(k){ if(!state.ueTexte[k]) state.ueTexte[k] = data.ueTexte[k]; });
+  }
+  if(Array.isArray(data.klausuren)){
+    var bekannt = {};
+    (state.klausuren || []).forEach(function(k){ bekannt[k.ts] = 1; });
+    state.klausuren = (state.klausuren || []).concat(
+      data.klausuren.filter(function(k){ return !bekannt[k.ts]; })
+    ).sort(function(a,b){ return a.ts - b.ts; }).slice(-20);
+  }
+  /* Kalibrierung: je Stufe gewinnt der vollstaendigere Zaehler. Addieren
+     wuerde beim Abgleich zweier Geraete doppelt zaehlen. */
+  if(data.kalib && typeof data.kalib === 'object'){
+    state.kalib = state.kalib || {};
+    Object.keys(data.kalib).forEach(function(k){
+      var inc = data.kalib[k] || {}, mine = state.kalib[k];
+      if(!mine || (inc.n || 0) > (mine.n || 0)) state.kalib[k] = { n:inc.n||0, r:inc.r||0 };
+    });
+  }
+  if(data.erklaerungen && typeof data.erklaerungen === 'object'){
+    state.erklaerungen = state.erklaerungen || {};
+    Object.keys(data.erklaerungen).forEach(function(k){
+      var inc = data.erklaerungen[k], mine = state.erklaerungen[k];
+      if(!mine || (inc.ts || 0) > (mine.ts || 0)) state.erklaerungen[k] = inc;
+    });
+  }
+  if(data.merkzettel && typeof data.merkzettel === 'object'){
+    state.merkzettel = state.merkzettel || {};
+    Object.keys(data.merkzettel).forEach(function(k){ if(!state.merkzettel[k]) state.merkzettel[k] = data.merkzettel[k]; });
+  }
+  if(data.dayCount && data.dayCount.day === todayKey()){
+    if(!state.dayCount || state.dayCount.day !== todayKey()) state.dayCount = { day:todayKey(), n:0 };
+    state.dayCount.n = Math.max(state.dayCount.n, data.dayCount.n || 0);
+  }
+  if(data.xpLog) Object.keys(data.xpLog).forEach(function(k){ state.xpLog[k] = 1; });
+  if(data.badges) Object.keys(data.badges).forEach(function(k){
+    if(!state.badges[k]) state.badges[k] = data.badges[k];
+  });
+  if(data.solved) Object.keys(data.solved).forEach(function(k){
+    if(!state.solved[k]) state.solved[k] = data.solved[k];
+  });
+  if(Array.isArray(data.tracesDone)) data.tracesDone.forEach(function(t){
+    if(state.tracesDone.indexOf(t) === -1) state.tracesDone.push(t);
+  });
+  if(data.streak && (data.streak.count || 0) >= 0){
+    var mine = state.streak || { count:0, best:0, last:null };
+    state.streak = ((data.streak.last || '') > (mine.last || '')) ? data.streak : mine;
+    state.streak.best = Math.max(mine.best || 0, data.streak.best || 0);
+  }
+  if(data.cardsToday && data.cardsToday.day === todayKey()){
+    if(!state.cardsToday || state.cardsToday.day !== todayKey()) state.cardsToday = data.cardsToday;
+    else state.cardsToday.n = Math.max(state.cardsToday.n, data.cardsToday.n);
+  }
+}
+function loadLocal(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) mergeIn(JSON.parse(raw));
+  }catch(e){}
+}
+var speicherGewarnt = false;
+function saveLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+    speicherGewarnt = false;
+  }catch(e){
+    if(speicherGewarnt) return;
+    speicherGewarnt = true;
+    var voll = e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014);
+    zeigeBanner('Dein Fortschritt wird nicht gespeichert.',
+      voll
+        ? 'Der Speicher dieses Browsers ist voll. Sichere deinen Stand im Profil ueber die '+
+          'Zwischenablage und gib dort Platz frei, sonst geht die heutige Arbeit verloren.'
+        : 'Dieser Browser erlaubt kein Speichern, etwa im privaten Fenster. Alles bleibt nur, '+
+          'solange der Tab offen ist. Sichere deinen Stand im Profil ueber die Zwischenablage.',
+      'localStorage: ' + ((e && e.name) || 'nicht verfuegbar'));
+  }
+}
+async function initDb(){
+  try{
+    if(window.claude && window.claude.use){ db = await window.claude.use('db'); }
+  }catch(e){ db = null; }
+}
+async function loadProgress(){
+  loadLocal();
+  render();
+  await initDb();
+  if(db){
+    try{
+      var snap = await db.doc('progress/state').get();
+      if(snap.exists) mergeIn(snap.data());
+    }catch(e){}
+    render();
+    subscribeProgress();
+  }
+  updateSyncHint();
+  saveProgress();
+}
+var savePending = false;
+var dbWriteChain = Promise.resolve();
+var dbSyncOff = false;
+async function saveProgress(){
+  saveLocal();
+  updateDueBadge();
+  if(!db || dbSyncOff || savePending) return;
+  savePending = true;
+  setTimeout(function(){
+    savePending = false;
+    /* Die Kette stellt sicher, dass nie zwei Schreibvorgaenge auf dasselbe
+       Dokument ueberlappen - das verlangt der db-Vertrag ausdruecklich. */
+    dbWriteChain = dbWriteChain.then(function(){
+      return db.doc('progress/state').set(serialize());
+    }).catch(function(err){
+      if(err && (err.code === 'revoked' || err.code === 'not_granted')) dbSyncOff = true;
+    });
+  }, 600);
+}
+var dbUnsub = null;
+function subscribeProgress(){
+  if(!db || dbUnsub) return;
+  try{
+    dbUnsub = db.doc('progress/state').onSnapshot(function(snap){
+      if(!snap.exists || snap.metadata.hasPendingWrites) return;
+      mergeIn(snap.data());
+      saveLocal();
+      updateXpBar();
+      updateDueBadge();
+    }, function(err){
+      dbUnsub = null;
+      if(err && err.code === 'revoked'){ dbSyncOff = true; updateSyncHint(); }
+    });
+  }catch(e){ dbUnsub = null; }
+}
+function updateSyncHint(){
+  var el = document.getElementById('syncHint');
+  if(!el) return;
+  var an = db && !dbSyncOff;
+  el.textContent = an ? 'Geraeteabgleich aktiv' : 'nur auf diesem Geraet';
+  el.className = 'sync-hint' + (an ? ' on' : '');
+}
+function exportProgress(){
+  var payload = { kurs:'ap1-expertenpfad', version:1, exportiert:new Date().toISOString(), daten:serialize() };
+  var text = JSON.stringify(payload);
+  var ta = document.getElementById('ioArea');
+  if(ta){ ta.value = text; ta.hidden = false; ta.select(); }
+  try{
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('<span class="t-xp">Kopiert</span><span class="t-reason">Fortschritt in der Zwischenablage</span>');
+    }).catch(function(){
+      showToast('<span class="t-xp">Bereit</span><span class="t-reason">Text unten markieren und kopieren</span>');
+    });
+  }catch(e){}
+}
+function showImport(){
+  var ta = document.getElementById('ioArea');
+  if(!ta) return;
+  ta.value = ''; ta.hidden = false; ta.placeholder = 'Hier den exportierten Text einfuegen und dann auf Uebernehmen klicken.';
+  ta.focus();
+  var b = document.getElementById('ioApply'); if(b) b.hidden = false;
+}
+function applyImport(){
+  var ta = document.getElementById('ioArea');
+  if(!ta || !ta.value.trim()){ showToast('<span class="t-xp">Leer</span><span class="t-reason">Kein Text eingefuegt</span>'); return; }
+  var obj;
+  try{ obj = JSON.parse(ta.value); }
+  catch(e){ showToast('<span class="t-xp">Fehler</span><span class="t-reason">Das ist kein gueltiger Export</span>'); return; }
+  var daten = obj && obj.daten ? obj.daten : obj;
+  if(!daten || typeof daten !== 'object' || !('completed' in daten || 'srs' in daten)){
+    showToast('<span class="t-xp">Fehler</span><span class="t-reason">Unbekanntes Format</span>'); return;
+  }
+  mergeIn(daten);            /* additiv: der bisherige Stand bleibt erhalten */
+  saveProgress();
+  render();
+  showToast('<span class="t-xp">Übernommen</span><span class="t-reason">Fortschritt zusammengeführt</span>');
+}
+function updateDueBadge(){
+  var b = document.getElementById('dueBadge');
+  if(!b) return;
+  var n = dueCards().length;
+  b.hidden = n === 0;
+  b.textContent = n;
+  b.className = 'mastery-pill' + (n > 0 ? ' bad' : '');
+}
+function toggleComplete(id, checked){
+  if(checked){
+    state.completed.add(id);
+    awardXp(50, 'Lektion abgeschlossen', 'lesson:' + id);
+    countLessonToday();
+    checkMilestones();
+  } else { state.completed.delete(id); }
+  saveProgress();
+  renderSidebar();
+  renderProgressPill();
+  renderContent();
+}
+function selectLesson(id){
+  /* Laufende Prüfung nicht stillschweigend verwerfen. */
+  if(exam.active && !exam.finished && id !== 'exam'){
+    if(!window.confirm('Die laufende Prüfung wird abgebrochen. Fortfahren?')) return;
+    stopExamTimer();
+    exam.active = false;
+  }
+  if(klausur.phase === 'laufend' && id !== 'klausur'){
+    if(!window.confirm('Die laufende Klausur wird verworfen. Fortfahren?')) return;
+    klUhrStoppen(); klausur.phase = 'start';
+  }
+  if(id !== 'exam') stopExamTimer();
+  state.currentId = id;
+  weichRendern(render);
+  closeDrawer();
+  window.scrollTo(0,0);
+  updateReadBar();
+}
+function render(){
+  renderSidebar();
+  renderMobilbar();
+  renderProgressPill();
+  updateXpBar();
+  renderContent();
+}
+function renderProgressPill(){
+  var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+  var pct = TOTAL ? Math.round((completed/TOTAL)*100) : 0;
+  document.getElementById('progressLabel').textContent = completed + '/' + TOTAL;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+function renderSidebar(){
+  var nav = document.getElementById('moduleNav');
+  nav.innerHTML = '';
+  var currentModule = moduleOfLesson(state.currentId);
+  var lastPart = null;
+  MODULES.forEach(function(m){
+    if(m.part !== lastPart){
+      var label = document.createElement('div');
+      label.className = 'part-label';
+      label.textContent = 'Teil ' + m.part + ' · ' + m.partTitle;
+      nav.appendChild(label);
+      lastPart = m.part;
+    }
+    var det = document.createElement('details');
+    det.className = 'module';
+    if(currentModule && currentModule.id === m.id) det.open = true;
+    var doneInModule = m.lessons.filter(function(l){ return state.completed.has(l.id); }).length;
+    var sum = document.createElement('summary');
+    sum.innerHTML = '<span class="chev">▸</span><span>'+esc(m.title)+'</span><span class="mod-count">'+doneInModule+'/'+m.lessons.length+'</span>';
+    det.appendChild(sum);
+    m.lessons.forEach(function(l){
+      var btn = document.createElement('button');
+      var aktiv = state.currentId === l.id;
+      btn.className = 'lesson-btn' + (aktiv ? ' active' : '');
+      /* Die aktive Lektion nicht nur einfaerben, sondern auch ansagen. */
+      if(aktiv) btn.setAttribute('aria-current', 'true'); else btn.removeAttribute('aria-current');
+      var done = state.completed.has(l.id);
+      btn.innerHTML = '<span class="check'+(done?' done':'')+'">'+(done?'✓':'')+'</span><span>'+esc(l.title)+'</span>';
+      btn.onclick = function(){ selectLesson(l.id); };
+      det.appendChild(btn);
+    });
+    nav.appendChild(det);
+  });
+
+  [['navHeute','heute'],['navIntro','intro'],['navProfile','profile'],['navReview','review'],['navExam','exam'],['navTracer','tracer'],['navKlausur','klausur'],['navSubnet','subnet'],['navTutor','tutor'],
+   ['navExercises','exercises'],['navFehler','fehler'],['navMerk','merk'],['navSheet','cheatsheet'],['navGlossar','glossar']].forEach(function(p){
+    var b = document.getElementById(p[0]);
+    if(!b) return;
+    var aktiv = state.currentId === p[1];
+    b.className = 'nav-link' + (aktiv ? ' active' : '');
+    if(aktiv) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  updateDueBadge();
+}
+function renderQuiz(lesson){
+  if(!lesson.quiz || !lesson.quiz.length) return '';
+  var html = '<div class="quiz"><h3>Kurz-Check</h3>';
+  lesson.quiz.forEach(function(q, qi){
+    html += '<fieldset class="qcard" id="q_'+lesson.id+'_'+qi+'"><legend>'+esc(q.q)+'</legend>';
+    q.options.forEach(function(opt, oi){
+      html += '<label class="opt"><input type="radio" name="rq_'+lesson.id+'_'+qi+'" value="'+oi+'"> <span>'+esc(opt)+'</span></label>';
+    });
+    html += '<div class="qfeedback" id="fb_'+lesson.id+'_'+qi+'"></div></fieldset>';
+  });
+  html += '<button class="check-btn" onclick="checkQuiz(\''+lesson.id+'\')">Antworten prüfen</button>';
+  html += '<div class="ex-meta" id="quizNote_'+lesson.id+'" hidden></div></div>';
+  return html;
+}
+function checkQuiz(lessonId){
+  var lesson = lessonById(lessonId);
+  var answeredAll = true;
+  var gain = 0;
+  lesson.quiz.forEach(function(q, qi){
+    var sel = document.querySelector('input[name="rq_'+lessonId+'_'+qi+'"]:checked');
+    var fb = document.getElementById('fb_'+lessonId+'_'+qi);
+    if(!sel){
+      answeredAll = false;
+      fb.className = 'qfeedback show wrong';
+      fb.textContent = 'Bitte wähle eine Antwort aus.';
+      return;
+    }
+    var val = parseInt(sel.value, 10);
+    var ok = val === q.correct;
+    var cardId = rpQuestionId(lesson,qi);
+    recordAnswer(cardId, ok);
+    /* Antwort aus der Lektion heraus plant die Karte ins Wiederholungssystem ein. */
+    if(ok){ if(!state.srs[cardId]) rateCard(cardId, 2); }
+    else { rateCard(cardId, 0); }
+    if(ok && !state.xpLog['quiz:' + cardId]){ state.xpLog['quiz:' + cardId] = 1; gain += 10; }
+
+    if(ok){
+      fb.className = 'qfeedback show correct';
+      fb.textContent = '✓ Richtig. ' + q.explain;
+    } else {
+      fb.className = 'qfeedback show wrong';
+      fb.textContent = '✗ Nicht ganz. Richtig ist: „' + q.options[q.correct] + '". ' + q.explain;
+    }
+  });
+  if(gain) awardXp(gain, 'Quizfragen richtig');
+  if(answeredAll){
+    var note = document.getElementById('quizNote_'+lessonId);
+    if(note){
+      note.hidden = false;
+      note.textContent = 'Diese Fragen sind jetzt im Wiederholungs-Trainer eingeplant — falsch beantwortete kommen heute noch einmal.';
+    }
+  }
+  saveProgress();
+  /* Der Lernbegleiter zaehlt die Karten dieser Lektion mit. */
+  try{ renderRail(); }catch(e){}
+}
+function renderLessonBlocks(lesson){
+  /* Reihenfolge der Text-/Codeblöcke: pro Lektion überschreibbar. */
+  var order = lesson.order || ['body','code','code2','body2','code3','code4'];
+  var html = '';
+  order.forEach(function(key){
+    var val = lesson[key];
+    if(!val) return;
+    if(key.indexOf('code') === 0){ html += codeBlock(val, lesson[key + 'Lang']); }
+    else { html += '<div class="lesson-body">' + val + '</div>'; }
+  });
+  return html;
+}
+var exFilter = 0;
+var LEVEL_NAMES = { 1:'Einsteiger', 2:'Fortgeschritten', 3:'Experte' };
+function setExFilter(lvl){ exFilter = lvl; renderContent(); }
+function toggleHint(exId, idx){
+  var el = document.getElementById('hint_'+exId+'_'+idx);
+  if(el) el.hidden = !el.hidden;
+}
+function toggleSolution(exId){
+  var el = document.getElementById('sol_'+exId);
+  if(el) el.hidden = !el.hidden;
+}
+function togglePrompt(exId){
+  var el = document.getElementById('prompt_'+exId);
+  if(el) el.hidden = !el.hidden;
+}
+function toggleSolved(id){
+  if(state.solved[id]){ delete state.solved[id]; }
+  else {
+    state.solved[id] = Date.now();
+    awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + id);
+    checkMilestones();
+  }
+  saveProgress();
+  renderContent();
+}
+function copyPrompt(exId){
+  var ex = EXERCISES.find(function(e){ return e.id===exId; });
+  if(!ex) return;
+  var text =
+    'Ich bereite mich auf die IHK-Abschlussprüfung Teil 1 als Fachinformatiker Anwendungsentwicklung vor (Level: '+LEVEL_NAMES[ex.level]+', Thema: '+ex.topic+') und habe folgende Prüfungsaufgabe bearbeitet.\n\n'+
+    'AUFGABE:\n'+ex.title+' — '+ex.task.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'\n\n'+
+    'MEINE LÖSUNG:\n[HIER DEINE LÖSUNG EINFÜGEN]\n\n'+
+    'Bitte prüfe meine Lösung so, wie ein IHK-Prüfer sie bewerten würde:\n'+
+    '1. Ist die Lösung fachlich korrekt? Falls nein: welcher konkrete Fall bricht?\n'+
+    '2. Bekäme sie die volle Punktzahl? Fehlt ein Rechenweg, eine Begründung oder eine Einheit?\n'+
+    '3. Steckt ein typischer Prüfungsfehler darin (Off-by-one, Faktor 8 zwischen Bit und Byte, MAX statt MIN im Netzplan, Skonto vom Listenpreis)?\n'+
+    '4. Ist die Antwort zum Operator der Aufgabe passend formuliert — nennen, beschreiben, begründen oder berechnen?\n'+
+    '5. Zeige eine Musterlösung und erkläre jede Abweichung kurz.\n\n'+
+    'Sei konkret und ehrlich, keine Gefälligkeitsbewertung. Wenn meine Lösung gut ist, sag das auch.';
+  var btn = document.getElementById('cp_'+exId);
+  try{
+    navigator.clipboard.writeText(text).then(function(){
+      if(btn){ var old = btn.textContent; btn.textContent = '✓ Kopiert'; setTimeout(function(){ btn.textContent = old; }, 1600); }
+    }).catch(function(){});
+  }catch(e){}
+}
+function renderExercises(){
+  var html = '<div class="breadcrumb">Praxis</div><h1>Übungsaufgaben</h1>'+
+    '<p class="intro-sub">'+EXERCISES.length+' Prüfungsaufgaben in drei Schwierigkeitsstufen — mit gestaffelten Tipps und vollständiger Musterlösung samt Rechenweg. Unter jeder Aufgabe steht ein Schreibfeld: Trag deine eigene Lösung ein, und Claude korrigiert sie direkt hier — mit Punkten, Teilpunkten auf den Rechenweg und dem, was gefehlt hätte.</p>';
+
+  html += '<div class="filter-row">';
+  html += '<button class="filter-btn'+(exFilter===0?' active':'')+'" onclick="setExFilter(0)">Alle ('+EXERCISES.length+')</button>';
+  [1,2,3].forEach(function(l){
+    var count = EXERCISES.filter(function(e){ return e.level===l; }).length;
+    html += '<button class="filter-btn'+(exFilter===l?' active':'')+'" onclick="setExFilter('+l+')">'+LEVEL_NAMES[l]+' ('+count+')</button>';
+  });
+  html += '</div>';
+
+  var list = exFilter===0 ? EXERCISES : EXERCISES.filter(function(e){ return e.level===exFilter; });
+
+  list.forEach(function(ex){
+    html += '<div class="ex-card">';
+    var solved = !!state.solved[ex.id];
+    html += '<div class="ex-head"><h3 id="exh_'+ex.id+'" data-ok="'+(solved?'1':'0')+'">'+(solved?'<span style="color:var(--success);">✓ </span>':'')+esc(ex.title)+'</h3>'+
+      '<span class="badge lvl'+ex.level+'">'+LEVEL_NAMES[ex.level]+'</span>'+
+      '<span class="badge topic">'+esc(ex.topic)+'</span></div>';
+    html += '<div class="ex-task">'+ex.task+'</div>';
+
+    html += '<div class="ex-actions">';
+    html += '<button class="ex-btn'+(solved?'':' primary')+'" id="sv_'+ex.id+'" onclick="toggleSolved(\''+ex.id+'\')">'+
+            (solved ? '✓ Gelöst' : 'Als gelöst markieren +'+xpAnzeige(30)+' XP')+'</button>';
+    ex.hints.forEach(function(h, i){
+      html += '<button class="ex-btn" onclick="toggleHint(\''+ex.id+'\','+i+')">💡 Tipp '+(i+1)+'</button>';
+    });
+    html += '<button class="ex-btn" onclick="toggleSolution(\''+ex.id+'\')">✅ Lösung anzeigen</button>';
+    html += '<button class="ex-btn primary" onclick="ueUmschalten(\''+ex.id+'\')">✍ Lösung schreiben &amp; prüfen lassen</button>';
+    html += '</div>';
+
+    ex.hints.forEach(function(h, i){
+      html += '<div class="ex-panel hint" id="hint_'+ex.id+'_'+i+'" hidden><div class="hint-label">Tipp '+(i+1)+'</div><p>'+h+'</p></div>';
+    });
+
+    html += '<div id="sol_'+ex.id+'" hidden>'+codeBlock(ex.solution, ex.solutionLang)+
+      '<div class="ex-panel"><strong>Hinweis zur Lösung:</strong> '+ex.solutionNote+'</div></div>';
+
+    var ueTxt = (state.ueTexte || {})[ex.id] || '';
+    var ueOffen = !!ue.offen[ex.id] || !!ueTxt || !!ue.erg[ex.id];
+    var ueMax = KL_PUNKTE[ex.level] || 8;
+    var ueHtml = ueErgHtml(ex.id);
+    html += '<div class="ue" id="ue_'+ex.id+'"'+(ueOffen ? '' : ' hidden')+'>'+
+      '<label class="ue-label" for="ueFeld_'+ex.id+'">Deine Lösung — Rechenweg mit Einheiten, Begründungen ausformuliert.</label>'+
+      '<textarea class="ue-feld" id="ueFeld_'+ex.id+'" rows="4" spellcheck="false" '+
+        'placeholder="Schreib so, wie du es in der Prüfung auf Papier tätest." '+
+        'oninput="ueSchreiben(\''+ex.id+'\', this.value)" '+
+        'onkeydown="ueTaste(event, \''+ex.id+'\')">'+esc(ueTxt)+'</textarea>'+
+      '<div class="ue-leiste">'+
+        '<button class="ex-btn primary" id="ueBtn_'+ex.id+'" onclick="uePruefen(\''+ex.id+'\')">Lösung prüfen lassen</button>'+
+        '<button class="ex-btn" onclick="ueLeeren(\''+ex.id+'\')">Leeren</button>'+
+        '<button class="ex-btn" onclick="togglePrompt(\''+ex.id+'\')">Prüfauftrag für den Chat</button>'+
+        '<span class="ue-note" id="ueNote_'+ex.id+'">Strg + Enter prüft · '+ueMax+' Punkte möglich · +'+xpAnzeige(10)+' XP</span>'+
+      '</div>'+
+      '<div class="ue-erg" id="ueErg_'+ex.id+'"'+(ueHtml ? '' : ' hidden')+'>'+ueHtml+'</div>'+
+      '</div>';
+
+    html += '<div class="ex-panel" id="prompt_'+ex.id+'" hidden>'+
+      '<p style="margin-bottom:8px;"><strong>So lässt du deine eigene Lösung prüfen:</strong> Kopiere den Prüfauftrag, füge ihn in VS Code in den Claude-Chat ein, ersetze den Platzhalter durch deinen Code — und du bekommst ein ehrliches Review statt nur „richtig/falsch".</p>'+
+      '<button class="ex-btn primary" id="cp_'+ex.id+'" onclick="copyPrompt(\''+ex.id+'\')">Prüfauftrag kopieren</button>'+
+      '<div class="ex-meta">Enthält: Aufgabenstellung, Platzhalter für deine Lösung und fünf konkrete Prüfkriterien (fachliche Korrektheit, Punktwürdigkeit, typische Prüfungsfehler, Operatorbezug, Musterlösung).</div>'+
+      '</div>';
+
+    html += '</div>';
+  });
+
+  return html;
+}
+var ue = { offen:{}, busy:{}, erg:{}, fehler:{}, speichern:null };

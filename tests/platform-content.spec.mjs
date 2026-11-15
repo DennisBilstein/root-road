@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('Neue Datenbank-,API-,MCP- und Agent-Lektionen sind datiert und verknüpft',async({page})=>{
-  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
+  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
   const result=await page.evaluate(()=>{
     // Nur die am 06.11.2026 verfassten Module; die Vertiefungen (mariadb-m2, später api-m2) tragen ihr eigenes Datum.
     const lessons=MODULES.filter(m=>['mariadb','apis','agents'].includes(m.course)&&!['mariadb-m2','api-m2'].includes(m.id)).flatMap(m=>m.lessons);

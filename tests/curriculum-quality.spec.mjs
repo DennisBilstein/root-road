@@ -1,6 +1,6 @@
 import { test,expect } from '@playwright/test';
 test('Alle PHP- und JS/Vue-Lektionen besitzen Ziele, Übungen, Quellen und gültige Karten',async({page})=>{
-  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
+  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
   const result=await page.evaluate(()=>{
     const php=MODULES.filter(m=>m.part===10).flatMap(m=>m.lessons);
     const js=MODULES.filter(m=>m.course==='javascript').flatMap(m=>m.lessons);

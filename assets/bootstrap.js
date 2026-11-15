@@ -13,6 +13,28 @@ window.RP_BOOTING=true;
     return geladen[src];
   };
 })();
+/* Lektionstexte (body, body2, code, tip …) liegen je Modul in assets/lesson-bodies/<Modul>.json und werden beim Öffnen einer Lektion
+   (rpLoadBodies) oder für die Volltextsuche (rpHydrateAll) in die vorhandenen Lektionsobjekte übernommen. Lektionen ohne geladene Texte tragen lazy:true. */
+(function(){
+  var laufend={};
+  window.rpLoadBodies=function(moduleIds){
+    return Promise.all(moduleIds.map(function(id){
+      var datei=window.RP_BODY_FILES&&window.RP_BODY_FILES[id];
+      if(!datei)return null;
+      if(!laufend[id])laufend[id]=fetch(datei).then(function(response){
+        if(!response.ok)throw new Error('Lektionstexte nicht verfügbar: '+id);return response.json();
+      }).then(function(texte){
+        var modul=MODULES.find(function(m){return m.id===id;});
+        if(modul)modul.lessons.forEach(function(lektion){if(texte[lektion.id])Object.assign(lektion,texte[lektion.id]);delete lektion.lazy;});
+      }).catch(function(error){delete laufend[id];throw error;});
+      return laufend[id];
+    }));
+  };
+  window.rpHydrateAll=async function(){
+    var ids=Object.keys(window.RP_BODY_FILES||{});
+    for(var i=0;i<ids.length;i+=8)await window.rpLoadBodies(ids.slice(i,i+8));
+  };
+})();
 /* Konto (/api/me) und Lerndaten werden gleichzeitig geladen; erst wenn beides vorliegt, laufen die Skripte in Listenreihenfolge. */
 (async function(){
   var meFertig=(async function(){
@@ -38,6 +60,8 @@ window.RP_BOOTING=true;
     /* Die Skripte dürfen erst nach den Datensätzen laufen; heruntergeladen werden sie schon jetzt parallel. */
     paths.forEach(preload);
     window.RP_LITERALS={};
+    window.RP_BODY_STATS=manifest.stats||{};
+    window.RP_BODY_FILES=Object.fromEntries(Object.entries(manifest.bodies||{}).map(function(entry){if(!/^assets\/lesson-bodies\/[a-z0-9-]+\.json$/.test(entry[1]))throw Error('Ungültiger Textpfad.');return [entry[0],mitVersion(entry[1])];}));
     await Promise.all((manifest.data||[]).map(function(file){var m=/^assets\/learning-data\/literal-(\d+)\.json$/.exec(file);if(!m)throw Error('Ungültiger Datenpfad.');
       return fetch(mitVersion(file)).then(function(r){if(!r.ok)throw Error('Lerndaten nicht verfügbar. Bitte npm run build ausführen.');return r.json();}).then(function(data){window.RP_LITERALS[m[1]]=data;});}));
     return paths;

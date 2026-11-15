@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Recherchierte ABAP-Lektionen haben Quellen, gültige Quizze und stabile IDs', async ({ page }) => {
   await page.goto('/');
-  await page.waitForFunction(() => window.RP_APP_READY);
+  await page.waitForFunction(() => window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
   const result = await page.evaluate(() => {
     const additions = FLAT.filter(l => l.researchedAt);
     const failures = [];

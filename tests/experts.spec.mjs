@@ -4,7 +4,7 @@ test('Expertenpfade sind vollständig, eindeutig und im Training verfügbar', as
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await page.waitForFunction(() => window.RP_APP_READY);
+  await page.waitForFunction(() => window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
   const summary = await page.evaluate(() => {
     const unique = list => new Set(list.map(x => x.id)).size === list.length;
     const experts = MODULES.filter(m => ['abap','java'].includes(m.course));

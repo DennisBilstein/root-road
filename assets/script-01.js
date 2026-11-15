@@ -14792,6 +14792,8 @@ var DAY = 86400000;
 /* Zahlen fuer die Fliesstexte einmal berechnen, damit sie nie wieder
    veralten koennen, wenn Lektionen dazukommen. */
 var DIAGRAMME = (function(){
+  /* Aufgeteilte Auslieferung: Die Texte laden erst beim Öffnen, die Zahl kommt aus dem Build (learning-manifest.json, stats.figures). */
+  if(window.RP_BODY_STATS && typeof window.RP_BODY_STATS.figures === 'number') return window.RP_BODY_STATS.figures;
   var n = 0;
   MODULES.forEach(function(m){ m.lessons.forEach(function(l){
     n += (String(l.body || "").match(/<figure class="fig">/g) || []).length;
@@ -16492,9 +16494,12 @@ function renderTracer(){
 /* ===================== Suche / Command Palette ===================== */
 var SEARCH_INDEX = [];
 var indexFertig = false;
+var indexNachladen = false;
 function buildIndex(){
+  var textOffen = false;
   MODULES.forEach(function(m){
     m.lessons.forEach(function(l){
+      if(l.lazy) textOffen = true;
       var text = ['body','body2','body3','tip','code','code2','code3','code4']
                    .map(function(k){ return l[k] || ''; }).join(' ');
       SEARCH_INDEX.push({ id:l.id, kind:'lesson', title:l.title, sub:'Teil '+m.part+' · '+m.title,
@@ -16521,6 +16526,15 @@ function buildIndex(){
     SEARCH_INDEX.push({ id:a[0], kind:'nav', title:a[1], sub:a[2], hay:(a[1]+' '+a[2]).toLowerCase() });
   });
   indexFertig = true;
+  /* Lektionstexte sind beim Start nicht geladen: Die Suche arbeitet sofort mit Titeln und ergänzt den Volltext, sobald alle Texte da sind. */
+  if(textOffen && !indexNachladen && typeof rpHydrateAll === 'function'){
+    indexNachladen = true;
+    rpHydrateAll().then(function(){
+      SEARCH_INDEX.length = 0; indexFertig = false; buildIndex();
+      var feld = document.getElementById('kpFeld');
+      if(kp.offen && feld) kpSuchen(feld.value);
+    }, function(){ indexNachladen = false; });
+  }
 }
 
 /* Die alte Befehlspalette wurde durch die neue Suche (kpOeffnen) ersetzt. */
@@ -19460,6 +19474,18 @@ function renderContentIntern(){
 
   var lesson = lessonById(state.currentId);
   if(!lesson){ state.currentId = 'intro'; return renderContent(); }
+  if(lesson.lazy && typeof rpLoadBodies === 'function'){
+    /* Texte stehen noch nicht bereit: Rahmen anzeigen, Texte des Moduls laden, dann neu zeichnen. */
+    var wanted = lesson.id, loadModule = moduleOfLesson(lesson.id);
+    el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="status" class="lesson-loading">Lektion wird geladen …</p>';
+    rpLoadBodies([loadModule.id]).then(function(){
+      if(state.currentId === wanted) renderContent();
+    }, function(){
+      if(state.currentId !== wanted) return;
+      el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="alert">Die Lektion konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" onclick="renderContent()">Erneut versuchen</button>';
+    });
+    return;
+  }
   var mod = moduleOfLesson(lesson.id);
   var idx = FLAT.findIndex(function(l){ return l.id===lesson.id; });
   var prev = FLAT[idx-1];

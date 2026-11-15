@@ -1,2182 +1,2602 @@
-MODULES.push({
-  id:'m12', part:4, partTitle:'Netzwerktechnik', title:'IPv4 & Subnetting', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m12-l1', title:'Aufbau der IPv4-Adresse und Subnetzmaske', minutes:9,
-      body:
-        '<p>Eine <strong>IPv4-Adresse</strong> besteht aus <strong>32 Bit</strong>, notiert als vier Oktette von 0 bis 255. Sie zerfällt in <strong>Netzanteil</strong> und <strong>Hostanteil</strong>; wo die Grenze liegt, bestimmt die <strong>Subnetzmaske</strong>.</p>'+
-        '<p>Die <strong>CIDR-Notation</strong> <code>/24</code> gibt an, wie viele Bits von links zum Netzanteil gehören. <code>/24</code> bedeutet also 24 Einsen:</p>'+
-        '<p><code>11111111.11111111.11111111.00000000 = 255.255.255.0</code></p>'+
-        '<p>Die <strong>Oktett-Werte</strong> ergeben sich aus den gesetzten Bits von links: <strong>128 – 192 – 224 – 240 – 248 – 252 – 254 – 255</strong>. Diese Zahlenreihe solltest du auswendig können, sie löst jede Maskenfrage.</p>'+
-        '<p><strong>Private Bereiche (RFC 1918)</strong> – im Internet nicht routbar, dafür braucht es NAT:</p>'+
-        '<ul><li><code>10.0.0.0/8</code></li><li><code>172.16.0.0/12</code> (also 172.16 bis 172.31)</li><li><code>192.168.0.0/16</code></li></ul>'+
-        '<figure class="fig"><svg viewBox="0 0 560 200" role="img" aria-label="Binaere Aufteilung einer IPv4-Adresse in Netz- und Hostanteil"><text class="s-hd" x="20" y="22">192.168.30.150 / 26</text><rect class="s-netpart" x="20" y="34" width="360" height="34" rx="3"/><rect class="s-hostpart" x="380" y="34" width="160" height="34" rx="3"/><text class="s-mono" x="200" y="56" text-anchor="middle">11000000.10101000.00011110.10</text><text class="s-mono" x="460" y="56" text-anchor="middle">010110</text><text class="s-lbl" x="200" y="86" text-anchor="middle">Netzanteil &#8211; 26 Bit</text><text class="s-lbl" x="460" y="86" text-anchor="middle">Hostanteil &#8211; 6 Bit</text><rect class="s-netpart" x="20" y="104" width="360" height="30" rx="3"/><rect class="s-box" x="380" y="104" width="160" height="30" rx="3"/><text class="s-mono" x="200" y="124" text-anchor="middle">11111111.11111111.11111111.11</text><text class="s-mono" x="460" y="124" text-anchor="middle">000000</text><text class="s-lbl" x="20" y="152">Maske 255.255.255.192</text><text class="s-lbl" x="20" y="176">Hostbits alle 0 &#8594; Netzadresse .128 &#160;&#160;&#183;&#160;&#160; alle 1 &#8594; Broadcast .191 &#160;&#160;&#183;&#160;&#160; 2&#8310; &#8722; 2 = 62 Hosts</text></svg><figcaption>Die Subnetzmaske zieht die Grenze zwischen Netz- und Hostanteil. Alles rechts der Grenze gehoert dem Host, und genau diese Bits werden fuer Netz- und Broadcastadresse auf 0 bzw. 1 gesetzt.</figcaption></figure>',
-      code:
-        "Die Praefixe, die du auswendig koennen solltest:\n\n"+
-        "  /24 -> 255.255.255.0    -> 2^8 - 2 = 254 Hosts\n"+
-        "  /25 -> 255.255.255.128  -> 2^7 - 2 = 126 Hosts\n"+
-        "  /26 -> 255.255.255.192  -> 2^6 - 2 =  62 Hosts\n"+
-        "  /27 -> 255.255.255.224  -> 2^5 - 2 =  30 Hosts\n"+
-        "  /28 -> 255.255.255.240  -> 2^4 - 2 =  14 Hosts\n"+
-        "  /29 -> 255.255.255.248  -> 2^3 - 2 =   6 Hosts\n"+
-        "  /30 -> 255.255.255.252  -> 2^2 - 2 =   2 Hosts (Punkt-zu-Punkt)",
-      codeLang:'Subnetzmasken',
-      tip:'Diese sieben Zeilen sind die beste Investition deiner Lernzeit im Netzwerkteil. Mit ihnen beantwortest du drei Aufgabentypen ohne zu rechnen: Maske zu Präfix, Präfix zu Hostanzahl und Hostbedarf zu Präfix. Schreib sie dir zu Prüfungsbeginn auf das Konzeptpapier, bevor du die erste Aufgabe liest – dann stehen sie dir unter Zeitdruck fehlerfrei zur Verfügung.',
-      quiz:[
-        {q:'Welche Subnetzmaske entspricht /26?', options:['255.255.255.0','255.255.255.192','255.255.255.240'], correct:1, explain:'26 gesetzte Bits: 255.255.255.192 – im letzten Oktett 11000000.'},
-        {q:'Wie viele nutzbare Hosts hat ein /27-Netz?', options:['32','30','62'], correct:1, explain:'2^5 = 32, minus Netz- und Broadcastadresse = 30.'},
-        {q:'Wie viele Hostbits hat ein /29-Netz?', options:['3','5','8'], correct:0, explain:'32 − 29 = 3, also 2³ − 2 = 6 nutzbare Hosts.'}
-      ]
-    },
-    {
-      id:'m12-l2', title:'Netzadresse, Broadcast und nutzbare Hosts berechnen', minutes:10,
-      body:
-        '<p>Drei Werte musst du aus jeder Adresse ableiten können:</p>'+
-        '<ul><li><strong>Netzadresse</strong> – alle Host-Bits auf <strong>0</strong>. Bezeichnet das Netz selbst, wird nie an ein Gerät vergeben.</li>'+
-        '<li><strong>Broadcast-Adresse</strong> – alle Host-Bits auf <strong>1</strong>. Erreicht alle Geräte im Segment, wird ebenfalls nie vergeben.</li>'+
-        '<li><strong>Nutzbare Hosts</strong> – alles dazwischen: <code>2^(Host-Bits) − 2</code>.</li></ul>'+
-        '<p>Formal berechnet man die Netzadresse über eine <strong>UND-Verknüpfung</strong> von IP und Maske, die Broadcast-Adresse über eine <strong>ODER-Verknüpfung</strong> mit der invertierten Maske. Bei glatten Masken wie /24 sieht man das Ergebnis direkt.</p>',
-      code:
-        "Gegeben: 192.168.0.52 / 255.255.255.0  (= /24)\n\n"+
-        "  Netzadresse:      192.168.0.0      (Hostanteil alles 0)\n"+
-        "  Erster Host:      192.168.0.1\n"+
-        "  Letzter Host:     192.168.0.254\n"+
-        "  Broadcast:        192.168.0.255    (Hostanteil alles 1)\n"+
-        "  Nutzbare Hosts:   2^8 - 2 = 254\n\n"+
-        "Gegeben: 192.168.10.100 / 26    (Maske 255.255.255.192)\n"+
-        "  Blockgroesse: 256 - 192 = 64  -> Netze bei .0  .64  .128  .192\n"+
-        "  .100 liegt im Netz  192.168.10.64\n"+
-        "  Broadcast:          192.168.10.127\n"+
-        "  Hostbereich:        192.168.10.65 bis 192.168.10.126",
-      codeLang:'Subnetting-Rechnung',
-      tip:'Die Blockgröße ist der schnellste Weg durch jede Subnetting-Aufgabe: Rechne 256 minus den Maskenwert des interessanten Oktetts. Bei /26 also 256 − 192 = 64. Die Netze beginnen dann bei Vielfachen dieser Zahl – 0, 64, 128, 192. Du suchst nur noch, in welchen Block deine Adresse fällt. Das dauert zehn Sekunden und ersetzt jede Binärrechnung.',
-      quiz:[
-        {q:'Wie lautet die Broadcast-Adresse zu 192.168.0.52/24?', options:['192.168.0.0','192.168.0.255','192.168.255.255'], correct:1, explain:'Der Hostanteil wird auf alles Eins gesetzt.'},
-        {q:'Warum werden bei der Hostzahl zwei Adressen abgezogen?', options:['Für Router und Switch','Für Netzadresse und Broadcast-Adresse','Als Sicherheitsreserve'], correct:1, explain:'Beide sind reserviert und dürfen keinem Gerät zugewiesen werden.'},
-        {q:'Wie ermittelt man die Broadcast-Adresse am schnellsten?', options:['Immer .255','Nächste Netzadresse minus 1','Netzadresse plus 100'], correct:1, explain:'.255 gilt nur bei /24 — bei /26 wäre es .63, .127, .191 oder .255.'}
-      ]
-    },
-    {
-      id:'m12-l3', title:'Subnetze bilden – vom Bedarf zur Maske', minutes:10,
-      body:
-        '<p>Die Aufgabenform lautet meist: „Teilen Sie <code>192.168.1.0/24</code> in vier gleich große Subnetze" oder „Jedes Subnetz soll mindestens 30 Hosts aufnehmen".</p>'+
-        '<p><strong>Weg 1 – Anzahl der Subnetze ist vorgegeben:</strong> Du brauchst so viele zusätzliche Netzbits, dass <code>2^x ≥ Anzahl</code>. Für 4 Subnetze also x = 2 → aus /24 wird /26.</p>'+
-        '<p><strong>Weg 2 – Hostzahl ist vorgegeben:</strong> Du brauchst so viele Hostbits, dass <code>2^y − 2 ≥ Hostbedarf</code>. Für 30 Hosts also y = 5 → Präfix = 32 − 5 = /27.</p>'+
-        '<p>Die Probe: Subnetzbits plus Hostbits ergeben zusammen immer die Bits, die im ursprünglichen Netz für Hosts zur Verfügung standen.</p>',
-      code:
-        "Aufgabe: 192.168.1.0/24 in 4 gleich grosse Subnetze teilen.\n\n"+
-        "  2^2 = 4  ->  2 zusaetzliche Netzbits  ->  /24 + 2 = /26\n"+
-        "  Maske 255.255.255.192, Blockgroesse 256 - 192 = 64\n\n"+
-        "  Subnetz 1: 192.168.1.0    Hosts .1   - .62    Broadcast .63\n"+
-        "  Subnetz 2: 192.168.1.64   Hosts .65  - .126   Broadcast .127\n"+
-        "  Subnetz 3: 192.168.1.128  Hosts .129 - .190   Broadcast .191\n"+
-        "  Subnetz 4: 192.168.1.192  Hosts .193 - .254   Broadcast .255\n\n"+
-        "  Probe: 4 Subnetze x 62 Hosts = 248 nutzbare Adressen (von 256)",
-      codeLang:'Subnetting',
-      tip:'Achte auf die Richtung der Rundung, das ist der häufigste Fehler: Bei der Anzahl der Subnetze rundest du die Zweierpotenz nach oben – für fünf Subnetze brauchst du 2³ = 8, nicht 2² = 4. Bei der Hostzahl gilt dasselbe: Für 30 Hosts reichen 2⁵ − 2 = 30 exakt, für 31 Hosts bräuchtest du schon 2⁶ − 2 = 62. Lieber einmal zu großzügig als ein Netz zu klein.',
-      quiz:[
-        {q:'Ein Netz soll in 8 Subnetze geteilt werden. Wie viele zusätzliche Netzbits?', options:['2','3','8'], correct:1, explain:'2³ = 8 – also drei zusätzliche Bits.'},
-        {q:'Jedes Subnetz braucht mindestens 50 Hosts. Welches Präfix?', options:['/26','/27','/28'], correct:0, explain:'2^6 − 2 = 62 ≥ 50; /27 böte nur 30 Hosts.'},
-        {q:'Ein Netz soll in 6 Subnetze geteilt werden. Wie viele zusätzliche Netzbits?', options:['2','3','6'], correct:1, explain:'2³ = 8 ≥ 6 — bei der Subnetzanzahl wird immer aufgerundet.'}
-      ]
-    },
-    {
-      id:'m12-l4', title:'Statische Konfiguration und Sonderadressen', minutes:8,
-      body:
-        '<p>Eine klassische Prüfungsaufgabe: Ein Gerät soll eine <strong>statische IP</strong> bekommen, damit es für die Fernwartung immer unter derselben Adresse erreichbar ist. Gegeben sind Netz, DHCP-Bereich und Router – gesucht ist eine gültige freie Adresse.</p>'+
-        '<p>Drei Bereiche musst du ausschließen:</p>'+
-        '<ul><li>die <strong>Netzadresse</strong> (.0) und die <strong>Broadcast-Adresse</strong> (.255),</li>'+
-        '<li>die Adresse des <strong>Routers</strong> (meist .1),</li>'+
-        '<li>den gesamten <strong>DHCP-Pool</strong> – eine statische Adresse darin führt zum Adresskonflikt.</li></ul>'+
-        '<p><strong>Sonderadressen</strong>, die du sofort deuten können musst:</p>'+
-        '<ul><li><code>127.0.0.1</code> – Loopback, das bist du selbst.</li>'+
-        '<li><code>169.254.x.x</code> – <strong>APIPA</strong>: Der Client hat keinen DHCP-Server gefunden und sich selbst eine Adresse gegeben. Kein Gateway, kein Internet.</li>'+
-        '<li><code>0.0.0.0</code> – Standardroute bzw. unbestimmt.</li></ul>',
-      code:
-        "Gegeben: Netz 192.168.20.0/24\n"+
-        "         DHCP-Range 192.168.20.20 - 192.168.20.254\n"+
-        "         Router 192.168.20.1\n\n"+
-        "Ausgeschlossen: .0 (Netz) | .1 (Router) | .20-.254 (DHCP) | .255 (Broadcast)\n"+
-        "Frei bleibt:    192.168.20.2 bis 192.168.20.19\n\n"+
-        "Konfiguration:  IP-Adresse      192.168.20.10\n"+
-        "                Subnetzmaske    255.255.255.0\n"+
-        "                Standardgateway 192.168.20.1",
-      codeLang:'IP-Konfiguration (Herbst 2024)',
-      tip:'Die Adresse 169.254.x.x ist ein Diagnosegeschenk: Wer sie sieht, weiß sofort, dass kein DHCP-Server erreichbar war. Die möglichen Ursachen dahinter sind eine eigene Prüfungsfrage wert – DHCP-Server ausgefallen oder Adresspool erschöpft, Kabel nicht gesteckt, falsches VLAN, oder ein fehlendes DHCP-Relay, wenn der Server in einem anderen Subnetz steht.',
-      quiz:[
-        {q:'Was bedeutet eine Adresse aus 169.254.x.x?', options:['Das Gerät ist im Internet','Kein DHCP-Server erreichbar, Adresse selbst vergeben (APIPA)','Ein Virus hat die Adresse geändert'], correct:1, explain:'Ohne Gateway ist damit nur die Kommunikation im eigenen Segment möglich.'},
-        {q:'Warum darf eine statische Adresse nicht im DHCP-Bereich liegen?', options:['Aus Stilgründen','Weil der DHCP-Server dieselbe Adresse vergeben könnte – Adresskonflikt','Weil sie dann langsamer ist'], correct:1, explain:'Alternativ arbeitet man mit einer DHCP-Reservierung.'},
-        {q:'Was ist die saubere Alternative zur statischen IP am Gerät?', options:['Gar keine Adresse','Eine DHCP-Reservierung auf die MAC-Adresse','Eine zweite Netzwerkkarte'], correct:1, explain:'Die Verwaltung bleibt dann zentral beim DHCP-Server.'}
-      ]
-    },
-    {
-      id:'m12-l5', title:'NAT, Ports und die Adressknappheit', minutes:8,
-      body:
-        '<p><strong>NAT</strong> (Network Address Translation) übersetzt private in öffentliche Adressen. Der Router ersetzt beim Verlassen des Netzes die private Quelladresse durch seine eigene öffentliche und merkt sich die Zuordnung in einer Tabelle.</p>'+
-        '<p>Bei <strong>PAT</strong> (Port Address Translation, auch „NAT Overload") teilen sich viele interne Geräte <em>eine</em> öffentliche Adresse – unterschieden werden sie über die <strong>Portnummer</strong>. Das ist der Normalfall in jedem Heim- und Firmennetz.</p>'+
-        '<p><strong>Warum das nötig wurde:</strong> IPv4 hat 2³² ≈ 4,3 Milliarden Adressen – zu wenig für die heutige Gerätezahl. NAT hat die Erschöpfung hinausgezögert, bringt aber Nachteile: keine Ende-zu-Ende-Erreichbarkeit von außen, Probleme bei Peer-to-Peer und VoIP, Zusatzaufwand im Router. IPv6 macht NAT überflüssig.</p>',
-      code:
-        "Intern                     Router (NAT/PAT)              Extern\n"+
-        "192.168.1.10:51000  ---->  84.12.7.3:40001   ---->  93.184.216.34:443\n"+
-        "192.168.1.11:49500  ---->  84.12.7.3:40002   ---->  93.184.216.34:443\n"+
-        "                           ^ eine oeffentliche Adresse,\n"+
-        "                             unterschieden durch den Port",
-      codeLang:'NAT / PAT',
-      tip:'NAT wird oft fälschlich als Sicherheitsfunktion bezeichnet. Der Effekt, dass interne Geräte von außen nicht direkt erreichbar sind, ist ein Nebeneffekt – kein Schutzkonzept. Eine Firewall entscheidet nach Regeln, NAT übersetzt nur Adressen. Wer in einer Prüfung NAT als Sicherheitsmaßnahme nennt, sollte diesen Unterschied zumindest mit erwähnen.',
-      quiz:[
-        {q:'Wodurch unterscheidet PAT mehrere interne Geräte hinter einer öffentlichen IP?', options:['Durch die MAC-Adresse','Durch die Portnummer','Durch den Hostnamen'], correct:1, explain:'Deshalb heißt es Port Address Translation.'},
-        {q:'Wie viele Adressen hat IPv4 insgesamt?', options:['2^32 ≈ 4,3 Milliarden','2^64','2^128'], correct:0, explain:'Zu wenig für die heutige Gerätezahl – daher NAT und IPv6.'},
-        {q:'Ist NAT eine Sicherheitsmaßnahme?', options:['Ja, es ersetzt die Firewall','Nein, die Nichterreichbarkeit von außen ist nur ein Nebeneffekt','Ja, es verschlüsselt den Verkehr'], correct:1, explain:'Eine Firewall entscheidet nach Regeln, NAT übersetzt lediglich Adressen.'}
-      ]
-    },
-    {
-      id:'m12-l6', title:'VLSM – Subnetze nach Bedarf statt nach Schema', minutes:11,
-      body:
-        '<p>Die bisherige Aufteilung hatte einen Haken: Alle Subnetze wurden <strong>gleich groß</strong>. Wenn eine Abteilung 60 Rechner hat und die nächste nur zwei, verschenkt man damit hunderte Adressen.</p>'+
-        '<p><strong>VLSM</strong> (Variable Length Subnet Mask) löst das: Jedes Teilnetz bekommt <em>seine eigene</em> Maske, passend zum Bedarf. Aus einem einzigen /24 lassen sich damit große und winzige Netze nebeneinander schneiden.</p>'+
-        '<p><strong>Das Verfahren in vier Schritten:</strong></p>'+
-        '<ol><li><strong>Nach Größe sortieren</strong> &#8211; das größte Netz zuerst. Das ist der entscheidende Schritt; wer klein anfängt, zerschneidet sich den Adressraum.</li>'+
-        '<li><strong>Präfix bestimmen</strong>: so viele Hostbits, dass <code>2^y &minus; 2 &ge; Bedarf</code>.</li>'+
-        '<li><strong>Von vorn zuteilen</strong>, lückenlos.</li>'+
-        '<li><strong>Ausrichtung prüfen</strong>: Jedes Subnetz muss an einem Vielfachen seiner eigenen Blockgröße beginnen.</li></ol>'+
-        '<p>Schritt 4 ist die Regel, an der es in der Prüfung scheitert. Ein /28 hat die Blockgröße 16 und darf deshalb nur bei .0, .16, .32, .48 und so weiter beginnen &#8211; niemals bei .20. Wer nach Gefühl zuteilt, verletzt genau das.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 250" role="img" aria-label="Aufteilung eines 24er Netzes in unterschiedlich grosse Subnetze">'+
-        '<text class="s-hd" x="20" y="22">192.168.10.0/24 &#8211; 256 Adressen</text>'+
-        '<rect class="s-strong" x="20" y="34" width="130" height="40" rx="3"/>'+
-        '<text class="s-lbl" x="85" y="52" text-anchor="middle">Vertrieb /26</text>'+
-        '<text class="s-mono" x="85" y="68" text-anchor="middle">.0 &#8211; .63</text>'+
-        '<rect class="s-accent" x="150" y="34" width="66" height="40" rx="3"/>'+
-        '<text class="s-lbl" x="183" y="52" text-anchor="middle">Technik</text>'+
-        '<text class="s-mono" x="183" y="68" text-anchor="middle">.64&#8211;.95</text>'+
-        '<rect class="s-accent" x="216" y="34" width="34" height="40" rx="3"/>'+
-        '<text class="s-mono" x="233" y="58" text-anchor="middle">/28</text>'+
-        '<rect class="s-warn" x="250" y="34" width="10" height="40" rx="2"/>'+
-        '<rect class="s-box" x="260" y="34" width="280" height="40" rx="3"/>'+
-        '<text class="s-lbl" x="400" y="58" text-anchor="middle">frei f&#252;r sp&#228;ter &#8211; .116 bis .255</text>'+
-        '<text class="s-mono" x="20" y="92">0</text>'+
-        '<text class="s-mono" x="145" y="92">64</text>'+
-        '<text class="s-mono" x="211" y="92">96</text>'+
-        '<text class="s-mono" x="246" y="92">112</text>'+
-        '<text class="s-mono" x="524" y="92">255</text>'+
-        '<rect class="s-box" x="20" y="108" width="520" height="122" rx="4"/>'+
-        '<text class="s-hd" x="34" y="130">Warum die Reihenfolge z&#228;hlt</text>'+
-        '<rect class="s-ok" x="34" y="142" width="14" height="14" rx="2"/>'+
-        '<text class="s-lbl" x="58" y="154">Gr&#246;&#223;tes zuerst: .0/26 &#8211; .64/27 &#8211; .96/28 &#8211; .112/30 &#8594; alles passt</text>'+
-        '<rect class="s-risk2" x="34" y="170" width="14" height="14" rx="2"/>'+
-        '<text class="s-lbl" x="58" y="182">Kleinstes zuerst: .0/30 &#8211; dann braucht das /26 den Block ab .64,</text>'+
-        '<text class="s-lbl" x="58" y="198">weil es bei .4 nicht beginnen darf &#8594; .4 bis .63 bleiben ungenutzt</text>'+
-        '<text class="s-mono" x="34" y="220">Ausrichtungsregel: Startadresse = Vielfaches der eigenen Blockgr&#246;&#223;e</text>'+
-        '</svg><figcaption>Vier Netze von 62 bis 2 Hosts aus einem einzigen /24. Das größte zuerst — sonst zerschneidet man sich den Adressraum.</figcaption></figure>',
-      code:
-        "AUFGABE\n"+
-        "  Gegeben 192.168.10.0/24. Benoetigt werden:\n"+
-        "     Vertrieb          60 Hosts\n"+
-        "     Technik           28 Hosts\n"+
-        "     Lager             12 Hosts\n"+
-        "     Router-Kopplung    2 Hosts\n\n"+
-        "SCHRITT 1 - sortieren, groesstes zuerst\n"+
-        "  60, 28, 12, 2\n\n"+
-        "SCHRITT 2 - Praefix je Netz  (2^y - 2 >= Bedarf)\n"+
-        "  60 Hosts -> 2^6 - 2 = 62  -> 6 Hostbits -> /26  Block 64\n"+
-        "  28 Hosts -> 2^5 - 2 = 30  -> 5 Hostbits -> /27  Block 32\n"+
-        "  12 Hosts -> 2^4 - 2 = 14  -> 4 Hostbits -> /28  Block 16\n"+
-        "   2 Hosts -> 2^2 - 2 =  2  -> 2 Hostbits -> /30  Block  4\n\n"+
-        "SCHRITT 3 - von vorn zuteilen\n\n"+
-        "  Netz       Bereich        Hosts nutzbar     Broadcast\n"+
-        "  ---------  -------------  ----------------  ---------\n"+
-        "  .0   /26   .0   bis .63   .1   bis .62      .63\n"+
-        "  .64  /27   .64  bis .95   .65  bis .94      .95\n"+
-        "  .96  /28   .96  bis .111  .97  bis .110     .111\n"+
-        "  .112 /30   .112 bis .115  .113 bis .114     .115\n\n"+
-        "  Frei bleiben .116 bis .255 fuer spaetere Netze.\n\n"+
-        "SCHRITT 4 - Ausrichtung pruefen\n"+
-        "   64 : 64 = 1   ok      96 : 16 = 6    ok\n"+
-        "  112 :  4 = 28  ok\n"+
-        "  Jede Startadresse ist ein Vielfaches ihrer Blockgroesse.\n\n"+
-        "GEGENPROBE - was gleich grosse Netze gekostet haetten\n"+
-        "  Alle vier als /26:  4 x 64 = 256 Adressen, der /24 ist voll.\n"+
-        "  Fuer die Router-Kopplung waeren 62 Adressen reserviert,\n"+
-        "  von denen zwei genutzt werden. Kein Platz fuer Erweiterung.\n\n"+
-        "MERKE FUER PUNKT-ZU-PUNKT\n"+
-        "  Eine Router-Kopplung braucht genau zwei Adressen -> /30.\n"+
-        "  Das ist der haeufigste VLSM-Teilschritt in Pruefungen.",
-      codeLang:'VLSM',
-      tip:'Wenn eine Aufgabe unterschiedliche Hostzahlen nennt, ist VLSM gemeint — auch wenn das Wort nicht fällt. Beginne immer mit dem größten Bedarf und schreibe dir zu jedem Netz die Blockgröße dazu, nicht nur das Präfix. Mit der Blockgröße siehst du die nächste freie Startadresse sofort, und die Ausrichtungsregel prüft sich von selbst: Die Startadresse muss ohne Rest durch die Blockgröße teilbar sein.',
-      quiz:[
-        {q:'In welcher Reihenfolge werden die Subnetze bei VLSM zugeteilt?', options:['Alphabetisch nach Abteilung','Das größte zuerst','Das kleinste zuerst'], correct:1, explain:'Umgekehrt zerschneidet man den Adressraum und die großen Netze passen nicht mehr.'},
-        {q:'Welches Präfix braucht eine Punkt-zu-Punkt-Verbindung zwischen zwei Routern?', options:['/28','/30','/24'], correct:1, explain:'2 hoch 2 minus 2 ergibt genau die zwei benötigten Adressen.'},
-        {q:'Ein /28 hat Blockgröße 16. Welche Startadresse ist zulässig?', options:['.20','.48','.100'], correct:1, explain:'48 geteilt durch 16 ergibt 3 ohne Rest — .20 und .100 sind keine Vielfachen von 16.'}
-      ]
-    },
-    {
-      id:'m12-l7', title:'Wie ein Router entscheidet', minutes:10,
-      body:
-        '<p>Ein Router hat eine Aufgabe: Für jedes eintreffende Paket bestimmen, <strong>wohin als Nächstes</strong>. Dafür schaut er in seine <strong>Routingtabelle</strong>.</p>'+
-        '<p>Jeder Eintrag nennt ein <strong>Zielnetz mit Präfix</strong>, das <strong>nächste Gerät</strong> auf dem Weg und die <strong>Schnittstelle</strong>, über die es erreichbar ist. Steht dort <em>on-link</em> oder <em>direkt verbunden</em>, hängt das Zielnetz unmittelbar an diesem Router.</p>'+
-        '<p><strong>Die Regel, die alles entscheidet: die längste Übereinstimmung.</strong> Passen mehrere Einträge auf eine Zieladresse, gewinnt der mit dem <strong>längsten Präfix</strong> &#8211; also der genaueste. Die Metrik kommt erst zum Zug, wenn zwei Einträge <em>gleich lang</em> sind.</p>'+
-        '<p>Die <strong>Standardroute</strong> <code>0.0.0.0/0</code> passt auf jede Adresse, ist aber mit Präfixlänge null immer die kürzeste. Sie greift deshalb genau dann, wenn nichts Genaueres da ist &#8211; darum heißt sie Standardgateway. Findet ein Router weder einen passenden Eintrag noch eine Standardroute, verwirft er das Paket und meldet per ICMP <em>Ziel nicht erreichbar</em>.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 268" role="img" aria-label="Routingtabelle und die Entscheidung nach laengster Uebereinstimmung">'+
-        '<rect class="s-strong" x="20" y="14" width="240" height="30" rx="4"/>'+
-        '<text class="s-lbl" x="140" y="34" text-anchor="middle">Paket an 10.5.3.7</text>'+
-        '<text class="s-hd" x="20" y="70">Routingtabelle &#8211; welche Eintr&#228;ge passen?</text>'+
-        '<rect class="s-box" x="20" y="80" width="520" height="26" rx="3"/>'+
-        '<text class="s-mono" x="32" y="98">0.0.0.0/0</text>'+
-        '<text class="s-mono" x="200" y="98">192.168.1.1</text>'+
-        '<text class="s-lbl" x="360" y="98">passt &#8211; Pr&#228;fixl&#228;nge 0</text>'+
-        '<rect class="s-box" x="20" y="110" width="520" height="26" rx="3"/>'+
-        '<text class="s-mono" x="32" y="128">192.168.1.0/24</text>'+
-        '<text class="s-mono" x="200" y="128">on-link</text>'+
-        '<text class="s-lbl" x="360" y="128">passt nicht</text>'+
-        '<rect class="s-accent" x="20" y="140" width="520" height="26" rx="3"/>'+
-        '<text class="s-mono" x="32" y="158">10.0.0.0/8</text>'+
-        '<text class="s-mono" x="200" y="158">192.168.1.253</text>'+
-        '<text class="s-lbl" x="360" y="158">passt &#8211; Pr&#228;fixl&#228;nge 8</text>'+
-        '<rect class="s-crit" x="20" y="170" width="520" height="26" rx="3"/>'+
-        '<text class="s-mono" x="32" y="188">10.5.0.0/16</text>'+
-        '<text class="s-mono" x="200" y="188">192.168.1.252</text>'+
-        '<text class="s-lbl" x="360" y="188">passt &#8211; Pr&#228;fixl&#228;nge 16 &#8594; GEWINNT</text>'+
-        '<rect class="s-ok" x="20" y="212" width="520" height="30" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="232" text-anchor="middle">Weitergabe an 192.168.1.252 &#8211; l&#228;ngstes Pr&#228;fix gewinnt, nicht die kleinste Metrik</text>'+
-        '<text class="s-lbl" x="20" y="260">Die Metrik entscheidet erst, wenn zwei Eintr&#228;ge gleich lange Pr&#228;fixe haben.</text>'+
-        '</svg><figcaption>Drei Einträge passen, der genaueste gewinnt. Die Standardroute mit Präfixlänge null ist immer der letzte Ausweg.</figcaption></figure>'+
-        '<p><strong>Was im IPv4-Kopf dafür gebraucht wird</strong> &#8211; drei Felder, die in Prüfungen auftauchen:</p>'+
-        '<ul><li><strong>TTL</strong> (Time to Live): Jeder Router zieht eins ab. Bei null wird das Paket verworfen und der Absender bekommt per ICMP eine <em>Zeitüberschreitung</em>. Das verhindert, dass Pakete bei einer Routingschleife ewig kreisen.</li>'+
-        '<li><strong>Protokollfeld</strong>: Sagt, was im Datenteil steckt &#8211; <code>1</code> ICMP, <code>6</code> TCP, <code>17</code> UDP. Ohne dieses Feld wüsste der Empfänger nicht, wem er den Inhalt geben soll.</li>'+
-        '<li><strong>Fragmentierung</strong>: Ist das Paket größer als die MTU der nächsten Strecke, zerlegt der Router es. Der Empfänger setzt es wieder zusammen &#8211; nie ein Router unterwegs.</li></ul>'+
-        '<p><strong>Und daraus folgt, wie <code>tracert</code> funktioniert:</strong> Das Werkzeug sendet Pakete mit TTL 1, dann 2, dann 3. Jeder Router, bei dem die TTL abläuft, meldet sich mit seiner eigenen Adresse zurück. So entsteht die Liste aller Stationen &#8211; ein Nebeneffekt des Schleifenschutzes, kein eigenes Protokoll.</p>',
-      code:
-        "ROUTINGTABELLE LESEN - typische Pruefungsaufgabe\n\n"+
-        "  Ziel             Naechster Schritt   Schnittstelle  Metrik\n"+
-        "  ---------------  ------------------  -------------  ------\n"+
-        "  0.0.0.0/0        192.168.1.1         eth0               10\n"+
-        "  10.0.0.0/8       192.168.1.253       eth0                5\n"+
-        "  10.5.0.0/16      192.168.1.252       eth0                5\n"+
-        "  192.168.1.0/24   on-link             eth0                1\n"+
-        "  127.0.0.0/8      on-link             lo                  1\n\n"+
-        "  Wohin geht ein Paket an ...\n\n"+
-        "   10.5.3.7      -> /16 passt am genauesten  -> 192.168.1.252\n"+
-        "   10.9.0.1      -> nur /8 passt             -> 192.168.1.253\n"+
-        "   192.168.1.40  -> /24, direkt verbunden    -> ohne Router\n"+
-        "   8.8.8.8       -> nur die Standardroute    -> 192.168.1.1\n\n"+
-        "  Beachte: 10.5.3.7 passt AUCH auf 10.0.0.0/8.\n"+
-        "  Die kleinere Metrik des /8 hilft nicht - Laenge geht vor.\n\n"+
-        "TTL UND TRACERT\n"+
-        "  Paket 1: TTL=1  -> erster Router verwirft, meldet sich\n"+
-        "  Paket 2: TTL=2  -> zweiter Router verwirft, meldet sich\n"+
-        "  Paket 3: TTL=3  -> dritter Router ...\n"+
-        "  bis das Ziel antwortet.\n\n"+
-        "  Startwerte verraten das Betriebssystem:\n"+
-        "     64   Linux, macOS\n"+
-        "    128   Windows\n"+
-        "    255   viele Netzgeraete\n"+
-        "  Antwort mit TTL=118 -> Windows, 10 Router unterwegs.\n\n"+
-        "PROTOKOLLFELD IM IPv4-KOPF\n"+
-        "     1  ICMP      6  TCP      17  UDP\n"+
-        "    41  IPv6      47  GRE     50  ESP (IPsec)\n\n"+
-        "WENN GAR NICHTS PASST\n"+
-        "  Kein Eintrag und keine Standardroute\n"+
-        "     -> Paket verworfen, ICMP \"Ziel nicht erreichbar\"\n"+
-        "     -> im Ping sichtbar als \"Zielhost nicht erreichbar\"",
-      codeLang:'Routing',
-      tip:'Die Verwechslung von Präfixlänge und Metrik ist der klassische Fehler bei Routingaufgaben. Die Metrik beschreibt nur, wie gut ein Weg ist — sie wird erst befragt, wenn zwei Einträge gleich genau sind. Schreibe dir bei jeder Aufgabe zuerst die Präfixlängen der passenden Einträge untereinander, dann ist die Entscheidung eindeutig und du musst gar nicht über die Metrik nachdenken.',
-      quiz:[
-        {q:'Zwei Einträge passen auf eine Zieladresse: 10.0.0.0/8 mit Metrik 5 und 10.5.0.0/16 mit Metrik 20. Welcher gewinnt?', options:['Der mit Metrik 5','Der mit dem Präfix /16','Die Standardroute'], correct:1, explain:'Längste Übereinstimmung geht vor. Die Metrik entscheidet nur bei gleich langen Präfixen.'},
-        {q:'Was passiert, wenn die TTL eines Pakets null erreicht?', options:['Es wird langsamer weitergeleitet','Es wird verworfen und der Absender bekommt per ICMP eine Zeitüberschreitung','Es wird fragmentiert'], correct:1, explain:'Genau diesen Mechanismus nutzt tracert, um jede Station sichtbar zu machen.'},
-        {q:'Welchen Wert trägt das Protokollfeld im IPv4-Kopf bei TCP?', options:['1','6','17'], correct:1, explain:'1 steht für ICMP, 17 für UDP.'}
-      ]
-    },
-  ]
-});
-MODULES.push({
-  id:'m13', part:4, partTitle:'Netzwerktechnik', title:'IPv6', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m13-l1', title:'Aufbau und Kürzungsregeln', minutes:9,
-      body:
-        '<p>Eine <strong>IPv6-Adresse</strong> besteht aus <strong>128 Bit</strong>, notiert als <strong>8 Blöcke zu je 16 Bit</strong> in Hexadezimalschreibweise, getrennt durch Doppelpunkte. Jeder Block hat also <strong>vier Hex-Ziffern</strong>.</p>'+
-        '<p>Die beiden <strong>Kürzungsregeln</strong>:</p>'+
-        '<ul><li><strong>Führende Nullen</strong> in einem Block dürfen entfallen: <code>0db8</code> → <code>db8</code>.</li>'+
-        '<li>Eine <em>zusammenhängende Folge</em> von Nullblöcken wird durch <code>::</code> ersetzt – und zwar <strong>nur einmal pro Adresse</strong>, sonst wäre sie nicht mehr eindeutig rekonstruierbar.</li></ul>'+
-        '<p>Zum <strong>Ausschreiben</strong> gehst du rückwärts vor: Zähle die vorhandenen Blöcke, ziehe sie von 8 ab – die Differenz ist die Anzahl der Nullblöcke, die das <code>::</code> ersetzt. Dann alle Blöcke auf vier Ziffern auffüllen.</p>',
-      code:
-        "Gekuerzt:    fe80::521a:c5ff:fef2:38b7\n\n"+
-        "  Vorhanden: fe80 | 521a c5ff fef2 38b7  = 5 Bloecke\n"+
-        "  8 - 5 = 3 Nullbloecke ersetzt das ::\n\n"+
-        "Ungekuerzt:  fe80:0000:0000:0000:521a:c5ff:fef2:38b7\n\n"+
-        "  Praefix (Netzanteil):     erste 64 Bit = fe80:0000:0000:0000\n"+
-        "  Interface-Identifier:     letzte 64 Bit = 521a:c5ff:fef2:38b7",
-      codeLang:'IPv6',
-      tip:'Wenn eine Aufgabe die ungekürzte Form verlangt, meint sie wirklich jede führende Null. Aus da8 wird 0da8, aus 28 wird 0028 – jeder Block hat exakt vier Hexadezimalziffern. Genau hier verlieren die meisten die Hälfte der Punkte, weil sie nur das Doppelpunkt-Paar auflösen und die führenden Nullen vergessen.',
-      quiz:[
-        {q:'Wie viele Bit hat eine IPv6-Adresse?', options:['32','64','128'], correct:2, explain:'8 Blöcke zu je 16 Bit.'},
-        {q:'Wie oft darf :: in einer IPv6-Adresse vorkommen?', options:['Beliebig oft','Genau einmal','Zweimal'], correct:1, explain:'Sonst wäre die Anzahl der Nullblöcke nicht mehr eindeutig.'},
-        {q:'Wie lautet 2001:0db8:0000:0000:0000:ff00:0042:8329 gekürzt?', options:['2001:db8::ff00:42:8329','2001:db8:0:0::ff00:42:8329','2001::db8::ff00:42:8329'], correct:0, explain:'Führende Nullen entfallen, die Nullblockfolge wird einmal durch :: ersetzt.'}
-      ]
-    },
-    {
-      id:'m13-l2', title:'Adresstypen, Präfix und Teilnetze', minutes:9,
-      body:
-        '<p>Eine Unicast-IPv6-Adresse teilt sich immer in <strong>64 Bit Präfix</strong> (Netzanteil) und <strong>64 Bit Interface-Identifier</strong> (Hostanteil) – also vier Blöcke je Seite.</p>'+
-        '<p>Das Präfix zerfällt typischerweise weiter in <strong>48 Bit Standortpräfix</strong> (drei Blöcke) und <strong>16 Bit Teilnetz-ID</strong> (vierter Block).</p>'+
-        '<p><strong>Anzahl möglicher Teilnetze:</strong> Bei n Bit Teilnetz-ID sind es <code>2ⁿ</code> – bei 16 Bit also 2¹⁶ = 65.536. <strong>Anders als bei IPv4 wird hier nichts abgezogen</strong>: IPv6 kennt keine Broadcast-Adresse.</p>'+
-        '<table class="lesson-table"><tr><th>Präfix</th><th>Typ</th><th>Bedeutung</th></tr>'+
-        '<tr><td>fe80::/10</td><td>Link-Local</td><td>selbst erzeugt, nur im lokalen Segment, nicht routbar</td></tr>'+
-        '<tr><td>2000::/3</td><td>Global Unicast</td><td>weltweit routbar</td></tr>'+
-        '<tr><td>fc00::/7</td><td>Unique Local (ULA)</td><td>Pendant zu privaten IPv4-Adressen</td></tr>'+
-        '<tr><td>ff00::/8</td><td>Multicast</td><td>IPv6 kennt <strong>keinen</strong> Broadcast</td></tr>'+
-        '<tr><td>::1/128</td><td>Loopback</td><td>entspricht 127.0.0.1</td></tr></table>'+
-        '<figure class="fig"><svg viewBox="0 0 560 160" role="img" aria-label="Aufbau einer IPv6-Adresse mit Standortpraefix, Teilnetz-ID und Interface-Identifier"><rect class="s-netpart" x="20" y="34" width="252" height="36" rx="3"/><rect class="s-strong" x="272" y="34" width="84" height="36" rx="3"/><rect class="s-hostpart" x="356" y="34" width="184" height="36" rx="3"/><text class="s-mono" x="146" y="57" text-anchor="middle">2001:0db8:5f2d</text><text class="s-mono" x="314" y="57" text-anchor="middle">0028</text><text class="s-mono" x="448" y="57" text-anchor="middle">521a:c5ff:fef2:38b7</text><text class="s-lbl" x="146" y="88" text-anchor="middle">48 Bit Standortpr&#228;fix</text><text class="s-lbl" x="314" y="88" text-anchor="middle">16 Bit Teilnetz</text><text class="s-lbl" x="448" y="88" text-anchor="middle">64 Bit Interface-Identifier</text><line class="s-brace" x1="20" y1="102" x2="356" y2="102"/><text class="s-lbl" x="188" y="120" text-anchor="middle">Pr&#228;fix &#8211; 64 Bit</text><line class="s-brace" x1="356" y1="102" x2="540" y2="102"/><text class="s-lbl" x="448" y="120" text-anchor="middle">Hostanteil &#8211; 64 Bit</text><text class="s-lbl" x="20" y="148">2&#185;&#8310; = 65.536 Teilnetze &#8211; ohne Abzug, denn IPv6 kennt keine Broadcast-Adresse.</text><text class="s-hd" x="20" y="22">128 Bit = 8 Bl&#246;cke zu je 16 Bit</text></svg><figcaption>Eine IPv6-Unicast-Adresse teilt sich immer in 64 Bit Praefix und 64 Bit Interface-Identifier. Die Teilnetz-ID ist der vierte Block.</figcaption></figure>',
-      code:
-        "2001:0da8:5f2d : 0028 : 521a:c5ff:fef2:38b7\n"+
-        "^^^^^^^^^^^^^^^   ^^^^   ^^^^^^^^^^^^^^^^^^^\n"+
-        "48 Bit Standort   16 Bit  64 Bit Interface-Identifier\n"+
-        "                  Teilnetz-ID\n\n"+
-        "Moegliche Teilnetze: 2^16 = 65.536   (kein \"-2\" wie bei IPv4!)",
-      codeLang:'IPv6-Struktur',
-      tip:'Das eingeschobene ff:fe in der Mitte des Interface-Identifiers ist ein verräterisches Muster: Es zeigt, dass der Identifier nach dem EUI-64-Verfahren aus der 48-Bit-MAC-Adresse erzeugt wurde. Die MAC wird dabei in der Mitte geteilt, FFFE eingeschoben und das siebte Bit invertiert – aus 50-1A-C5 wird also 521a. Wer das in einer Analyseaufgabe erwähnt, zeigt echtes Verständnis.',
-      quiz:[
-        {q:'Wie viele Teilnetze erlaubt eine 16-Bit-Teilnetz-ID?', options:['2^16 = 65.536','2^16 − 2','16'], correct:0, explain:'IPv6 kennt keine Broadcast-Adresse, daher kein Abzug.'},
-        {q:'Wofür steht das Präfix fe80::?', options:['Global Unicast','Link-Local – selbst erzeugt, nicht routbar','Multicast'], correct:1, explain:'Jedes IPv6-Interface bildet sich beim Start automatisch eine solche Adresse.'},
-        {q:'Welcher Teil einer IPv6-Unicast-Adresse ist der Interface-Identifier?', options:['Die ersten 64 Bit','Die letzten 64 Bit','Die mittleren 16 Bit'], correct:1, explain:'Die ersten 64 Bit bilden das Präfix aus Standortanteil und Teilnetz-ID.'}
-      ]
-    },
-    {
-      id:'m13-l3', title:'Warum IPv6 – Vorteile und Autokonfiguration', minutes:8,
-      body:
-        '<p>Die Vorteile werden regelmäßig als Nennaufgabe geprüft, besonders im Kontext <strong>IoT</strong>:</p>'+
-        '<ul><li><strong>Nahezu unbegrenzter Adressraum</strong> – 2¹²⁸ ≈ 3,4 × 10³⁸ Adressen. Genug für jeden Sensor der Welt.</li>'+
-        '<li><strong>Ende-zu-Ende-Erreichbarkeit ohne NAT</strong> – jedes Gerät bekommt eine global gültige Adresse und ist direkt ansprechbar. Wichtig für Fernwartung und Steuerung.</li>'+
-        '<li><strong>Vereinfachter Header</strong> mit fester Größe – Router verarbeiten Pakete schneller.</li>'+
-        '<li><strong>IPsec</strong> ist von Haus aus vorgesehen.</li>'+
-        '<li><strong>Kein Broadcast</strong> – dessen Aufgaben übernimmt gezielteres Multicast.</li></ul>'+
-        '<p><strong>SLAAC</strong> (Stateless Address Autoconfiguration): Über <em>Router Advertisements</em> erfährt ein Host das Präfix und bildet sich seine Adresse selbst – ganz ohne DHCP-Server. Deshalb steht in der Windows-Ausgabe „Autokonfiguration aktiviert: Ja".</p>'+
-        '<p>Statt ARP nutzt IPv6 das <strong>Neighbor Discovery Protocol (NDP)</strong> über ICMPv6.</p>',
-      code:'',
-      tip:'Wenn eine Aufgabe nach Vorteilen „für den Einsatz im IoT-Bereich" fragt, sind zwei Argumente deutlich stärker als die anderen: der Adressraum, weil es um Millionen einzeln adressierbarer Kleingeräte geht, und die Ende-zu-Ende-Erreichbarkeit ohne NAT, weil Sensoren ferngewartet und gesteuert werden müssen. Wer diese beiden nennt, trifft den Kern der Frage.',
-      quiz:[
-        {q:'Was ersetzt in IPv6 die Funktion von ARP?', options:['DHCP','Neighbor Discovery Protocol über ICMPv6','DNS'], correct:1, explain:'ARP existiert in IPv6 nicht.'},
-        {q:'Was bedeutet SLAAC?', options:['Ein Verschlüsselungsverfahren','Zustandslose Autokonfiguration – der Host bildet seine Adresse selbst','Ein Routingprotokoll'], correct:1, explain:'Das Präfix kommt per Router Advertisement, den Rest bildet der Host.'},
-        {q:'Was ersetzt in IPv6 das ARP-Protokoll?', options:['DHCPv6','Neighbor Discovery über ICMPv6','DNS'], correct:1, explain:'ARP existiert in IPv6 nicht mehr.'}
-      ]
-    },
-    {
-      id:'m13-l4', title:'Nachbarschaft: NDP, Multicast und DAD', minutes:10,
-      body:
-        '<p>IPv6 kennt kein ARP und keinen Broadcast. Beide Aufgaben übernimmt das <strong>Neighbor Discovery Protocol</strong> (NDP), das auf ICMPv6 aufsetzt und gezieltes <strong>Multicast</strong> nutzt.</p>'+
-        '<p><strong>Die Multicastgruppen, die du kennen musst:</strong></p>'+
-        '<table class="lesson-table"><tr><th>Adresse</th><th>Wer hört zu</th></tr>'+
-        '<tr><td><code>ff02::1</code></td><td><strong>alle Knoten</strong> im Segment &#8211; das Gegenstück zum alten Broadcast</td></tr>'+
-        '<tr><td><code>ff02::2</code></td><td><strong>alle Router</strong> im Segment</td></tr>'+
-        '<tr><td><code>ff02::1:ffxx:xxxx</code></td><td>die <strong>angeforderte Knotengruppe</strong> (Solicited-Node)</td></tr></table>'+
-        '<p>Die dritte ist der Trick, der IPv6 sparsamer macht als IPv4. Sie wird aus den <strong>letzten 24 Bit</strong> der gesuchten Adresse gebildet. Eine Anfrage erreicht damit nur die wenigen Geräte, deren Adresse auf dieselben 24 Bit endet &#8211; statt wie beim ARP-Broadcast <em>jedes</em> Gerät im Netz aufzuwecken.</p>'+
-        '<p><strong>Die vier NDP-Nachrichten:</strong></p>'+
-        '<ul><li><strong>Neighbor Solicitation</strong> (NS) &#8211; „Wem gehört diese Adresse?" Ersetzt den ARP-Request.</li>'+
-        '<li><strong>Neighbor Advertisement</strong> (NA) &#8211; „Mir, hier ist meine MAC." Ersetzt den ARP-Reply.</li>'+
-        '<li><strong>Router Solicitation</strong> (RS) &#8211; „Ist hier ein Router?" an <code>ff02::2</code>.</li>'+
-        '<li><strong>Router Advertisement</strong> (RA) &#8211; „Ja, und hier ist das Präfix." an <code>ff02::1</code>.</li></ul>'+
-        '<p><strong>Duplicate Address Detection</strong> (DAD) nutzt dieselbe Mechanik für einen anderen Zweck: Bevor ein Gerät eine selbst gebildete Adresse benutzt, fragt es per NS nach <em>genau dieser</em> Adresse &#8211; mit der unbestimmten Adresse <code>::</code> als Absender. Antwortet niemand, ist sie frei. Antwortet jemand, verzichtet das Gerät darauf. Deshalb kann es in IPv6 praktisch keinen stillen Adresskonflikt geben, anders als bei einer von Hand vergebenen IPv4-Adresse.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 276" role="img" aria-label="Neighbor Discovery und Duplicate Address Detection">'+
-        '<text class="s-hd" x="20" y="22">1) Wem geh&#246;rt eine Adresse? &#8211; NS und NA</text>'+
-        '<rect class="s-accent" x="20" y="32" width="110" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="75" y="54" text-anchor="middle">Host A</text>'+
-        '<rect class="s-accent" x="430" y="32" width="110" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="485" y="54" text-anchor="middle">Host B</text>'+
-        '<line class="s-arrow" x1="132" y1="42" x2="426" y2="42" marker-end="url(#ndp)"/>'+
-        '<text class="s-mono" x="279" y="36" text-anchor="middle">NS an ff02::1:ff&#8230; &#8211; nur passende H&#246;rer</text>'+
-        '<line class="s-arrow2" x1="428" y1="60" x2="134" y2="60" marker-end="url(#ndp)"/>'+
-        '<text class="s-mono" x="279" y="76" text-anchor="middle">NA per Unicast &#8211; hier ist meine MAC</text>'+
-        '<text class="s-hd" x="20" y="108">2) Ist meine neue Adresse frei? &#8211; DAD</text>'+
-        '<rect class="s-warn" x="20" y="118" width="110" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="75" y="140" text-anchor="middle">neuer Host</text>'+
-        '<line class="s-arrow" x1="132" y1="132" x2="426" y2="132" marker-end="url(#ndp)"/>'+
-        '<text class="s-mono" x="279" y="126" text-anchor="middle">NS auf die EIGENE Adresse, Absender ::</text>'+
-        '<rect class="s-ok" x="430" y="118" width="110" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="485" y="140" text-anchor="middle">Stille</text>'+
-        '<text class="s-lbl" x="150" y="166">keine Antwort &#8594; Adresse ist frei und wird benutzt</text>'+
-        '<rect class="s-box" x="20" y="182" width="520" height="80" rx="4"/>'+
-        '<text class="s-hd" x="34" y="204">So entsteht die angeforderte Knotengruppe</text>'+
-        '<text class="s-mono" x="34" y="226">Zieladresse&#160;&#160;&#160;2001:db8::<tspan class="s-uline">52:1a3b</tspan></text>'+
-        '<text class="s-mono" x="34" y="246">Gruppe&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ff02::1:ff<tspan class="s-uline">52:1a3b</tspan> &#160;&#8592; die letzten 24 Bit</text>'+
-        '<defs><marker id="ndp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Statt alle zu fragen wie ARP, spricht IPv6 nur die Geräte an, deren Adresse auf dieselben 24 Bit endet.</figcaption></figure>',
-      code:
-        "ARP GEGEN NDP - was sich geaendert hat\n\n"+
-        "  IPv4 / ARP                  IPv6 / NDP\n"+
-        "  --------------------------  ---------------------------\n"+
-        "  Broadcast an ff:ff:ff:...   Multicast an ff02::1:ffxx:xxxx\n"+
-        "  JEDES Geraet wird gestoert  nur passende Hoerer\n"+
-        "  eigenes Protokoll           ICMPv6\n"+
-        "  arp -a                      ip -6 neigh  /  netsh ...\n"+
-        "  kein Schutz vor Doppelung   DAD vor jeder Nutzung\n\n"+
-        "DIE VIER NACHRICHTEN\n"+
-        "  RS  Router Solicitation    Host fragt   -> ff02::2\n"+
-        "  RA  Router Advertisement   Router sagt  -> ff02::1\n"+
-        "  NS  Neighbor Solicitation  wer hat X?\n"+
-        "  NA  Neighbor Advertisement ich, hier meine MAC\n\n"+
-        "SOLICITED-NODE SELBST BILDEN\n"+
-        "  gesucht   fe80::1a2b:3c4d:5e6f:7a8b\n"+
-        "  letzte 24 Bit sind  6f:7a8b\n"+
-        "  Gruppe    ff02::1:ff6f:7a8b\n\n"+
-        "  Regel: ff02::1:ff + die letzten sechs Hexziffern.\n\n"+
-        "WARUM MAN ff02::1 KENNEN SOLLTE\n"+
-        "  ping ff02::1%eth0\n"+
-        "     antwortet jeder Knoten im Segment - das IPv6-Gegenstueck\n"+
-        "     zum Broadcast-Ping und ein schneller Weg, alle Geraete\n"+
-        "     im lokalen Netz sichtbar zu machen.\n\n"+
-        "  ping ff02::2%eth0\n"+
-        "     antworten nur die Router. Gut, um ein unerwartetes\n"+
-        "     Router-Advertisement aufzuspueren.",
-      codeLang:'NDP',
-      tip:'Die Frage „Was ersetzt ARP in IPv6?" beantworten viele mit dem Stichwort NDP und lassen es dabei. Der Punkt dahinter ist der Fortschritt: ARP stört mit jedem Broadcast alle Geräte im Segment, NDP spricht über die angeforderte Knotengruppe nur die wenigen an, deren Adresse auf dieselben 24 Bit endet. Wer das erwähnt, zeigt, dass er den Unterschied verstanden hat und nicht nur ein Kürzel kennt.',
-      quiz:[
-        {q:'Welche Multicastgruppe erreicht alle Knoten eines Segments?', options:['ff02::1','ff02::2','ff00::1'], correct:0, explain:'ff02::2 erreicht nur die Router — ein Broadcast wie in IPv4 existiert nicht.'},
-        {q:'Woraus wird die angeforderte Knotengruppe gebildet?', options:['Aus dem Präfix','Aus den letzten 24 Bit der Zieladresse','Aus der MAC-Adresse des Routers'], correct:1, explain:'Deshalb hören nur die wenigen Geräte zu, deren Adresse auf dieselben Bits endet.'},
-        {q:'Wozu dient Duplicate Address Detection?', options:['Zum Finden des Standardgateways','Um vor der Nutzung zu prüfen, ob die eigene Adresse schon vergeben ist','Zum Verschlüsseln der Verbindung'], correct:1, explain:'Der Absender ist dabei die unbestimmte Adresse — antwortet niemand, ist die Adresse frei.'}
-      ]
-    },
-    {
-      id:'m13-l5', title:'Adressvergabe: SLAAC, DHCPv6 und Privacy Extensions', minutes:10,
-      body:
-        '<p>Ein IPv6-Gerät kann auf <strong>drei Wegen</strong> zu seiner Adresse kommen &#8211; und anders als bei IPv4 hat es meist <em>mehrere gleichzeitig</em>. Das ist normal und kein Fehler.</p>'+
-        '<p>Welcher Weg gilt, steuert der Router über zwei Bits im <strong>Router Advertisement</strong>:</p>'+
-        '<table class="lesson-table"><tr><th>M-Bit</th><th>O-Bit</th><th>Bedeutung</th></tr>'+
-        '<tr><td>0</td><td>0</td><td>reines <strong>SLAAC</strong> &#8211; der Host bildet alles selbst</td></tr>'+
-        '<tr><td>0</td><td>1</td><td>SLAAC für die Adresse, <strong>DHCPv6 nur für Zusatzangaben</strong> wie DNS (zustandslos)</td></tr>'+
-        '<tr><td>1</td><td>&#8211;</td><td><strong>DHCPv6 zustandsbehaftet</strong> &#8211; der Server vergibt und verwaltet die Adressen</td></tr></table>'+
-        '<p><strong>Bei SLAAC</strong> liefert das Router Advertisement nur das <strong>Präfix</strong>, die ersten 64 Bit. Die zweiten 64 Bit, den <strong>Interface-Identifier</strong>, bildet der Host selbst &#8211; früher nach dem <strong>EUI-64</strong>-Verfahren aus der MAC-Adresse.</p>'+
-        '<p>EUI-64 geht so: Die 48-Bit-MAC wird in der Mitte geteilt, <code>FFFE</code> eingeschoben und das siebte Bit umgedreht. Aus <code>50:1A:C5:F2:38:B7</code> wird damit <code>521a:c5ff:fef2:38b7</code>. Das eingeschobene <strong>ff:fe</strong> in der Mitte ist das verräterische Muster, an dem man eine EUI-64-Adresse sofort erkennt.</p>'+
-        '<p><strong>Und genau darin lag ein Datenschutzproblem:</strong> Die MAC-Adresse ist weltweit eindeutig und ändert sich nie. Ein Gerät wäre damit über jedes Netz hinweg wiedererkennbar gewesen &#8211; im Hotel, in der Firma, zu Hause. Deshalb gibt es die <strong>Privacy Extensions</strong>: Der Interface-Identifier wird zufällig gewählt und regelmäßig gewechselt, oft täglich. Moderne Betriebssysteme haben das standardmäßig aktiv, sodass ein Gerät typischerweise <em>mehrere</em> Adressen zugleich führt: eine stabile zum Empfangen und eine wechselnde zum Senden nach außen.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 268" role="img" aria-label="Wege der IPv6-Adressvergabe abhaengig von den RA-Bits">'+
-        '<rect class="s-strong" x="180" y="12" width="200" height="34" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="34" text-anchor="middle">Router Advertisement</text>'+
-        '<line class="s-arrow" x1="280" y1="46" x2="280" y2="62" marker-end="url(#adr)"/>'+
-        '<polygon class="s-warn" points="280,64 356,94 280,124 204,94"/>'+
-        '<text class="s-mono" x="280" y="98" text-anchor="middle">M-Bit?</text>'+
-        '<line class="s-arrow" x1="204" y1="94" x2="120" y2="94" marker-end="url(#adr)"/>'+
-        '<text class="s-mono" x="162" y="86" text-anchor="middle">0</text>'+
-        '<line class="s-arrow" x1="356" y1="94" x2="440" y2="94" marker-end="url(#adr)"/>'+
-        '<text class="s-mono" x="398" y="86" text-anchor="middle">1</text>'+
-        '<rect class="s-ok" x="20" y="132" width="200" height="58" rx="4"/>'+
-        '<text class="s-hd" x="120" y="152" text-anchor="middle">SLAAC</text>'+
-        '<text class="s-lbl" x="120" y="170" text-anchor="middle">Pr&#228;fix vom Router,</text>'+
-        '<text class="s-lbl" x="120" y="184" text-anchor="middle">Rest bildet der Host selbst</text>'+
-        '<rect class="s-accent" x="340" y="132" width="200" height="58" rx="4"/>'+
-        '<text class="s-hd" x="440" y="152" text-anchor="middle">DHCPv6</text>'+
-        '<text class="s-lbl" x="440" y="170" text-anchor="middle">Server vergibt und</text>'+
-        '<text class="s-lbl" x="440" y="184" text-anchor="middle">verwaltet die Adressen</text>'+
-        '<text class="s-lbl" x="20" y="212">O-Bit = 1 zus&#228;tzlich: DHCPv6 liefert nur DNS und &#228;hnliche Angaben (zustandslos).</text>'+
-        '<rect class="s-box" x="20" y="224" width="520" height="34" rx="4"/>'+
-        '<text class="s-mono" x="34" y="246">EUI-64:&#160; 50:1A:C5 | F2:38:B7&#160; &#8594;&#160; 521a:c5<tspan class="s-uline">ff:fe</tspan>f2:38b7</text>'+
-        '<defs><marker id="adr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Das M-Bit entscheidet über den Weg. Das ff:fe in der Mitte verrät, dass der Interface-Identifier aus der MAC gebildet wurde.</figcaption></figure>',
-      code:
-        "EUI-64 SCHRITT FUER SCHRITT\n\n"+
-        "  MAC            50 : 1A : C5 : F2 : 38 : B7\n"+
-        "  1. teilen      50 1A C5  |  F2 38 B7\n"+
-        "  2. FFFE rein   50 1A C5 FF FE F2 38 B7\n"+
-        "  3. 7. Bit kippen im ersten Byte\n"+
-        "        50 = 0101 0000\n"+
-        "                    ^ das siebte Bit von links\n"+
-        "        52 = 0101 0010\n"+
-        "  Ergebnis       521a:c5ff:fef2:38b7\n\n"+
-        "  Vollstaendige Adresse mit dem Praefix 2001:db8:1:2::/64\n"+
-        "        2001:0db8:0001:0002:521a:c5ff:fef2:38b7\n\n"+
-        "MEHRERE ADRESSEN SIND NORMAL\n"+
-        "  ip -6 addr show\n\n"+
-        "    fe80::521a:c5ff:fef2:38b7      Link-Local, immer da\n"+
-        "    2001:db8:1:2:521a:c5ff:fef2:38b7   stabil (EUI-64)\n"+
-        "    2001:db8:1:2:9c3f:0a81:ee52:41d7   temporaer\n"+
-        "                                       wechselt regelmaessig\n\n"+
-        "  Ausgehend wird die TEMPORAERE benutzt, eingehend ist das\n"+
-        "  Geraet ueber die stabile erreichbar.\n\n"+
-        "WAS DAS FUER DIE PRAXIS BEDEUTET\n"+
-        "  Firewallregel auf eine feste IPv6-Adresse?\n"+
-        "     -> Privacy Extensions fuer Server abschalten oder\n"+
-        "        die Adresse per DHCPv6 fest zuweisen.\n"+
-        "  Logdatei zeigt eine unbekannte Adresse?\n"+
-        "     -> kann dasselbe Geraet von gestern sein.\n\n"+
-        "WARUM SLAAC OHNE SERVER AUSKOMMT\n"+
-        "  Praefix kommt per RA vom Router, den Rest bildet der Host.\n"+
-        "  Deshalb funktioniert IPv6 im kleinen Netz voellig ohne\n"+
-        "  DHCP-Server - der Router genuegt.",
-      codeLang:'Adressvergabe',
-      tip:'Bei einer Aufgabe zum Vergleich von DHCP und SLAAC lautet der stärkste Punkt nicht „SLAAC braucht keinen Server", sondern die Konsequenz daraus: Es gibt keine zentrale Liste, wer welche Adresse hat. Wer Nachvollziehbarkeit braucht — etwa aus Datenschutz- oder Sicherheitsgründen — nimmt trotzdem DHCPv6 zustandsbehaftet. Genau diese Abwägung will die Prüfung sehen.',
-      quiz:[
-        {q:'Was liefert das Router Advertisement bei reinem SLAAC?', options:['Die vollständige Adresse','Nur das Präfix, die ersten 64 Bit','Nur den DNS-Server'], correct:1, explain:'Den Interface-Identifier bildet der Host selbst.'},
-        {q:'Woran erkennt man einen nach EUI-64 gebildeten Interface-Identifier?', options:['Am eingeschobenen ff:fe in der Mitte','An der führenden Null','An der Länge'], correct:0, explain:'Die MAC wird geteilt, FFFE eingeschoben und das siebte Bit umgedreht.'},
-        {q:'Wozu dienen die Privacy Extensions?', options:['Zur Verschlüsselung des Verkehrs','Der Interface-Identifier wird zufällig gewählt und gewechselt, damit das Gerät nicht wiedererkennbar ist','Zur schnelleren Adressvergabe'], correct:1, explain:'Aus der MAC gebildete Adressen wären netzübergreifend eindeutig und damit verfolgbar.'}
-      ]
-    },
-    {
-      id:'m13-l6', title:'Der Umstieg: Präfixplanung, Dual Stack und NAT64', minutes:10,
-      body:
-        '<p>IPv4 und IPv6 sind <strong>nicht kompatibel</strong>. Ein reiner IPv6-Rechner kann einen reinen IPv4-Server nicht ansprechen &#8211; es sind verschiedene Protokolle, kein Dialekt desselben. Deshalb braucht der Umstieg Übergangsverfahren.</p>'+
-        '<p><strong>Die Präfixplanung</strong> zuerst, weil sie in Aufgaben zur Netzplanung auftaucht. Anders als bei IPv4 wird <em>nicht</em> gespart:</p>'+
-        '<table class="lesson-table"><tr><th>Präfix</th><th>Wer bekommt es</th><th>Enthält</th></tr>'+
-        '<tr><td><code>/48</code></td><td>ein Unternehmen vom Provider</td><td>65.536 Teilnetze</td></tr>'+
-        '<tr><td><code>/56</code></td><td>ein Standort oder ein Privatanschluss</td><td>256 Teilnetze</td></tr>'+
-        '<tr><td><code>/64</code></td><td><strong>jedes einzelne Teilnetz</strong></td><td>2&#8310;&#8308; Adressen</td></tr></table>'+
-        '<p><strong>Die eiserne Regel: Ein Teilnetz ist immer ein /64.</strong> Nicht kleiner. Das wirkt verschwenderisch, ist aber Absicht &#8211; SLAAC und die angeforderte Knotengruppe setzen 64 Hostbits voraus und funktionieren bei einem /80 oder /96 schlicht nicht. Wer aus Sparsamkeit kleiner schneidet, bricht die automatische Adressvergabe. Gespart wird bei IPv6 nicht.</p>'+
-        '<p><strong>Die drei Übergangsverfahren:</strong></p>'+
-        '<ul><li><strong>Dual Stack</strong> &#8211; das Gerät spricht <em>beides</em> gleichzeitig und wählt je Ziel das passende Protokoll. Der saubere und heute übliche Weg. Preis: doppelte Adressverwaltung, doppelte Firewallregeln.</li>'+
-        '<li><strong>Tunnel</strong> &#8211; IPv6-Pakete werden in IPv4-Pakete verpackt, um eine Strecke zu überbrücken, die nur IPv4 kann. Nützlich als Übergang, kostet Nutzlast und erschwert die Fehlersuche.</li>'+
-        '<li><strong>NAT64 mit DNS64</strong> &#8211; für reine IPv6-Netze, die noch IPv4-Ziele erreichen müssen. DNS64 erfindet für einen IPv4-Server eine IPv6-Adresse, NAT64 übersetzt den Verkehr. So kommt ein Gerät ohne jede IPv4-Adresse ins alte Internet.</li></ul>'+
-        '<p><strong>Ein Unterschied im Betrieb, der geprüft wird: Router fragmentieren in IPv6 nicht.</strong> Ist ein Paket für die nächste Strecke zu groß, verwirft der Router es und meldet per ICMPv6 <em>Packet Too Big</em> mit der zulässigen Größe. Der <strong>Absender</strong> passt daraufhin seine Paketgröße an &#8211; das nennt man <strong>Path MTU Discovery</strong>. Die Mindest-MTU liegt bei <strong>1280 Byte</strong>.</p>'+
-        '<p>Daraus folgt eine häufige Störung: Wer ICMPv6 pauschal in der Firewall blockiert, zerstört die Path MTU Discovery. Kleine Seiten laden dann, große bleiben hängen. Bei IPv4 war ICMP verzichtbar, <strong>bei IPv6 ist es Teil des Betriebs</strong> &#8211; NDP läuft ebenfalls darüber.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 262" role="img" aria-label="Praefixhierarchie und die drei Uebergangsverfahren">'+
-        '<text class="s-hd" x="20" y="22">Pr&#228;fixplanung &#8211; von oben nach unten</text>'+
-        '<rect class="s-strong" x="20" y="32" width="520" height="30" rx="3"/>'+
-        '<text class="s-lbl" x="280" y="52" text-anchor="middle">/48 &#8211; das Unternehmen &#183; 65.536 Teilnetze</text>'+
-        '<rect class="s-accent" x="60" y="68" width="440" height="28" rx="3"/>'+
-        '<text class="s-lbl" x="280" y="87" text-anchor="middle">/56 &#8211; ein Standort &#183; 256 Teilnetze</text>'+
-        '<rect class="s-ok" x="110" y="102" width="120" height="28" rx="3"/>'+
-        '<text class="s-mono" x="170" y="121" text-anchor="middle">/64 Vertrieb</text>'+
-        '<rect class="s-ok" x="236" y="102" width="120" height="28" rx="3"/>'+
-        '<text class="s-mono" x="296" y="121" text-anchor="middle">/64 Technik</text>'+
-        '<rect class="s-ok" x="362" y="102" width="120" height="28" rx="3"/>'+
-        '<text class="s-mono" x="422" y="121" text-anchor="middle">/64 G&#228;ste</text>'+
-        '<text class="s-lbl" x="20" y="150">Ein Teilnetz ist immer ein /64 &#8211; kleiner bricht SLAAC.</text>'+
-        '<rect class="s-box" x="20" y="164" width="166" height="80" rx="4"/>'+
-        '<text class="s-hd" x="103" y="186" text-anchor="middle">Dual Stack</text>'+
-        '<text class="s-lbl" x="103" y="206" text-anchor="middle">beides gleichzeitig,</text>'+
-        '<text class="s-lbl" x="103" y="222" text-anchor="middle">je Ziel das passende</text>'+
-        '<text class="s-mono" x="103" y="238" text-anchor="middle">der Normalfall</text>'+
-        '<rect class="s-box" x="197" y="164" width="166" height="80" rx="4"/>'+
-        '<text class="s-hd" x="280" y="186" text-anchor="middle">Tunnel</text>'+
-        '<text class="s-lbl" x="280" y="206" text-anchor="middle">IPv6 verpackt in IPv4,</text>'+
-        '<text class="s-lbl" x="280" y="222" text-anchor="middle">um eine Strecke zu</text>'+
-        '<text class="s-lbl" x="280" y="238" text-anchor="middle">&#252;berbr&#252;cken</text>'+
-        '<rect class="s-box" x="374" y="164" width="166" height="80" rx="4"/>'+
-        '<text class="s-hd" x="457" y="186" text-anchor="middle">NAT64 + DNS64</text>'+
-        '<text class="s-lbl" x="457" y="206" text-anchor="middle">reines IPv6-Netz</text>'+
-        '<text class="s-lbl" x="457" y="222" text-anchor="middle">erreicht IPv4-Ziele</text>'+
-        '<text class="s-mono" x="457" y="238" text-anchor="middle">&#252;bersetzt</text>'+
-        '</svg><figcaption>Die Hierarchie ist bewusst großzügig. Wer beim Teilnetz unter /64 geht, spart Adressen, die es im Überfluss gibt, und verliert die automatische Vergabe.</figcaption></figure>',
-      code:
-        "WIE VIELE TEILNETZE STECKEN DRIN?\n\n"+
-        "  Von /48 auf /64  ->  16 Bit frei  ->  2^16 = 65.536\n"+
-        "  Von /56 auf /64  ->   8 Bit frei  ->  2^8  =    256\n"+
-        "  Von /48 auf /56  ->   8 Bit frei  ->  2^8  =    256 Standorte\n\n"+
-        "  Formel: 2 hoch (Zielpraefix - Ausgangspraefix)\n"+
-        "  KEIN Abzug von 2 - IPv6 kennt keine Broadcastadresse.\n\n"+
-        "TYPISCHE PRUEFUNGSRECHNUNG\n"+
-        "  \"Ein Unternehmen erhaelt 2001:db8:1200::/40.\n"+
-        "   Wie viele /48 lassen sich daraus bilden?\"\n"+
-        "     48 - 40 = 8  ->  2^8 = 256\n\n"+
-        "PATH MTU DISCOVERY\n"+
-        "  IPv4: Router darf fragmentieren\n"+
-        "  IPv6: Router fragmentiert NIE\n"+
-        "        -> verwirft und meldet ICMPv6 Packet Too Big\n"+
-        "        -> der ABSENDER verkleinert seine Pakete\n"+
-        "  Mindest-MTU 1280 Byte.\n\n"+
-        "  Stoerungsbild bei blockiertem ICMPv6\n"+
-        "     Ping geht, kleine Seiten laden, grosse haengen.\n"+
-        "     Ursache: Path MTU Discovery kaputt.\n"+
-        "     Merke: ICMPv6 nicht pauschal blocken - NDP laeuft\n"+
-        "     ebenfalls darueber, sonst findet sich gar nichts mehr.\n\n"+
-        "REIHENFOLGE BEI DUAL STACK\n"+
-        "  Hat ein Name einen AAAA- UND einen A-Eintrag, versucht das\n"+
-        "  Betriebssystem in der Regel zuerst IPv6 und faellt bei\n"+
-        "  Problemen schnell auf IPv4 zurueck (Happy Eyeballs).\n"+
-        "  Deshalb faellt ein kaputtes IPv6 oft erst spaet auf.",
-      codeLang:'IPv6-Umstieg',
-      tip:'Die Frage, warum ein Teilnetz immer ein /64 bleibt, obwohl darin mehr Adressen stecken als die Erde Sandkörner hat, ist eine gute Verständnisfrage. Die Antwort ist nicht Großzügigkeit, sondern Technik: SLAAC bildet den Interface-Identifier aus 64 Bit, und die angeforderte Knotengruppe setzt dieselbe Struktur voraus. Bei einem /80 funktioniert die automatische Adressvergabe nicht mehr.',
-      quiz:[
-        {q:'Wie groß ist ein einzelnes IPv6-Teilnetz üblicherweise?', options:['/48','/56','/64'], correct:2, explain:'Kleiner zu schneiden bricht SLAAC und die angeforderte Knotengruppe.'},
-        {q:'Was passiert in IPv6, wenn ein Paket für die nächste Strecke zu groß ist?', options:['Der Router fragmentiert es','Der Router verwirft es und meldet Packet Too Big — der Absender verkleinert','Es wird verworfen ohne Meldung'], correct:1, explain:'Das ist die Path MTU Discovery. Die Mindest-MTU beträgt 1280 Byte.'},
-        {q:'Wozu dient NAT64 zusammen mit DNS64?', options:['Damit ein reines IPv6-Netz noch IPv4-Ziele erreicht','Zum Verschlüsseln von IPv6','Um IPv4-Adressen zu sparen'], correct:0, explain:'DNS64 erfindet für den IPv4-Server eine IPv6-Adresse, NAT64 übersetzt den Verkehr.'}
-      ]
-    },
-  ]
-});
-MODULES.push({
-  id:'m14', part:4, partTitle:'Netzwerktechnik', title:'Netzdienste, WLAN & Speichernetze', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m14-l1', title:'DHCP und ARP', minutes:9,
-      body:
-        '<p><strong>DHCP</strong> vergibt die IP-Konfiguration automatisch. Der Ablauf – Merkwort <strong>DORA</strong>:</p>'+
-        '<ul><li><strong>D</strong>iscover – der Client sucht per Broadcast einen Server.</li>'+
-        '<li><strong>O</strong>ffer – der Server bietet eine Adresse an.</li>'+
-        '<li><strong>R</strong>equest – der Client fordert genau dieses Angebot an.</li>'+
-        '<li><strong>A</strong>cknowledge – der Server bestätigt und setzt die Lease-Dauer.</li></ul>'+
-        '<p>Verteilt werden typischerweise: IP-Adresse, Subnetzmaske, Standardgateway, DNS-Server, Lease-Dauer. Eine <strong>DHCP-Reservierung</strong> bindet eine feste IP an eine MAC-Adresse – die saubere Alternative zur statischen Konfiguration am Gerät.</p>'+
-        '<p><strong>ARP</strong> löst zu einer bekannten <strong>IP-Adresse</strong> die zugehörige <strong>MAC-Adresse</strong> im lokalen Netz auf. Der Ablauf: ARP-Request per Broadcast („Wer hat 192.168.0.1?"), ARP-Reply per Unicast, Speicherung im <strong>ARP-Cache</strong> (<code>arp -a</code>).</p>',
-      code:
-        "ARP schlaegt die Bruecke zwischen Schicht 3 und Schicht 2:\n\n"+
-        "  Anwendung adressiert per IP     (Schicht 3)\n"+
-        "  Versand im LAN erfolgt per MAC  (Schicht 2)\n\n"+
-        "  1. Broadcast an ff:ff:ff:ff:ff:ff - \"Wer hat 192.168.0.1?\"\n"+
-        "  2. Unicast-Antwort des Besitzers - \"Ich, hier ist meine MAC.\"\n"+
-        "  3. Eintrag im ARP-Cache (laeuft nach Minuten ab)\n\n"+
-        "Fuer Ziele ausserhalb wird die MAC des Standardgateways aufgeloest.",
-      codeLang:'ARP',
-      tip:'Ein Sicherheitsaspekt, der in Prüfungen gern als Zusatzfrage auftaucht: ARP ist unauthentifiziert – jeder kann behaupten, eine bestimmte IP zu besitzen. Dieses ARP-Spoofing ermöglicht Man-in-the-Middle-Angriffe im lokalen Netz. Gegenmaßnahmen sind Dynamic ARP Inspection auf dem Switch, statische Einträge und Port Security.',
-      quiz:[
-        {q:'Wofür steht DORA beim DHCP?', options:['Discover, Offer, Request, Acknowledge','Domain, Object, Route, Address','Data, Order, Reply, Ack'], correct:0, explain:'Die vier Schritte der dynamischen Adressvergabe.'},
-        {q:'Was ermittelt ARP?', options:['Die IP zu einer bekannten MAC','Die MAC zu einer bekannten IP im lokalen Netz','Den Hostnamen zu einer IP'], correct:1, explain:'Die Umkehrung leistete früher RARP, heute DHCP.'},
-        {q:'Was verteilt ein DHCP-Server typischerweise außer der IP-Adresse?', options:['Nur die IP','Subnetzmaske, Gateway, DNS-Server und Lease-Dauer','Das Passwort'], correct:1, explain:'Deshalb ist ein Gerät mit APIPA-Adresse auch ohne Gateway und DNS.'}
-      ]
-    },
-    {
-      id:'m14-l2', title:'DNS und Diagnosewerkzeuge', minutes:8,
-      body:
-        '<p><strong>DNS</strong> übersetzt Namen in IP-Adressen. Die Auflösung läuft hierarchisch: Root-Server → Top-Level-Domain (.de) → autoritativer Nameserver der Domain. Antworten werden zwischengespeichert (Cache mit TTL).</p>'+
-        '<p>Die wichtigsten <strong>Ressource Records</strong>: <strong>A</strong> (Name → IPv4), <strong>AAAA</strong> (Name → IPv6), <strong>CNAME</strong> (Alias), <strong>MX</strong> (Mailserver), <strong>PTR</strong> (Reverse-Lookup), <strong>NS</strong> (zuständiger Nameserver).</p>'+
-        '<p>Dein <strong>Werkzeugkasten</strong> für die Fehlersuche:</p>'+
-        '<ul><li><code>ping</code> – Erreichbarkeit über ICMP, zeigt Antwortzeit und Paketverlust.</li>'+
-        '<li><code>tracert</code> / <code>traceroute</code> – zeigt jeden Router auf dem Weg; findet, <em>wo</em> der Weg abbricht.</li>'+
-        '<li><code>ipconfig /all</code> bzw. <code>ip a</code> – eigene Konfiguration inklusive MAC.</li>'+
-        '<li><code>ipconfig /release</code> und <code>/renew</code> – DHCP-Lease erneuern.</li>'+
-        '<li><code>arp -a</code> – ARP-Cache anzeigen.</li>'+
-        '<li><code>nslookup</code> / <code>dig</code> – DNS testen.</li>'+
-        '<li><code>netstat -an</code> / <code>ss</code> – offene Verbindungen und lauschende Ports.</li></ul>',
-      code:'',
-      tip:'Achte bei Befehlsaufgaben auf die Parameter – sie sind oft der eigentliche Punkt. Das schlichte ipconfig zeigt die MAC-Adresse nicht an, erst ipconfig /all tut das. Wer nur ipconfig schreibt, wenn nach der physischen Adresse gefragt ist, bekommt keinen Punkt. Alternativen unter Windows sind getmac /v, unter Linux ip link.',
-      quiz:[
-        {q:'Welcher Ressource Record ordnet einem Namen eine IPv6-Adresse zu?', options:['A','AAAA','MX'], correct:1, explain:'A steht für IPv4, AAAA für IPv6 – vier A für die vierfache Adresslänge.'},
-        {q:'Welcher Befehl zeigt die MAC-Adresse an?', options:['ipconfig','ipconfig /all','ping'], correct:1, explain:'Ohne den Parameter /all fehlt die physische Adresse.'},
-        {q:'Welcher Befehl zeigt den Weg über alle Router bis zum Ziel?', options:['ping','tracert bzw. traceroute','nslookup'], correct:1, explain:'So findet man, an welcher Stelle der Weg abbricht.'}
-      ]
-    },
-    {
-      id:'m14-l3', title:'WLAN und Sicherheitsverfahren', minutes:8,
-      body:
-        '<p>Für den WLAN-Zugang braucht ein Client zwei Angaben: die <strong>SSID</strong> (den Netzwerknamen) und den <strong>Pre-shared Key</strong> (das Passwort).</p>'+
-        '<p>Die <strong>Verschlüsselungsstandards</strong> in historischer Reihenfolge: <strong>WEP</strong> (gebrochen, nicht mehr verwenden) → <strong>WPA</strong> (TKIP, veraltet) → <strong>WPA2</strong> (AES/CCMP, Mindeststandard) → <strong>WPA3</strong> (SAE, Schutz gegen Offline-Wörterbuchangriffe, Forward Secrecy).</p>'+
-        '<p>Die beiden <strong>Betriebsarten</strong> – der Kern der typischen Prüfungsfrage:</p>'+
-        '<ul><li><strong>Personal / PSK</strong> – ein gemeinsames Passwort für alle. Einfach umzusetzen, aber: Scheidet ein Mitarbeiter aus, muss es auf allen Geräten geändert werden. Geeignet für kleine Unternehmen.</li>'+
-        '<li><strong>Enterprise / 802.1X mit EAP und RADIUS-Server</strong> – individuelle Benutzerkonten oder Zertifikate. Ein einzelner Zugang lässt sich gezielt sperren, jeder Zugriff ist protokolliert. Preis: ein RADIUS-Server muss betrieben werden. Geeignet für mittlere und große Unternehmen.</li></ul>'+
-        '<p>Die drei Rollen bei 802.1X: <strong>Supplicant</strong> (Endgerät) – <strong>Authenticator</strong> (Access Point/Switch) – <strong>Authentication Server</strong> (RADIUS).</p>',
-      code:'',
-      tip:'Zwei oft genannte WLAN-Maßnahmen taugen wenig und du solltest das wissen: Das Abschalten des SSID-Broadcasts ist kosmetisch, denn die SSID wird beim Verbinden ohnehin übertragen. Und der MAC-Filter ist leicht zu umgehen, weil MAC-Adressen per Software gefälscht werden können. Als „zusätzliche Hürde" darfst du sie nennen, als Sicherheitsmaßnahme nicht.',
-      quiz:[
-        {q:'Welcher WLAN-Standard ist heute Mindeststandard?', options:['WEP','WPA','WPA2 (besser WPA3)'], correct:2, explain:'WEP ist gebrochen, WPA mit TKIP veraltet.'},
-        {q:'Welchen Vorteil bietet WPA-Enterprise mit RADIUS?', options:['Es ist einfacher einzurichten','Individuelle Zugänge lassen sich gezielt sperren und protokollieren','Es ist schneller'], correct:1, explain:'Beim PSK müsste man das Passwort auf allen Geräten ändern.'},
-        {q:'Warum ist ein MAC-Filter keine echte Sicherheitsmaßnahme?', options:['Er ist zu langsam','MAC-Adressen lassen sich per Software fälschen','Er funktioniert nur im LAN'], correct:1, explain:'Als zusätzliche Hürde darf man ihn nennen, als Schutzkonzept nicht.'}
-      ]
-    },
-    {
-      id:'m14-l4', title:'DAS, NAS und SAN', minutes:8,
-      body:
-        '<p>Die drei Speicherarchitekturen werden regelmäßig verglichen:</p>'+
-        '<ul><li><strong>DAS</strong> (Direct Attached Storage) – Speicher direkt am Server. Einfach und schnell, aber nur von diesem einen Server nutzbar.</li>'+
-        '<li><strong>NAS</strong> (Network Attached Storage) – eigenständiges Speichergerät im LAN, stellt <strong>Dateien</strong> über SMB/CIFS oder NFS bereit. Einfach einzurichten, günstig, für viele Clients nutzbar. Nachteil: dateibasiert (nicht optimal für Datenbanken), teilt sich die Bandbreite mit dem normalen LAN-Verkehr.</li>'+
-        '<li><strong>SAN</strong> (Storage Area Network) – eigenes Hochgeschwindigkeitsnetz nur für Speicher, stellt den Servern <strong>Blockspeicher</strong> bereit. Sehr hohe Performance, ideal für Datenbanken und Virtualisierung, Erweiterung im laufenden Betrieb. Nachteil: teuer, eigene Infrastruktur (Fibre Channel oder iSCSI), Spezialwissen nötig.</li></ul>'+
-        '<p><strong>Der eine Unterschied, den du dir merken musst: NAS liefert Dateien, SAN liefert Blöcke.</strong> Daraus folgt alles andere – Performance, Datenbanktauglichkeit und Kosten.</p>',
-      code:'',
-      tip:'Aus dem Satz „NAS liefert Dateien, SAN liefert Blöcke" lassen sich alle Vorteile herleiten, ohne sie einzeln zu lernen. Ein Server, der Blöcke bekommt, sieht das SAN wie eine lokale Festplatte und kann sein eigenes Dateisystem darauflegen – deshalb eignet es sich für Datenbanken und Virtualisierung. Ein NAS bringt sein Dateisystem mit und ist deshalb für gemeinsame Dateiablagen ideal.',
-      quiz:[
-        {q:'Was ist der Kernunterschied zwischen NAS und SAN?', options:['NAS liefert Dateien, SAN liefert Blöcke','NAS ist schneller','SAN nutzt WLAN'], correct:0, explain:'Daraus folgen Performance, Datenbanktauglichkeit und Kosten.'},
-        {q:'Welche Protokolle nutzt ein SAN?', options:['SMB und NFS','Fibre Channel und iSCSI','HTTP und FTP'], correct:1, explain:'SMB und NFS sind dateibasierte NAS-Protokolle.'},
-        {q:'Welche Speicherlösung eignet sich am besten für eine Datenbank?', options:['NAS über SMB','SAN mit Blockspeicher','Ein USB-Laufwerk'], correct:1, explain:'Der Server legt sein eigenes Dateisystem auf den Blockspeicher — das brauchen Datenbanken.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m15', part:5, partTitle:'IT-Sicherheit & Datenschutz', title:'Schutzziele & Maßnahmen', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m15-l1', title:'Die Schutzziele der Informationssicherheit', minutes:9,
-      body:
-        '<p>Die <strong>drei Grundschutzziele</strong> nach BSI – Merkwort <strong>VIV</strong> oder englisch <strong>CIA</strong>:</p>'+
-        '<table class="lesson-table"><tr><th>Ziel</th><th>Bedeutung</th><th>Typische Maßnahme</th></tr>'+
-        '<tr><td><strong>Vertraulichkeit</strong> (Confidentiality)</td><td>Nur Befugte sehen die Daten</td><td>Verschlüsselung, Berechtigungskonzept</td></tr>'+
-        '<tr><td><strong>Integrität</strong> (Integrity)</td><td>Daten sind unverändert und vollständig</td><td>Prüfsummen, Hashwerte, Signaturen</td></tr>'+
-        '<tr><td><strong>Verfügbarkeit</strong> (Availability)</td><td>Daten sind bei Bedarf nutzbar</td><td>Backup, Redundanz, RAID, USV</td></tr></table>'+
-        '<p>Ergänzend werden häufig genannt: <strong>Authentizität</strong> (die Identität ist echt), <strong>Verbindlichkeit / Nichtabstreitbarkeit</strong> (eine Handlung ist nachweisbar dem Urheber zuzuordnen) und <strong>Belastbarkeit</strong>.</p>'+
-        '<p>Bei der Aufgabenform „Ordnen Sie die Maßnahme einem Schutzziel zu" hilft die Kontrollfrage: <em>Wovor schützt sie?</em> Vor Mitlesen → Vertraulichkeit. Vor unbemerkter Veränderung → Integrität. Vor Ausfall → Verfügbarkeit.</p>',
-      code:'',
-      tip:'Eine Maßnahme kann mehreren Zielen dienen, und genau das bringt zusätzliche Punkte, wenn du es begründest. Eine digitale Signatur sichert die Integrität, weil jede Änderung sie ungültig macht, zugleich die Authentizität, weil sie den Urheber ausweist, und die Verbindlichkeit, weil er die Urheberschaft nicht abstreiten kann. Drei Ziele mit einer Maßnahme.',
-      quiz:[
-        {q:'Welchem Schutzziel dient ein RAID-Verbund?', options:['Vertraulichkeit','Integrität','Verfügbarkeit'], correct:2, explain:'RAID überbrückt den Ausfall einer Festplatte – es schützt nicht vor unbefugtem Lesen.'},
-        {q:'Welches Schutzziel sichert ein Hashwert?', options:['Integrität','Verfügbarkeit','Vertraulichkeit'], correct:0, explain:'Er macht jede nachträgliche Veränderung erkennbar.'},
-        {q:'Welchem Schutzziel dient die Nichtabstreitbarkeit am nächsten?', options:['Verfügbarkeit','Verbindlichkeit und Authentizität','Vertraulichkeit'], correct:1, explain:'Erreicht wird sie vor allem durch digitale Signaturen und lückenlose Protokollierung.'}
-      ]
-    },
-    {
-      id:'m15-l2', title:'Technische und organisatorische Maßnahmen', minutes:9,
-      body:
-        '<p>Die AP1 fragt sehr häufig: „Nennen Sie je zwei technische und zwei organisatorische Maßnahmen." Die Unterscheidung ist einfach:</p>'+
-        '<p><strong>Technisch (TOM technisch)</strong> – etwas, das man installiert, konfiguriert oder baut: Firewall, Virenschutz, Verschlüsselung, Backup, Zugangskontrolle per Chipkarte, automatische Bildschirmsperre, Patchmanagement, VPN, USV.</p>'+
-        '<p><strong>Organisatorisch</strong> – etwas, das man regelt, schult oder dokumentiert: Passwortrichtlinie, Berechtigungskonzept nach dem <strong>Need-to-know-Prinzip</strong>, Mitarbeiterschulung, Clean-Desk-Policy, Besucherregelung, Notfallhandbuch, Vier-Augen-Prinzip, Vertraulichkeitsvereinbarung, Löschkonzept.</p>'+
-        '<p>Die klassische <strong>Einteilung nach Ebenen</strong> für Aufgaben zum Gesamtkonzept:</p>'+
-        '<ul><li><strong>Baulich / physisch</strong> – Zaun, Schließanlage, Serverraum, Brandschutz, Klimatisierung.</li>'+
-        '<li><strong>Technisch</strong> – siehe oben.</li>'+
-        '<li><strong>Organisatorisch</strong> – siehe oben.</li>'+
-        '<li><strong>Personell</strong> – Schulung, Sensibilisierung, Zuverlässigkeitsprüfung.</li></ul>',
-      code:'',
-      tip:'Der Fehler, der hier regelmäßig Punkte kostet: eine Maßnahme nennen, die in der Zwischenkategorie liegt, und sie nicht begründen. „Passwörter" allein ist unklar. „Passwortrichtlinie mit Mindestlänge und Wechselintervall" ist eindeutig organisatorisch, „erzwungene Passwortkomplexität per Gruppenrichtlinie" eindeutig technisch. Formuliere so, dass die Zuordnung aus der Maßnahme selbst hervorgeht.',
-      quiz:[
-        {q:'Welche Maßnahme ist organisatorisch?', options:['Firewall-Regelwerk','Schulung der Mitarbeiter zu Phishing','Festplattenverschlüsselung'], correct:1, explain:'Sie wird nicht installiert, sondern durchgeführt und dokumentiert.'},
-        {q:'Was besagt das Need-to-know-Prinzip?', options:['Jeder soll alles wissen','Jeder erhält nur die Rechte, die er für seine Aufgabe braucht','Nur der Chef hat Rechte'], correct:1, explain:'Auch „Prinzip der minimalen Rechte" genannt.'},
-        {q:'Welche Maßnahme ist baulich statt technisch?', options:['Virenschutz','Brandschutztür am Serverraum','Verschlüsselung'], correct:1, explain:'Die bauliche Ebene wird bei Sicherheitskonzepten oft vergessen.'}
-      ]
-    },
-    {
-      id:'m15-l3', title:'Backup-Strategien und RAID', minutes:10,
-      body:
-        '<p>Die <strong>drei Sicherungsarten</strong> – das wird fast jede Prüfung abgefragt:</p>'+
-        '<table class="lesson-table"><tr><th>Art</th><th>Gesichert wird</th><th>Sicherung</th><th>Rücksicherung</th></tr>'+
-        '<tr><td><strong>Voll</strong></td><td>alle Daten</td><td>langsam, viel Platz</td><td>schnell: 1 Medium</td></tr>'+
-        '<tr><td><strong>Differenziell</strong></td><td>alles seit der letzten <em>Voll</em>sicherung</td><td>mittel, wächst täglich</td><td>mittel: Voll + letzte diff.</td></tr>'+
-        '<tr><td><strong>Inkrementell</strong></td><td>alles seit der letzten <em>beliebigen</em> Sicherung</td><td>schnell, wenig Platz</td><td>langsam: Voll + <em>alle</em> ink.</td></tr></table>'+
-        '<p><strong>Die 3-2-1-Regel:</strong> 3 Kopien der Daten, auf 2 verschiedenen Medientypen, davon 1 außer Haus (bzw. offline – Schutz vor Ransomware).</p>'+
-        '<p><strong>RAID-Level:</strong></p>'+
-        '<ul><li><strong>RAID 0</strong> (Striping) – schnell, <strong>keine</strong> Ausfallsicherheit. Kein echtes RAID im Sinne der Sicherheit. Nutzkapazität 100 %.</li>'+
-        '<li><strong>RAID 1</strong> (Mirroring) – zwei identische Platten, eine darf ausfallen. Nutzkapazität 50 %.</li>'+
-        '<li><strong>RAID 5</strong> – Striping mit verteilter Parität, mindestens 3 Platten, eine darf ausfallen. Nutzkapazität <code>(n−1) × Plattengröße</code>.</li>'+
-        '<li><strong>RAID 6</strong> – doppelte Parität, mindestens 4 Platten, zwei dürfen ausfallen. Nutzkapazität <code>(n−2) × Plattengröße</code>.</li>'+
-        '<li><strong>RAID 10</strong> – gespiegelt und gestriped, mindestens 4 Platten. Schnell und sicher, Nutzkapazität 50 %.</li></ul>'+
-        '<figure class="fig"><svg viewBox="0 0 560 200" role="img" aria-label="Vergleich der RAID-Level 0, 1 und 5"><text class="s-hd" x="20" y="20">RAID 0 &#8211; Striping</text><rect class="s-box" x="20" y="28" width="86" height="40" rx="4"/><text class="s-mono" x="63" y="53" text-anchor="middle">A1 A3</text><rect class="s-box" x="114" y="28" width="86" height="40" rx="4"/><text class="s-mono" x="157" y="53" text-anchor="middle">A2 A4</text><text class="s-lbl" x="212" y="53">schnell, 100 % Kapazit&#228;t, KEINE Sicherheit</text><text class="s-hd" x="20" y="96">RAID 1 &#8211; Mirroring</text><rect class="s-accent" x="20" y="104" width="86" height="40" rx="4"/><text class="s-mono" x="63" y="129" text-anchor="middle">A1 A2</text><rect class="s-accent" x="114" y="104" width="86" height="40" rx="4"/><text class="s-mono" x="157" y="129" text-anchor="middle">A1 A2</text><text class="s-lbl" x="212" y="129">gespiegelt, 50 % Kapazit&#228;t, 1 Platte darf ausfallen</text><text class="s-hd" x="20" y="172">RAID 5 &#8211; Striping mit verteilter Parit&#228;t</text><rect class="s-box" x="20" y="180" width="60" height="16" rx="3"/><text class="s-mono" x="50" y="192" text-anchor="middle">A1</text><rect class="s-box" x="86" y="180" width="60" height="16" rx="3"/><text class="s-mono" x="116" y="192" text-anchor="middle">A2</text><rect class="s-strong" x="152" y="180" width="60" height="16" rx="3"/><text class="s-mono" x="182" y="192" text-anchor="middle">Ap</text><text class="s-lbl" x="224" y="192">mind. 3 Platten &#183; (n&#8722;1) &#215; Gr&#246;&#223;e &#183; 1 Ausfall verkraftbar</text></svg><figcaption>RAID schuetzt gegen den Ausfall einer Platte, nicht gegen Loeschen, Ransomware oder Feuer. Es ersetzt niemals ein Backup.</figcaption></figure>',
-      code:
-        "Rechenbeispiel: 5 Festplatten a 4 TB\n\n"+
-        "  RAID 0:  5 x 4 TB = 20 TB   (keine Ausfallsicherheit)\n"+
-        "  RAID 5:  (5-1) x 4 = 16 TB  (1 Platte darf ausfallen)\n"+
-        "  RAID 6:  (5-2) x 4 = 12 TB  (2 Platten duerfen ausfallen)\n"+
-        "  RAID 10: 20 / 2  = 10 TB    (bei gerader Plattenzahl)",
-      codeLang:'RAID-Kapazität',
-      tip:'Der wichtigste Satz zum Thema, der in Begründungsaufgaben fast immer verlangt wird: RAID ist kein Backup. Es schützt gegen den Hardwareausfall einer Platte, nicht gegen versehentliches Löschen, nicht gegen Ransomware und nicht gegen Feuer im Serverraum – all das trifft den Spiegel sofort mit. Deshalb braucht es zusätzlich eine Sicherung, und mindestens eine Kopie davon offline.',
-      quiz:[
-        {q:'Was wird bei einer differenziellen Sicherung gesichert?', options:['Alles seit der letzten beliebigen Sicherung','Alles seit der letzten Vollsicherung','Nur die geänderten Dateien von heute'], correct:1, explain:'Die inkrementelle Sicherung bezieht sich dagegen auf die letzte beliebige Sicherung.'},
-        {q:'Wie viel Nutzkapazität bieten 6 Platten à 2 TB im RAID 5?', options:['12 TB','10 TB','6 TB'], correct:1, explain:'(6−1) × 2 TB = 10 TB, eine Platte geht für die Parität drauf.'},
-        {q:'Wie viele Platten dürfen bei RAID 6 gleichzeitig ausfallen?', options:['Eine','Zwei','Keine'], correct:1, explain:'Dafür braucht es mindestens vier Platten und die Nutzkapazität sinkt auf (n−2).'}
-      ]
-    },
-    {
-      id:'m15-l4', title:'Verfügbarkeit berechnen und USV', minutes:8,
-      body:
-        '<p>Die <strong>Verfügbarkeit</strong> in Prozent berechnet sich als:</p>'+
-        '<p><code>V = (Gesamtzeit − Ausfallzeit) / Gesamtzeit × 100 %</code></p>'+
-        '<p>Ein Jahr hat <strong>8.760 Stunden</strong> (365 × 24) bzw. <strong>525.600 Minuten</strong> – diese Zahlen solltest du parat haben.</p>'+
-        '<table class="lesson-table"><tr><th>Verfügbarkeit</th><th>Max. Ausfall pro Jahr</th></tr>'+
-        '<tr><td>99 %</td><td>ca. 3,65 Tage</td></tr>'+
-        '<tr><td>99,9 % („drei Neunen")</td><td>ca. 8,8 Stunden</td></tr>'+
-        '<tr><td>99,99 %</td><td>ca. 52,6 Minuten</td></tr>'+
-        '<tr><td>99,999 % („five nines")</td><td>ca. 5,3 Minuten</td></tr></table>'+
-        '<p>Zwei Kennzahlen aus dem Notfallmanagement: <strong>RTO</strong> (Recovery Time Objective) ist die maximal tolerierbare <em>Ausfalldauer</em>. <strong>RPO</strong> (Recovery Point Objective) ist der maximal tolerierbare <em>Datenverlust</em>, gemessen in Zeit – er bestimmt, wie oft gesichert werden muss.</p>'+
-        '<p>Eine <strong>USV</strong> überbrückt Stromausfälle und fährt Server bei längerem Ausfall kontrolliert herunter – sie schützt vor Datenverlust durch abrupte Abschaltung.</p>',
-      code:
-        "Ein Server fiel im Jahr 4 Stunden aus. Verfuegbarkeit?\n\n"+
-        "  Gesamtzeit  = 365 x 24 = 8.760 h\n"+
-        "  V = (8760 - 4) / 8760 = 0,999543...\n"+
-        "  V = 99,95 %\n\n"+
-        "Umgekehrt: 99,9 % zugesichert - wie viel Ausfall ist erlaubt?\n"+
-        "  8.760 h x 0,001 = 8,76 h  (ca. 8 Stunden 46 Minuten)",
-      codeLang:'Verfügbarkeitsrechnung',
-      tip:'Achte darauf, welche Bezugszeit die Aufgabe meint – das ist der Stolperstein. Ist das SLA auf die Betriebszeit von Montag bis Freitag, 8 bis 18 Uhr bezogen, rechnest du nicht mit 8.760 Stunden, sondern mit etwa 2.600. Dieselbe Ausfalldauer ergibt dann eine deutlich schlechtere Verfügbarkeit. Lies den Bezugszeitraum, bevor du rechnest.',
-      quiz:[
-        {q:'Wie viele Stunden hat ein Jahr?', options:['8.640','8.760','9.000'], correct:1, explain:'365 × 24 = 8.760 Stunden.'},
-        {q:'Was gibt der RPO an?', options:['Wie lange die Wiederherstellung dauern darf','Wie viel Datenverlust (in Zeit) maximal tolerierbar ist','Wie viele Server benötigt werden'], correct:1, explain:'Der RPO bestimmt das Sicherungsintervall, der RTO die Wiederherstellzeit.'},
-        {q:'Ein SLA nennt 99,9 % bezogen auf 24/7. Wie viel Ausfall ist erlaubt?', options:['Etwa 88 Stunden','Etwa 8,8 Stunden','Etwa 53 Minuten'], correct:1, explain:'8.760 h × 0,001 — bei Bezug auf die Servicezeit wäre es deutlich weniger.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m16', part:5, partTitle:'IT-Sicherheit & Datenschutz', title:'Kryptografie, Angriffe & DSGVO', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m16-l1', title:'Symmetrisch, asymmetrisch, hybrid', minutes:10,
-      body:
-        '<p><strong>Symmetrische Verschlüsselung</strong> – <em>ein</em> Schlüssel für Ver- und Entschlüsselung (AES). Sehr schnell, auch für große Datenmengen. Das Problem: der <strong>Schlüsselaustausch</strong>. Wie bekommt der Empfänger den Schlüssel sicher? Und die Zahl der Schlüssel wächst quadratisch: bei n Teilnehmern braucht man <code>n × (n−1) / 2</code> Schlüssel.</p>'+
-        '<p><strong>Asymmetrische Verschlüsselung</strong> – ein <strong>Schlüsselpaar</strong> aus öffentlichem und privatem Schlüssel (RSA, ECC). Löst das Austauschproblem, ist aber deutlich langsamer.</p>'+
-        '<p><strong>Die Regel, die alles entscheidet:</strong></p>'+
-        '<ul><li><strong>Verschlüsseln</strong> mit dem <strong>öffentlichen</strong> Schlüssel des <strong>Empfängers</strong> → nur er kann mit seinem privaten Schlüssel lesen. Ziel: <strong>Vertraulichkeit</strong>.</li>'+
-        '<li><strong>Signieren</strong> mit dem <strong>privaten</strong> Schlüssel des <strong>Senders</strong> → jeder kann mit dem öffentlichen prüfen, dass es wirklich von ihm stammt. Ziel: <strong>Authentizität und Integrität</strong>.</li></ul>'+
-        '<p><strong>Hybride Verfahren</strong> (TLS/HTTPS) kombinieren beides: Asymmetrisch wird ein zufälliger <strong>Sitzungsschlüssel</strong> ausgetauscht, die eigentlichen Daten laufen dann schnell symmetrisch. So hat man die Sicherheit des einen und die Geschwindigkeit des anderen Verfahrens.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="Verschluesseln und Signieren im Vergleich"><text class="s-hd" x="20" y="20">Vertraulichkeit &#8211; Verschl&#252;sseln</text><rect class="s-box" x="20" y="30" width="96" height="34" rx="4"/><text class="s-lbl" x="68" y="52" text-anchor="middle">Sender</text><line class="s-arrow" x1="116" y1="47" x2="228" y2="47" marker-end="url(#ar3)"/><text class="s-lbl" x="172" y="40" text-anchor="middle">&#128274; mit</text><rect class="s-key-pub" x="234" y="30" width="146" height="34" rx="4"/><text class="s-lbl" x="307" y="52" text-anchor="middle">&#246;ffentl. Schl&#252;ssel Empf.</text><line class="s-arrow" x1="380" y1="47" x2="448" y2="47" marker-end="url(#ar3)"/><rect class="s-box" x="454" y="30" width="86" height="34" rx="4"/><text class="s-lbl" x="497" y="52" text-anchor="middle">Empf&#228;nger</text><text class="s-lbl" x="20" y="84">&#8594; nur der Empf&#228;nger kann mit seinem privaten Schl&#252;ssel &#246;ffnen</text><text class="s-hd" x="20" y="118">Authentizit&#228;t &#8211; Signieren</text><rect class="s-box" x="20" y="128" width="96" height="34" rx="4"/><text class="s-lbl" x="68" y="150" text-anchor="middle">Sender</text><line class="s-arrow" x1="116" y1="145" x2="228" y2="145" marker-end="url(#ar3)"/><text class="s-lbl" x="172" y="138" text-anchor="middle">&#9997; mit</text><rect class="s-key-priv" x="234" y="128" width="146" height="34" rx="4"/><text class="s-lbl" x="307" y="150" text-anchor="middle">privatem Schl&#252;ssel Sender</text><line class="s-arrow" x1="380" y1="145" x2="448" y2="145" marker-end="url(#ar3)"/><rect class="s-box" x="454" y="128" width="86" height="34" rx="4"/><text class="s-lbl" x="497" y="150" text-anchor="middle">jeder</text><text class="s-lbl" x="20" y="182">&#8594; jeder kann mit dem &#246;ffentlichen Schl&#252;ssel pr&#252;fen, dass es vom Sender stammt</text><rect class="s-strong" x="20" y="196" width="520" height="28" rx="4"/><text class="s-lbl" x="280" y="214" text-anchor="middle">Hybrid (TLS): asymmetrisch den Sitzungsschl&#252;ssel tauschen, dann symmetrisch mit AES &#252;bertragen</text><defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs></svg><figcaption>Die Merkregel: Verschluesselt wird mit dem oeffentlichen Schluessel des Empfaengers, signiert mit dem eigenen privaten.</figcaption></figure>',
-      code:
-        "Ablauf einer HTTPS-Verbindung (vereinfacht):\n\n"+
-        "  1. Server sendet sein Zertifikat mit oeffentlichem Schluessel\n"+
-        "  2. Client prueft das Zertifikat gegen die CA-Kette\n"+
-        "  3. Client erzeugt einen zufaelligen Sitzungsschluessel\n"+
-        "  4. Client verschluesselt ihn mit dem OEFFENTLICHEN Schluessel des Servers\n"+
-        "  5. Nur der Server kann ihn mit seinem PRIVATEN Schluessel oeffnen\n"+
-        "  6. Ab jetzt: schnelle symmetrische Verschluesselung (AES)",
-      codeLang:'Hybridverfahren',
-      tip:'Wenn du in der Prüfung unsicher bist, welcher Schlüssel verwendet wird, hilft eine einzige Frage: Was soll erreicht werden? Soll niemand sonst mitlesen, brauchst du den öffentlichen Schlüssel des Empfängers – nur dessen privates Gegenstück öffnet die Nachricht. Soll bewiesen werden, dass du der Absender bist, brauchst du deinen eigenen privaten Schlüssel, denn nur du besitzt ihn.',
-      quiz:[
-        {q:'Womit verschlüsselt man eine vertrauliche Nachricht an Herrn Meier?', options:['Mit dem eigenen privaten Schlüssel','Mit Meiers öffentlichem Schlüssel','Mit Meiers privatem Schlüssel'], correct:1, explain:'Nur Meier kann dann mit seinem privaten Schlüssel entschlüsseln.'},
-        {q:'Warum arbeitet TLS hybrid?', options:['Aus Kompatibilitätsgründen','Asymmetrisch für den sicheren Schlüsselaustausch, symmetrisch für die schnelle Datenübertragung','Weil AES unsicher ist'], correct:1, explain:'Man kombiniert die Stärken beider Verfahren.'},
-        {q:'Wie viele Schlüssel braucht symmetrische Verschlüsselung bei 6 Teilnehmern?', options:['6','15','36'], correct:1, explain:'n · (n−1) / 2 — dieselbe Formel wie bei Peer-to-Peer-Beziehungen.'}
-      ]
-    },
-    {
-      id:'m16-l2', title:'Hashes, Zertifikate und VPN', minutes:9,
-      body:
-        '<p>Eine <strong>Hashfunktion</strong> (SHA-256) erzeugt aus beliebigen Daten einen Wert fester Länge. Sie ist <strong>Einwegfunktion</strong> – aus dem Hash lässt sich das Original nicht zurückrechnen. Schon ein geändertes Bit ergibt einen völlig anderen Hash (Lawineneffekt). Einsatz: Integritätsprüfung von Downloads und Passwortspeicherung.</p>'+
-        '<p><strong>Passwörter niemals im Klartext speichern</strong>, sondern als Hash mit <strong>Salt</strong> (einem zufälligen Zusatz pro Benutzer, der Rainbow-Table-Angriffe verhindert) und einem bewusst langsamen Verfahren wie bcrypt oder Argon2.</p>'+
-        '<p>Ein <strong>digitales Zertifikat</strong> (X.509) bindet einen öffentlichen Schlüssel an eine Identität und wird von einer <strong>Zertifizierungsstelle (CA)</strong> signiert. Es enthält Inhaber, öffentlichen Schlüssel, Aussteller, Gültigkeitszeitraum und die Signatur der CA. Ein selbstsigniertes Zertifikat verschlüsselt zwar, weist aber die Identität nicht vertrauenswürdig aus – daher die Browserwarnung.</p>'+
-        '<p>Ein <strong>VPN</strong> baut durch ein unsicheres Netz einen verschlüsselten <strong>Tunnel</strong> auf. <strong>Site-to-Site</strong> verbindet zwei Standorte dauerhaft, <strong>End-to-Site</strong> (Remote Access) bindet einzelne Mitarbeiter im Homeoffice ein. Protokolle: IPsec, OpenVPN, WireGuard.</p>',
-      code:'',
-      tip:'Warum ein VPN im Homeoffice nicht optional ist, lässt sich in einem Satz begründen, und genau diese Begründung will die IHK sehen: Ohne Tunnel liefen die Daten unverschlüsselt über das öffentliche Internet und könnten unterwegs mitgelesen oder verändert werden. Das VPN stellt Vertraulichkeit und Integrität her und macht den Rechner zugleich zum Teil des Firmennetzes.',
-      quiz:[
-        {q:'Wozu dient ein Salt bei der Passwortspeicherung?', options:['Er macht das Passwort länger','Er verhindert, dass vorberechnete Rainbow Tables funktionieren','Er verschlüsselt das Passwort'], correct:1, explain:'Jeder Benutzer bekommt einen eigenen Zufallswert – gleiche Passwörter ergeben verschiedene Hashes.'},
-        {q:'Was bestätigt eine Zertifizierungsstelle?', options:['Dass der Server schnell ist','Dass ein öffentlicher Schlüssel wirklich zu dieser Identität gehört','Dass die Daten verschlüsselt sind'], correct:1, explain:'Ohne diese Bestätigung wäre ein Man-in-the-Middle-Angriff möglich.'},
-        {q:'Warum warnt der Browser bei einem selbstsignierten Zertifikat?', options:['Es verschlüsselt nicht','Die Identität ist von keiner vertrauenswürdigen Stelle bestätigt','Es ist abgelaufen'], correct:1, explain:'Verschlüsselt wird durchaus — nur der Identitätsnachweis fehlt.'}
-      ]
-    },
-    {
-      id:'m16-l3', title:'Schadsoftware und Angriffsarten', minutes:9,
-      body:
-        '<p><strong>Schadsoftware nach Verbreitungsweg:</strong></p>'+
-        '<ul><li><strong>Virus</strong> – hängt sich an eine Wirtsdatei, braucht eine Benutzeraktion zur Ausführung.</li>'+
-        '<li><strong>Wurm</strong> – verbreitet sich <em>selbstständig</em> über das Netz, ohne Wirt und ohne Zutun.</li>'+
-        '<li><strong>Trojaner</strong> – tarnt sich als nützliches Programm und bringt heimlich Schadcode mit.</li>'+
-        '<li><strong>Ransomware</strong> – verschlüsselt Daten und fordert Lösegeld. Wirksamster Schutz: ein <strong>offline</strong> gelagertes Backup.</li>'+
-        '<li><strong>Spyware / Keylogger</strong> – späht Eingaben und Verhalten aus.</li>'+
-        '<li><strong>Rootkit</strong> – verbirgt sich tief im System und verschleiert andere Schädlinge.</li></ul>'+
-        '<p><strong>Angriffsarten:</strong> <strong>Phishing</strong> (gefälschte Mails), <strong>Spear-Phishing</strong> (gezielt auf eine Person zugeschnitten), <strong>Social Engineering</strong> (Manipulation von Menschen statt Technik – der Anruf des „IT-Supports"), <strong>DoS/DDoS</strong> (Überlastung eines Dienstes), <strong>Man-in-the-Middle</strong>, <strong>SQL-Injection</strong> (Einschleusen von SQL über Eingabefelder – Gegenmaßnahme: <strong>Prepared Statements</strong> und Eingabevalidierung), <strong>XSS</strong>, <strong>Brute Force</strong>.</p>'+
-        '<p><strong>Erkennungsmerkmale einer Phishing-Mail:</strong> unpersönliche Anrede, Dringlichkeit und Drohung, Rechtschreibfehler, abweichende Absenderadresse, Link-Ziel stimmt nicht mit dem angezeigten Text überein, unerwarteter Anhang, Abfrage von Zugangsdaten.</p>',
-      code:'',
-      tip:'Der Unterschied zwischen Virus und Wurm wird fast in jeder Prüfung abgefragt und lässt sich an einem Wort festmachen: Selbstständigkeit. Der Virus braucht einen Wirt und eine Benutzeraktion, der Wurm verbreitet sich allein über Netzwerkschwachstellen. Deshalb ist ein Wurmausbruch typischerweise viel schneller – und deshalb ist zeitnahes Patchen die wirksamste Gegenmaßnahme.',
-      quiz:[
-        {q:'Was unterscheidet einen Wurm von einem Virus?', options:['Der Wurm ist harmloser','Der Wurm verbreitet sich selbstständig ohne Wirtsdatei','Der Wurm befällt nur Linux'], correct:1, explain:'Der Virus benötigt eine Wirtsdatei und eine Benutzeraktion.'},
-        {q:'Wie verhindert man SQL-Injection wirksam?', options:['Durch ein längeres Passwort','Durch Prepared Statements mit Parametern und Eingabevalidierung','Durch eine Firewall'], correct:1, explain:'Eingaben werden dann als Daten behandelt, nicht als SQL-Code.'},
-        {q:'Was ist das wirksamste Mittel gegen Ransomware?', options:['Ein aktueller Virenscanner','Ein offline gelagertes Backup','Eine Firewall'], correct:1, explain:'Alle online erreichbaren Sicherungen werden mitverschlüsselt.'}
-      ]
-    },
-    {
-      id:'m16-l4', title:'DSGVO – Grundsätze, Rechte, Pflichten', minutes:10,
-      body:
-        '<p>Die DSGVO schützt <strong>personenbezogene Daten</strong>: alle Informationen, die sich auf eine identifizierte oder identifizierbare natürliche Person beziehen – Name, Adresse, E-Mail, Personalnummer, IP-Adresse, Standortdaten.</p>'+
-        '<p><strong>Besondere Kategorien (Art. 9)</strong> genießen erhöhten Schutz: Gesundheitsdaten, ethnische Herkunft, politische Meinungen, religiöse Überzeugungen, Gewerkschaftszugehörigkeit, biometrische Daten, Sexualleben.</p>'+
-        '<p><strong>Grundsätze (Art. 5):</strong> Rechtmäßigkeit und Transparenz · <strong>Zweckbindung</strong> · <strong>Datenminimierung</strong> · Richtigkeit · <strong>Speicherbegrenzung</strong> · Integrität und Vertraulichkeit · Rechenschaftspflicht.</p>'+
-        '<p><strong>Rechtsgrundlagen (Art. 6)</strong> – eine muss vorliegen: Einwilligung · Vertragserfüllung · rechtliche Verpflichtung · lebenswichtige Interessen · öffentliches Interesse · berechtigtes Interesse.</p>'+
-        '<p><strong>Betroffenenrechte:</strong> Auskunft (Art. 15) · Berichtigung (16) · <strong>Löschung / „Recht auf Vergessenwerden"</strong> (17) · Einschränkung (18) · <strong>Datenübertragbarkeit</strong> (20) · Widerspruch (21).</p>'+
-        '<p><strong>Pflichten des Unternehmens:</strong> Verzeichnis von Verarbeitungstätigkeiten · TOM nach Art. 32 · <strong>Meldung einer Datenpanne binnen 72 Stunden</strong> an die Aufsichtsbehörde · Datenschutz-Folgenabschätzung bei hohem Risiko · <strong>Auftragsverarbeitungsvertrag (AVV)</strong> mit Dienstleistern, etwa dem Cloud-Anbieter.</p>'+
-        '<p><strong>Bußgelder:</strong> bis 20 Mio. € oder 4 % des weltweiten Jahresumsatzes – der höhere Wert gilt.</p>',
-      code:'',
-      tip:'Drei Zahlen und ein Begriffspaar reichen für die meisten DSGVO-Fragen: 72 Stunden für die Meldung einer Datenpanne, 20 Millionen Euro oder 4 Prozent Jahresumsatz als Bußgeldrahmen, und der Unterschied zwischen Verantwortlichem – wer über Zweck und Mittel entscheidet – und Auftragsverarbeiter, der weisungsgebunden verarbeitet und deshalb einen AVV braucht.',
-      quiz:[
-        {q:'Binnen welcher Frist ist eine Datenpanne zu melden?', options:['24 Stunden','72 Stunden','7 Tage'], correct:1, explain:'An die zuständige Aufsichtsbehörde, bei hohem Risiko zusätzlich an die Betroffenen.'},
-        {q:'Was besagt der Grundsatz der Datenminimierung?', options:['Daten möglichst komprimiert speichern','Nur so viele Daten erheben, wie für den Zweck erforderlich sind','Daten nach einem Jahr löschen'], correct:1, explain:'Die zeitliche Komponente ist dagegen die Speicherbegrenzung.'},
-        {q:'Welche Rechtsgrundlage nach Art. 6 DSGVO trägt die Verarbeitung von Kundendaten zur Auftragsabwicklung?', options:['Einwilligung','Vertragserfüllung','Berechtigtes Interesse'], correct:1, explain:'Eine Einwilligung wäre hier unnötig und zudem jederzeit widerrufbar.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m17', part:6, partTitle:'Projektmanagement & Wirtschaft', title:'Netzplantechnik', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m17-l1', title:'Der Netzplan – Aufbau und Vorwärtsrechnung', minutes:11,
-      order:1,
-      body:
-        '<p>Der <strong>Netzplan</strong> ist die rechenintensivste AP1-Aufgabe – und eine der am sichersten zu punktenden, weil das Verfahren immer identisch ist.</p>'+
-        '<p>Jeder <strong>Vorgangsknoten</strong> enthält sechs Werte plus Dauer:</p>'+
-        '<table class="lesson-table"><tr><th>Kürzel</th><th>Bedeutung</th></tr>'+
-        '<tr><td>FAZ</td><td>Frühester Anfangszeitpunkt</td></tr>'+
-        '<tr><td>FEZ</td><td>Frühester Endzeitpunkt</td></tr>'+
-        '<tr><td>SAZ</td><td>Spätester Anfangszeitpunkt</td></tr>'+
-        '<tr><td>SEZ</td><td>Spätester Endzeitpunkt</td></tr>'+
-        '<tr><td>GP</td><td>Gesamtpuffer</td></tr>'+
-        '<tr><td>FP</td><td>Freier Puffer</td></tr>'+
-        '<tr><td>D</td><td>Dauer</td></tr></table>'+
-        '<p><strong>Vorwärtsrechnung – von links nach rechts:</strong></p>'+
-        '<ul><li><code>FEZ = FAZ + D</code></li>'+
-        '<li><code>FAZ = größter FEZ aller Vorgänger</code> — bei mehreren Vorgängern gilt das <strong>Maximum</strong>, denn erst wenn der letzte fertig ist, kann es weitergehen.</li>'+
-        '<li>Der Startvorgang beginnt mit FAZ = 0.</li></ul>'+
-        '<figure class="fig"><svg viewBox="0 0 540 250" role="img" aria-label="Aufbau eines Vorgangsknotens im Netzplan"><rect class="s-accent" x="150" y="14" width="240" height="108" rx="4"/><line class="s-line" x1="150" y1="50" x2="390" y2="50"/><line class="s-line" x1="150" y1="86" x2="390" y2="86"/><line class="s-line" x1="230" y1="14" x2="230" y2="50"/><line class="s-line" x1="310" y1="14" x2="310" y2="50"/><line class="s-line" x1="230" y1="86" x2="230" y2="122"/><line class="s-line" x1="310" y1="86" x2="310" y2="122"/><text class="s-mono" x="190" y="38" text-anchor="middle">FAZ</text><text class="s-mono" x="270" y="38" text-anchor="middle">D</text><text class="s-mono" x="350" y="38" text-anchor="middle">FEZ</text><text class="s-hd" x="270" y="74" text-anchor="middle">Vorgang</text><text class="s-mono" x="190" y="110" text-anchor="middle">SAZ</text><text class="s-mono" x="270" y="110" text-anchor="middle">GP</text><text class="s-mono" x="350" y="110" text-anchor="middle">SEZ</text><text class="s-lbl" x="404" y="38">fr&#252;heste Lage &#8211; vorw&#228;rts</text><text class="s-lbl" x="404" y="110">sp&#228;teste Lage &#8211; r&#252;ckw&#228;rts</text><rect class="s-box" x="20" y="152" width="240" height="84" rx="4"/><text class="s-hd" x="34" y="174">Vorw&#228;rts &#8211; von links</text><text class="s-mono" x="34" y="196">FEZ = FAZ + D</text><text class="s-mono" x="34" y="216">FAZ = MAX(FEZ Vorg&#228;nger)</text><rect class="s-box" x="280" y="152" width="240" height="84" rx="4"/><text class="s-hd" x="294" y="174">R&#252;ckw&#228;rts &#8211; von rechts</text><text class="s-mono" x="294" y="196">SAZ = SEZ &#8722; D</text><text class="s-mono" x="294" y="216">SEZ = MIN(SAZ Nachfolger)</text></svg><figcaption>Die obere Zeile entsteht in der Vorwaertsrechnung, die untere in der Rueckwaertsrechnung. Vorwaerts gilt MAX, rueckwaerts MIN.</figcaption></figure>',
-      code:
-        "Knotendarstellung (uebliche Form):\n\n"+
-        "   +--------+--------+--------+\n"+
-        "   |  FAZ   |   D    |  FEZ   |\n"+
-        "   +--------+--------+--------+\n"+
-        "   |     Vorgangsbezeichnung   |\n"+
-        "   +--------+--------+--------+\n"+
-        "   |  SAZ   |   GP   |  SEZ   |\n"+
-        "   +--------+--------+--------+\n\n"+
-        "Vorwaertsrechnung:\n"+
-        "  A: FAZ=0,  D=5  -> FEZ=5\n"+
-        "  B: FAZ=5,  D=3  -> FEZ=8      (Vorgaenger A)\n"+
-        "  C: FAZ=5,  D=7  -> FEZ=12     (Vorgaenger A)\n"+
-        "  D: FAZ=MAX(8,12)=12, D=4 -> FEZ=16   (Vorgaenger B und C)",
-      codeLang:'Netzplan',
-      tip:'Der häufigste Fehler in der Vorwärtsrechnung ist die Verwechslung von Maximum und Minimum bei mehreren Vorgängern. Denk an die Baustelle: Wenn Elektrik und Sanitär fertig sein müssen, bevor verputzt wird, wartest du auf den Langsameren. Also Maximum. In der Rückwärtsrechnung kehrt sich das um – dort gilt das Minimum, weil du den frühesten Termin einhalten musst, den ein Nachfolger vorgibt.',
-      quiz:[
-        {q:'Wie berechnet man den FAZ bei mehreren Vorgängern?', options:['Als Summe aller FEZ','Als größter FEZ der Vorgänger (Maximum)','Als kleinster FEZ der Vorgänger'], correct:1, explain:'Erst wenn der letzte Vorgänger fertig ist, kann der Vorgang starten.'},
-        {q:'Wie lautet die Formel für den FEZ?', options:['FEZ = FAZ + D','FEZ = SAZ − D','FEZ = FAZ − D'], correct:0, explain:'Früher Start plus Dauer ergibt frühes Ende.'},
-        {q:'Ein Vorgang hat drei Vorgänger mit FEZ 8, 12 und 5. Wie hoch ist sein FAZ?', options:['5','12','25'], correct:1, explain:'Es gilt das Maximum — erst wenn der letzte Vorgänger fertig ist, kann es weitergehen.'}
-      ]
-    },
-    {
-      id:'m17-l2', title:'Rückwärtsrechnung, Puffer und kritischer Pfad', minutes:11,
-      order:2,
-      body:
-        '<p><strong>Rückwärtsrechnung – von rechts nach links:</strong></p>'+
-        '<ul><li>Beim <strong>letzten Vorgang gilt SEZ = FEZ</strong>. Das ist der Startpunkt der Rückwärtsrechnung.</li>'+
-        '<li><code>SAZ = SEZ − D</code></li>'+
-        '<li><code>SEZ = kleinster SAZ aller Nachfolger</code> — hier gilt das <strong>Minimum</strong>.</li></ul>'+
-        '<p><strong>Die Puffer:</strong></p>'+
-        '<ul><li><code>GP = SAZ − FAZ</code> (gleichwertig: <code>SEZ − FEZ</code>) — der <strong>Gesamtpuffer</strong> gibt an, um wie viel ein Vorgang verschoben werden darf, <em>ohne das Projektende</em> zu gefährden. Er kann von mehreren Vorgängen eines Pfades nur <em>einmal insgesamt</em> verbraucht werden.</li>'+
-        '<li><code>FP = kleinster FAZ der Nachfolger − eigener FEZ</code> — der <strong>freie Puffer</strong> gibt an, um wie viel verschoben werden darf, <em>ohne den frühesten Start eines Nachfolgers</em> zu verzögern.</li></ul>'+
-        '<p><strong>Der kritische Pfad</strong> ist die Kette aller Vorgänge mit <strong>GP = 0</strong>. Er bestimmt die Gesamtprojektdauer: Verzögert sich hier ein einziger Vorgang um einen Tag, verschiebt sich das Projektende um denselben Tag.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 190" role="img" aria-label="Netzplan mit hervorgehobenem kritischen Pfad"><rect class="s-crit" x="20" y="72" width="76" height="44" rx="4"/><text class="s-hd" x="58" y="92" text-anchor="middle">A</text><text class="s-mono" x="58" y="108" text-anchor="middle">D=4 GP=0</text><rect class="s-crit" x="160" y="18" width="76" height="44" rx="4"/><text class="s-hd" x="198" y="38" text-anchor="middle">B</text><text class="s-mono" x="198" y="54" text-anchor="middle">D=6 GP=0</text><rect class="s-box" x="160" y="122" width="76" height="44" rx="4"/><text class="s-hd" x="198" y="142" text-anchor="middle">C</text><text class="s-mono" x="198" y="158" text-anchor="middle">D=3 GP=6</text><rect class="s-crit" x="300" y="18" width="76" height="44" rx="4"/><text class="s-hd" x="338" y="38" text-anchor="middle">D</text><text class="s-mono" x="338" y="54" text-anchor="middle">D=5 GP=0</text><rect class="s-box" x="300" y="122" width="76" height="44" rx="4"/><text class="s-hd" x="338" y="142" text-anchor="middle">E</text><text class="s-mono" x="338" y="158" text-anchor="middle">D=2 GP=6</text><rect class="s-crit" x="440" y="72" width="76" height="44" rx="4"/><text class="s-hd" x="478" y="92" text-anchor="middle">F</text><text class="s-mono" x="478" y="108" text-anchor="middle">D=4 GP=0</text><line class="s-critline" x1="96" y1="86" x2="158" y2="46"/><line class="s-line" x1="96" y1="102" x2="158" y2="140"/><line class="s-critline" x1="236" y1="40" x2="298" y2="40"/><line class="s-line" x1="236" y1="144" x2="298" y2="144"/><line class="s-critline" x1="376" y1="46" x2="438" y2="86"/><line class="s-line" x1="376" y1="140" x2="438" y2="102"/><text class="s-lbl" x="20" y="184">Kritischer Pfad A&#8211;B&#8211;D&#8211;F: l&#252;ckenlose Kette mit GP = 0. Der Zweig C&#8211;E hat 6 Zeiteinheiten Puffer.</text></svg><figcaption>Der kritische Pfad bildet immer eine durchgehende Kette vom ersten bis zum letzten Vorgang. Jede Verzoegerung dort verschiebt das Projektende unmittelbar.</figcaption></figure>',
-      code:
-        "Fortsetzung des Beispiels, Projektende = 16:\n\n"+
-        "  D: SEZ=16, D=4 -> SAZ=12      GP = 12-12 = 0   kritisch\n"+
-        "  C: SEZ=12, D=7 -> SAZ=5       GP =  5- 5 = 0   kritisch\n"+
-        "  B: SEZ=12, D=3 -> SAZ=9       GP =  9- 5 = 4   4 Tage Puffer\n"+
-        "  A: SEZ=MIN(9,5)=5, D=5 -> SAZ=0   GP = 0-0 = 0  kritisch\n\n"+
-        "  Kritischer Pfad: A - C - D       Projektdauer: 16 Tage\n"+
-        "  Freier Puffer B: MIN(FAZ Nachfolger) - FEZ_B = 12 - 8 = 4",
-      codeLang:'Netzplan-Rückwärtsrechnung',
-      tip:'Nutze die eingebaute Probe: Beim ersten Vorgang muss SAZ null ergeben, wenn das Projekt ohne Gesamtpuffer geplant ist. Kommt dort eine andere Zahl heraus, hast du dich verrechnet – meist beim Minimum in der Rückwärtsrechnung. Und noch eine Kontrolle: Der kritische Pfad muss eine durchgehende Kette vom ersten bis zum letzten Vorgang bilden, ohne Lücke.',
-      quiz:[
-        {q:'Wie berechnet man den Gesamtpuffer?', options:['GP = SAZ − FAZ','GP = FEZ + D','GP = SEZ + FAZ'], correct:0, explain:'Gleichwertig ist SEZ − FEZ.'},
-        {q:'Was kennzeichnet den kritischen Pfad?', options:['Die längste Dauer eines einzelnen Vorgangs','Alle Vorgänge mit Gesamtpuffer 0','Die meisten Vorgänger'], correct:1, explain:'Jede Verzögerung dort verschiebt das Projektende unmittelbar.'},
-        {q:'Ein Vorgang mit GP 4 verzögert sich um 6 Tage. Wie wirkt sich das aus?', options:['Gar nicht','Das Projektende verschiebt sich um 2 Tage','Um 6 Tage'], correct:1, explain:'Nur der Anteil oberhalb des Gesamtpuffers schlägt durch.'}
-      ]
-    },
-    {
-      id:'m17-l3', title:'Gantt-Diagramm, Meilensteine und Aufwandsschätzung', minutes:8,
-      order:3,
-      body:
-        '<p>Das <strong>Gantt-Diagramm</strong> (Balkenplan) zeigt Vorgänge als waagerechte Balken auf einer Zeitachse. Es macht Dauer, Überlappung und Termine anschaulich, stellt Abhängigkeiten aber schlechter dar als der Netzplan – dessen Puffer und kritischen Pfad man dort nicht direkt ablesen kann.</p>'+
-        '<p>Ein <strong>Meilenstein</strong> ist ein Ereignis mit <strong>Dauer null</strong>, das den Abschluss einer Phase markiert und als Entscheidungspunkt dient („Pflichtenheft abgenommen").</p>'+
-        '<p>Der <strong>Projektstrukturplan (PSP)</strong> zerlegt das Projekt hierarchisch in Teilaufgaben bis hinunter zu <strong>Arbeitspaketen</strong> – der kleinsten planbaren Einheit mit Verantwortlichem, Aufwand und Ergebnis. Er ist die Grundlage jeder Terminplanung: Erst zerlegen, dann schätzen, dann terminieren.</p>'+
-        '<p><strong>Drei-Punkt-Schätzung (PERT):</strong></p>'+
-        '<p><code>tE = (optimistisch + 4 × wahrscheinlich + pessimistisch) / 6</code></p>'+
-        '<p>Der wahrscheinliche Wert wird vierfach gewichtet, die Summe durch 6 geteilt.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 252" role="img" aria-label="Gantt-Diagramm eines Projekts mit sechs Vorgaengen und Puffern">'+
-        '<line class="s-line" x1="80" y1="34" x2="544" y2="34"/>'+
-        '<text class="s-lbl" x="80" y="26" text-anchor="middle">0</text>'+
-        '<text class="s-lbl" x="200" y="26" text-anchor="middle">5</text>'+
-        '<text class="s-lbl" x="320" y="26" text-anchor="middle">10</text>'+
-        '<text class="s-lbl" x="440" y="26" text-anchor="middle">15</text>'+
-        '<text class="s-lbl" x="536" y="26" text-anchor="middle">19</text>'+
-        '<line class="s-dash2" x1="200" y1="34" x2="200" y2="196"/>'+
-        '<line class="s-dash2" x1="320" y1="34" x2="320" y2="196"/>'+
-        '<line class="s-dash2" x1="440" y1="34" x2="440" y2="196"/>'+
-        '<text class="s-hd" x="20" y="56">A</text><rect class="s-crit" x="80" y="44" width="96" height="16" rx="3"/>'+
-        '<text class="s-hd" x="20" y="82">B</text><rect class="s-crit" x="176" y="70" width="144" height="16" rx="3"/>'+
-        '<text class="s-hd" x="20" y="108">C</text><rect class="s-accent" x="176" y="96" width="72" height="16" rx="3"/>'+
-        '<rect class="s-ring" x="248" y="96" width="144" height="16" rx="3"/>'+
-        '<text class="s-hd" x="20" y="134">D</text><rect class="s-crit" x="320" y="122" width="120" height="16" rx="3"/>'+
-        '<text class="s-hd" x="20" y="160">E</text><rect class="s-accent" x="248" y="148" width="48" height="16" rx="3"/>'+
-        '<rect class="s-ring" x="296" y="148" width="144" height="16" rx="3"/>'+
-        '<text class="s-hd" x="20" y="186">F</text><rect class="s-crit" x="440" y="174" width="96" height="16" rx="3"/>'+
-        '<polygon class="s-strong" points="536,200 546,210 536,220 526,210"/>'+
-        '<text class="s-lbl" x="516" y="214" text-anchor="end">Meilenstein: Projektende Tag 19</text>'+
-        '<rect class="s-crit" x="20" y="234" width="18" height="10" rx="2"/>'+
-        '<text class="s-lbl" x="44" y="243">kritisch, kein Puffer</text>'+
-        '<rect class="s-accent" x="186" y="234" width="18" height="10" rx="2"/>'+
-        '<text class="s-lbl" x="210" y="243">Vorgang</text>'+
-        '<rect class="s-ring" x="286" y="234" width="18" height="10" rx="2"/>'+
-        '<text class="s-lbl" x="310" y="243">Puffer &#8211; so weit darf der Balken wandern</text>'+
-        '</svg><figcaption>Dasselbe Projekt wie im Netzplan. Der Balkenplan zeigt Zeitlage und Puffer anschaulich &#8212; den kritischen Pfad muss man dagegen einf&#228;rben, sonst sieht man ihn nicht.</figcaption></figure>',
-      code:
-        "Aufwandsschaetzung fuer ein Arbeitspaket:\n"+
-        "  optimistisch    O =  4 Tage\n"+
-        "  wahrscheinlich  M =  6 Tage\n"+
-        "  pessimistisch   P = 14 Tage\n\n"+
-        "  tE = (4 + 4*6 + 14) / 6 = (4 + 24 + 14) / 6 = 42 / 6 = 7 Tage\n\n"+
-        "Personentage -> Kosten:\n"+
-        "  7 PT x 8 h x 75 EUR/h = 4.200 EUR",
-      codeLang:'PERT-Schätzung',
-      tip:'Unterscheide Personentage von Kalendertagen, sonst verrechnest du dich um Faktoren. Zwanzig Personentage sind bei zwei Mitarbeitern zehn Kalendertage – aber nur, wenn sich die Aufgabe überhaupt teilen lässt. Bei nicht teilbaren Aufgaben bringt der zweite Mitarbeiter nichts. Genau dieser Hinweis wird in Aufgaben zur Projektverkürzung gern erwartet.',
-      quiz:[
-        {q:'Welche Dauer hat ein Meilenstein?', options:['Einen Tag','Null','Die Dauer der Phase'], correct:1, explain:'Er ist ein Zeitpunkt, kein Vorgang.'},
-        {q:'Wie lautet die PERT-Formel?', options:['(O + M + P) / 3','(O + 4M + P) / 6','(O + 2M + P) / 4'], correct:1, explain:'Der wahrscheinliche Wert wird vierfach gewichtet.'},
-        {q:'Was zeigt ein Gantt-Diagramm schlechter als ein Netzplan?', options:['Die Dauer der Vorgänge','Puffer und kritischen Pfad','Die Kalendertermine'], correct:1, explain:'Dafür stellt es Zeitlage und Überlappungen anschaulicher dar.'}
-      ]
-    },
-    {
-      id:'m17-l4', title:'Ein Netzplan von Anfang bis Ende', minutes:11,
-      order:4,
-      body:
-        '<p>Die beiden vorigen Lektionen haben die Regeln geliefert. Hier steht das fertige Ergebnis: <strong>ein vollständig gerechneter Netzplan</strong>, genau so, wie du ihn in der Prüfung abgibst. Es ist dasselbe Projekt, das die vorige Lektion als Balkenplan gezeigt hat.</p>'+
-        '<p><strong>Die Vorgangsliste</strong>, wie sie in der Aufgabe stünde:</p>'+
-        '<table class="lesson-table"><tr><th>Vorgang</th><th>Dauer</th><th>Vorgänger</th></tr>'+
-        '<tr><td>A</td><td>4</td><td>&#8211;</td></tr>'+
-        '<tr><td>B</td><td>6</td><td>A</td></tr>'+
-        '<tr><td>C</td><td>3</td><td>A</td></tr>'+
-        '<tr><td>D</td><td>5</td><td>B</td></tr>'+
-        '<tr><td>E</td><td>2</td><td>C</td></tr>'+
-        '<tr><td>F</td><td>4</td><td>D, E</td></tr></table>'+
-        '<figure class="fig"><svg viewBox="0 0 560 286" role="img" aria-label="Vollstaendig gerechneter Netzplan mit sechs Vorgaengen und markiertem kritischen Pfad">'+
-        '<line class="s-critline" x1="118" y1="120" x2="150" y2="60"/>'+
-        '<line class="s-line" x1="118" y1="148" x2="150" y2="206"/>'+
-        '<line class="s-critline" x1="258" y1="57" x2="296" y2="57"/>'+
-        '<line class="s-line" x1="258" y1="209" x2="296" y2="209"/>'+
-        '<line class="s-critline" x1="404" y1="60" x2="438" y2="120"/>'+
-        '<line class="s-line" x1="404" y1="206" x2="438" y2="148"/>'+
-        '<rect class="s-crit" x="10" y="104" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="10" y1="123" x2="118" y2="123"/><line class="s-line" x1="10" y1="143" x2="118" y2="143"/>'+
-        '<line class="s-line" x1="46" y1="104" x2="46" y2="123"/><line class="s-line" x1="82" y1="104" x2="82" y2="123"/>'+
-        '<line class="s-line" x1="46" y1="143" x2="46" y2="162"/><line class="s-line" x1="82" y1="143" x2="82" y2="162"/>'+
-        '<text class="s-mono" x="28" y="118" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="64" y="118" text-anchor="middle">4</text>'+
-        '<text class="s-mono" x="100" y="118" text-anchor="middle">4</text>'+
-        '<text class="s-hd" x="64" y="138" text-anchor="middle">A</text>'+
-        '<text class="s-mono" x="28" y="157" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="64" y="157" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="100" y="157" text-anchor="middle">4</text>'+
-        '<rect class="s-crit" x="150" y="28" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="150" y1="47" x2="258" y2="47"/><line class="s-line" x1="150" y1="67" x2="258" y2="67"/>'+
-        '<line class="s-line" x1="186" y1="28" x2="186" y2="47"/><line class="s-line" x1="222" y1="28" x2="222" y2="47"/>'+
-        '<line class="s-line" x1="186" y1="67" x2="186" y2="86"/><line class="s-line" x1="222" y1="67" x2="222" y2="86"/>'+
-        '<text class="s-mono" x="168" y="42" text-anchor="middle">4</text>'+
-        '<text class="s-mono" x="204" y="42" text-anchor="middle">6</text>'+
-        '<text class="s-mono" x="240" y="42" text-anchor="middle">10</text>'+
-        '<text class="s-hd" x="204" y="62" text-anchor="middle">B</text>'+
-        '<text class="s-mono" x="168" y="81" text-anchor="middle">4</text>'+
-        '<text class="s-mono" x="204" y="81" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="240" y="81" text-anchor="middle">10</text>'+
-        '<rect class="s-box" x="150" y="180" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="150" y1="199" x2="258" y2="199"/><line class="s-line" x1="150" y1="219" x2="258" y2="219"/>'+
-        '<line class="s-line" x1="186" y1="180" x2="186" y2="199"/><line class="s-line" x1="222" y1="180" x2="222" y2="199"/>'+
-        '<line class="s-line" x1="186" y1="219" x2="186" y2="238"/><line class="s-line" x1="222" y1="219" x2="222" y2="238"/>'+
-        '<text class="s-mono" x="168" y="194" text-anchor="middle">4</text>'+
-        '<text class="s-mono" x="204" y="194" text-anchor="middle">3</text>'+
-        '<text class="s-mono" x="240" y="194" text-anchor="middle">7</text>'+
-        '<text class="s-hd" x="204" y="214" text-anchor="middle">C</text>'+
-        '<text class="s-mono" x="168" y="233" text-anchor="middle">10</text>'+
-        '<text class="s-mono" x="204" y="233" text-anchor="middle">6</text>'+
-        '<text class="s-mono" x="240" y="233" text-anchor="middle">13</text>'+
-        '<rect class="s-crit" x="296" y="28" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="296" y1="47" x2="404" y2="47"/><line class="s-line" x1="296" y1="67" x2="404" y2="67"/>'+
-        '<line class="s-line" x1="332" y1="28" x2="332" y2="47"/><line class="s-line" x1="368" y1="28" x2="368" y2="47"/>'+
-        '<line class="s-line" x1="332" y1="67" x2="332" y2="86"/><line class="s-line" x1="368" y1="67" x2="368" y2="86"/>'+
-        '<text class="s-mono" x="314" y="42" text-anchor="middle">10</text>'+
-        '<text class="s-mono" x="350" y="42" text-anchor="middle">5</text>'+
-        '<text class="s-mono" x="386" y="42" text-anchor="middle">15</text>'+
-        '<text class="s-hd" x="350" y="62" text-anchor="middle">D</text>'+
-        '<text class="s-mono" x="314" y="81" text-anchor="middle">10</text>'+
-        '<text class="s-mono" x="350" y="81" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="386" y="81" text-anchor="middle">15</text>'+
-        '<rect class="s-box" x="296" y="180" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="296" y1="199" x2="404" y2="199"/><line class="s-line" x1="296" y1="219" x2="404" y2="219"/>'+
-        '<line class="s-line" x1="332" y1="180" x2="332" y2="199"/><line class="s-line" x1="368" y1="180" x2="368" y2="199"/>'+
-        '<line class="s-line" x1="332" y1="219" x2="332" y2="238"/><line class="s-line" x1="368" y1="219" x2="368" y2="238"/>'+
-        '<text class="s-mono" x="314" y="194" text-anchor="middle">7</text>'+
-        '<text class="s-mono" x="350" y="194" text-anchor="middle">2</text>'+
-        '<text class="s-mono" x="386" y="194" text-anchor="middle">9</text>'+
-        '<text class="s-hd" x="350" y="214" text-anchor="middle">E</text>'+
-        '<text class="s-mono" x="314" y="233" text-anchor="middle">13</text>'+
-        '<text class="s-mono" x="350" y="233" text-anchor="middle">6</text>'+
-        '<text class="s-mono" x="386" y="233" text-anchor="middle">15</text>'+
-        '<rect class="s-crit" x="438" y="104" width="108" height="58" rx="3"/>'+
-        '<line class="s-line" x1="438" y1="123" x2="546" y2="123"/><line class="s-line" x1="438" y1="143" x2="546" y2="143"/>'+
-        '<line class="s-line" x1="474" y1="104" x2="474" y2="123"/><line class="s-line" x1="510" y1="104" x2="510" y2="123"/>'+
-        '<line class="s-line" x1="474" y1="143" x2="474" y2="162"/><line class="s-line" x1="510" y1="143" x2="510" y2="162"/>'+
-        '<text class="s-mono" x="456" y="118" text-anchor="middle">15</text>'+
-        '<text class="s-mono" x="492" y="118" text-anchor="middle">4</text>'+
-        '<text class="s-mono" x="528" y="118" text-anchor="middle">19</text>'+
-        '<text class="s-hd" x="492" y="138" text-anchor="middle">F</text>'+
-        '<text class="s-mono" x="456" y="157" text-anchor="middle">15</text>'+
-        '<text class="s-mono" x="492" y="157" text-anchor="middle">0</text>'+
-        '<text class="s-mono" x="528" y="157" text-anchor="middle">19</text>'+
-        '<text class="s-lbl" x="10" y="262">Jeder Knoten: oben FAZ &#160;D&#160; FEZ &#160;&#183;&#160; Mitte Vorgang &#160;&#183;&#160; unten SAZ &#160;GP&#160; SEZ</text>'+
-        '<text class="s-lbl" x="10" y="278">Kritischer Pfad A&#8211;B&#8211;D&#8211;F, alle mit GP = 0. Projektdauer 19 Zeiteinheiten.</text>'+
-        '</svg><figcaption>So sieht die fertige Lösung aus. Der Zweig C–E trägt sechs Zeiteinheiten Puffer — er darf sich verschieben, ohne das Projektende zu berühren.</figcaption></figure>'+
-        '<p><strong>Die Reihenfolge, in der du rechnest</strong>, ist immer dieselbe und sollte dir in Fleisch und Blut übergehen:</p>'+
-        '<ol><li><strong>Netz zeichnen</strong> und die Dauern eintragen &#8211; sonst nichts.</li>'+
-        '<li><strong>Vorwärts</strong> von links: <code>FEZ = FAZ + D</code>, bei mehreren Vorgängern <strong>Maximum</strong>.</li>'+
-        '<li>Beim letzten Vorgang <strong>SEZ = FEZ</strong> setzen.</li>'+
-        '<li><strong>Rückwärts</strong> von rechts: <code>SAZ = SEZ &minus; D</code>, bei mehreren Nachfolgern <strong>Minimum</strong>.</li>'+
-        '<li><strong>Puffer</strong>: <code>GP = SAZ &minus; FAZ</code>.</li>'+
-        '<li><strong>Kritischen Pfad</strong> markieren: alle Vorgänge mit GP = 0, als durchgehende Kette.</li></ol>'+
-        '<p><strong>Zwei Proben, die dich vor Punktverlust schützen.</strong> Erstens: Beim ersten Vorgang muss SAZ null ergeben. Kommt etwas anderes heraus, steckt der Fehler fast immer im Minimum der Rückwärtsrechnung. Zweitens: Der kritische Pfad muss lückenlos vom ersten bis zum letzten Vorgang durchlaufen. Eine Lücke bedeutet, dass irgendwo ein GP falsch gerechnet ist.</p>',
-      code:
-        "DIE RECHNUNG IM EINZELNEN\n\n"+
-        "VORWAERTS\n"+
-        "  A  FAZ 0                     FEZ = 0 + 4  = 4\n"+
-        "  B  FAZ = FEZ(A) = 4          FEZ = 4 + 6  = 10\n"+
-        "  C  FAZ = FEZ(A) = 4          FEZ = 4 + 3  = 7\n"+
-        "  D  FAZ = FEZ(B) = 10         FEZ = 10 + 5 = 15\n"+
-        "  E  FAZ = FEZ(C) = 7          FEZ = 7 + 2  = 9\n"+
-        "  F  FAZ = MAX(15, 9) = 15     FEZ = 15 + 4 = 19   <- MAXIMUM\n\n"+
-        "  Projektdauer = 19\n\n"+
-        "RUECKWAERTS  (F ist letzter Vorgang: SEZ = FEZ = 19)\n"+
-        "  F  SEZ 19                    SAZ = 19 - 4 = 15\n"+
-        "  D  SEZ = SAZ(F) = 15         SAZ = 15 - 5 = 10\n"+
-        "  E  SEZ = SAZ(F) = 15         SAZ = 15 - 2 = 13\n"+
-        "  B  SEZ = SAZ(D) = 10         SAZ = 10 - 6 = 4\n"+
-        "  C  SEZ = SAZ(E) = 13         SAZ = 13 - 3 = 10\n"+
-        "  A  SEZ = MIN(4, 10) = 4      SAZ = 4 - 4  = 0    <- MINIMUM\n\n"+
-        "PUFFER   GP = SAZ - FAZ\n"+
-        "  A  0 - 0  = 0      kritisch\n"+
-        "  B  4 - 4  = 0      kritisch\n"+
-        "  C  10 - 4 = 6\n"+
-        "  D  10 - 10 = 0     kritisch\n"+
-        "  E  13 - 7 = 6\n"+
-        "  F  15 - 15 = 0     kritisch\n\n"+
-        "  Kritischer Pfad: A - B - D - F\n\n"+
-        "PROBE\n"+
-        "  SAZ des ersten Vorgangs = 0            stimmt\n"+
-        "  Kette A-B-D-F ist lueckenlos           stimmt\n"+
-        "  4 + 6 + 5 + 4 = 19 = Projektdauer      stimmt\n\n"+
-        "FREIER PUFFER - nur wenn ausdruecklich gefragt\n"+
-        "  FP = MIN(FAZ aller Nachfolger) - eigener FEZ\n"+
-        "  FP(C) = FAZ(E) - FEZ(C) = 7 - 7 = 0\n"+
-        "  FP(E) = FAZ(F) - FEZ(E) = 15 - 9 = 6\n\n"+
-        "  Achtung: C und E teilen sich die 6 Zeiteinheiten.\n"+
-        "  Verbraucht C fuenf davon, bleibt E genau eine.",
-      codeLang:'Netzplan komplett',
-      tip:'Der freie Puffer von C ist null, obwohl sein Gesamtpuffer sechs beträgt — und genau dieser Unterschied wird gern geprüft. Der Gesamtpuffer gehört dem ganzen Pfad, der freie Puffer nur dem einzelnen Vorgang. Verschiebt sich C auch nur um einen Tag, rutscht E mit. Wer beide Begriffe in der Antwort trennt und das am Beispiel zeigt, bekommt den Begründungspunkt.',
-      quiz:[
-        {q:'Vorgang F hat die Vorgänger D (FEZ 15) und E (FEZ 9). Wie hoch ist sein FAZ?', options:['9','15','24'], correct:1, explain:'In der Vorwärtsrechnung gilt das Maximum — erst wenn der letzte Vorgänger fertig ist, kann F starten.'},
-        {q:'Vorgang A hat die Nachfolger B (SAZ 4) und C (SAZ 10). Wie hoch ist sein SEZ?', options:['4','10','14'], correct:0, explain:'Rückwärts gilt das Minimum. Merksatz: vorwärts MAX, rückwärts MIN.'},
-        {q:'C hat Gesamtpuffer 6, aber freien Puffer 0. Was bedeutet das?', options:['Die Rechnung ist falsch','C darf sich nur verschieben, wenn E mitwandert','C ist kritisch'], correct:1, explain:'Der Gesamtpuffer gehört dem Pfad, der freie Puffer dem einzelnen Vorgang.'}
-      ]
-    },
-  ]
-});
-MODULES.push({
-  id:'m18', part:6, partTitle:'Projektmanagement & Wirtschaft', title:'Angebotsvergleich & Kalkulation', relevanz:'sehr hoch',
-  lessons:[
-    {
-      id:'m18-l1', title:'Die Nutzwertanalyse', minutes:10,
-      body:
-        '<p>Die <strong>Nutzwertanalyse</strong> vergleicht Angebote anhand <em>nicht-monetärer</em> Kriterien. Sie erscheint in fast jeder AP1 und folgt immer demselben Ablauf:</p>'+
-        '<ol><li><strong>Kriterien festlegen</strong> (Support, Benutzerfreundlichkeit, Erweiterbarkeit, Datenschutz …).</li>'+
-        '<li><strong>Gewichtung vergeben</strong> – die Summe aller Gewichte muss <strong>100 %</strong> ergeben. Diese Probe wird oft eigens bepunktet.</li>'+
-        '<li><strong>Punkte vergeben</strong> je Kriterium und Anbieter, meist 1–10 oder 1–5.</li>'+
-        '<li><strong>Teilnutzwert = Punkte × Gewichtung.</strong></li>'+
-        '<li><strong>Gesamtnutzwert = Summe der Teilnutzwerte.</strong> Der höchste Wert gewinnt.</li></ol>'+
-        '<p><strong>Ausschlusskriterien (K.-o.-Kriterien)</strong> werden <em>vor</em> der Bewertung geprüft: Wer sie nicht erfüllt, fliegt raus und wird gar nicht erst bewertet.</p>',
-      code:
-        "Kriterium         Gew.   A: Pkt  Teilw.   B: Pkt  Teilw.\n"+
-        "-----------------------------------------------------------\n"+
-        "Funktionsumfang    40%      8     3,20       6      2,40\n"+
-        "Support            30%      5     1,50       9      2,70\n"+
-        "Bedienbarkeit      20%      7     1,40       7      1,40\n"+
-        "Erweiterbarkeit    10%      9     0,90       4      0,40\n"+
-        "-----------------------------------------------------------\n"+
-        "Summe             100%           7,00             6,90\n\n"+
-        "Ergebnis: Anbieter A gewinnt knapp (7,00 vs. 6,90).",
-      codeLang:'Nutzwertanalyse',
-      tip:'Der Satz, der bei „Begründen Sie Ihre Entscheidung" Punkte bringt, geht über das Nennen des Siegers hinaus: Die Nutzwertanalyse macht eine Entscheidung nachvollziehbar und dokumentiert, ist aber nicht objektiv – Kriterienauswahl, Gewichtung und Punktvergabe sind subjektiv. Bei einem knappen Ergebnis wie 7,00 zu 6,90 solltest du genau darauf hinweisen und zusätzlich die Kosten heranziehen.',
-      quiz:[
-        {q:'Wie viel muss die Summe der Gewichtungen ergeben?', options:['10','100 %','So viel wie es Kriterien gibt'], correct:1, explain:'Diese Probe wird häufig eigens bepunktet.'},
-        {q:'Wie wird ein Teilnutzwert berechnet?', options:['Punkte + Gewichtung','Punkte × Gewichtung','Punkte / Gewichtung'], correct:1, explain:'Die Summe aller Teilnutzwerte ergibt den Gesamtnutzwert.'},
-        {q:'Wie behandelt man ein K.-o.-Kriterium in der Nutzwertanalyse?', options:['Mit doppelter Gewichtung','Vorab prüfen — wer es nicht erfüllt, wird gar nicht bewertet','Mit 0 Punkten bewerten'], correct:1, explain:'Ausschlusskriterien stehen vor der eigentlichen Bewertung.'}
-      ]
-    },
-    {
-      id:'m18-l2', title:'Bezugspreis und Angebotsvergleich', minutes:10,
-      body:
-        '<p>Der <strong>Bezugspreis</strong> ist das, was eine Beschaffung tatsächlich kostet – Rabatte und Skonti verändern die Rangfolge oft gegenüber dem Listenpreis. Das Kalkulationsschema ist immer gleich:</p>'+
-        '<table class="lesson-table"><tr><th>Schritt</th><th>Position</th></tr>'+
-        '<tr><td></td><td>Listeneinkaufspreis</td></tr>'+
-        '<tr><td>−</td><td>Liefererrabatt</td></tr>'+
-        '<tr><td>=</td><td><strong>Zieleinkaufspreis</strong></td></tr>'+
-        '<tr><td>−</td><td>Liefererskonto</td></tr>'+
-        '<tr><td>=</td><td><strong>Bareinkaufspreis</strong></td></tr>'+
-        '<tr><td>+</td><td>Bezugskosten (Fracht, Verpackung, Versicherung)</td></tr>'+
-        '<tr><td>=</td><td><strong>Bezugspreis / Einstandspreis</strong></td></tr></table>'+
-        '<p><strong>Wichtig:</strong> Skonto wird vom <em>bereits rabattierten</em> Preis berechnet, nicht vom Listenpreis – und die Bezugskosten kommen <strong>nach</strong> dem Skontoabzug hinzu, denn auf Fracht gibt es keinen Skonto.</p>'+
-        '<p>Bei der <strong>Umsatzsteuer</strong>: Rechne immer mit <strong>Nettopreisen</strong>. Für ein vorsteuerabzugsberechtigtes Unternehmen ist die Umsatzsteuer ein durchlaufender Posten und damit kein Kostenfaktor.</p>',
-      code:
-        "Angebot: Listenpreis 12.000 EUR, 15 % Rabatt, 2 % Skonto,\n"+
-        "         Bezugskosten 250 EUR\n\n"+
-        "  Listeneinkaufspreis            12.000,00\n"+
-        "  - Rabatt 15 %                 - 1.800,00\n"+
-        "  = Zieleinkaufspreis            10.200,00\n"+
-        "  - Skonto 2 % (von 10.200)     -   204,00\n"+
-        "  = Bareinkaufspreis              9.996,00\n"+
-        "  + Bezugskosten                +   250,00\n"+
-        "  = Bezugspreis                  10.246,00 EUR\n\n"+
-        "Netto -> Brutto:  netto x 1,19       Brutto -> Netto: brutto / 1,19\n"+
-        "Die im Brutto enthaltene USt:  brutto / 1,19 x 0,19  (NICHT brutto x 0,19)",
-      codeLang:'Bezugskalkulation',
-      tip:'Der teuerste Fehler dieser Aufgabenform ist die Berechnung der enthaltenen Umsatzsteuer aus dem Bruttobetrag. Neunzehn Prozent von 119 Euro sind nicht die enthaltene Steuer – die beträgt 19 Euro, nicht 22,61. Rechne immer erst auf netto zurück, indem du durch 1,19 teilst, und nimm davon 19 Prozent. Oder direkt: brutto mal 19 geteilt durch 119.',
-      quiz:[
-        {q:'Wovon wird das Skonto berechnet?', options:['Vom Listenpreis','Vom bereits rabattierten Zieleinkaufspreis','Vom Bezugspreis inklusive Fracht'], correct:1, explain:'Und auf Bezugskosten gibt es gar keinen Skonto.'},
-        {q:'Wie viel Umsatzsteuer stecken in 238 € brutto bei 19 %?', options:['45,22 €','38,00 €','47,60 €'], correct:1, explain:'238 / 1,19 = 200 netto, davon 19 % = 38 €.'},
-        {q:'Auf welchen Betrag gibt es keinen Skonto?', options:['Auf den Listenpreis','Auf die Bezugskosten wie Fracht','Auf den Zieleinkaufspreis'], correct:1, explain:'Deshalb kommen die Bezugskosten erst nach dem Skontoabzug hinzu.'}
-      ]
-    },
-    {
-      id:'m18-l3', title:'Wirtschaftlichkeit, Amortisation und Finanzierung', minutes:10,
-      body:
-        '<p><strong>Amortisationsdauer</strong> – nach welcher Zeit hat sich eine Investition bezahlt gemacht?</p>'+
-        '<p><code>Amortisationsdauer = Investitionssumme / jährlicher Rückfluss (Einsparung)</code></p>'+
-        '<p>Ein Ergebnis von 2,5 Jahren bedeutet 2 Jahre und 6 Monate. Rechne Nachkommastellen in Monate um: <code>0,5 × 12 = 6</code>.</p>'+
-        '<p><strong>Make or Buy</strong> – Eigenentwicklung gegen Kauf. Man stellt beide Gesamtkosten über denselben Betrachtungszeitraum gegenüber, <strong>inklusive laufender Kosten</strong>: Lizenz, Wartung, Support, Schulung, Personal. Der Vergleich nur der Anschaffungskosten ist ein typischer Aufgabenfehler, den du in der Antwort vermeiden solltest.</p>'+
-        '<p><strong>Leasing gegen Kauf:</strong> Leasing schont die Liquidität, bietet planbare Raten und aktuelle Technik, ist aber über die Laufzeit meist teurer und man erwirbt kein Eigentum. Kauf bindet Kapital, ist langfristig günstiger und schafft Eigentum.</p>'+
-        '<p><strong>Ratendarlehen</strong> (Tilgungsdarlehen): Die Tilgung bleibt konstant, die Zinsen sinken mit der Restschuld – also sinkt auch die Gesamtrate.</p>'+
-        '<p><code>Zinsen der Periode = Restschuld × Zinssatz × (Monate / 12)</code></p>',
-      code:
-        "Ratendarlehen: 24.000 EUR, 4 Jahre, 5 % p.a., jaehrliche Tilgung\n\n"+
-        "  Tilgung pro Jahr = 24.000 / 4 = 6.000 EUR\n\n"+
-        "  Jahr  Restschuld  Zinsen 5%   Tilgung   Rate\n"+
-        "   1     24.000      1.200      6.000    7.200\n"+
-        "   2     18.000        900      6.000    6.900\n"+
-        "   3     12.000        600      6.000    6.600\n"+
-        "   4      6.000        300      6.000    6.300\n"+
-        "                    -------\n"+
-        "  Zinsen gesamt:     3.000 EUR\n\n"+
-        "Amortisation: 15.000 EUR Investition, 6.000 EUR Ersparnis/Jahr\n"+
-        "  15.000 / 6.000 = 2,5 Jahre = 2 Jahre und 6 Monate",
-      codeLang:'Finanzierungsrechnung',
-      tip:'Beim Ratendarlehen ist die Zinsberechnung immer von der Restschuld zu Beginn der Periode vorzunehmen, nicht vom ursprünglichen Darlehensbetrag. Wer das übersieht, bekommt in jeder Zeile denselben Zinsbetrag heraus – und hat damit versehentlich ein Annuitätendarlehen gerechnet, bei dem die Rate konstant bleibt und sich stattdessen das Verhältnis von Zins und Tilgung verschiebt.',
-      quiz:[
-        {q:'Eine Investition von 18.000 € spart 7.200 € pro Jahr. Amortisationsdauer?', options:['2 Jahre','2,5 Jahre','3 Jahre'], correct:1, explain:'18.000 / 7.200 = 2,5 Jahre, also 2 Jahre und 6 Monate.'},
-        {q:'Was ist beim Ratendarlehen konstant?', options:['Die Gesamtrate','Die Tilgung','Die Zinsen'], correct:1, explain:'Die Zinsen sinken mit der Restschuld, daher sinkt auch die Rate.'},
-        {q:'Was bleibt beim Annuitätendarlehen konstant?', options:['Die Tilgung','Die Gesamtrate','Die Zinsen'], correct:1, explain:'Beim Ratendarlehen ist dagegen die Tilgung konstant und die Rate sinkt.'}
-      ]
-    },
-    {
-      id:'m18-l4', title:'Verträge und Kaufvertragsstörungen', minutes:9,
-      body:
-        '<p>Ein Vertrag kommt durch <strong>zwei übereinstimmende Willenserklärungen</strong> zustande – Angebot und Annahme. Ein Katalog oder eine Webseite ist noch kein Angebot, sondern eine <em>Aufforderung zur Abgabe eines Angebots</em> (invitatio ad offerendum).</p>'+
-        '<p><strong>Die Vertragsarten in der IT</strong> – der Unterschied ist prüfungsrelevant:</p>'+
-        '<ul><li><strong>Werkvertrag</strong> – geschuldet ist ein <strong>Erfolg</strong>, ein fertiges Werk. Individualsoftware, die abgenommen wird. Es gibt eine Abnahme und Gewährleistung.</li>'+
-        '<li><strong>Dienstvertrag</strong> – geschuldet ist die <strong>Tätigkeit</strong>, nicht der Erfolg. Beratung, Support nach Aufwand.</li>'+
-        '<li><strong>Kaufvertrag</strong> – Standardsoftware auf Datenträger oder Hardware.</li>'+
-        '<li><strong>Mietvertrag</strong> – zeitweise Überlassung gegen Entgelt, etwa SaaS und Cloud.</li></ul>'+
-        '<p><strong>Die drei Kaufvertragsstörungen:</strong></p>'+
-        '<ul><li><strong>Mangelhafte Lieferung</strong> – Sachmangel oder Rechtsmangel. Rechte in fester Reihenfolge: zuerst <strong>Nacherfüllung</strong> (Nachbesserung oder Ersatzlieferung), erst danach Rücktritt, Minderung oder Schadenersatz.</li>'+
-        '<li><strong>Lieferverzug</strong> – der Verkäufer liefert nicht rechtzeitig. Der Käufer setzt eine <strong>Nachfrist</strong>; danach Rücktritt oder Schadenersatz.</li>'+
-        '<li><strong>Zahlungsverzug</strong> – der Käufer zahlt nicht. Es folgt das Mahnverfahren, Verzugszinsen und gegebenenfalls das gerichtliche Mahnverfahren.</li></ul>'+
-        '<p><strong>Fristen:</strong> Gewährleistung 2 Jahre bei Neuware (B2B verkürzbar auf 1 Jahr), <strong>Beweislastumkehr</strong> im Verbrauchsgüterkauf 12 Monate. Die <strong>Garantie</strong> ist dagegen eine freiwillige zusätzliche Zusage des Herstellers – das wird gern verwechselt.</p>',
-      code:'',
-      tip:'Die Unterscheidung von Gewährleistung und Garantie ist eine klassische Fangfrage. Die Gewährleistung ist gesetzlich vorgeschrieben, richtet sich gegen den Verkäufer und gilt zwei Jahre. Die Garantie ist freiwillig, kommt meist vom Hersteller und kann in Umfang und Dauer frei gestaltet sein. Wer „Garantie" schreibt, wo „Gewährleistung" gemeint ist, verliert den Punkt.',
-      quiz:[
-        {q:'Welche Vertragsart liegt bei der Erstellung einer Individualsoftware mit Abnahme vor?', options:['Dienstvertrag','Werkvertrag','Mietvertrag'], correct:1, explain:'Geschuldet ist ein Erfolg, nicht nur die Tätigkeit.'},
-        {q:'Welches Recht hat der Käufer bei einem Sachmangel zuerst?', options:['Sofortiger Rücktritt','Nacherfüllung – Nachbesserung oder Ersatzlieferung','Schadenersatz'], correct:1, explain:'Die weiteren Rechte greifen erst, wenn die Nacherfüllung scheitert.'},
-        {q:'Welcher Vertrag liegt bei einer SaaS-Nutzung gegen monatliches Entgelt vor?', options:['Kaufvertrag','Mietvertrag','Werkvertrag'], correct:1, explain:'Zeitweise Überlassung gegen Entgelt ist die Definition der Miete.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m36', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Rechnerarchitektur & IT-Grundkonzepte', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m36-l1', title:'EVA-Prinzip und Von-Neumann-Architektur', minutes:9,
-      body:
-        '<p>Jede Datenverarbeitung folgt dem <strong>EVA-Prinzip</strong>: <strong>E</strong>ingabe &#8594; <strong>V</strong>erarbeitung &#8594; <strong>A</strong>usgabe. Häufig wird es zu <strong>EVAS</strong> erweitert, wobei das S für <strong>Speicherung</strong> steht — ohne sie wäre jedes Ergebnis nach dem Abschalten verloren.</p>'+
-        '<p>Die technische Umsetzung dieses Prinzips ist seit 1945 die <strong>Von-Neumann-Architektur</strong>. Ihre fünf Bestandteile solltest du benennen können:</p>'+
-        '<table class="lesson-table"><tr><th>Baustein</th><th>Aufgabe</th></tr>'+
-        '<tr><td><strong>Steuerwerk</strong> (Control Unit)</td><td>holt Befehle, dekodiert sie, steuert den Ablauf</td></tr>'+
-        '<tr><td><strong>Rechenwerk</strong> (ALU)</td><td>führt Rechen- und Vergleichsoperationen aus</td></tr>'+
-        '<tr><td><strong>Speicherwerk</strong></td><td>hält Programme <em>und</em> Daten</td></tr>'+
-        '<tr><td><strong>Ein-/Ausgabewerk</strong></td><td>verbindet mit der Außenwelt</td></tr>'+
-        '<tr><td><strong>Bussystem</strong></td><td>verbindet alles miteinander</td></tr></table>'+
-        '<p>Steuerwerk und Rechenwerk zusammen bilden den <strong>Prozessor</strong> (CPU).</p>'+
-        '<p><strong>Das entscheidende Merkmal</strong>, nach dem gefragt wird: Programme und Daten liegen im <em>selben</em> Speicher und werden über <em>denselben</em> Bus transportiert. Das macht den Rechner universell — er kann jedes Programm ausführen, das man hineinlädt, statt für eine Aufgabe fest verdrahtet zu sein.</p>'+
-        '<p>Derselbe gemeinsame Bus ist aber auch die Schwachstelle: Befehle und Daten können nicht gleichzeitig transportiert werden. Dieser <strong>Von-Neumann-Flaschenhals</strong> ist der Grund, warum moderne Prozessoren Caches und getrennte Befehls- und Datenpfade einsetzen. Die <strong>Harvard-Architektur</strong> trennt beides von vornherein und findet sich deshalb in Mikrocontrollern und in den Caches heutiger CPUs.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 250" role="img" aria-label="Von-Neumann-Architektur mit CPU, Speicher, Ein- und Ausgabe sowie dem gemeinsamen Bus">'+
-        '<rect class="s-strong" x="150" y="14" width="260" height="76" rx="6"/>'+
-        '<text class="s-hd" x="280" y="34" text-anchor="middle">Prozessor (CPU)</text>'+
-        '<rect class="s-accent" x="164" y="42" width="112" height="38" rx="4"/>'+
-        '<text class="s-lbl" x="220" y="66" text-anchor="middle">Steuerwerk</text>'+
-        '<rect class="s-accent" x="284" y="42" width="112" height="38" rx="4"/>'+
-        '<text class="s-lbl" x="340" y="66" text-anchor="middle">Rechenwerk</text>'+
-        '<rect class="s-box" x="20" y="150" width="140" height="48" rx="4"/>'+
-        '<text class="s-lbl" x="90" y="172" text-anchor="middle">Eingabewerk</text>'+
-        '<text class="s-mono" x="90" y="190" text-anchor="middle">Tastatur, Sensor</text>'+
-        '<rect class="s-accent" x="212" y="150" width="136" height="48" rx="4"/>'+
-        '<text class="s-lbl" x="280" y="172" text-anchor="middle">Speicherwerk</text>'+
-        '<text class="s-mono" x="280" y="190" text-anchor="middle">Befehle + Daten</text>'+
-        '<rect class="s-box" x="400" y="150" width="140" height="48" rx="4"/>'+
-        '<text class="s-lbl" x="470" y="172" text-anchor="middle">Ausgabewerk</text>'+
-        '<text class="s-mono" x="470" y="190" text-anchor="middle">Monitor, Aktor</text>'+
-        '<line class="s-line" x1="20" y1="120" x2="540" y2="120" stroke-width="7"/>'+
-        '<text class="s-lbl" x="280" y="112" text-anchor="middle">B U S S Y S T E M</text>'+
-        '<line class="s-arrow" x1="280" y1="90" x2="280" y2="116" marker-end="url(#vnp)"/>'+
-        '<line class="s-arrow" x1="90" y1="146" x2="90" y2="124" marker-end="url(#vnp)"/>'+
-        '<line class="s-arrow" x1="280" y1="146" x2="280" y2="124" marker-end="url(#vnp)"/>'+
-        '<line class="s-arrow" x1="470" y1="124" x2="470" y2="146" marker-end="url(#vnp)"/>'+
-        '<text class="s-lbl" x="20" y="228">Befehle und Daten teilen sich Speicher und Bus &#8212; das macht den Rechner universell</text>'+
-        '<text class="s-lbl" x="20" y="244">und erzeugt zugleich den Von-Neumann-Flaschenhals.</text>'+
-        '<defs><marker id="vnp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Die fünf Bausteine nach von Neumann. Steuerwerk und Rechenwerk bilden zusammen die CPU.</figcaption></figure>',
-      code:
-        "EVA am Alltagsbeispiel - Zugangskontrolle\n\n"+
-        "  E  Chipkarte wird an den Leser gehalten\n"+
-        "  V  System prueft die Kartennummer gegen die Rechtetabelle\n"+
-        "  A  Tuer oeffnet oder Leuchte bleibt rot\n"+
-        "  S  Zutrittsversuch wird protokolliert\n\n"+
-        "Ohne das S waere nicht nachvollziehbar, wer wann da war -\n"+
-        "und genau das verlangt ein Berechtigungskonzept.\n\n"+
-        "VON NEUMANN gegen HARVARD\n\n"+
-        "  Von Neumann : ein Speicher, ein Bus fuer Befehle UND Daten\n"+
-        "                universell, guenstig, aber Flaschenhals\n\n"+
-        "  Harvard     : getrennte Speicher und Busse\n"+
-        "                schneller, aber starrer\n"+
-        "                Einsatz: Mikrocontroller, CPU-Caches",
-      codeLang:'Rechnerarchitektur',
-      tip:'Bei der Frage „Nennen Sie die Bestandteile der Von-Neumann-Architektur" reicht eine Aufzählung für die Nennpunkte, aber die Begründungspunkte holst du mit dem Kernsatz: Programme und Daten liegen im selben Speicher. Daraus folgt beides — die Universalität des Rechners und der Flaschenhals. Wer nur fünf Kästchen aufzählt, lässt die Hälfte der Punkte liegen.',
-      quiz:[
-        {q:'Wofür steht das S in EVAS?', options:['Steuerung','Speicherung','Sicherheit'], correct:1, explain:'Ohne Speicherung wäre jedes Verarbeitungsergebnis nach dem Abschalten verloren.'},
-        {q:'Welche beiden Werke bilden zusammen den Prozessor?', options:['Steuerwerk und Rechenwerk','Speicherwerk und Bussystem','Ein- und Ausgabewerk'], correct:0, explain:'Das Steuerwerk holt und dekodiert Befehle, das Rechenwerk führt sie aus.'},
-        {q:'Was bezeichnet der Von-Neumann-Flaschenhals?', options:['Zu wenig Arbeitsspeicher','Befehle und Daten teilen sich einen Bus und können nicht gleichzeitig übertragen werden','Eine zu langsame Festplatte'], correct:1, explain:'Die Harvard-Architektur umgeht ihn durch getrennte Speicher und Busse.'}
-      ]
-    },
-    {
-      id:'m36-l2', title:'Der Befehlszyklus und die drei Bussysteme', minutes:9,
-      body:
-        '<p>Ein Prozessor arbeitet Befehle in einem festen, sich endlos wiederholenden Ablauf ab — dem <strong>Befehlszyklus</strong>:</p>'+
-        '<ol><li><strong>FETCH</strong> — Das Steuerwerk holt den Befehl aus dem Speicher. Die Adresse steht im <strong>Befehlszähler</strong> (Program Counter).</li>'+
-        '<li><strong>DECODE</strong> — Der Befehl wird entschlüsselt: Welche Operation, welche Operanden?</li>'+
-        '<li><strong>EXECUTE</strong> — Das Rechenwerk führt die Operation aus.</li>'+
-        '<li><strong>WRITE BACK</strong> — Das Ergebnis wird in ein Register oder in den Speicher geschrieben, der Befehlszähler wird erhöht.</li></ol>'+
-        '<p>Die <strong>Taktfrequenz</strong> gibt an, wie viele solcher Schritte pro Sekunde möglich sind: 3 GHz sind drei Milliarden Takte je Sekunde. <strong>Ein Befehl braucht dabei mehrere Takte</strong> — deshalb sagt die Taktfrequenz allein wenig über die Leistung aus. Entscheidend sind zusätzlich die Anzahl der <strong>Kerne</strong>, die Größe der <strong>Caches</strong> und die <strong>Pipeline</strong>, die mehrere Befehle überlappend bearbeitet.</p>'+
-        '<p><strong>Die drei Busse</strong> — eine sichere Prüfungsfrage:</p>'+
-        '<table class="lesson-table"><tr><th>Bus</th><th>Transportiert</th><th>Richtung</th></tr>'+
-        '<tr><td><strong>Datenbus</strong></td><td>die eigentlichen Werte</td><td>in beide Richtungen</td></tr>'+
-        '<tr><td><strong>Adressbus</strong></td><td>die Speicheradresse</td><td>nur von der CPU weg</td></tr>'+
-        '<tr><td><strong>Steuerbus</strong></td><td>Signale wie Lesen, Schreiben, Takt</td><td>in beide Richtungen</td></tr></table>'+
-        '<p><strong>Die Rechnung, die dazu gestellt wird:</strong> Die Breite des Adressbusses bestimmt, wie viele Speicherzellen überhaupt ansprechbar sind — bei n Adressleitungen sind es <code>2 hoch n</code>. Mit 32 Adressleitungen also rund 4,3 Milliarden Zellen, bei einem Byte je Zelle genau <strong>4 GiB</strong>. Genau das ist der Grund, warum ein 32-Bit-System nicht mehr als 4 GiB Arbeitsspeicher nutzen kann.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 190" role="img" aria-label="Befehlszyklus aus Holen, Dekodieren, Ausfuehren und Zurueckschreiben">'+
-        '<rect class="s-accent" x="24" y="30" width="112" height="52" rx="6"/>'+
-        '<text class="s-hd" x="80" y="54" text-anchor="middle">1 FETCH</text>'+
-        '<text class="s-mono" x="80" y="72" text-anchor="middle">holen</text>'+
-        '<rect class="s-accent" x="160" y="30" width="112" height="52" rx="6"/>'+
-        '<text class="s-hd" x="216" y="54" text-anchor="middle">2 DECODE</text>'+
-        '<text class="s-mono" x="216" y="72" text-anchor="middle">entschluesseln</text>'+
-        '<rect class="s-strong" x="296" y="30" width="112" height="52" rx="6"/>'+
-        '<text class="s-hd" x="352" y="54" text-anchor="middle">3 EXECUTE</text>'+
-        '<text class="s-mono" x="352" y="72" text-anchor="middle">ausfuehren</text>'+
-        '<rect class="s-accent" x="432" y="30" width="112" height="52" rx="6"/>'+
-        '<text class="s-hd" x="488" y="54" text-anchor="middle">4 WRITE</text>'+
-        '<text class="s-mono" x="488" y="72" text-anchor="middle">speichern</text>'+
-        '<line class="s-arrow" x1="136" y1="56" x2="156" y2="56" marker-end="url(#bzp)"/>'+
-        '<line class="s-arrow" x1="272" y1="56" x2="292" y2="56" marker-end="url(#bzp)"/>'+
-        '<line class="s-arrow" x1="408" y1="56" x2="428" y2="56" marker-end="url(#bzp)"/>'+
-        '<path class="s-dash" d="M488 86 C 488 126, 80 126, 80 88" marker-end="url(#bzp)"/>'+
-        '<text class="s-lbl" x="284" y="142" text-anchor="middle">Befehlszaehler + 1 &#8594; der Zyklus beginnt von vorn</text>'+
-        '<text class="s-lbl" x="24" y="176">Ein Befehl braucht mehrere Takte. Deshalb sagt die Taktfrequenz allein wenig ueber die Leistung.</text>'+
-        '<defs><marker id="bzp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Der Befehlszyklus läuft, solange der Rechner an ist. Eine Pipeline bearbeitet mehrere Befehle zeitlich überlappend.</figcaption></figure>',
-      code:
-        "ADRESSBUSBREITE UND MAXIMALER SPEICHER\n\n"+
-        "  16 Adressleitungen : 2^16 =        65.536 Zellen =  64 KiB\n"+
-        "  20 Adressleitungen : 2^20 =     1.048.576 Zellen =   1 MiB\n"+
-        "  32 Adressleitungen : 2^32 = 4.294.967.296 Zellen =   4 GiB\n"+
-        "  64 Adressleitungen : 2^64 = theoretisch 16 EiB\n\n"+
-        "  Deshalb kann ein 32-Bit-Betriebssystem nicht mehr als\n"+
-        "  4 GiB Arbeitsspeicher adressieren - unabhaengig davon,\n"+
-        "  wie viele Riegel im Rechner stecken.\n\n"+
-        "TYPISCHE PRUEFUNGSFRAGE\n"+
-        "  Wie viele Adressleitungen braucht man fuer 1 GiB?\n"+
-        "     1 GiB = 2^30 Byte  ->  30 Adressleitungen",
-      codeLang:'Bussysteme',
-      tip:'Die Frage „Warum bringt ein vierter Speicherriegel im alten 32-Bit-Rechner nichts?" ist eine Verständnisfrage, keine Wissensfrage. Die Antwort steckt im Adressbus: Mit 32 Leitungen lassen sich nur 2 hoch 32 Zellen ansprechen, also 4 GiB. Was darüber hinaus verbaut ist, kann der Prozessor gar nicht adressieren. Rechne die Zweierpotenz im Kopf über 2 hoch 10 gleich 1 Ki.',
-      quiz:[
-        {q:'In welcher Reihenfolge läuft der Befehlszyklus?', options:['Decode, Fetch, Execute','Fetch, Decode, Execute, Write back','Execute, Fetch, Decode'], correct:1, explain:'Der Befehlszähler zeigt dabei immer auf den nächsten zu holenden Befehl.'},
-        {q:'Welcher Bus überträgt ausschließlich in eine Richtung?', options:['Der Datenbus','Der Adressbus','Der Steuerbus'], correct:1, explain:'Adressen gibt nur die CPU vor; Daten und Steuersignale laufen in beide Richtungen.'},
-        {q:'Wie viel Speicher lässt sich mit 32 Adressleitungen ansprechen?', options:['32 MiB','4 GiB','64 GiB'], correct:1, explain:'2 hoch 32 Zellen zu je einem Byte ergeben 4 GiB — die Grenze jedes 32-Bit-Systems.'}
-      ]
-    },
-    {
-      id:'m36-l3', title:'Die Speicherpyramide und flüchtige Speicher', minutes:9,
-      body:
-        '<p>Kein Speicher ist gleichzeitig schnell, groß und billig. Deshalb staffeln Rechner ihren Speicher in einer <strong>Pyramide</strong>: Je näher am Prozessor, desto schneller, kleiner und teurer.</p>'+
-        '<table class="lesson-table"><tr><th>Ebene</th><th>Größe</th><th>Zugriffszeit</th><th>Flüchtig?</th></tr>'+
-        '<tr><td><strong>Register</strong> (in der CPU)</td><td>wenige hundert Byte</td><td>unter 1 ns</td><td>ja</td></tr>'+
-        '<tr><td><strong>Cache L1 / L2 / L3</strong></td><td>32 KiB bis 64 MiB</td><td>1 bis 20 ns</td><td>ja</td></tr>'+
-        '<tr><td><strong>Arbeitsspeicher (RAM)</strong></td><td>8 bis 128 GiB</td><td>etwa 80 ns</td><td>ja</td></tr>'+
-        '<tr><td><strong>SSD / NVMe</strong></td><td>250 GiB bis mehrere TB</td><td>etwa 50 Mikrosekunden</td><td>nein</td></tr>'+
-        '<tr><td><strong>Festplatte / Band</strong></td><td>TB bis PB</td><td>Millisekunden bis Minuten</td><td>nein</td></tr></table>'+
-        '<p><strong>Flüchtig (volatil)</strong> heißt: Der Inhalt geht beim Abschalten verloren. Das gilt für Register, Cache und RAM. <strong>Nichtflüchtig</strong> sind SSD, Festplatte, Band — und das <strong>ROM</strong> beziehungsweise der Flash-Baustein, in dem die Firmware liegt.</p>'+
-        '<p><strong>Warum der Cache überhaupt funktioniert:</strong> Programme greifen nicht zufällig auf den Speicher zu, sondern nach dem <strong>Lokalitätsprinzip</strong>. Zeitliche Lokalität bedeutet, dass kürzlich benutzte Daten bald wieder gebraucht werden; räumliche Lokalität, dass benachbarte Daten als Nächstes an der Reihe sind — etwa beim Durchlaufen eines Arrays. Deshalb genügen wenige Megabyte Cache, um den größten Teil aller Zugriffe abzufangen.</p>'+
-        '<p>Ein Zugriff, den der Cache beantworten kann, heißt <strong>Hit</strong>, andernfalls <strong>Miss</strong>. Die <strong>Trefferquote</strong> liegt in der Praxis bei über 90 Prozent — deshalb wirkt ein Rechner deutlich schneller, als es die RAM-Zugriffszeit allein erwarten ließe.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="Speicherpyramide von Registern bis zum Bandarchiv">'+
-        '<polygon class="s-strong" points="248,14 312,14 324,48 236,48"/>'+
-        '<text class="s-mono" x="280" y="38" text-anchor="middle">Register</text>'+
-        '<polygon class="s-accent" points="236,50 324,50 340,88 220,88"/>'+
-        '<text class="s-mono" x="280" y="76" text-anchor="middle">Cache L1 L2 L3</text>'+
-        '<polygon class="s-accent" points="220,90 340,90 358,130 202,130"/>'+
-        '<text class="s-mono" x="280" y="116" text-anchor="middle">Arbeitsspeicher</text>'+
-        '<polygon class="s-box" points="202,132 358,132 378,172 182,172"/>'+
-        '<text class="s-mono" x="280" y="158" text-anchor="middle">SSD / NVMe</text>'+
-        '<polygon class="s-box" points="182,174 378,174 398,212 162,212"/>'+
-        '<text class="s-mono" x="280" y="198" text-anchor="middle">Festplatte / Band</text>'+
-        '<text class="s-lbl" x="416" y="38">schnell, klein, teuer</text>'+
-        '<text class="s-lbl" x="416" y="200">langsam, gross, billig</text>'+
-        '<line class="s-arrow2" x1="410" y1="50" x2="410" y2="188" marker-end="url(#spp)"/>'+
-        '<text class="s-lbl" x="20" y="80">fl&#252;chtig</text>'+
-        '<line class="s-line" x1="20" y1="90" x2="20" y2="128"/>'+
-        '<text class="s-lbl" x="20" y="168">nicht</text>'+
-        '<text class="s-lbl" x="20" y="184">fl&#252;chtig</text>'+
-        '<defs><marker id="spp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Die Trennlinie zwischen flüchtig und nichtflüchtig verläuft zwischen Arbeitsspeicher und SSD. Alles darüber ist nach dem Abschalten leer.</figcaption></figure>',
-      code:
-        "GROESSENORDNUNGEN ANSCHAULICH\n"+
-        "  Setzt man einen Registerzugriff mit 1 Sekunde an:\n\n"+
-        "     Register      1 s\n"+
-        "     L1-Cache      2 s\n"+
-        "     RAM          80 s          (gut eine Minute)\n"+
-        "     SSD      50.000 s          (etwa 14 Stunden)\n"+
-        "     Festplatte  10 Mio s       (etwa 4 Monate)\n\n"+
-        "  Deshalb ist der Umstieg von Festplatte auf SSD die\n"+
-        "  wirksamste Einzelmassnahme gegen einen langsamen Rechner -\n"+
-        "  wirksamer als mehr RAM oder eine schnellere CPU.\n\n"+
-        "FLUECHTIG ODER NICHT?\n"+
-        "  fluechtig     : Register, Cache, RAM\n"+
-        "  nichtfluechtig: ROM/Flash (Firmware), SSD, HDD, Band",
-      codeLang:'Speicherhierarchie',
-      tip:'Wenn eine Aufgabe fragt, wie ein langsamer Arbeitsplatzrechner beschleunigt werden kann, ist die Speicherpyramide die Begründungsgrundlage. Nenne nicht nur die Maßnahme, sondern die Größenordnung: Der Sprung von der Festplatte zur SSD verkürzt die Zugriffszeit um den Faktor zweihundert, mehr RAM hilft dagegen nur, wenn das System überhaupt auslagert. Erst messen, dann aufrüsten.',
-      quiz:[
-        {q:'Welcher Speicher ist nichtflüchtig?', options:['Arbeitsspeicher','Cache','SSD'], correct:2, explain:'Register, Cache und RAM verlieren ihren Inhalt beim Abschalten.'},
-        {q:'Warum genügen wenige Megabyte Cache für einen großen Leistungsgewinn?', options:['Weil Cache-Speicher besonders groß ist','Wegen des Lokalitätsprinzips — Programme greifen auf benachbarte und kürzlich benutzte Daten zu','Weil der Cache komprimiert'], correct:1, explain:'Dadurch liegt die Trefferquote in der Praxis über 90 Prozent.'},
-        {q:'Welche Aufrüstung beschleunigt einen Rechner mit Festplatte typischerweise am stärksten?', options:['Eine höhere CPU-Taktfrequenz','Der Austausch gegen eine SSD','Ein größerer Monitor'], correct:1, explain:'Die Zugriffszeit sinkt dabei um etwa den Faktor zweihundert.'}
-      ]
-    },
-    {
-      id:'m36-l4', title:'Zeichen und Zahlen im Rechner darstellen', minutes:10,
-      body:
-        '<p>Ein Rechner kennt nur Nullen und Einsen. Wie daraus Text und negative Zahlen werden, ist eine wiederkehrende Prüfungsfrage.</p>'+
-        '<p><strong>Zeichenkodierung</strong> — die Entwicklung in drei Schritten:</p>'+
-        '<table class="lesson-table"><tr><th>Kodierung</th><th>Umfang</th><th>Platzbedarf</th></tr>'+
-        '<tr><td><strong>ASCII</strong></td><td>7 Bit, 128 Zeichen — keine Umlaute</td><td>1 Byte je Zeichen</td></tr>'+
-        '<tr><td><strong>ISO 8859-1</strong> (Latin-1)</td><td>8 Bit, 256 Zeichen — westeuropäisch</td><td>1 Byte je Zeichen</td></tr>'+
-        '<tr><td><strong>Unicode / UTF-8</strong></td><td>über 150.000 Zeichen, alle Schriften</td><td><strong>1 bis 4 Byte</strong> je Zeichen</td></tr></table>'+
-        '<p><strong>UTF-8 ist variabel lang</strong> — das ist der entscheidende Punkt. Ein lateinischer Buchstabe belegt ein Byte, ein Umlaut zwei, ein Emoji vier. Daraus folgt: <strong>Zeichenanzahl und Byteanzahl sind nicht dasselbe.</strong> Genau hier entstehen die bekannten Darstellungsfehler, wenn eine Datei als Latin-1 gespeichert und als UTF-8 gelesen wird — aus einem <em>ü</em> werden dann zwei Zeichen.</p>'+
-        '<p><strong>Negative Ganzzahlen</strong> werden im <strong>Zweierkomplement</strong> dargestellt. Das Verfahren: alle Bits umdrehen, dann eins addieren. Das oberste Bit ist das <strong>Vorzeichenbit</strong> — ist es 1, ist die Zahl negativ. Der Vorteil: Die Addition funktioniert für positive und negative Zahlen mit derselben Schaltung, und es gibt nur <em>eine</em> Null.</p>'+
-        '<p>Ein vorzeichenbehaftetes Byte deckt damit den Bereich <strong>−128 bis +127</strong> ab, ein 32-Bit-Integer etwa −2,1 bis +2,1 Milliarden. Wird diese Grenze überschritten, entsteht ein <strong>Überlauf</strong>: Der Wert springt ins Negative um.</p>'+
-        '<p><strong>Kommazahlen</strong> werden als <strong>Gleitkommazahlen</strong> gespeichert (IEEE 754), aufgeteilt in Vorzeichen, Exponent und Mantisse. Weil die Mantisse endlich ist, lassen sich viele Dezimalbrüche nur annähern — deshalb ergibt <code>0,1 + 0,2</code> in fast jeder Sprache nicht exakt <code>0,3</code>. Für Geldbeträge verwendet man deshalb nie Gleitkomma, sondern Ganzzahlen in Cent oder einen Dezimaltyp.</p>',
-      code:
-        "ZWEIERKOMPLEMENT - Schritt fuer Schritt\n\n"+
-        "  Gesucht: -5 als 8-Bit-Zahl\n\n"+
-        "   1. +5 binaer          0000 0101\n"+
-        "   2. alle Bits kippen   1111 1010\n"+
-        "   3. eins addieren      1111 1011   = -5\n\n"+
-        "  Probe: 5 + (-5)\n"+
-        "     0000 0101\n"+
-        "   + 1111 1011\n"+
-        "   -----------\n"+
-        "    10000 0000  ->  das 9. Bit faellt weg, Ergebnis 0. Stimmt.\n\n"+
-        "WERTEBEREICHE\n"+
-        "   8 Bit  vorzeichenlos :        0 bis        255\n"+
-        "   8 Bit  mit Vorzeichen:     -128 bis       +127\n"+
-        "  16 Bit  mit Vorzeichen:  -32.768 bis    +32.767\n"+
-        "  32 Bit  mit Vorzeichen:  rund -2,1 bis +2,1 Mrd\n\n"+
-        "UTF-8 - Zeichen sind nicht gleich Byte\n"+
-        "  \"Gruss\"     5 Zeichen,  5 Byte\n"+
-        "  \"Gruesse\"   7 Zeichen,  7 Byte\n"+
-        "  \"Gruesse!\"  8 Zeichen,  8 Byte\n"+
-        "  ein Umlaut  1 Zeichen,  2 Byte\n"+
-        "  ein Emoji   1 Zeichen,  4 Byte",
-      codeLang:'Kodierung & Zahlen',
-      tip:'Die Frage „Warum wird ein Geldbetrag nicht als Gleitkommazahl gespeichert?" kommt regelmäßig und hat eine präzise Antwort: Dezimalbrüche wie 0,1 sind im Binärsystem periodisch und werden nur gerundet abgelegt. Bei vielen Additionen summieren sich die Rundungsfehler und die Bilanz stimmt nicht mehr auf den Cent. Die saubere Lösung sind Ganzzahlen in Cent oder ein Dezimaltyp.',
-      quiz:[
-        {q:'Wie viele Byte belegt ein Zeichen in UTF-8?', options:['Immer genau 1','Immer genau 2','Zwischen 1 und 4, je nach Zeichen'], correct:2, explain:'Deshalb sind Zeichenanzahl und Dateigröße nicht dasselbe.'},
-        {q:'Wie bildet man das Zweierkomplement einer Zahl?', options:['Alle Bits kippen und eins addieren','Das erste Bit auf 1 setzen','Die Zahl durch zwei teilen'], correct:0, explain:'Dadurch funktioniert die Addition für positive und negative Zahlen mit derselben Schaltung.'},
-        {q:'Welchen Wertebereich hat ein vorzeichenbehaftetes Byte?', options:['0 bis 255','−128 bis +127','−255 bis +255'], correct:1, explain:'Das oberste Bit dient als Vorzeichen, deshalb halbiert sich der positive Bereich.'}
-      ]
-    },
-    {
-      id:'m36-l5', title:'Logische Gatter und Schaltnetze', minutes:8,
-      body:
-        '<p>Unter dem Zweierkomplement und jeder Bedingung im Programm liegen <strong>logische Gatter</strong> — elektronische Bausteine, die aus Eingangssignalen ein Ausgangssignal berechnen. Die <strong>Wahrheitstabelle</strong> beschreibt sie vollständig.</p>'+
-        '<table class="lesson-table"><tr><th>A</th><th>B</th><th>UND</th><th>ODER</th><th>XOR</th><th>NAND</th></tr>'+
-        '<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>'+
-        '<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>'+
-        '<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>'+
-        '<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr></table>'+
-        '<p><strong>UND</strong> liefert nur bei zwei Einsen eine Eins, <strong>ODER</strong> bei mindestens einer, <strong>XOR</strong> (exklusives Oder) bei <em>genau</em> einer — es prüft also auf Ungleichheit. <strong>NICHT</strong> kehrt ein einzelnes Signal um. <strong>NAND</strong> und <strong>NOR</strong> sind die verneinten Formen; aus NAND allein lässt sich jede beliebige Schaltung aufbauen, weshalb es als universelles Gatter gilt.</p>'+
-        '<p><strong>Der Halbaddierer</strong> zeigt, wie aus Logik Arithmetik wird: Ein XOR liefert die Summenstelle, ein UND den Übertrag. Damit addiert man zwei einzelne Bits. Schaltet man mehrere <strong>Volladdierer</strong> hintereinander, die zusätzlich einen eingehenden Übertrag verarbeiten, entsteht das Rechenwerk, das ganze Zahlen addiert.</p>'+
-        '<p>Für die Prüfung reichen zwei Fähigkeiten: eine <strong>Wahrheitstabelle ausfüllen</strong> und einen zusammengesetzten Ausdruck auswerten. Bei drei Eingängen hat die Tabelle acht Zeilen — allgemein <code>2 hoch n</code>. Schreibe die Eingangskombinationen immer in derselben binären Zählreihenfolge auf, dann vergisst du keine.</p>'+
-        '<p>Für Vereinfachungen gelten die <strong>Gesetze von De Morgan</strong>: Die Verneinung einer UND-Verknüpfung ist die ODER-Verknüpfung der Verneinungen — und umgekehrt. Praktisch heißt das: Wer eine Bedingung verneint, dreht jeden Vergleich um <em>und</em> tauscht UND gegen ODER.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 170" role="img" aria-label="Halbaddierer aus einem XOR- und einem UND-Gatter">'+
-        '<text class="s-mono" x="24" y="52">A</text><text class="s-mono" x="24" y="110">B</text>'+
-        '<line class="s-line" x1="38" y1="46" x2="150" y2="46"/>'+
-        '<line class="s-line" x1="38" y1="104" x2="150" y2="104"/>'+
-        '<line class="s-line" x1="90" y1="46" x2="90" y2="122"/>'+
-        '<line class="s-line" x1="90" y1="122" x2="150" y2="122"/>'+
-        '<line class="s-line" x1="118" y1="104" x2="118" y2="64"/>'+
-        '<line class="s-line" x1="118" y1="64" x2="150" y2="64"/>'+
-        '<rect class="s-strong" x="150" y="28" width="96" height="52" rx="6"/>'+
-        '<text class="s-hd" x="198" y="60" text-anchor="middle">XOR</text>'+
-        '<rect class="s-accent" x="150" y="98" width="96" height="46" rx="6"/>'+
-        '<text class="s-hd" x="198" y="127" text-anchor="middle">UND</text>'+
-        '<line class="s-arrow" x1="246" y1="54" x2="330" y2="54" marker-end="url(#hap)"/>'+
-        '<line class="s-arrow" x1="246" y1="121" x2="330" y2="121" marker-end="url(#hap)"/>'+
-        '<text class="s-mono" x="340" y="58">Summe</text>'+
-        '<text class="s-mono" x="340" y="125">Uebertrag</text>'+
-        '<text class="s-lbl" x="430" y="46">1 + 1 = 0</text>'+
-        '<text class="s-lbl" x="430" y="64">Uebertrag 1</text>'+
-        '<text class="s-lbl" x="24" y="160">XOR liefert die Summenstelle, UND den &#220;bertrag &#8212; so wird aus Logik Arithmetik.</text>'+
-        '<defs><marker id="hap" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Der Halbaddierer ist die kleinste Recheneinheit. Mehrere Volladdierer hintereinander bilden das Rechenwerk der CPU.</figcaption></figure>',
-      code:
-        "WAHRHEITSTABELLE AUSFUELLEN - immer in binaerer Zaehlreihenfolge\n\n"+
-        "  Gesucht: Y = (A UND B) ODER (NICHT C)\n\n"+
-        "   A B C | A UND B | NICHT C | Y\n"+
-        "   ------+---------+---------+---\n"+
-        "   0 0 0 |    0    |    1    | 1\n"+
-        "   0 0 1 |    0    |    0    | 0\n"+
-        "   0 1 0 |    0    |    1    | 1\n"+
-        "   0 1 1 |    0    |    0    | 0\n"+
-        "   1 0 0 |    0    |    1    | 1\n"+
-        "   1 0 1 |    0    |    0    | 0\n"+
-        "   1 1 0 |    1    |    1    | 1\n"+
-        "   1 1 1 |    1    |    0    | 1\n\n"+
-        "  Drei Eingaenge -> 2^3 = 8 Zeilen. Hilfsspalten anlegen,\n"+
-        "  dann kann man sich nicht verrechnen.\n\n"+
-        "DE MORGAN - Verneinung richtig aufloesen\n"+
-        "  NICHT (A UND B)  =  (NICHT A) ODER (NICHT B)\n"+
-        "  NICHT (A ODER B) =  (NICHT A) UND  (NICHT B)\n\n"+
-        "  Im Code: NICHT (alter >= 18 UND hatAusweis)\n"+
-        "        =  alter < 18 ODER NICHT hatAusweis",
-      codeLang:'Schaltlogik',
-      tip:'De Morgan ist nicht nur Schaltungstheorie, sondern der häufigste Logikfehler in Fehlersuchaufgaben. Wer eine Bedingung verneint, muss zwei Dinge gleichzeitig tun: jeden Vergleich umdrehen und UND gegen ODER tauschen. Wird nur eins davon gemacht, läuft das Programm fehlerfrei und rechnet trotzdem falsch — genau die Sorte Fehler, die kein Compiler findet.',
-      quiz:[
-        {q:'Wann liefert ein XOR-Gatter eine 1?', options:['Wenn beide Eingänge 1 sind','Wenn genau ein Eingang 1 ist','Wenn beide Eingänge 0 sind'], correct:1, explain:'XOR prüft damit auf Ungleichheit der beiden Eingänge.'},
-        {q:'Wie viele Zeilen hat die Wahrheitstabelle bei vier Eingängen?', options:['8','16','4'], correct:1, explain:'2 hoch 4 gleich 16 — allgemein 2 hoch Anzahl der Eingänge.'},
-        {q:'Wie lautet NICHT (A UND B) nach De Morgan?', options:['(NICHT A) UND (NICHT B)','(NICHT A) ODER (NICHT B)','A ODER B'], correct:1, explain:'Verneinen heißt: jeden Teil umdrehen und die Verknüpfung tauschen.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m19', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Einheiten, Datenmengen & Übertragung', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m19-l1', title:'Bit, Byte und die beiden Präfixsysteme', minutes:9,
-      body:
-        '<p>Die Grundlage: <strong>1 Byte = 8 Bit</strong>. Datenmengen werden in Byte (Großbuchstabe <strong>B</strong>) angegeben, Übertragungsraten in Bit pro Sekunde (kleines <strong>b</strong>, also <strong>bit/s</strong> oder <strong>bps</strong>).</p>'+
-        '<p>Es gibt <strong>zwei Präfixsysteme</strong>, und die AP1 prüft den Unterschied:</p>'+
-        '<table class="lesson-table"><tr><th>Dezimal (SI)</th><th>Faktor</th><th>Binär (IEC)</th><th>Faktor</th></tr>'+
-        '<tr><td>1 kB (Kilobyte)</td><td>10³ = 1.000</td><td>1 KiB (Kibibyte)</td><td>2¹⁰ = 1.024</td></tr>'+
-        '<tr><td>1 MB</td><td>10⁶</td><td>1 MiB</td><td>2²⁰</td></tr>'+
-        '<tr><td>1 GB</td><td>10⁹</td><td>1 GiB</td><td>2³⁰</td></tr>'+
-        '<tr><td>1 TB</td><td>10¹²</td><td>1 TiB</td><td>2⁴⁰</td></tr></table>'+
-        '<p>Daher stammt der bekannte Effekt: Eine als „1 TB" verkaufte Festplatte zeigt Windows als etwa 931 GiB an – 10¹² geteilt durch 2³⁰ ergibt 931,3. Die Platte ist nicht kleiner, sie wird nur anders gezählt.</p>'+
-        '<p><strong>Kleine Einheiten:</strong> 1 s = 1.000 ms = 1.000.000 µs = 10⁹ ns.</p>',
-      code:
-        "Umrechnungskette - immer vollstaendig hinschreiben:\n\n"+
-        "  Bit -> Byte      : / 8\n"+
-        "  Byte -> KiB      : / 1024\n"+
-        "  KiB -> MiB       : / 1024\n"+
-        "  MiB -> GiB       : / 1024\n\n"+
-        "Beispiel: 4.194.304 Bit sind wie viel MiB?\n"+
-        "  4.194.304 / 8    = 524.288 Byte\n"+
-        "  524.288 / 1024   =     512 KiB\n"+
-        "  512 / 1024       =     0,5 MiB",
-      codeLang:'Einheitenumrechnung',
-      tip:'Schreibe bei Umrechnungsaufgaben jeden Zwischenschritt mit Einheit hin, auch wenn du im Kopf rechnen könntest. Die IHK vergibt Teilpunkte auf den Rechenweg – wer nur das Endergebnis notiert und sich um einen Faktor 8 vertut, bekommt null Punkte statt der Hälfte. Der Faktor 8 zwischen Bit und Byte ist dabei die mit Abstand häufigste Fehlerquelle.',
-      quiz:[
-        {q:'Wie viele Byte hat ein Kibibyte (KiB)?', options:['1.000','1.024','8.192'], correct:1, explain:'2^10 = 1.024 – das dezimale Kilobyte hat dagegen 1.000 Byte.'},
-        {q:'Wofür steht das kleine b in „100 Mbit/s"?', options:['Byte','Bit','Baud'], correct:1, explain:'Datenraten werden in Bit pro Sekunde angegeben, Datenmengen in Byte.'},
-        {q:'Wie viele Byte sind 1 MiB?', options:['1.000.000','1.048.576','1.024'], correct:1, explain:'2²⁰ — das dezimale MB hat dagegen genau eine Million Byte.'}
-      ]
-    },
-    {
-      id:'m19-l2', title:'Übertragungsdauer und Datenmengen berechnen', minutes:10,
-      body:
-        '<p>Die zentrale Formel:</p>'+
-        '<p><code>Zeit = Datenmenge / Übertragungsrate</code></p>'+
-        '<p>Der Haken liegt immer in den Einheiten: Die Datenmenge steht in <strong>Byte</strong>, die Rate in <strong>Bit/s</strong>. Also erst umrechnen, dann teilen.</p>'+
-        '<p><strong>Das Vorgehen in vier Schritten:</strong></p>'+
-        '<ol><li>Datenmenge in Bit umrechnen (× 8).</li>'+
-        '<li>Rate in Bit/s bringen.</li>'+
-        '<li>Teilen – das Ergebnis sind Sekunden.</li>'+
-        '<li>In Minuten oder Stunden umrechnen und <strong>sinnvoll runden</strong>.</li></ol>'+
-        '<p><strong>Speicherbedarf berechnen:</strong> Anzahl × Größe je Einheit. Bei Datenbanken: Datensatzgröße × Anzahl Datensätze, gegebenenfalls mal Aufbewahrungszeitraum.</p>'+
-        '<p><strong>Unkomprimierte Audio- oder Videodaten:</strong> <code>Abtastrate × Bittiefe × Kanäle × Dauer</code>.</p>',
-      code:
-        "Aufgabe: 4,5 GB Backup ueber eine 250-Mbit/s-Leitung.\n\n"+
-        "  1. 4,5 GB = 4,5 x 10^9 Byte = 4,5 x 10^9 x 8 Bit = 36 x 10^9 Bit\n"+
-        "  2. Rate = 250 x 10^6 Bit/s\n"+
-        "  3. t = 36.000.000.000 / 250.000.000 = 144 s\n"+
-        "  4. 144 s = 2 Minuten 24 Sekunden\n\n"+
-        "Audio: 3 Min Stereo, 44,1 kHz, 16 Bit, unkomprimiert\n"+
-        "  44.100 x 16 x 2 x 180 s = 254.016.000 Bit\n"+
-        "  / 8 = 31.752.000 Byte  ~ 31,75 MB  (bzw. ~30,3 MiB)",
-      codeLang:'Übertragungsrechnung',
-      tip:'Achte auf den Zusatz „bei 80 Prozent effektiver Auslastung", der in Prüfungsaufgaben häufig versteckt ist. Die Bruttorate wird nie vollständig erreicht, weil Protokoll-Overhead anfällt. Dann rechnest du zuerst 250 mal 0,8 gleich 200 Mbit/s und erst danach die Zeit. Wer den Satz überliest, bekommt ein zu optimistisches Ergebnis und verliert den Punkt.',
-      quiz:[
-        {q:'Wie lange dauert die Übertragung von 100 MB über 100 Mbit/s?', options:['1 Sekunde','8 Sekunden','12,5 Sekunden'], correct:1, explain:'100 MB = 800 Mbit, geteilt durch 100 Mbit/s = 8 s.'},
-        {q:'Was muss man vor dem Teilen immer prüfen?', options:['Die Uhrzeit','Ob Datenmenge und Rate dieselbe Basiseinheit haben (Bit vs. Byte)','Den Hersteller'], correct:1, explain:'Der Faktor 8 ist die häufigste Fehlerquelle.'},
-        {q:'Was ist bei „effektiver Auslastung 75 %" zuerst zu tun?', options:['Das Ergebnis durch 0,75 teilen','Die Datenrate vor der Division auf 75 % reduzieren','Nichts'], correct:1, explain:'Erst die Rate anpassen, dann die Zeit berechnen.'}
-      ]
-    },
-    {
-      id:'m19-l3', title:'Zahlensysteme und Codierung', minutes:9,
-      body:
-        '<p>Die AP1 verlangt sichere Umrechnung zwischen <strong>Dezimal, Binär und Hexadezimal</strong> – besonders im Kontext von IP-Adressen, Subnetzmasken und MAC-Adressen.</p>'+
-        '<p><strong>Binär → Dezimal:</strong> Stellenwerte von rechts addieren: 1, 2, 4, 8, 16, 32, 64, 128.</p>'+
-        '<p><strong>Dezimal → Binär:</strong> Von links mit 128 beginnen und fortlaufend fragen „passt die Zahl hinein?"</p>'+
-        '<p><strong>Hexadezimal:</strong> Ziffern 0–9 und A–F, wobei A = 10 bis F = 15. <strong>Je vier Binärstellen ergeben genau eine Hex-Ziffer</strong> – deshalb ist die Umrechnung zwischen Binär und Hex reine Blockbildung, ganz ohne Rechnung.</p>'+
-        '<p><strong>Zeichencodierung:</strong> <strong>ASCII</strong> nutzt 7 Bit für 128 Zeichen, erweitert 8 Bit für 256. <strong>Unicode</strong> umfasst alle Schriftzeichen der Welt; <strong>UTF-8</strong> kodiert sie variabel mit 1 bis 4 Byte und ist zu ASCII abwärtskompatibel. Deshalb belegen Umlaute in UTF-8 zwei Byte – eine beliebte Rechenaufgabe zum Speicherbedarf.</p>',
-      code:
-        "Dezimal 192 -> Binaer:\n"+
-        "  128 passt (Rest 64) -> 1\n"+
-        "   64 passt (Rest  0) -> 1\n"+
-        "   32,16,8,4,2,1 passen nicht -> 0\n"+
-        "  Ergebnis: 11000000\n\n"+
-        "Binaer -> Hex (Vierergruppen von rechts):\n"+
-        "  1100 0000\n"+
-        "   C    0     ->  0xC0\n\n"+
-        "Hex-Tabelle: 8=1000  9=1001  A=1010  B=1011\n"+
-        "             C=1100  D=1101  E=1110  F=1111",
-      codeLang:'Zahlensysteme',
-      tip:'Die Vierergruppierung ist der Trick, der Hexadezimal-Aufgaben in Sekunden löst: Vier Bit haben genau 16 mögliche Werte, also exakt eine Hex-Ziffer. Du musst nie über Dezimal gehen. Gruppiere von rechts, fülle links mit Nullen auf und übersetze jede Gruppe einzeln. Das gilt genauso rückwärts – jede Hex-Ziffer wird zu vier Bit.',
-      quiz:[
-        {q:'Welcher Dezimalwert entspricht dem Binärwert 11100000?', options:['192','224','240'], correct:1, explain:'128 + 64 + 32 = 224 – die Subnetzmaske /27.'},
-        {q:'Wie viele Binärstellen entsprechen einer Hex-Ziffer?', options:['2','4','8'], correct:1, explain:'Vier Bit ergeben 16 Werte, genau ein Hex-Zeichen.'},
-        {q:'Wie viele Zeichen kann ASCII mit 7 Bit darstellen?', options:['64','128','256'], correct:1, explain:'Erweitertes ASCII nutzt 8 Bit für 256 Zeichen.'}
-      ]
-    },
-    {
-      id:'m19-l4', title:'Ergonomie, Green IT und Energiekosten', minutes:9,
-      body:
-        '<p>Der Prüfungsbereich heißt „Einrichten eines IT-gestützten Arbeitsplatzes" – deshalb gehören Ergonomie und Umwelt fest dazu.</p>'+
-        '<p><strong>Ergonomie am Bildschirmarbeitsplatz</strong> (ArbStättV, Anhang 6):</p>'+
-        '<ul><li>Blickrichtung <strong>parallel</strong> zum Fenster – nicht davor (Blendung) und nicht mit dem Rücken dazu (Reflexionen).</li>'+
-        '<li>Sehabstand 50–80 cm, oberste Bildschirmzeile <strong>unterhalb</strong> der Augenhöhe, Blick leicht gesenkt.</li>'+
-        '<li>Beleuchtung mindestens 500 Lux am Arbeitsplatz, blendfrei.</li>'+
-        '<li>Ober- und Unterarm sowie Ober- und Unterschenkel etwa im 90-Grad-Winkel, Füße flach auf dem Boden.</li>'+
-        '<li>Tischhöhe rund 72 cm oder höhenverstellbar, Stuhl mit verstellbarer Rückenlehne.</li>'+
-        '<li>Arbeitsplatzfläche mindestens 8 bis 10 m² pro Person, Lärm unter 55 dB(A) bei Büroarbeit.</li>'+
-        '<li>Regelmäßige Pausen und Tätigkeitswechsel, Angebot einer arbeitsmedizinischen Vorsorge.</li></ul>'+
-        '<p><strong>Green IT:</strong> energieeffiziente Geräte (Energy Star, Blauer Engel, TCO), Server<strong>virtualisierung</strong> statt vieler physischer Maschinen, Thin Clients, Abwärmenutzung und freie Kühlung im Rechenzentrum, Standby-Abschaltung, längere Nutzungsdauer und fachgerechte Entsorgung nach <strong>ElektroG</strong>, Druckaufkommen senken.</p>'+
-        '<p><strong>Wirkungsgrad:</strong> <code>η = abgegebene Leistung / zugeführte Leistung × 100 %</code>. Im Rechenzentrum misst man zusätzlich den <strong>PUE</strong> = Gesamtenergie / IT-Energie; ideal wäre 1,0.</p>',
-      code:
-        "Stromkosten berechnen - Standardaufgabe:\n\n"+
-        "  20 PCs x 120 W x 9 h/Tag x 220 Arbeitstage\n"+
-        "  = 20 x 120 x 9 x 220 = 4.752.000 Wh = 4.752 kWh\n"+
-        "  bei 0,32 EUR/kWh  ->  1.520,64 EUR pro Jahr\n\n"+
-        "Ersparnis durch Abschaltung statt Standby (je 5 W, 15 h/Tag):\n"+
-        "  20 x 5 W x 15 h x 365 = 547.500 Wh = 547,5 kWh = 175,20 EUR/Jahr",
-      codeLang:'Energiekostenrechnung',
-      tip:'Bei Stromkostenaufgaben ist die Umrechnung von Wattstunden in Kilowattstunden der Punkt, an dem es schiefgeht – teile durch 1.000, bevor du mit dem Preis multiplizierst. Und achte auf den Zeitraum: Arbeitstage sind etwa 220 im Jahr, Kalendertage 365. Welcher Wert gilt, hängt davon ab, ob das Gerät nur während der Arbeitszeit läuft oder durchgehend.',
-      quiz:[
-        {q:'Wie sollte der Bildschirm zum Fenster stehen?', options:['Direkt davor','Mit dem Rücken zum Fenster','Blickrichtung parallel zum Fenster'], correct:2, explain:'Davor blendet das Licht, dahinter spiegelt es sich im Display.'},
-        {q:'Was misst der PUE-Wert eines Rechenzentrums?', options:['Die Rechenleistung','Gesamtenergie geteilt durch IT-Energie','Die CO2-Emission'], correct:1, explain:'Je näher an 1,0, desto effizienter die Infrastruktur.'},
-        {q:'Wie viel Beleuchtungsstärke fordert die Arbeitsstättenverordnung am Büroarbeitsplatz mindestens?', options:['200 Lux','500 Lux','1.000 Lux'], correct:1, explain:'Zusätzlich muss die Beleuchtung blendfrei sein.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m37', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Betriebssystem & Systemstart', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m37-l1', title:'Was ein Betriebssystem leistet', minutes:9,
-      body:
-        '<p>Ein <strong>Betriebssystem</strong> ist die Schicht zwischen Hardware und Anwendung. Es verwaltet die <strong>Betriebsmittel</strong> und stellt Programmen eine einheitliche Schnittstelle bereit — ohne es müsste jede Anwendung jede Festplatte und jede Grafikkarte selbst ansteuern.</p>'+
-        '<p><strong>Die fünf Kernaufgaben</strong>, eine klassische Nennfrage:</p>'+
-        '<table class="lesson-table"><tr><th>Aufgabe</th><th>Worum es geht</th></tr>'+
-        '<tr><td><strong>Prozessverwaltung</strong></td><td>Welches Programm bekommt wann die CPU?</td></tr>'+
-        '<tr><td><strong>Speicherverwaltung</strong></td><td>Wer darf welchen Bereich des RAM nutzen?</td></tr>'+
-        '<tr><td><strong>Dateiverwaltung</strong></td><td>Ordner, Dateien, Zugriffsrechte</td></tr>'+
-        '<tr><td><strong>Geräteverwaltung</strong></td><td>Ansteuerung über Treiber</td></tr>'+
-        '<tr><td><strong>Benutzerverwaltung</strong></td><td>Konten, Anmeldung, Berechtigungen</td></tr></table>'+
-        '<p>Den Kern bildet der <strong>Kernel</strong>. Er läuft im <strong>Kernel-Modus</strong> mit vollem Hardwarezugriff, während Anwendungen im <strong>Benutzermodus</strong> laufen und nur über definierte <strong>Systemaufrufe</strong> an die Hardware kommen. Diese Trennung ist ein Sicherheitsmerkmal: Ein abstürzendes Programm reißt nicht das ganze System mit, und keine Anwendung kann den Speicher einer anderen lesen.</p>'+
-        '<p><strong>Treiber</strong> sind die gerätespezifischen Übersetzer. Sie laufen typischerweise im Kernel-Modus — deshalb kann ein fehlerhafter Treiber tatsächlich das gesamte System zum Absturz bringen, während ein fehlerhaftes Anwendungsprogramm nur sich selbst beendet. Das ist die Antwort auf die Frage, warum Treiber aus vertrauenswürdiger Quelle stammen müssen und warum Windows unsignierte Treiber blockiert.</p>'+
-        '<p><strong>Multitasking</strong> bedeutet, dass mehrere Programme scheinbar gleichzeitig laufen. Bei einem einzelnen Kern ist das eine Illusion: Das Betriebssystem schaltet sehr schnell zwischen ihnen um. Echte Gleichzeitigkeit gibt es erst mit mehreren Kernen. Beim <strong>präemptiven</strong> Multitasking entzieht das Betriebssystem einem Programm die CPU notfalls gegen dessen Willen — nur so kann ein hängendes Programm das System nicht blockieren.</p>',
-      code:
-        "SCHICHTEN - von unten nach oben\n\n"+
-        "   +-------------------------------------------+\n"+
-        "   |  Anwendungen (Benutzermodus)              |\n"+
-        "   |  Browser, Office, Fachanwendung           |\n"+
-        "   +-------------------------------------------+\n"+
-        "   |  Systemaufrufe (API)                      |  <- die Grenze\n"+
-        "   +-------------------------------------------+\n"+
-        "   |  Kernel (Kernel-Modus)                    |\n"+
-        "   |  Prozesse, Speicher, Dateien, Geraete     |\n"+
-        "   +-------------------------------------------+\n"+
-        "   |  Treiber                                  |\n"+
-        "   +-------------------------------------------+\n"+
-        "   |  Hardware                                 |\n"+
-        "   +-------------------------------------------+\n\n"+
-        "WARUM DIE TRENNUNG WICHTIG IST\n"+
-        "  Anwendung stuerzt ab  -> nur dieser Prozess endet\n"+
-        "  Treiber stuerzt ab    -> Bluescreen / Kernel Panic\n\n"+
-        "  Deshalb: Treiber nur vom Hersteller, signiert,\n"+
-        "  und vor dem Rollout auf einem Testgeraet pruefen.",
-      codeLang:'Betriebssystem',
-      tip:'Bei der Frage „Nennen Sie Aufgaben eines Betriebssystems" zählen die fünf Verwaltungsaufgaben als Nennpunkte. Den Zusatzpunkt holst du mit der Abstraktionsleistung: Das Betriebssystem verbirgt die Unterschiede der Hardware hinter einer einheitlichen Schnittstelle, sodass dieselbe Anwendung auf verschiedenen Geräten läuft. Genau deshalb muss nicht jedes Programm eigene Treiber mitbringen.',
-      quiz:[
-        {q:'Warum kann ein fehlerhafter Treiber das ganze System zum Absturz bringen?', options:['Weil Treiber besonders groß sind','Weil Treiber im Kernel-Modus mit vollem Hardwarezugriff laufen','Weil Treiber nicht kompiliert werden'], correct:1, explain:'Anwendungen laufen im Benutzermodus und reißen beim Absturz nichts mit.'},
-        {q:'Was kennzeichnet präemptives Multitasking?', options:['Programme geben die CPU freiwillig ab','Das Betriebssystem entzieht die CPU notfalls gegen den Willen des Programms','Es läuft nur ein Programm gleichzeitig'], correct:1, explain:'Nur so kann ein hängendes Programm das System nicht blockieren.'},
-        {q:'Wie gelangt eine Anwendung an die Hardware?', options:['Direkt über den Adressbus','Über Systemaufrufe an den Kernel','Gar nicht'], correct:1, explain:'Die Trennung von Benutzer- und Kernel-Modus ist ein Sicherheitsmerkmal.'}
-      ]
-    },
-    {
-      id:'m37-l2', title:'Prozesse, Threads und Scheduling', minutes:9,
-      body:
-        '<p>Ein <strong>Programm</strong> ist eine Datei auf der Platte. Ein <strong>Prozess</strong> ist dieses Programm in Ausführung — mit eigenem Speicherbereich, eigenen offenen Dateien und eigener Prozess-ID. Startet man dasselbe Programm zweimal, entstehen <strong>zwei Prozesse</strong>.</p>'+
-        '<p>Ein <strong>Thread</strong> ist ein Ausführungsstrang <em>innerhalb</em> eines Prozesses. Alle Threads eines Prozesses teilen sich dessen Speicher — das macht den Austausch zwischen ihnen schnell, aber auch gefährlich: Greifen zwei Threads gleichzeitig auf dieselbe Variable zu, entsteht eine <strong>Race Condition</strong>. Dagegen hilft <strong>Synchronisation</strong>, etwa über eine Sperre.</p>'+
-        '<p><strong>Die Prozesszustände</strong> — das Modell, das als Diagramm abgefragt wird:</p>'+
-        '<ul><li><strong>bereit</strong> — der Prozess könnte rechnen und wartet auf die CPU,</li>'+
-        '<li><strong>rechnend</strong> — er hat die CPU gerade zugeteilt bekommen,</li>'+
-        '<li><strong>blockiert</strong> — er wartet auf etwas anderes, etwa eine Festplatte oder eine Netzwerkantwort.</li></ul>'+
-        '<p>Der Wechsel von <em>rechnend</em> nach <em>bereit</em> heißt <strong>Verdrängung</strong>, der umgekehrte Weg <strong>Zuteilung</strong>. Jeder Wechsel kostet Zeit, weil der Zustand gesichert und wiederhergestellt werden muss — den <strong>Kontextwechsel</strong>. Zu viele Prozesse bedeuten deshalb mehr Verwaltung und weniger Nutzarbeit.</p>'+
-        '<p><strong>Scheduling-Verfahren</strong>, die du unterscheiden solltest:</p>'+
-        '<table class="lesson-table"><tr><th>Verfahren</th><th>Regel</th><th>Schwäche</th></tr>'+
-        '<tr><td><strong>FCFS</strong> (First Come First Served)</td><td>in der Reihenfolge des Eintreffens</td><td>ein langer Job blockiert alle</td></tr>'+
-        '<tr><td><strong>SJF</strong> (Shortest Job First)</td><td>kürzester Auftrag zuerst</td><td>lange Jobs verhungern</td></tr>'+
-        '<tr><td><strong>Round Robin</strong></td><td>jeder bekommt eine feste Zeitscheibe</td><td>Wahl der Scheibengröße</td></tr>'+
-        '<tr><td><strong>Prioritätsgesteuert</strong></td><td>höhere Priorität zuerst</td><td>niedrige Priorität verhungert</td></tr></table>'+
-        '<p><strong>Round Robin</strong> ist das Verfahren der Wahl für interaktive Systeme, weil jeder Prozess garantiert regelmäßig drankommt und die Bedienung flüssig bleibt.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 200" role="img" aria-label="Zustandsdiagramm eines Prozesses mit bereit, rechnend und blockiert">'+
-        '<rect class="s-accent" x="30" y="24" width="120" height="46" rx="8"/>'+
-        '<text class="s-hd" x="90" y="52" text-anchor="middle">bereit</text>'+
-        '<rect class="s-strong" x="380" y="24" width="140" height="46" rx="8"/>'+
-        '<text class="s-hd" x="450" y="52" text-anchor="middle">rechnend</text>'+
-        '<rect class="s-warn" x="200" y="128" width="150" height="46" rx="8"/>'+
-        '<text class="s-hd" x="275" y="156" text-anchor="middle">blockiert</text>'+
-        '<path class="s-arrow" d="M150 38 L376 38" marker-end="url(#pzp)"/>'+
-        '<text class="s-lbl" x="263" y="30" text-anchor="middle">Zuteilung</text>'+
-        '<path class="s-arrow" d="M376 58 L154 58" marker-end="url(#pzp)"/>'+
-        '<text class="s-lbl" x="263" y="74" text-anchor="middle">Verdr&#228;ngung (Zeitscheibe abgelaufen)</text>'+
-        '<path class="s-arrow" d="M440 72 L350 126" marker-end="url(#pzp)"/>'+
-        '<text class="s-lbl" x="400" y="112">wartet auf E/A</text>'+
-        '<path class="s-arrow" d="M200 140 L100 74" marker-end="url(#pzp)"/>'+
-        '<text class="s-lbl" x="86" y="118">E/A fertig</text>'+
-        '<text class="s-lbl" x="30" y="194">Aus &#8222;blockiert&#8220; geht es nie direkt zu &#8222;rechnend&#8220; &#8212; der Prozess muss erst wieder in die Warteschlange.</text>'+
-        '<defs><marker id="pzp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Drei Zustände, vier Übergänge. Die fehlende Kante von blockiert nach rechnend ist eine beliebte Prüfungsfalle.</figcaption></figure>',
-      code:
-        "ROUND ROBIN DURCHRECHNEN - Zeitscheibe 4 ms\n\n"+
-        "  Prozess  Rechenzeit\n"+
-        "     A        10 ms\n"+
-        "     B         4 ms\n"+
-        "     C         6 ms\n\n"+
-        "  Ablauf:\n"+
-        "     0- 4  A  (bleiben 6)\n"+
-        "     4- 8  B  (fertig bei  8)\n"+
-        "     8-12  C  (bleiben 2)\n"+
-        "    12-16  A  (bleiben 2)\n"+
-        "    16-18  C  (fertig bei 18)\n"+
-        "    18-20  A  (fertig bei 20)\n\n"+
-        "  Durchlaufzeit = Ende - Ankunft (alle kamen bei 0 an)\n"+
-        "     A = 20   B = 8   C = 18\n"+
-        "     Mittel = (20 + 8 + 18) / 3 = 15,33 ms\n\n"+
-        "  Zum Vergleich FCFS in der Reihenfolge A, B, C:\n"+
-        "     A = 10   B = 14   C = 20   ->  Mittel 14,67 ms\n"+
-        "     Besser im Mittel, aber B wartet 10 ms auf seinen Start.",
-      codeLang:'Scheduling',
-      tip:'Wenn eine Aufgabe Scheduling-Verfahren vergleichen lässt, genügt die mittlere Durchlaufzeit nicht als Antwort. Nenne zusätzlich die Antwortzeit für kurze Aufträge: Round Robin hat oft die schlechtere Mittelwertbilanz und fühlt sich trotzdem besser an, weil kein Prozess lange warten muss. Für interaktive Arbeitsplätze zählt genau das, für einen Stapelverarbeitungsserver zählt der Durchsatz.',
-      quiz:[
-        {q:'Was unterscheidet einen Thread von einem Prozess?', options:['Threads haben einen eigenen Speicherbereich','Threads teilen sich den Speicher ihres Prozesses','Threads laufen ohne Betriebssystem'], correct:1, explain:'Das macht den Austausch schnell, erzeugt aber die Gefahr von Race Conditions.'},
-        {q:'Welcher Zustandsübergang existiert im Prozessmodell NICHT?', options:['rechnend nach bereit','blockiert direkt nach rechnend','bereit nach rechnend'], correct:1, explain:'Aus blockiert geht es zurück nach bereit — der Prozess reiht sich erst wieder ein.'},
-        {q:'Welches Scheduling-Verfahren eignet sich am besten für interaktive Arbeitsplätze?', options:['First Come First Served','Round Robin mit Zeitscheiben','Shortest Job First'], correct:1, explain:'Jeder Prozess kommt garantiert regelmäßig dran, die Bedienung bleibt flüssig.'}
-      ]
-    },
-    {
-      id:'m37-l3', title:'Speicherverwaltung und virtueller Speicher', minutes:9,
-      body:
-        '<p>Der Arbeitsspeicher ist begrenzt, die Summe aller laufenden Programme oft größer. Die Lösung heißt <strong>virtueller Speicher</strong>: Jeder Prozess bekommt einen eigenen, zusammenhängend wirkenden Adressraum, der in Wahrheit auf verstreute Bereiche des RAM und auf die Platte abgebildet wird.</p>'+
-        '<p>Die Abbildung erfolgt in Blöcken fester Größe, den <strong>Seiten</strong> (Pages, meist 4 KiB). Eine <strong>Seitentabelle</strong> übersetzt virtuelle in physische Adressen; die Hardware-Einheit dafür heißt <strong>MMU</strong> (Memory Management Unit).</p>'+
-        '<p><strong>Die drei Vorteile</strong>, nach denen gefragt wird:</p>'+
-        '<ol><li><strong>Mehr Speicher nutzbar, als physisch vorhanden ist</strong> — selten gebrauchte Seiten wandern in die <strong>Auslagerungsdatei</strong> (Windows: pagefile.sys; Linux: Swap-Partition).</li>'+
-        '<li><strong>Isolation</strong> — kein Prozess kann den Speicher eines anderen lesen, weil er dessen Adressen gar nicht abbilden kann. Das ist ein zentrales Sicherheitsmerkmal.</li>'+
-        '<li><strong>Kein Fragmentierungsproblem</strong> — der Speicher muss physisch nicht am Stück frei sein.</li></ol>'+
-        '<p>Wird eine Seite angefordert, die gerade nicht im RAM liegt, entsteht ein <strong>Seitenfehler</strong> (Page Fault): Das Betriebssystem holt sie von der Platte nach. Das ist normal — kritisch wird es erst, wenn es <em>ständig</em> passiert.</p>'+
-        '<p><strong>Thrashing</strong> ist genau dieser Zustand: Das System verbringt mehr Zeit mit Ein- und Auslagern als mit Rechnen. Symptom im Alltag — die Festplattenanzeige leuchtet dauerhaft, der Rechner reagiert kaum noch, die CPU-Auslastung ist aber niedrig. Die Ursache ist zu wenig Arbeitsspeicher, und die einzige wirksame Abhilfe ist mehr RAM oder weniger gleichzeitige Programme. Eine größere Auslagerungsdatei macht es <em>schlimmer</em>, nicht besser.</p>'+
-        '<p>Dieses Symptombild ist eine dankbare Prüfungsfrage: Hohe CPU-Last deutet auf ein rechenintensives Programm, hohe Plattenaktivität bei <em>niedriger</em> CPU-Last dagegen auf Speichermangel.</p>',
-      code:
-        "VIRTUELL GEGEN PHYSISCH\n\n"+
-        "  Prozess A sieht:   0x0000 ... 0xFFFF   (zusammenhaengend)\n"+
-        "  Tatsaechlich liegt er:\n"+
-        "     Seite 0  ->  RAM-Rahmen 42\n"+
-        "     Seite 1  ->  RAM-Rahmen  7\n"+
-        "     Seite 2  ->  ausgelagert auf die Platte\n"+
-        "     Seite 3  ->  RAM-Rahmen 19\n\n"+
-        "  Zugriff auf Seite 2 -> Seitenfehler -> nachladen\n\n"+
-        "DIAGNOSE AM SYMPTOM\n\n"+
-        "  CPU hoch, Platte ruhig    -> rechenintensives Programm\n"+
-        "  CPU niedrig, Platte dauernd aktiv, System zaeh\n"+
-        "                            -> Thrashing, zu wenig RAM\n"+
-        "  CPU niedrig, Platte ruhig, System zaeh\n"+
-        "                            -> Netz oder externer Dienst\n\n"+
-        "  Merke: Mehr Auslagerungsdatei behebt Thrashing NICHT.\n"+
-        "  Sie verlagert das Problem nur auf ein langsameres Medium.",
-      codeLang:'Speicherverwaltung',
-      tip:'Die Kombination „System ist zäh, Festplatte leuchtet dauerhaft, CPU-Auslastung aber niedrig" ist ein Standardfall in Störungsaufgaben. Die erwartete Antwort lautet Speichermangel mit Auslagerung, nicht ein defekter Datenträger. Und die Maßnahme ist Arbeitsspeicher aufrüsten — wer stattdessen die Auslagerungsdatei vergrößert, verschlimmert das Verhalten.',
-      quiz:[
-        {q:'Wozu dient der virtuelle Speicher unter anderem?', options:['Er beschleunigt die CPU','Er isoliert Prozesse voneinander','Er ersetzt den Cache'], correct:1, explain:'Zusätzlich macht er mehr Speicher nutzbar, als physisch vorhanden ist.'},
-        {q:'Was beschreibt Thrashing?', options:['Das System lagert mehr aus und ein, als es rechnet','Die CPU wird zu heiß','Die Festplatte ist defekt'], correct:0, explain:'Typisch ist hohe Plattenaktivität bei niedriger CPU-Auslastung.'},
-        {q:'Ein Rechner ist zäh, die Platte arbeitet dauernd, die CPU langweilt sich. Was hilft?', options:['Eine schnellere CPU','Mehr Arbeitsspeicher','Eine größere Auslagerungsdatei'], correct:1, explain:'Eine größere Auslagerungsdatei verlagert das Problem nur auf ein langsameres Medium.'}
-      ]
-    },
-    {
-      id:'m37-l4', title:'Vom Einschalten bis zum Desktop: BIOS, UEFI und Bootvorgang', minutes:9,
-      body:
-        '<p>Zwischen Einschaltknopf und Anmeldebildschirm liegt eine feste Kette von Schritten. Wer sie kennt, kann Startprobleme gezielt eingrenzen statt zu raten.</p>'+
-        '<ol><li><strong>Firmware startet</strong> — BIOS oder UEFI liegt in einem Flash-Baustein auf dem Mainboard und ist damit nichtflüchtig.</li>'+
-        '<li><strong>POST</strong> (Power-On Self-Test) — Selbsttest der Hardware: CPU, RAM, Grafik. Fehler werden hier über Signaltöne oder Codes gemeldet, <em>bevor</em> ein Bildschirmbild existiert.</li>'+
-        '<li><strong>Bootmedium wählen</strong> — laut Bootreihenfolge.</li>'+
-        '<li><strong>Bootloader laden</strong> — Windows Boot Manager oder GRUB.</li>'+
-        '<li><strong>Kernel laden</strong>, Treiber initialisieren.</li>'+
-        '<li><strong>Dienste starten</strong>, Anmeldung anzeigen.</li></ol>'+
-        '<p><strong>BIOS gegen UEFI</strong> — der Vergleich wird direkt abgefragt:</p>'+
-        '<table class="lesson-table"><tr><th></th><th>BIOS (alt)</th><th>UEFI (heute)</th></tr>'+
-        '<tr><td>Partitionsschema</td><td>MBR</td><td>GPT</td></tr>'+
-        '<tr><td>Maximale Startplatte</td><td><strong>2 TiB</strong></td><td>praktisch unbegrenzt</td></tr>'+
-        '<tr><td>Partitionen</td><td>4 primäre</td><td>128 und mehr</td></tr>'+
-        '<tr><td>Bedienung</td><td>Textmenü, Tastatur</td><td>Grafisch, Maus, Netzwerk</td></tr>'+
-        '<tr><td>Sicherheit</td><td>keine</td><td><strong>Secure Boot</strong></td></tr>'+
-        '<tr><td>Startzeit</td><td>langsamer</td><td>schneller</td></tr></table>'+
-        '<p><strong>Secure Boot</strong> lässt nur signierte Bootloader zu und verhindert damit, dass sich Schadsoftware vor das Betriebssystem schiebt. Das erklärt zugleich, warum ein Rechner nicht von einem selbst erstellten Linux-Stick startet, solange Secure Boot aktiv ist — eine typische Praxisfrage.</p>'+
-        '<p>Die Einstellungen werden im <strong>CMOS</strong> gespeichert und von einer <strong>Knopfzelle</strong> gepuffert. Ist sie leer, verliert der Rechner bei jedem Ausschalten Uhrzeit und Bootreihenfolge — das Symptom „falsches Datum nach jedem Start" hat genau diese Ursache und kostet keine zwei Euro Ersatzteil.</p>'+
-        '<figure class="fig"><svg viewBox="0 0 560 200" role="img" aria-label="Bootvorgang in sechs Schritten mit typischen Fehlerbildern">'+
-        '<rect class="s-accent" x="14" y="26" width="86" height="44" rx="5"/>'+
-        '<text class="s-mono" x="57" y="46" text-anchor="middle">Firmware</text>'+
-        '<text class="s-mono" x="57" y="62" text-anchor="middle">BIOS/UEFI</text>'+
-        '<rect class="s-strong" x="108" y="26" width="76" height="44" rx="5"/>'+
-        '<text class="s-mono" x="146" y="53" text-anchor="middle">POST</text>'+
-        '<rect class="s-accent" x="192" y="26" width="96" height="44" rx="5"/>'+
-        '<text class="s-mono" x="240" y="46" text-anchor="middle">Bootmedium</text>'+
-        '<text class="s-mono" x="240" y="62" text-anchor="middle">waehlen</text>'+
-        '<rect class="s-accent" x="296" y="26" width="86" height="44" rx="5"/>'+
-        '<text class="s-mono" x="339" y="53" text-anchor="middle">Bootloader</text>'+
-        '<rect class="s-accent" x="390" y="26" width="72" height="44" rx="5"/>'+
-        '<text class="s-mono" x="426" y="53" text-anchor="middle">Kernel</text>'+
-        '<rect class="s-ok" x="470" y="26" width="76" height="44" rx="5"/>'+
-        '<text class="s-mono" x="508" y="46" text-anchor="middle">Dienste</text>'+
-        '<text class="s-mono" x="508" y="62" text-anchor="middle">Anmeldung</text>'+
-        '<line class="s-arrow" x1="100" y1="48" x2="106" y2="48" marker-end="url(#btp)"/>'+
-        '<line class="s-arrow" x1="184" y1="48" x2="190" y2="48" marker-end="url(#btp)"/>'+
-        '<line class="s-arrow" x1="288" y1="48" x2="294" y2="48" marker-end="url(#btp)"/>'+
-        '<line class="s-arrow" x1="382" y1="48" x2="388" y2="48" marker-end="url(#btp)"/>'+
-        '<line class="s-arrow" x1="462" y1="48" x2="468" y2="48" marker-end="url(#btp)"/>'+
-        '<text class="s-hd" x="14" y="106">Wo bleibt der Start h&#228;ngen?</text>'+
-        '<text class="s-lbl" x="14" y="128">Signalt&#246;ne, kein Bild &#8594; POST: RAM oder Grafik</text>'+
-        '<text class="s-lbl" x="14" y="148">&#8222;No bootable device&#8220; &#8594; Bootreihenfolge oder Datentr&#228;ger</text>'+
-        '<text class="s-lbl" x="14" y="168">Falsches Datum nach jedem Start &#8594; CMOS-Knopfzelle leer</text>'+
-        '<text class="s-lbl" x="14" y="188">Stick startet nicht &#8594; Secure Boot aktiv</text>'+
-        '<defs><marker id="btp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">'+
-        '<path class="s-head2" d="M0 0 L9 4.5 L0 9 z"/></marker></defs>'+
-        '</svg><figcaption>Jedes Fehlerbild zeigt auf eine bestimmte Stufe der Kette. Damit lässt sich ein Startproblem eingrenzen, ohne Teile zu tauschen.</figcaption></figure>',
-      code:
-        "STOERUNGSANALYSE AM BOOTVORGANG\n\n"+
-        "  Symptom                        wahrscheinliche Stufe\n"+
-        "  -----------------------------  ----------------------------\n"+
-        "  Kein Luefter, keine LED        Netzteil oder Stromversorgung\n"+
-        "  Luefter laeuft, kein Bild,\n"+
-        "  Signaltoene                    POST: RAM oder Grafikkarte\n"+
-        "  \"No bootable device found\"     Bootreihenfolge, Datentraeger\n"+
-        "                                 nicht erkannt oder Kabel lose\n"+
-        "  Bootloader-Menue, dann Fehler  Betriebssystem oder Treiber\n"+
-        "  Anmeldung erscheint, dann\n"+
-        "  Absturz                        Dienst oder Treiber\n"+
-        "  Uhr steht nach jedem Aus       CMOS-Knopfzelle leer\n\n"+
-        "VORGEHEN\n"+
-        "  Immer von unten nach oben pruefen - genau wie beim\n"+
-        "  OSI-Modell. Erst Strom, dann Hardware, dann Datentraeger,\n"+
-        "  dann Betriebssystem. Nie mit dem Tauschen anfangen.",
-      codeLang:'Bootvorgang',
-      tip:'Die Parallele zur Netzwerkdiagnose ist kein Zufall und lohnt sich zu erwähnen: Auch beim Startvorgang arbeitet man sich von unten nach oben durch, weil jede Stufe auf der darunter aufbaut. Wer bei „kein Bild" sofort die Grafikkarte tauscht, hat die Stromversorgung und den POST übersprungen. Erst eingrenzen, dann handeln — das ist die Antwort, die Punkte bringt.',
-      quiz:[
-        {q:'Welche Aufgabe hat der POST?', options:['Er lädt das Betriebssystem','Er testet die Hardware vor dem Start','Er startet die Netzwerkdienste'], correct:1, explain:'Fehler werden über Signaltöne gemeldet, bevor überhaupt ein Bild existiert.'},
-        {q:'Welches Partitionsschema gehört zu UEFI?', options:['MBR','GPT','FAT32'], correct:1, explain:'MBR gehört zum alten BIOS und begrenzt die Startplatte auf 2 TiB.'},
-        {q:'Ein Rechner verliert nach jedem Ausschalten Uhrzeit und Bootreihenfolge. Was ist die Ursache?', options:['Die Festplatte ist defekt','Die CMOS-Knopfzelle ist leer','Das Netzteil ist zu schwach'], correct:1, explain:'Sie puffert die Firmware-Einstellungen und kostet als Ersatzteil kaum etwas.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m20', part:6, partTitle:'Projektmanagement & Wirtschaft', title:'Beschaffung & Kostenrechnung', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m20-l1', title:'Der Beschaffungsprozess und die ABC-Analyse', minutes:9,
-      body:
-        '<p>Wenn eine Aufgabe lautet „Beschreiben Sie die Schritte von der Bedarfsermittlung bis zur Bezahlung", ist immer dieselbe Kette gemeint:</p>'+
-        '<ol><li><strong>Bedarfsermittlung</strong> – was wird gebraucht, in welcher Menge, bis wann?</li>'+
-        '<li><strong>Bezugsquellenermittlung</strong> – welche Anbieter kommen infrage?</li>'+
-        '<li><strong>Anfrage</strong> – unverbindlich, an mehrere Anbieter.</li>'+
-        '<li><strong>Angebotsvergleich</strong> – quantitativ über den Bezugspreis, qualitativ über die Nutzwertanalyse.</li>'+
-        '<li><strong>Bestellung</strong> – die verbindliche Willenserklärung des Käufers.</li>'+
-        '<li><strong>Wareneingang</strong> – Prüfung gegen Lieferschein und Bestellung, Mängelrüge bei Abweichung.</li>'+
-        '<li><strong>Rechnungsprüfung</strong> – sachlich (wurde geliefert?) und rechnerisch (stimmen die Zahlen?).</li>'+
-        '<li><strong>Zahlung</strong> – unter Ausnutzung des Skontos, wenn wirtschaftlich sinnvoll.</li></ol>'+
-        '<p>Die <strong>ABC-Analyse</strong> ordnet Beschaffungsgüter nach ihrem Wertanteil, damit die Aufmerksamkeit dorthin fließt, wo Geld liegt:</p>'+
-        '<table class="lesson-table"><tr><th>Klasse</th><th>Wertanteil</th><th>Mengenanteil</th><th>Behandlung</th></tr>'+
-        '<tr><td>A</td><td>ca. 70–80 %</td><td>ca. 10–20 %</td><td>sorgfältig planen, Angebote vergleichen, verhandeln</td></tr>'+
-        '<tr><td>B</td><td>ca. 15–20 %</td><td>ca. 30 %</td><td>normale Beschaffung</td></tr>'+
-        '<tr><td>C</td><td>ca. 5–10 %</td><td>ca. 50–70 %</td><td>vereinfacht, Sammelbestellung, Rahmenvertrag</td></tr></table>',
-      code:
-        "ABC-Analyse - so rechnest du sie:\n\n"+
-        "  1. Je Position:  Jahresverbrauch x Preis = Jahreswert\n"+
-        "  2. Absteigend nach Jahreswert sortieren\n"+
-        "  3. Prozentanteil am Gesamtwert berechnen\n"+
-        "  4. KUMULIEREN (aufsummieren)\n"+
-        "  5. Klassengrenzen ziehen: bis 80 % = A, bis 95 % = B, Rest = C\n\n"+
-        "Position   Jahreswert   Anteil   kumuliert   Klasse\n"+
-        "  Server      42.000     60,0 %     60,0 %      A\n"+
-        "  Notebooks   14.000     20,0 %     80,0 %      A\n"+
-        "  Monitore     8.400     12,0 %     92,0 %      B\n"+
-        "  Software     3.500      5,0 %     97,0 %      C\n"+
-        "  Zubehoer     2.100      3,0 %    100,0 %      C\n"+
-        "  --------------------------------\n"+
-        "  Gesamt      70.000    100,0 %",
-      codeLang:'ABC-Analyse',
-      tip:'Der Schritt, der in Prüfungen am häufigsten vergessen wird, ist das Kumulieren. Ohne die aufsummierte Spalte lässt sich die Klassengrenze gar nicht ziehen, und die Aufgabe bleibt unvollständig. Und merke dir die Kernaussage hinter der Methode: Wenige A-Güter binden den Großteil des Kapitals, deshalb lohnt sich dort Verhandlungsaufwand — bei C-Gütern kostet die Beschaffung schnell mehr als das Gut selbst.',
-      quiz:[
-        {q:'Was kennzeichnet ein A-Gut?', options:['Hoher Mengenanteil, geringer Wertanteil','Hoher Wertanteil, geringer Mengenanteil','Beides gering'], correct:1, explain:'Wenige Positionen binden den Großteil des Beschaffungswerts.'},
-        {q:'Welcher Rechenschritt entscheidet über die Klassengrenzen?', options:['Die Sortierung','Die kumulierte Prozentspalte','Der Einzelpreis'], correct:1, explain:'Erst die Aufsummierung zeigt, wo die 80-Prozent-Grenze liegt.'},
-        {q:'Wie werden C-Güter üblicherweise beschafft?', options:['Mit intensiver Verhandlung','Vereinfacht über Sammelbestellung oder Rahmenvertrag','Gar nicht'], correct:1, explain:'Bei C-Gütern kostet der Beschaffungsvorgang oft mehr als das Gut selbst.'}
-      ]
-    },
-    {
-      id:'m20-l2', title:'Fixkosten, variable Kosten und Break-Even', minutes:10,
-      body:
-        '<p>Die Unterscheidung der Kostenarten ist die Grundlage jeder Wirtschaftlichkeitsrechnung:</p>'+
-        '<ul><li><strong>Fixkosten (K<sub>f</sub>)</strong> fallen unabhängig von der Menge an: Miete, Abschreibung, Grundgebühr, Gehälter, Lizenz-Grundpaket.</li>'+
-        '<li><strong>Variable Kosten (k<sub>v</sub> je Stück)</strong> steigen mit der Menge: Material, Strom pro Gerät, Lizenz pro Benutzer, Papier und Toner je Seite.</li></ul>'+
-        '<p><strong>Die Formeln:</strong></p>'+
-        '<table class="lesson-table"><tr><th>Größe</th><th>Formel</th></tr>'+
-        '<tr><td>Gesamtkosten</td><td>K = K<sub>f</sub> + k<sub>v</sub> · x</td></tr>'+
-        '<tr><td>Stückkosten</td><td>k = K / x</td></tr>'+
-        '<tr><td>Deckungsbeitrag je Stück</td><td>db = Preis − k<sub>v</sub></td></tr>'+
-        '<tr><td>Break-Even-Menge</td><td>x = K<sub>f</sub> / (Preis − k<sub>v</sub>)</td></tr></table>'+
-        '<p>Der <strong>Deckungsbeitrag</strong> ist der Betrag, der nach Abzug der variablen Kosten übrig bleibt, um die Fixkosten zu decken. Erst wenn die Summe aller Deckungsbeiträge die Fixkosten erreicht, ist der <strong>Break-Even-Point</strong> überschritten und es entsteht Gewinn.</p>'+
-        '<p>Bei einem <strong>Verfahrensvergleich</strong> (zwei Varianten mit unterschiedlichen Fix- und variablen Kosten) suchst du die <strong>kritische Menge</strong>, bei der beide gleich teuer sind — darunter lohnt die Variante mit niedrigen Fixkosten, darüber die mit niedrigen variablen Kosten.</p>',
-      code:
-        "BREAK-EVEN\n"+
-        "  Fixkosten 24.000 EUR, Verkaufspreis 80 EUR, variable Kosten 50 EUR\n"+
-        "  db = 80 - 50 = 30 EUR je Stueck\n"+
-        "  x  = 24.000 / 30 = 800 Stueck\n"+
-        "  Ab dem 801. Stueck entsteht Gewinn.\n\n"+
-        "VERFAHRENSVERGLEICH (kritische Menge)\n"+
-        "  Variante A (Eigenbetrieb): Kf = 12.000, kv = 4 EUR/Vorgang\n"+
-        "  Variante B (Dienstleister): Kf =  2.000, kv = 9 EUR/Vorgang\n\n"+
-        "  Gleichsetzen:  12.000 + 4x = 2.000 + 9x\n"+
-        "                 10.000      = 5x\n"+
-        "                 x           = 2.000 Vorgaenge\n\n"+
-        "  Bis 2.000 Vorgaenge ist B guenstiger, darueber A.",
-      codeLang:'Kostenrechnung',
-      tip:'Beim Verfahrensvergleich lautet die Antwort nie nur die Zahl. Gefragt ist immer auch die Empfehlung mit Richtung — welche Variante unterhalb und welche oberhalb der kritischen Menge günstiger ist. Prüfe das mit einer Beispielmenge gegen: Setze 1.000 und 3.000 ein, dann siehst du sofort, welche Seite zu welcher Variante gehört, und verwechselst die Richtung nicht.',
-      quiz:[
-        {q:'Wie berechnet man den Deckungsbeitrag je Stück?', options:['Preis minus Gesamtkosten','Preis minus variable Stückkosten','Preis minus Fixkosten'], correct:1, explain:'Der Deckungsbeitrag deckt anschließend die Fixkosten.'},
-        {q:'Fixkosten 15.000 €, db 25 € je Stück. Wo liegt der Break-Even?', options:['375 Stück','600 Stück','1.500 Stück'], correct:1, explain:'15.000 / 25 = 600 Stück.'},
-        {q:'Welche Kosten steigen mit der produzierten Menge?', options:['Fixkosten','Variable Kosten','Beide gleichermaßen'], correct:1, explain:'Die Fixkosten bleiben unabhängig von der Menge konstant.'}
-      ]
-    },
-    {
-      id:'m20-l3', title:'Abschreibung, TCO und Kostenvergleich', minutes:9,
-      body:
-        '<p>Ein Gerät wird nicht im Anschaffungsjahr voll als Kosten verbucht, sondern über seine <strong>Nutzungsdauer</strong> verteilt. Das ist die <strong>Abschreibung (AfA)</strong>.</p>'+
-        '<p><strong>Lineare Abschreibung</strong> – der Standard in der AP1:</p>'+
-        '<p><code>jährliche AfA = (Anschaffungswert − Restwert) / Nutzungsdauer</code></p>'+
-        '<p>Der <strong>Buchwert</strong> sinkt jedes Jahr um diesen Betrag. Die betriebsgewöhnliche Nutzungsdauer steht in den AfA-Tabellen; für PCs und Notebooks sind es nach aktueller Verwaltungsauffassung <strong>drei Jahre</strong>, oft wird auch die Sofortabschreibung genutzt.</p>'+
-        '<p><strong>TCO – Total Cost of Ownership.</strong> Der Anschaffungspreis ist nur ein Teil der Wahrheit. In den Vergleich gehören:</p>'+
-        '<ul><li><strong>Einmalig:</strong> Anschaffung, Installation, Migration, Schulung.</li>'+
-        '<li><strong>Laufend:</strong> Lizenzen, Wartung, Support, Strom, Verbrauchsmaterial, Administrationsaufwand.</li>'+
-        '<li><strong>Am Ende:</strong> Entsorgung oder Restwert.</li></ul>'+
-        '<p>Genau deshalb kann das teurere Gerät das günstigere sein — der Klassiker ist der Drucker mit niedrigem Kaufpreis und hohem Seitenpreis.</p>',
-      code:
-        "ABSCHREIBUNG\n"+
-        "  Server 9.000 EUR, Nutzungsdauer 5 Jahre, Restwert 0\n"+
-        "  AfA = 9.000 / 5 = 1.800 EUR pro Jahr\n\n"+
-        "  Jahr 1: Buchwert 7.200   Jahr 3: 3.600   Jahr 5: 0\n\n"+
-        "TCO-VERGLEICH ZWEIER DRUCKER ueber 4 Jahre, 30.000 Seiten/Jahr\n\n"+
-        "                        Tinte        Laser\n"+
-        "  Anschaffung            120 EUR     680 EUR\n"+
-        "  Seitenpreis           0,09 EUR    0,021 EUR\n"+
-        "  Seiten gesamt        120.000     120.000\n"+
-        "  Verbrauchsmaterial  10.800 EUR   2.520 EUR\n"+
-        "  Strom (ca.)             40 EUR     110 EUR\n"+
-        "  ----------------------------------------------\n"+
-        "  TCO 4 Jahre         10.960 EUR   3.310 EUR\n\n"+
-        "  Der Laserdrucker kostet in der Anschaffung das 5,7-Fache,\n"+
-        "  ueber die Nutzungsdauer aber nur ein Drittel.",
-      codeLang:'TCO-Rechnung',
-      tip:'Wenn eine Aufgabe zwei Geräte vergleicht und einen Seitenpreis oder Verbrauch je Einheit nennt, ist das der Hinweis auf eine TCO-Rechnung — nicht auf einen Preisvergleich. Rechne dann immer über den genannten Zeitraum und die genannte Menge, und schreibe den Betrachtungszeitraum in die Antwort. Ohne ihn ist die Aussage „Gerät B ist günstiger" wertlos, weil sie erst ab einer bestimmten Nutzungsdauer stimmt.',
-      quiz:[
-        {q:'Ein Gerät kostet 12.000 €, Nutzungsdauer 4 Jahre, Restwert 0. Wie hoch ist die lineare AfA?',options:['4.000 €','3.000 €','12.000 €'], correct:1, explain:'12.000 / 4 = 3.000 € pro Jahr.'},
-        {q:'Was gehört NICHT in eine TCO-Betrachtung?', options:['Schulungskosten','Der Listenpreis eines Konkurrenzprodukts','Die Entsorgungskosten'], correct:1, explain:'TCO betrachtet alle Kosten des eigenen Geräts über den Lebenszyklus.'},
-        {q:'Warum kann der teurere Drucker der günstigere sein?', options:['Er ist schneller','Weil über die Nutzungsdauer der Seitenpreis die Gesamtkosten dominiert','Er hat mehr Garantie'], correct:1, explain:'Genau das ist der Kern einer TCO-Betrachtung.'}
-      ]
-    },
-    {
-      id:'m20-l4', title:'Kennzahlen: Produktivität, Wirtschaftlichkeit, Rentabilität', minutes:8,
-      body:
-        '<p>Drei Kennzahlen werden gern verwechselt, obwohl sie ganz unterschiedliche Fragen beantworten:</p>'+
-        '<table class="lesson-table"><tr><th>Kennzahl</th><th>Formel</th><th>Frage</th></tr>'+
-        '<tr><td><strong>Produktivität</strong></td><td>Ausbringungsmenge / Einsatzmenge</td><td>Wie viel kommt je Einheit heraus? (mengenmäßig)</td></tr>'+
-        '<tr><td><strong>Wirtschaftlichkeit</strong></td><td>Ertrag / Aufwand</td><td>Lohnt es sich? (wertmäßig, > 1 ist gut)</td></tr>'+
-        '<tr><td><strong>Rentabilität</strong></td><td>Gewinn / Kapital × 100 %</td><td>Wie verzinst sich das eingesetzte Kapital?</td></tr>'+
-        '<tr><td><strong>ROI</strong></td><td>Gewinn / Investition × 100 %</td><td>Was bringt genau diese Investition?</td></tr></table>'+
-        '<p>Der Unterschied in einem Satz: <strong>Produktivität ist mengenmäßig, Wirtschaftlichkeit wertmäßig, Rentabilität bezieht sich auf das Kapital.</strong></p>'+
-        '<p>Weitere Kennzahlen, die in AP1-Aufgaben auftauchen: <strong>Auslastungsgrad</strong> (Ist-Leistung / Soll-Leistung), <strong>Fehlerquote</strong>, <strong>Erstlösungsquote</strong> im Support und die <strong>Verfügbarkeit</strong> aus Modul 15.</p>',
-      code:
-        "Ein Support-Team loest mit 4 Mitarbeitern 640 Tickets im Monat.\n"+
-        "Personalkosten 18.000 EUR, verrechneter Ertrag 27.000 EUR.\n\n"+
-        "  Produktivitaet    = 640 / 4          = 160 Tickets je Mitarbeiter\n"+
-        "  Wirtschaftlichkeit= 27.000 / 18.000  = 1,5   (> 1 -> wirtschaftlich)\n"+
-        "  Gewinn            = 27.000 - 18.000  = 9.000 EUR\n\n"+
-        "Eine Automatisierung kostet 30.000 EUR und spart 9.000 EUR im Jahr:\n"+
-        "  ROI (Jahr 1)      = 9.000 / 30.000 x 100 = 30 %\n"+
-        "  Amortisation      = 30.000 / 9.000       = 3,3 Jahre",
-      codeLang:'Kennzahlen',
-      tip:'Achte auf die Einheiten in der Aufgabenstellung, denn sie verraten die gesuchte Kennzahl. Stehen dort Stückzahlen oder Tickets, ist Produktivität gemeint. Stehen dort Euro auf beiden Seiten, ist es Wirtschaftlichkeit — und das Ergebnis ist dimensionslos, ein Wert über 1 bedeutet wirtschaftlich. Steht ein Kapital- oder Investitionsbetrag im Nenner, ist es Rentabilität oder ROI, und die Antwort gehört in Prozent.',
-      quiz:[
-        {q:'Ertrag 44.000 €, Aufwand 40.000 €. Wie hoch ist die Wirtschaftlichkeit?', options:['1,1','4.000','10 %'], correct:0, explain:'44.000 / 40.000 = 1,1 – ein Wert über 1 bedeutet wirtschaftlich.'},
-        {q:'Welche Kennzahl ist rein mengenmäßig?', options:['Rentabilität','Produktivität','Wirtschaftlichkeit'], correct:1, explain:'Ausbringungsmenge geteilt durch Einsatzmenge – ohne Geldbeträge.'},
-        {q:'Eine Wirtschaftlichkeit von 0,9 bedeutet was?', options:['Sehr gut','Unwirtschaftlich — der Aufwand übersteigt den Ertrag','90 % Gewinn'], correct:1, explain:'Erst ein Wert über 1 bedeutet wirtschaftliches Arbeiten.'}
-      ]
-    }
-  ]
-});
-MODULES.push({
-  id:'m21', part:7, partTitle:'IT-Grundlagen, Hardware & Arbeitsplatz', title:'Hardware-Komponenten', relevanz:'hoch',
-  lessons:[
-    {
-      id:'m21-l1', title:'CPU, Arbeitsspeicher und Mainboard', minutes:10,
-      body:
-        '<p>Bei „Begründen Sie die Auswahl der Komponenten" musst du Kennwerte nennen <em>und</em> sagen, warum sie zum Einsatzzweck passen.</p>'+
-        '<p><strong>Prozessor (CPU):</strong></p>'+
-        '<ul><li><strong>Kerne</strong> arbeiten echt parallel. <strong>Threads</strong> sind logische Kerne durch Hyperthreading — sie bringen etwa 20 bis 30 Prozent, nicht das Doppelte.</li>'+
-        '<li><strong>Taktfrequenz</strong> in GHz zählt bei Programmen, die nur einen Kern nutzen. Viele Kerne helfen bei Virtualisierung, Kompilieren, Rendering und Datenbanken.</li>'+
-        '<li><strong>Cache</strong> (L1 bis L3) ist schneller Zwischenspeicher direkt in der CPU und puffert den langsamen RAM-Zugriff ab.</li>'+
-        '<li><strong>TDP</strong> ist die abzuführende Verlustleistung — relevant für Kühlung und Netzteil.</li></ul>'+
-        '<p><strong>Arbeitsspeicher (RAM):</strong> flüchtig, verliert den Inhalt beim Ausschalten. Typen <strong>DDR4</strong> und <strong>DDR5</strong> sind zueinander <em>nicht</em> kompatibel — unterschiedliche Kerbe und Spannung. <strong>Dual Channel</strong> verdoppelt die Anbindung, deshalb zwei gleiche Riegel statt einem großen. <strong>ECC</strong>-RAM erkennt und korrigiert Bitfehler und gehört in Server.</p>'+
-        '<p><strong>Mainboard:</strong> Der <strong>Sockel</strong> muss zur CPU passen, der <strong>Chipsatz</strong> bestimmt die verfügbaren Funktionen. Formfaktoren: ATX (voll), µATX (kompakt), Mini-ITX (sehr klein).</p>',
-      code:
-        "Typische Begruendung in der Pruefung:\n\n"+
-        "  Einsatz: Entwickler-Arbeitsplatz mit lokalen VMs und Container\n\n"+
-        "  CPU  8 Kerne / 16 Threads  weil mehrere VMs gleichzeitig laufen\n"+
-        "                             und Kompiliervorgaenge parallelisieren\n"+
-        "  RAM  32 GB DDR5, 2 x 16 GB weil jede VM eigenen Speicher belegt;\n"+
-        "                             zwei Riegel wegen Dual Channel\n"+
-        "  SSD  1 TB NVMe             weil Build- und Datenbankzugriffe\n"+
-        "                             stark von der Zugriffszeit profitieren\n"+
-        "  GPU  integriert            weil keine 3D-Last anfaellt - spart\n"+
-        "                             Anschaffung und Stromkosten",
-      codeLang:'Komponentenauswahl',
-      tip:'Die Formulierung entscheidet über den Punkt. „32 GB RAM" allein ist eine Angabe, keine Begründung. „32 GB RAM, weil pro virtueller Maschine 8 GB reserviert werden und drei VMs parallel laufen sollen" ist eine. Nimm dir für jede Komponente den Satzbau vor: Kennwert, dann „weil", dann der konkrete Bezug zum geschilderten Arbeitsplatz.',
-      quiz:[
-        {q:'Warum baut man zwei RAM-Riegel statt eines doppelt so großen ein?', options:['Weil es billiger ist','Wegen Dual Channel – die Speicheranbindung verdoppelt sich','Weil ein Riegel nicht erlaubt ist'], correct:1, explain:'Zwei identische Riegel in den richtigen Bänken nutzen beide Speicherkanäle.'},
-        {q:'Wofür wird ECC-RAM eingesetzt?', options:['Für Gaming-PCs','In Servern, weil er Bitfehler erkennt und korrigiert','Für Notebooks, weil er Strom spart'], correct:1, explain:'Datenintegrität im Dauerbetrieb ist im Server wichtiger als der Aufpreis.'},
-        {q:'Was bewirkt Dual Channel beim Arbeitsspeicher?', options:['Doppelte Kapazität','Verdoppelte Speicheranbindung durch zwei parallele Kanäle','Weniger Stromverbrauch'], correct:1, explain:'Deshalb zwei gleiche Riegel statt eines großen — in den richtigen Bänken.'}
-      ]
-    },
-    {
-      id:'m21-l2', title:'Massenspeicher: HDD, SSD und NVMe', minutes:9,
-      body:
-        '<p><strong>HDD</strong> – rotierende Magnetscheiben mit beweglichem Schreib-Lese-Kopf. Kennwerte: Umdrehungszahl (5.400 / 7.200 / 10.000 U/min) und die <strong>Zugriffszeit</strong> von etwa 5 bis 10 Millisekunden. Günstig je Terabyte, mechanisch anfällig, laut, langsam bei vielen kleinen Zugriffen.</p>'+
-        '<p><strong>SSD</strong> – Flash-Speicher ohne bewegliche Teile. Zugriffszeit unter 0,1 Millisekunden, also rund <strong>hundertmal schneller</strong>. Robust, leise, stromsparend, teurer je Terabyte. Kennwert <strong>TBW</strong> (Terabytes Written) gibt die Schreiblebensdauer an.</p>'+
-        '<table class="lesson-table"><tr><th>Anbindung</th><th>Bauform</th><th>Bruttorate</th></tr>'+
-        '<tr><td>SATA III</td><td>2,5 Zoll oder M.2</td><td>6 Gbit/s (ca. 550 MB/s netto)</td></tr>'+
-        '<tr><td>NVMe über PCIe 3.0 ×4</td><td>M.2</td><td>ca. 32 Gbit/s (ca. 3.500 MB/s)</td></tr>'+
-        '<tr><td>NVMe über PCIe 4.0 ×4</td><td>M.2</td><td>ca. 64 Gbit/s (ca. 7.000 MB/s)</td></tr></table>'+
-        '<p><strong>Der wichtigste Merksatz:</strong> M.2 ist nur die <em>Bauform</em>, NVMe das <em>Protokoll</em>. Eine M.2-SSD kann intern über SATA laufen und ist dann nicht schneller als eine 2,5-Zoll-SSD.</p>'+
-        '<p>Bei der <strong>Kapazitätsplanung</strong> rechnest du Nutzdaten plus Betriebssystem plus Reserve. Für SSDs gilt: Ab etwa 80 Prozent Füllstand sinkt die Schreibleistung, plane deshalb Luft ein.</p>',
-      code:
-        "Uebertragungsdauer vergleichen - 40 GB kopieren:\n\n"+
-        "  HDD      ca. 150 MB/s :  40.000 MB / 150  = 267 s  = 4 min 27 s\n"+
-        "  SATA-SSD ca. 520 MB/s :  40.000 MB / 520  =  77 s  = 1 min 17 s\n"+
-        "  NVMe     ca. 3.000 MB/s: 40.000 MB / 3000 =  13 s\n\n"+
-        "Hinweis: 40 GB = 40.000 MB (dezimal). Beim Kopieren begrenzt\n"+
-        "immer das langsamere der beiden Laufwerke.",
-      codeLang:'Speicherrechnung',
-      tip:'Achte bei Datenblattangaben auf die Einheit, denn Hersteller mischen sie bewusst. Schnittstellen werden in Gigabit pro Sekunde angegeben, Lese- und Schreibraten in Megabyte pro Sekunde. SATA III hat 6 Gbit/s brutto, was nach Abzug des Protokoll-Overheads etwa 550 MB/s netto ergibt — der Faktor 8 plus rund 20 Prozent Overhead. Wer das verwechselt, rechnet um den Faktor acht daneben.',
-      quiz:[
-        {q:'Was bezeichnet M.2?', options:['Ein Übertragungsprotokoll','Eine Bauform bzw. einen Steckplatz','Eine Kapazitätsangabe'], correct:1, explain:'Das Protokoll ist SATA oder NVMe – erst NVMe bringt die hohe Geschwindigkeit.'},
-        {q:'Welcher Kennwert beschreibt die Schreiblebensdauer einer SSD?', options:['IOPS','TBW','RPM'], correct:1, explain:'Terabytes Written – RPM gibt es nur bei der HDD.'},
-        {q:'Was gibt der TBW-Wert einer SSD an?', options:['Die Lesegeschwindigkeit','Die Schreiblebensdauer in Terabytes Written','Die Kapazität'], correct:1, explain:'HDDs haben dafür die Umdrehungszahl als Kennwert.'}
-      ]
-    },
-    {
-      id:'m21-l3', title:'Schnittstellen und ihre Datenraten', minutes:9,
-      body:
-        '<p>Bei „Welche Schnittstelle wählen Sie und warum?" brauchst du Zahlen. Die wichtigsten:</p>'+
-        '<table class="lesson-table"><tr><th>Schnittstelle</th><th>Datenrate</th><th>Einsatz</th></tr>'+
-        '<tr><td>USB 2.0</td><td>480 Mbit/s</td><td>Tastatur, Maus, Drucker</td></tr>'+
-        '<tr><td>USB 3.2 Gen 1 (früher 3.0)</td><td>5 Gbit/s</td><td>externe Festplatten</td></tr>'+
-        '<tr><td>USB 3.2 Gen 2</td><td>10 Gbit/s</td><td>schnelle externe SSD</td></tr>'+
-        '<tr><td>USB4 / Thunderbolt 4</td><td>40 Gbit/s</td><td>Docking, externe GPU, Monitor</td></tr>'+
-        '<tr><td>HDMI 2.1</td><td>48 Gbit/s</td><td>4K/120 Hz, 8K</td></tr>'+
-        '<tr><td>DisplayPort 1.4</td><td>32,4 Gbit/s</td><td>Mehrschirmbetrieb, Daisy Chain</td></tr>'+
-        '<tr><td>RJ45 Gigabit-Ethernet</td><td>1 Gbit/s</td><td>LAN-Standard</td></tr>'+
-        '<tr><td>RJ45 10-Gigabit</td><td>10 Gbit/s</td><td>Server, Backbone</td></tr></table>'+
-        '<p><strong>Power Delivery</strong> über USB-C liefert bis 100 W (nach neuer Spezifikation bis 240 W) und erlaubt damit das Laden des Notebooks über dasselbe Kabel, das auch Monitor und Netzwerk anbindet — das ist das Argument für eine <strong>Dockingstation mit USB-C</strong>.</p>',
-      code:
-        "Externe SSD mit 40 GB Daten sichern:\n\n"+
-        "  USB 2.0  (480 Mbit/s):\n"+
-        "     40 GB x 8 = 320 Gbit = 320.000 Mbit\n"+
-        "     320.000 / 480 = 667 s = 11 min 7 s\n\n"+
-        "  USB 3.2 Gen 1 (5 Gbit/s):\n"+
-        "     320.000 / 5.000 = 64 s = 1 min 4 s\n\n"+
-        "  Praxis: Die SSD selbst begrenzt bei ca. 500 MB/s auf ca. 80 s.\n"+
-        "  Es gilt immer das langsamste Glied der Kette.",
-      codeLang:'Schnittstellenrechnung',
-      tip:'Der Satz vom langsamsten Glied ist in Prüfungsantworten mehr wert als jede Datenrate. Eine 10-Gigabit-Schnittstelle bringt nichts, wenn die Festplatte dahinter 150 MB/s schafft, und ein NVMe-Laufwerk nichts, wenn es über USB 2.0 angebunden ist. Wenn eine Aufgabe eine Kette aus Gerät, Kabel und Gegenstelle beschreibt, suche das Nadelöhr und benenne es ausdrücklich.',
-      quiz:[
-        {q:'Wie schnell ist USB 3.2 Gen 1?', options:['480 Mbit/s','5 Gbit/s','40 Gbit/s'], correct:1, explain:'Früher als USB 3.0 bezeichnet – USB 2.0 hat 480 Mbit/s.'},
-        {q:'Was ermöglicht USB-C Power Delivery an einer Dockingstation?', options:['Höhere Datenrate','Stromversorgung des Notebooks über dasselbe Kabel','Bessere Bildqualität'], correct:1, explain:'Bis 100 W, damit genügt ein Kabel für Strom, Bild, Netzwerk und Peripherie.'},
-        {q:'Was begrenzt die Geschwindigkeit einer Übertragungskette?', options:['Die schnellste Komponente','Die langsamste Komponente','Die Kabellänge'], correct:1, explain:'Eine NVMe-SSD an USB 2.0 ist nicht schneller als USB 2.0.'}
-      ]
-    },
-    {
-      id:'m21-l4', title:'Monitor und Drucker richtig auswählen', minutes:9,
-      body:
-        '<p><strong>Monitor</strong> – die Kennwerte und was sie bedeuten:</p>'+
-        '<ul><li><strong>Auflösung:</strong> Full HD 1920×1080 · WQHD 2560×1440 · 4K UHD 3840×2160. Die Pixelzahl ist das Produkt: 1920 · 1080 = 2.073.600 Pixel.</li>'+
-        '<li><strong>Seitenverhältnis:</strong> 16:9 Standard, 21:9 Ultrawide, 16:10 mit mehr vertikalem Platz für Text und Code.</li>'+
-        '<li><strong>Panel:</strong> <strong>IPS</strong> hat gute Blickwinkel und Farbtreue (Büro, Bildbearbeitung), <strong>TN</strong> ist schnell aber blickwinkelabhängig, <strong>VA</strong> bietet hohen Kontrast.</li>'+
-        '<li><strong>Ergonomie:</strong> höhenverstellbar, neigbar, drehbar, entspiegelt, Blaulichtfilter — genau das wird bei Arbeitsplatzaufgaben erwartet.</li></ul>'+
-        '<p><strong>Drucker</strong> – die Entscheidung fällt fast immer über den <strong>Seitenpreis</strong>, nicht über den Kaufpreis:</p>'+
-        '<table class="lesson-table"><tr><th></th><th>Tintenstrahl</th><th>Laser</th></tr>'+
-        '<tr><td>Anschaffung</td><td>niedrig</td><td>höher</td></tr>'+
-        '<tr><td>Seitenpreis s/w</td><td>hoch (ca. 4–10 ct)</td><td>niedrig (ca. 1–3 ct)</td></tr>'+
-        '<tr><td>Geschwindigkeit</td><td>gering</td><td>hoch</td></tr>'+
-        '<tr><td>Bei seltener Nutzung</td><td>Düsen trocknen ein</td><td>unproblematisch</td></tr>'+
-        '<tr><td>Fotodruck</td><td>sehr gut</td><td>mäßig</td></tr>'+
-        '<tr><td>Empfehlung</td><td>wenig Volumen, Farbfotos</td><td>Büro, hohes Volumen</td></tr></table>',
-      code:
-        "Pixelzahl und Speicherbedarf eines Bildschirminhalts:\n\n"+
-        "  4K UHD: 3840 x 2160 = 8.294.400 Pixel\n"+
-        "  Farbtiefe 24 Bit (True Color) = 3 Byte je Pixel\n"+
-        "  8.294.400 x 3 = 24.883.200 Byte = ca. 23,7 MiB je Vollbild\n\n"+
-        "  Bei 60 Hz unkomprimiert:\n"+
-        "  23,7 MiB x 60 = ca. 1.424 MiB/s = ca. 11,9 Gbit/s\n"+
-        "  -> deshalb reicht HDMI 1.4 (10,2 Gbit/s) nicht fuer 4K/60,\n"+
-        "     wohl aber DisplayPort 1.4 oder HDMI 2.0.",
-      codeLang:'Anzeigerechnung',
-      tip:'Die Rechnung Pixel mal Farbtiefe taucht in zwei Verkleidungen auf: als Speicherbedarf eines Bildes und als benötigte Bandbreite einer Anzeigeverbindung. Beide Male ist der Rechenweg identisch, nur die Frage am Ende unterscheidet sich. Merke dir 24 Bit gleich 3 Byte für True Color — und dass 32 Bit vier Byte sind, weil ein Alphakanal für Transparenz hinzukommt.',
-      quiz:[
-        {q:'Wie viele Pixel hat ein Full-HD-Bildschirm?', options:['1.920','2.073.600','8.294.400'], correct:1, explain:'1920 × 1080 – 4K hat mit 8.294.400 genau die vierfache Menge.'},
-        {q:'Welcher Drucker eignet sich für ein Büro mit 2.500 Seiten im Monat?', options:['Tintenstrahl, wegen des niedrigen Kaufpreises','Laser, wegen des niedrigen Seitenpreises und der Geschwindigkeit','Beide gleich gut'], correct:1, explain:'Bei hohem Volumen dominiert der Seitenpreis die Gesamtkosten.'},
-        {q:'Wie viel Speicher braucht ein Full-HD-Vollbild bei 24 Bit Farbtiefe?', options:['Etwa 2 MiB','Etwa 6 MiB','Etwa 24 MiB'], correct:1, explain:'1920 × 1080 × 3 Byte = 6.220.800 Byte, also rund 5,9 MiB.'}
-      ]
-    },
-    {
-      id:'m21-l5', title:'Netzteil, Leistungsbedarf und USV', minutes:9,
-      body:
-        '<p>Bei „Dimensionieren Sie das Netzteil" addierst du den Leistungsbedarf aller Komponenten und schlägst eine <strong>Reserve</strong> auf — üblich sind 20 bis 30 Prozent. Gründe für die Reserve: Lastspitzen, spätere Aufrüstung und der Umstand, dass Netzteile im Bereich von etwa 50 Prozent Auslastung den besten Wirkungsgrad haben.</p>'+
-        '<p><strong>80 PLUS</strong> zertifiziert den Wirkungsgrad: Bronze etwa 85 Prozent, Gold etwa 90 Prozent, Platinum etwa 92 Prozent. Die Differenz wird als Wärme abgegeben und muss weggekühlt werden.</p>'+
-        '<p><strong>USV-Dimensionierung</strong> – hier lauert eine Einheitenfalle. USV-Geräte werden in <strong>Voltampere (VA)</strong> angegeben, Verbraucher in <strong>Watt (W)</strong>. Der Zusammenhang ist der <strong>Leistungsfaktor</strong>:</p>'+
-        '<p><code>W = VA × Leistungsfaktor</code> (häufig 0,6 bis 0,9)</p>'+
-        '<p>Eine USV mit 1.500 VA und Faktor 0,6 liefert also nur 900 W. Die drei Bauarten:</p>'+
-        '<ul><li><strong>Offline / Standby</strong> – schaltet erst bei Ausfall um, kurze Unterbrechung, günstig, für Einzelplätze.</li>'+
-        '<li><strong>Line-interactive</strong> – gleicht zusätzlich Spannungsschwankungen aus.</li>'+
-        '<li><strong>Online / Dauerwandler</strong> – der Verbraucher hängt immer am Wechselrichter, absolut unterbrechungsfrei, für Server und Netzwerktechnik.</li></ul>',
-      code:
-        "NETZTEIL DIMENSIONIEREN\n"+
-        "  CPU (TDP)            125 W\n"+
-        "  Grafikkarte          220 W\n"+
-        "  Mainboard + RAM       60 W\n"+
-        "  2 x NVMe-SSD          16 W\n"+
-        "  Luefter, Peripherie   25 W\n"+
-        "  ------------------------\n"+
-        "  Summe                446 W\n"+
-        "  + 25 % Reserve       112 W\n"+
-        "  ------------------------\n"+
-        "  Empfehlung        ca. 560 W  ->  600-W-Netzteil, 80 PLUS Gold\n\n"+
-        "USV FUER EINEN SERVERSCHRANK\n"+
-        "  Server 2 x 350 W + Switch 60 W + NAS 90 W = 850 W\n"+
-        "  Leistungsfaktor 0,7:  850 / 0,7 = 1.214 VA\n"+
-        "  + Reserve         ->  mindestens 1.500 VA waehlen",
-      codeLang:'Leistungsberechnung',
-      tip:'Die Umrechnung zwischen Watt und Voltampere ist eine klassische Fangfrage. Du teilst durch den Leistungsfaktor, wenn du von Watt auf VA kommen willst, und multiplizierst in die andere Richtung. Wer eine 1.000-VA-USV für 1.000 W Last kauft, hat sie überlastet — sie schafft je nach Faktor nur 600 bis 900 W. Nenne in der Antwort außerdem den zweiten Zweck der USV: Sie überbrückt nicht nur, sie fährt die Server bei längerem Ausfall kontrolliert herunter.',
-      quiz:[
-        {q:'Eine USV hat 2.000 VA bei einem Leistungsfaktor von 0,8. Wie viel Watt liefert sie?', options:['2.500 W','1.600 W','2.000 W'], correct:1, explain:'2.000 × 0,8 = 1.600 W.'},
-        {q:'Warum plant man beim Netzteil 20–30 % Reserve ein?', options:['Aus Vorschrift','Wegen Lastspitzen, Aufrüstbarkeit und dem besten Wirkungsgrad bei mittlerer Last','Damit es leiser ist'], correct:1, explain:'Ein dauerhaft voll ausgelastetes Netzteil arbeitet ineffizient und altert schneller.'},
-        {q:'Warum arbeitet ein Netzteil bei etwa halber Auslastung am effizientesten?', options:['Es wird dann kälter','Dort liegt das Wirkungsgradmaximum der Schaltnetzteile','Das ist ein Mythos'], correct:1, explain:'Deshalb plant man 20 bis 30 Prozent Reserve statt knapp zu dimensionieren.'}
-      ]
-    }
-  ]
-});
+var EXERCISES = [
+{
+  id:'ex1', level:1, topic:'Pseudocode', title:'Durchschnitt mit Filterbedingung',
+  task:'<p>Schreibe einen <strong>Pseudocode-Algorithmus</strong>, der aus einem Array <code>messwerte</code> den Durchschnitt aller Werte berechnet, die <strong>größer als 0</strong> sind. Gibt es keinen solchen Wert, soll der Algorithmus <code>-1</code> zurückgeben.</p>',
+  hints:[
+    'Du brauchst zwei Variablen: eine Summe und einen Zähler für die berücksichtigten Werte.',
+    'Die Division darf erst nach der Schleife erfolgen — und nur, wenn der Zähler größer als 0 ist.',
+    'Die Division durch null ist der eigentliche Prüfungspunkt dieser Aufgabe. Ohne die Abfrage gibt es Punktabzug.'
+  ],
+  solution:
+    "FUNKTION durchschnittPositiv(messwerte)\n"+
+    "  summe  <- 0\n"+
+    "  anzahl <- 0\n"+
+    "  FUER i VON 0 BIS LAENGE(messwerte) - 1 TUE\n"+
+    "    WENN messwerte[i] > 0 DANN\n"+
+    "      summe  <- summe + messwerte[i]\n"+
+    "      anzahl <- anzahl + 1\n"+
+    "    ENDEWENN\n"+
+    "  ENDEFUER\n"+
+    "  WENN anzahl > 0 DANN\n"+
+    "    GIB summe / anzahl ZURUECK\n"+
+    "  SONST\n"+
+    "    GIB -1 ZURUECK\n"+
+    "  ENDEWENN\n"+
+    "ENDEFUNKTION",
+  solutionLang:'Pseudocode',
+  solutionNote:'Das Muster „Akkumulator plus Zähler plus Division nach der Schleife" kommt in jeder zweiten AP1 vor. Der Prüfungspunkt steckt in der Abfrage auf anzahl > 0: Ohne sie entsteht bei einem Array ohne positive Werte eine Division durch null. Beachte außerdem die Grenze LAENGE - 1, weil Arrays bei 0 beginnen.'
+},
+{
+  id:'ex2', level:1, topic:'Subnetting', title:'Netz, Broadcast und Hostbereich bestimmen',
+  task:'<p>Gegeben ist die Adresse <strong>192.168.30.150 / 255.255.255.192</strong>.</p>'+
+    '<p>Bestimme: (a) das CIDR-Präfix, (b) die Netzadresse, (c) die Broadcast-Adresse, (d) den nutzbaren Hostbereich und (e) die Anzahl der nutzbaren Hosts.</p>',
+  hints:[
+    'Zerlege 192 binär: 11000000. Zähle die Einsen über alle vier Oktette hinweg.',
+    'Die Blockgröße erhältst du mit 256 minus dem Maskenwert des letzten Oktetts.',
+    'Die Netze beginnen bei Vielfachen der Blockgröße. Suche, in welchen Block die .150 fällt.'
+  ],
+  solution:
+    "(a) Praefix\n"+
+    "    255 = 11111111 (8 Bit) x 3 = 24 Bit\n"+
+    "    192 = 11000000 (2 Bit)\n"+
+    "    -> /26\n\n"+
+    "(b) Blockgroesse = 256 - 192 = 64\n"+
+    "    Netze beginnen bei:  .0   .64   .128   .192\n"+
+    "    .150 liegt zwischen .128 und .191\n"+
+    "    -> Netzadresse 192.168.30.128\n\n"+
+    "(c) Broadcast = naechster Netzanfang - 1 = .192 - 1\n"+
+    "    -> 192.168.30.191\n\n"+
+    "(d) Hostbereich 192.168.30.129 bis 192.168.30.190\n\n"+
+    "(e) Hostbits = 32 - 26 = 6\n"+
+    "    2^6 - 2 = 64 - 2 = 62 nutzbare Hosts",
+  solutionLang:'Subnetting',
+  solutionNote:'Die Blockgrößen-Methode ersetzt jede Binärrechnung und dauert unter einer Minute. Merke dir die Logik: Broadcast ist immer die Adresse direkt vor dem nächsten Netzanfang. Der Abzug von zwei Adressen gilt nur bei IPv4 — bei IPv6 wird nichts abgezogen, weil es dort keinen Broadcast gibt.'
+},
+{
+  id:'ex3', level:1, topic:'Einheiten', title:'Übertragungsdauer eines Backups',
+  task:'<p>Ein Backup von <strong>6 GB</strong> soll über eine Standleitung mit <strong>200 Mbit/s</strong> in ein Rechenzentrum übertragen werden. Die Leitung ist effektiv nur zu <strong>75 %</strong> nutzbar.</p>'+
+    '<p>Berechne die Übertragungsdauer in Minuten und Sekunden. Gib den vollständigen Rechenweg an.</p>',
+  hints:[
+    'Datenmengen stehen in Byte, Datenraten in Bit pro Sekunde. Der Faktor 8 fehlt sonst.',
+    'Die effektive Auslastung reduziert die Rate — das musst du vor der Division tun.',
+    'Rechne mit dezimalen Präfixen: 1 GB = 10^9 Byte.'
+  ],
+  solution:
+    "1. Datenmenge in Bit\n"+
+    "   6 GB = 6 x 10^9 Byte\n"+
+    "   6 x 10^9 x 8 = 48 x 10^9 Bit = 48.000.000.000 Bit\n\n"+
+    "2. Effektive Datenrate\n"+
+    "   200 Mbit/s x 0,75 = 150 Mbit/s = 150.000.000 Bit/s\n\n"+
+    "3. Dauer\n"+
+    "   t = 48.000.000.000 / 150.000.000 = 320 s\n\n"+
+    "4. Umrechnung\n"+
+    "   320 s = 5 Minuten 20 Sekunden\n\n"+
+    "Antwort: Die Uebertragung dauert 5 Minuten und 20 Sekunden.",
+  solutionLang:'Berechnung',
+  solutionNote:'Drei Fallen stecken in dieser Standardaufgabe: der vergessene Faktor 8, die überlesene effektive Auslastung und die Verwechslung von GB mit GiB. Schreibe jeden Zwischenschritt mit Einheit hin — die IHK vergibt Teilpunkte auf den Rechenweg, selbst wenn das Endergebnis falsch ist.'
+},
+{
+  id:'ex4', level:1, topic:'OSI-Modell', title:'Protokolle und Geräte zuordnen',
+  task:'<p>Ordne jedem Begriff die passende OSI-Schicht mit <strong>Nummer und Namen</strong> zu und begründe jeweils in einem Satz:</p>'+
+    '<div class="check-prompt">Switch  ·  DHCP  ·  Router  ·  TCP  ·  ARP  ·  HTTPS  ·  Patchkabel</div>',
+  hints:[
+    'Frage nicht, worüber ein Protokoll spricht, sondern auf welcher Ebene es selbst arbeitet.',
+    'DHCP verteilt zwar IP-Adressen, setzt aber selbst auf UDP auf.',
+    'ARP verbindet Schicht 3 mit Schicht 2 — es wird der Sicherungsschicht zugerechnet.'
+  ],
+  solution:
+    "Patchkabel  -> Schicht 1, Bituebertragung\n"+
+    "               Uebertraegt physikalische Signale, kennt keine Adressen.\n\n"+
+    "Switch      -> Schicht 2, Sicherung\n"+
+    "               Leitet Frames anhand der MAC-Adresse gezielt weiter.\n\n"+
+    "ARP         -> Schicht 2, Sicherung\n"+
+    "               Loest zu einer IP die MAC-Adresse im lokalen Netz auf.\n\n"+
+    "Router      -> Schicht 3, Vermittlung\n"+
+    "               Entscheidet anhand der IP-Adresse ueber den Weg zwischen Netzen.\n\n"+
+    "TCP         -> Schicht 4, Transport\n"+
+    "               Stellt eine gesicherte Ende-zu-Ende-Verbindung ueber Ports her.\n\n"+
+    "DHCP        -> Schicht 7, Anwendung\n"+
+    "               Ist ein Anwendungsprotokoll, das auf UDP aufsetzt.\n\n"+
+    "HTTPS       -> Schicht 7, Anwendung (Verschluesselung auf Schicht 6 per TLS)\n"+
+    "               Uebertraegt Webinhalte, TLS liegt darunter.",
+  solutionLang:'Zuordnung',
+  solutionNote:'DHCP und ARP sind die beiden Begriffe, an denen diese Aufgabe regelmäßig entschieden wird. Wer DHCP wegen der IP-Vergabe auf Schicht 3 setzt, verliert den Punkt. Bei HTTPS akzeptiert die IHK sowohl Schicht 7 als auch den Hinweis auf TLS in Schicht 6 — nenne am besten beides.'
+},
+{
+  id:'ex5', level:1, topic:'ER-Modell', title:'Kardinalitäten aus einem Text ableiten',
+  task:'<p>Eine Kfz-Werkstatt beschreibt ihren Betrieb so:</p>'+
+    '<div class="check-prompt">„Jeder Kunde kann mehrere Fahrzeuge besitzen, jedes Fahrzeug gehört genau einem Kunden. Zu jedem Fahrzeug werden im Laufe der Zeit mehrere Reparaturaufträge erfasst. An einem Reparaturauftrag können mehrere Mechaniker arbeiten, und jeder Mechaniker arbeitet an mehreren Aufträgen. Für jeden Auftrag wird genau eine Rechnung erstellt."</div>'+
+    '<p>Nenne alle Beziehungen mit ihrer Kardinalität und gib an, wo Fremdschlüssel bzw. Zwischentabellen entstehen.</p>',
+  hints:[
+    'Lies jeden Satz in beide Richtungen — die Kardinalität ergibt sich immer aus beiden Blickwinkeln.',
+    'Signalwörter: „genau ein" ergibt 1, „mehrere" oder „beliebig viele" ergibt n.',
+    'Nur bei n:m entsteht eine eigene Tabelle. Bei 1:n wandert der Fremdschlüssel auf die n-Seite.'
+  ],
+  solution:
+    "Kunde  1 : n  Fahrzeug\n"+
+    "  -> Fremdschluessel KundenNr in Fahrzeug\n\n"+
+    "Fahrzeug  1 : n  Reparaturauftrag\n"+
+    "  -> Fremdschluessel FahrzeugNr in Reparaturauftrag\n\n"+
+    "Reparaturauftrag  n : m  Mechaniker\n"+
+    "  -> Zwischentabelle Auftrag_Mechaniker\n"+
+    "     (#AuftragsNr, #PersonalNr, evtl. Arbeitszeit)\n\n"+
+    "Reparaturauftrag  1 : 1  Rechnung\n"+
+    "  -> Fremdschluessel AuftragsNr in Rechnung (oder umgekehrt)\n\n"+
+    "Relationenmodell:\n"+
+    "  Kunde(KundenNr, Name, Adresse)\n"+
+    "  Fahrzeug(Kennzeichen, Modell, Baujahr, #KundenNr)\n"+
+    "  Reparaturauftrag(AuftragsNr, Datum, Beschreibung, #Kennzeichen)\n"+
+    "  Mechaniker(PersonalNr, Name, Qualifikation)\n"+
+    "  Auftrag_Mechaniker(#AuftragsNr, #PersonalNr, Arbeitszeit)\n"+
+    "  Rechnung(RechnungsNr, Betrag, Datum, #AuftragsNr)",
+  solutionLang:'ER-Modell',
+  solutionNote:'Bei einer n:m-Beziehung wird die Zwischentabelle fast immer erwartet — und sie ist die Stelle, an der zusätzliche Attribute wie die Arbeitszeit ihren Platz finden. Sie gehören weder zum Auftrag noch zum Mechaniker, sondern zur Verbindung beider. Wer das erkennt, zeigt echtes Modellierungsverständnis.'
+},
+{
+  id:'ex6', level:1, topic:'Wirtschaft', title:'Bezugspreis und Angebotsvergleich',
+  task:'<p>Zwei Anbieter machen ein Angebot für 15 identische Notebooks:</p>'+
+    '<div class="check-prompt">Anbieter A: Listenpreis 1.200 € pro Gerät, 12 % Rabatt, 2 % Skonto, Versand 180 € gesamt\nAnbieter B: Listenpreis 1.150 € pro Gerät, 8 % Rabatt, 3 % Skonto, Versand frei</div>'+
+    '<p>Berechne den Bezugspreis beider Angebote (netto) und gib eine begründete Empfehlung.</p>',
+  hints:[
+    'Rechne zuerst mit dem Gesamtlistenpreis für alle 15 Geräte, das spart Zwischenschritte.',
+    'Das Skonto wird vom bereits rabattierten Zieleinkaufspreis berechnet, nicht vom Listenpreis.',
+    'Die Bezugskosten kommen nach dem Skontoabzug hinzu — auf Fracht gibt es keinen Skonto.'
+  ],
+  solution:
+    "ANBIETER A\n"+
+    "  Listeneinkaufspreis  15 x 1.200 =  18.000,00\n"+
+    "  - Rabatt 12 %                   -  2.160,00\n"+
+    "  = Zieleinkaufspreis                15.840,00\n"+
+    "  - Skonto 2 % (von 15.840)       -    316,80\n"+
+    "  = Bareinkaufspreis                 15.523,20\n"+
+    "  + Bezugskosten                  +    180,00\n"+
+    "  = Bezugspreis                      15.703,20 EUR\n\n"+
+    "ANBIETER B\n"+
+    "  Listeneinkaufspreis  15 x 1.150 =  17.250,00\n"+
+    "  - Rabatt 8 %                    -  1.380,00\n"+
+    "  = Zieleinkaufspreis                15.870,00\n"+
+    "  - Skonto 3 % (von 15.870)       -    476,10\n"+
+    "  = Bareinkaufspreis                 15.393,90\n"+
+    "  + Bezugskosten                  +      0,00\n"+
+    "  = Bezugspreis                      15.393,90 EUR\n\n"+
+    "EMPFEHLUNG\n"+
+    "  Differenz: 15.703,20 - 15.393,90 = 309,30 EUR\n"+
+    "  Anbieter B ist um 309,30 EUR guenstiger und wird empfohlen -\n"+
+    "  obwohl A den hoeheren Rabattsatz bietet.",
+  solutionLang:'Kalkulation',
+  solutionNote:'Diese Aufgabe zeigt, warum der Listenpreis nichts aussagt: Anbieter A hat den höheren Rabatt, verliert aber trotzdem. Formuliere die Empfehlung immer als vollständigen Satz mit der Differenz — eine reine Zahlenangabe ohne Entscheidung kostet Punkte, weil der Operator „empfehlen" eine Festlegung verlangt.'
+},
+{
+  id:'ex7', level:2, topic:'Netzplan', title:'Netzplan vollständig berechnen',
+  task:'<p>Ein Projekt besteht aus sieben Vorgängen:</p>'+
+    '<div class="check-prompt">Vorgang   Dauer   Vorgänger\n   A        4        —\n   B        6        A\n   C        3        A\n   D        5        B\n   E        2        C\n   F        4        D, E\n   G        3        F</div>'+
+    '<p>Berechne für jeden Vorgang FAZ, FEZ, SAZ, SEZ und den Gesamtpuffer. Bestimme die Projektdauer und den kritischen Pfad.</p>',
+  hints:[
+    'Vorwärts: FEZ = FAZ + D, und bei mehreren Vorgängern gilt für den FAZ das Maximum.',
+    'Beim letzten Vorgang setzt du SEZ = FEZ und rechnest von dort rückwärts.',
+    'Rückwärts gilt für den SEZ das Minimum aller SAZ der Nachfolger. GP = SAZ − FAZ.'
+  ],
+  solution:
+    "VORWAERTSRECHNUNG\n"+
+    "  A: FAZ=0            D=4  FEZ=4\n"+
+    "  B: FAZ=4            D=6  FEZ=10\n"+
+    "  C: FAZ=4            D=3  FEZ=7\n"+
+    "  D: FAZ=10           D=5  FEZ=15\n"+
+    "  E: FAZ=7            D=2  FEZ=9\n"+
+    "  F: FAZ=MAX(15,9)=15 D=4  FEZ=19\n"+
+    "  G: FAZ=19           D=3  FEZ=22\n\n"+
+    "RUECKWAERTSRECHNUNG (SEZ von G = FEZ = 22)\n"+
+    "  G: SEZ=22           SAZ=19\n"+
+    "  F: SEZ=19           SAZ=15\n"+
+    "  E: SEZ=15           SAZ=13\n"+
+    "  D: SEZ=15           SAZ=10\n"+
+    "  C: SEZ=13           SAZ=10\n"+
+    "  B: SEZ=10           SAZ=4\n"+
+    "  A: SEZ=MIN(4,10)=4  SAZ=0     Probe: SAZ = 0  ok\n\n"+
+    "GESAMTPUFFER (GP = SAZ - FAZ)\n"+
+    "  A: 0-0  = 0   kritisch\n"+
+    "  B: 4-4  = 0   kritisch\n"+
+    "  C: 10-4 = 6\n"+
+    "  D: 10-10= 0   kritisch\n"+
+    "  E: 13-7 = 6\n"+
+    "  F: 15-15= 0   kritisch\n"+
+    "  G: 19-19= 0   kritisch\n\n"+
+    "ERGEBNIS\n"+
+    "  Projektdauer:    22 Zeiteinheiten\n"+
+    "  Kritischer Pfad: A - B - D - F - G\n"+
+    "  Der Zweig C-E hat 6 Zeiteinheiten Puffer.",
+  solutionLang:'Netzplan',
+  solutionNote:'Zwei eingebaute Proben sichern das Ergebnis ab: Beim ersten Vorgang muss SAZ null ergeben, und der kritische Pfad muss eine lückenlose Kette vom Anfang bis zum Ende bilden. Beachte außerdem, dass C und E denselben Gesamtpuffer von 6 haben — er steht ihnen gemeinsam einmal zur Verfügung, nicht jedem für sich.'
+},
+{
+  id:'ex8', level:2, topic:'Subnetting', title:'Ein Netz bedarfsgerecht aufteilen',
+  task:'<p>Ein Unternehmen erhält das Netz <strong>172.20.16.0/22</strong> und möchte es in Abteilungsnetze aufteilen. Jedes Abteilungsnetz soll <strong>mindestens 200 Hosts</strong> aufnehmen können.</p>'+
+    '<p>Bestimme das erforderliche Präfix, die Anzahl der möglichen Subnetze und gib die ersten drei Subnetze mit Netzadresse, Hostbereich und Broadcast an.</p>',
+  hints:[
+    'Suche zuerst die Zweierpotenz, die 200 Hosts abdeckt: 2^y − 2 ≥ 200.',
+    'Aus den Hostbits ergibt sich das Präfix als 32 minus Hostbits.',
+    'Die Anzahl der Subnetze ist 2 hoch der Differenz zwischen neuem und altem Präfix.'
+  ],
+  solution:
+    "1. Hostbits bestimmen\n"+
+    "   2^7 - 2 = 126   zu wenig\n"+
+    "   2^8 - 2 = 254   ausreichend fuer 200 Hosts\n"+
+    "   -> 8 Hostbits -> Praefix = 32 - 8 = /24\n\n"+
+    "2. Anzahl der Subnetze\n"+
+    "   neues Praefix /24 - altes Praefix /22 = 2 zusaetzliche Netzbits\n"+
+    "   -> 2^2 = 4 Subnetze\n\n"+
+    "3. Adressbereich des Ausgangsnetzes\n"+
+    "   172.20.16.0/22 umfasst 172.20.16.0 bis 172.20.19.255\n"+
+    "   (Blockgroesse im 3. Oktett: 256 - 252 = 4)\n\n"+
+    "4. Die Subnetze (Maske 255.255.255.0)\n"+
+    "   Subnetz 1: 172.20.16.0\n"+
+    "              Hosts 172.20.16.1 - 172.20.16.254\n"+
+    "              Broadcast 172.20.16.255\n\n"+
+    "   Subnetz 2: 172.20.17.0\n"+
+    "              Hosts 172.20.17.1 - 172.20.17.254\n"+
+    "              Broadcast 172.20.17.255\n\n"+
+    "   Subnetz 3: 172.20.18.0\n"+
+    "              Hosts 172.20.18.1 - 172.20.18.254\n"+
+    "              Broadcast 172.20.18.255\n\n"+
+    "   (Subnetz 4: 172.20.19.0/24)",
+  solutionLang:'Subnetting',
+  solutionNote:'Hier musst du in beide Richtungen denken: vom Hostbedarf zum Präfix und vom Präfixsprung zur Subnetzanzahl. Die Probe lautet 4 Subnetze mal 254 Hosts gleich 1.016 nutzbare Adressen aus 1.024 des /22. Achte auf die Blockgröße im dritten Oktett — bei Präfixen zwischen /17 und /24 verschiebt sich die Rechnung dorthin.'
+},
+{
+  id:'ex9', level:2, topic:'SQL', title:'Auswertung mit JOIN, Gruppierung und HAVING',
+  task:'<p>Gegeben sind die Tabellen:</p>'+
+    '<div class="check-prompt">kunde(kundennr, name, ort)\nauftrag(auftragsnr, #kundennr, datum, status)\nposition(#auftragsnr, #artikelnr, menge, einzelpreis)</div>'+
+    '<p>Schreibe eine SQL-Abfrage, die für jeden Kunden aus <strong>Hamburg</strong> den Namen und den <strong>Gesamtumsatz aller abgeschlossenen Aufträge des Jahres 2025</strong> ausgibt. Es sollen nur Kunden mit einem Umsatz über 5.000 € erscheinen, sortiert nach Umsatz absteigend.</p>',
+  hints:[
+    'Der Umsatz einer Position ist menge mal einzelpreis — summiert über alle Positionen.',
+    'Filter auf Einzelzeilen gehören in WHERE, Filter auf das Aggregat in HAVING.',
+    'Beim Jahresfilter ist ein Bereichsvergleich mit BETWEEN robuster als eine Funktion auf der Spalte.'
+  ],
+  solution:
+    "SELECT   k.name,\n"+
+    "         SUM(p.menge * p.einzelpreis) AS gesamtumsatz\n"+
+    "FROM     kunde k\n"+
+    "JOIN     auftrag  a ON a.kundennr   = k.kundennr\n"+
+    "JOIN     position p ON p.auftragsnr = a.auftragsnr\n"+
+    "WHERE    k.ort    = 'Hamburg'\n"+
+    "  AND    a.status = 'abgeschlossen'\n"+
+    "  AND    a.datum BETWEEN '2025-01-01' AND '2025-12-31'\n"+
+    "GROUP BY k.kundennr, k.name\n"+
+    "HAVING   SUM(p.menge * p.einzelpreis) > 5000\n"+
+    "ORDER BY gesamtumsatz DESC;",
+  solutionLang:'SQL',
+  solutionNote:'Drei Details entscheiden über die volle Punktzahl. Erstens gehört der Umsatzfilter in HAVING, weil er sich auf das Aggregat bezieht — in WHERE wäre er ein Syntaxfehler. Zweitens muss die Gruppierung alle nicht aggregierten Spalten enthalten; die Kundennummer mitzunehmen ist sauberer als nur der Name, falls zwei Kunden gleich heißen. Drittens ist BETWEEN einer Funktion wie YEAR(a.datum) vorzuziehen, weil letztere den Index unbrauchbar macht.'
+},
+{
+  id:'ex10', level:2, topic:'Normalisierung', title:'Von der 1. in die 3. Normalform',
+  task:'<p>Diese Tabelle verstößt gegen die Normalisierungsregeln:</p>'+
+    '<div class="check-prompt">Bestellung(BestellNr, ArtikelNr, Artikelbezeichnung, Menge,\n           LieferantenNr, Lieferantenname, Lieferantenort,\n           Kundenname, Kundenanschrift)</div>'+
+    '<p>Der Primärschlüssel ist die Kombination aus BestellNr und ArtikelNr. Überführe die Tabelle schrittweise in die <strong>3. Normalform</strong> und begründe jeden Schritt.</p>',
+  hints:[
+    'Prüfe zuerst, welche Attribute nur von einem Teil des zusammengesetzten Schlüssels abhängen.',
+    'Danach suche Attribute, die von einem Nichtschlüsselattribut abhängen — das ist die transitive Abhängigkeit.',
+    'Fremdschlüssel kennzeichnest du mit # und den Primärschlüssel durch Unterstreichen.'
+  ],
+  solution:
+    "AUSGANGSLAGE (1. NF erfuellt: alle Attribute atomar)\n"+
+    "  Schluessel: (BestellNr, ArtikelNr)\n\n"+
+    "SCHRITT 1 -> 2. NF  (Teilabhaengigkeiten aufloesen)\n"+
+    "  Artikelbezeichnung haengt nur von ArtikelNr ab  -> Teilabhaengigkeit\n"+
+    "  Kundenname, Kundenanschrift haengen nur von BestellNr ab\n\n"+
+    "  Bestellung(BestellNr, Kundenname, Kundenanschrift)\n"+
+    "  Artikel(ArtikelNr, Artikelbezeichnung, LieferantenNr,\n"+
+    "          Lieferantenname, Lieferantenort)\n"+
+    "  Bestellposition(#BestellNr, #ArtikelNr, Menge)\n\n"+
+    "SCHRITT 2 -> 3. NF  (transitive Abhaengigkeiten aufloesen)\n"+
+    "  Lieferantenname und -ort haengen von LieferantenNr ab,\n"+
+    "  nicht direkt von ArtikelNr  -> transitiv\n"+
+    "  Kundenanschrift haengt vom Kunden ab, nicht von der Bestellung\n\n"+
+    "ERGEBNIS IN 3. NF\n"+
+    "  Kunde(KundenNr, Kundenname, Kundenanschrift)\n"+
+    "  Bestellung(BestellNr, Bestelldatum, #KundenNr)\n"+
+    "  Bestellposition(#BestellNr, #ArtikelNr, Menge)\n"+
+    "  Artikel(ArtikelNr, Artikelbezeichnung, #LieferantenNr)\n"+
+    "  Lieferant(LieferantenNr, Lieferantenname, Lieferantenort)",
+  solutionLang:'Normalisierung',
+  solutionNote:'Die Begründung ist hier so viel wert wie das Ergebnis. Formuliere sie mit den Fachbegriffen: In der 2. NF beseitigst du Teilabhängigkeiten vom zusammengesetzten Schlüssel, in der 3. NF transitive Abhängigkeiten zwischen Nichtschlüsselattributen. Nenne zusätzlich den praktischen Nutzen — die Änderungsanomalie verschwindet, weil ein Lieferantenumzug nur noch an einer Stelle gepflegt werden muss.'
+},
+{
+  id:'ex11', level:2, topic:'UML', title:'Klassenhierarchie mit Vererbung entwerfen',
+  task:'<p>Eine Bibliotheksverwaltung soll <strong>Bücher</strong> und <strong>DVDs</strong> abbilden:</p>'+
+    '<div class="check-prompt">Beide Medien haben eine Inventarnummer, einen Titel, ein Erscheinungsjahr und einen Ausleihstatus. Beide können ausgeliehen und zurückgegeben werden.\nBücher haben zusätzlich einen Autor, eine ISBN und eine Seitenzahl.\nDVDs haben zusätzlich eine Laufzeit und eine Altersfreigabe.\nDie Berechnung der Leihgebühr erfolgt bei Büchern und DVDs unterschiedlich.</div>'+
+    '<p>Entwirf das UML-Klassendiagramm in Textform mit Attributen, Methoden, Sichtbarkeiten und der korrekten Beziehung.</p>',
+  hints:[
+    'Was beide Klassen gemeinsam haben, wandert in die Oberklasse.',
+    'Der Satz zur Leihgebühr ist der entscheidende Hinweis — gleiche Methode, unterschiedliches Verhalten.',
+    'Attribute werden privat, Methoden öffentlich. Der Vererbungspfeil zeigt zur Oberklasse.'
+  ],
+  solution:
+    "+----------------------------------+\n"+
+    "|           Medium                 |   (abstrakt)\n"+
+    "+----------------------------------+\n"+
+    "| - inventarnummer: String         |\n"+
+    "| - titel: String                  |\n"+
+    "| - erscheinungsjahr: int          |\n"+
+    "| - ausgeliehen: boolean           |\n"+
+    "+----------------------------------+\n"+
+    "| + ausleihen(): void              |\n"+
+    "| + zurueckgeben(): void           |\n"+
+    "| + leihgebuehrBerechnen(): double |   (abstrakt)\n"+
+    "+----------------------------------+\n"+
+    "                 /_\\\n"+
+    "                  |\n"+
+    "        +---------+---------+\n"+
+    "        |                   |\n"+
+    "+-------------------+  +----------------------------+\n"+
+    "|      Buch         |  |            DVD             |\n"+
+    "+-------------------+  +----------------------------+\n"+
+    "| - autor: String   |  | - laufzeitMinuten: int     |\n"+
+    "| - isbn: String    |  | - altersfreigabe: int      |\n"+
+    "| - seitenzahl: int |  +----------------------------+\n"+
+    "+-------------------+  | + leihgebuehrBerechnen():  |\n"+
+    "| + leihgebuehr-    |  |     double                 |\n"+
+    "|   Berechnen():    |  | + getAltersfreigabe(): int |\n"+
+    "|     double        |  +----------------------------+\n"+
+    "| + getIsbn(): Str  |\n"+
+    "+-------------------+\n\n"+
+    "Beziehung: Generalisierung, durchgezogene Linie mit geschlossener,\n"+
+    "nicht ausgefuellter Dreieckspitze, Pfeil zeigt zur Oberklasse Medium.",
+  solutionLang:'UML',
+  solutionNote:'Die Methode leihgebuehrBerechnen steht bewusst in allen drei Klassen: In der Oberklasse als abstrakte Vorgabe, in den Unterklassen mit eigener Implementierung. Das ist Polymorphie, und der Satz „die Berechnung erfolgt unterschiedlich" war der Auslöser dafür. Die IHK akzeptiert auch die Variante ohne abstrakte Deklaration in der Oberklasse — dann muss die Methode aber in beiden Unterklassen stehen.'
+},
+{
+  id:'ex12', level:2, topic:'Nutzwertanalyse', title:'Nutzwertanalyse mit Kostenvergleich',
+  task:'<p>Für eine Ticketsystem-Beschaffung liegen zwei Angebote vor:</p>'+
+    '<div class="check-prompt">Kriterium             Gewicht   Anbieter A   Anbieter B\nFunktionsumfang         35 %        7            9\nBenutzerfreundlichkeit  25 %        9            6\nSupportqualität         20 %        6            8\nSchnittstellen          15 %        8            7\nZukunftssicherheit       5 %        5            9\n\nJahreskosten                    12.400 €     15.800 €</div>'+
+    '<p>Berechne die Gesamtnutzwerte, ermittle den Nutzen je 1.000 € Jahreskosten und sprich eine begründete Empfehlung aus.</p>',
+  hints:[
+    'Teilnutzwert ist Punkte mal Gewichtung. Prüfe zuerst, ob die Gewichte 100 % ergeben.',
+    'Rechne mit Dezimalwerten: 35 % entspricht dem Faktor 0,35.',
+    'Für das Preis-Leistungs-Verhältnis teilst du den Nutzwert durch die Kosten in Tausend Euro.'
+  ],
+  solution:
+    "PROBE: 35 + 25 + 20 + 15 + 5 = 100 %  ok\n\n"+
+    "ANBIETER A\n"+
+    "  Funktionsumfang         7 x 0,35 = 2,45\n"+
+    "  Benutzerfreundlichkeit  9 x 0,25 = 2,25\n"+
+    "  Supportqualitaet        6 x 0,20 = 1,20\n"+
+    "  Schnittstellen          8 x 0,15 = 1,20\n"+
+    "  Zukunftssicherheit      5 x 0,05 = 0,25\n"+
+    "  Gesamtnutzwert                   = 7,35\n\n"+
+    "ANBIETER B\n"+
+    "  Funktionsumfang         9 x 0,35 = 3,15\n"+
+    "  Benutzerfreundlichkeit  6 x 0,25 = 1,50\n"+
+    "  Supportqualitaet        8 x 0,20 = 1,60\n"+
+    "  Schnittstellen          7 x 0,15 = 1,05\n"+
+    "  Zukunftssicherheit      9 x 0,05 = 0,45\n"+
+    "  Gesamtnutzwert                   = 7,75\n\n"+
+    "NUTZEN JE 1.000 EUR JAHRESKOSTEN\n"+
+    "  A: 7,35 / 12,4 = 0,593\n"+
+    "  B: 7,75 / 15,8 = 0,491\n\n"+
+    "EMPFEHLUNG\n"+
+    "  Nach reinem Nutzwert gewinnt B (7,75 zu 7,35).\n"+
+    "  Bezogen auf die Kosten ist A jedoch deutlich wirtschaftlicher\n"+
+    "  (0,593 zu 0,491) und zugleich 3.400 EUR pro Jahr guenstiger.\n"+
+    "  Empfehlung: Anbieter A, da der Nutzenvorsprung von B (5 %)\n"+
+    "  den Kostenaufschlag von 27 % nicht rechtfertigt.",
+  solutionLang:'Nutzwertanalyse',
+  solutionNote:'Die Kombination aus Nutzwert und Kosten ist die anspruchsvollere Variante dieser Aufgabe und genau die, bei der die IHK eine echte Abwägung sehen will. Stelle den prozentualen Nutzenvorsprung dem prozentualen Mehrpreis gegenüber — diese Gegenüberstellung macht die Empfehlung nachvollziehbar und ist mehr wert als die bloße Nennung des Siegers.'
+},
+{
+  id:'ex13', level:2, topic:'IT-Sicherheit', title:'Sicherheitskonzept für Homeoffice',
+  task:'<p>Eine Steuerkanzlei mit 14 Mitarbeitern ermöglicht Homeoffice. Die Mitarbeiter greifen von privaten und dienstlichen Geräten auf den Kanzleiserver zu, auf dem Mandantendaten liegen.</p>'+
+    '<p>Erstelle ein Sicherheitskonzept mit <strong>je drei technischen und drei organisatorischen Maßnahmen</strong>. Ordne jeder Maßnahme das vorrangig geschützte Schutzziel zu und begründe sie in einem Satz.</p>',
+  hints:[
+    'Technisch bedeutet installiert oder konfiguriert, organisatorisch bedeutet geregelt oder geschult.',
+    'Denke an die Besonderheit: Mandantendaten unterliegen zusätzlich der Verschwiegenheitspflicht und der DSGVO.',
+    'Jede Maßnahme braucht ein „weil" — die Begründung ist der eigentliche Punkt.'
+  ],
+  solution:
+    "TECHNISCHE MASSNAHMEN\n\n"+
+    "1. VPN mit Zwei-Faktor-Authentifizierung   -> Vertraulichkeit, Authentizitaet\n"+
+    "   Der Zugriff laeuft durch einen verschluesselten Tunnel, weil die Daten\n"+
+    "   sonst unverschluesselt ueber das oeffentliche Internet liefen. Der zweite\n"+
+    "   Faktor verhindert, dass ein gestohlenes Passwort allein Zugang verschafft.\n\n"+
+    "2. Festplattenverschluesselung der Notebooks (BitLocker)  -> Vertraulichkeit\n"+
+    "   Bei Diebstahl oder Verlust bleiben die Daten unlesbar, weil ohne Schluessel\n"+
+    "   auch der Ausbau der Platte nichts bringt.\n\n"+
+    "3. Zentrales Backup mit Offline-Kopie nach 3-2-1  -> Verfuegbarkeit\n"+
+    "   Ein Ransomware-Befall oder ein Hardwaredefekt fuehrt sonst zum\n"+
+    "   endgueltigen Verlust der Mandantendaten.\n\n"+
+    "ORGANISATORISCHE MASSNAHMEN\n\n"+
+    "4. Verbot privater Geraete, Ausgabe dienstlicher Notebooks  -> Vertraulichkeit\n"+
+    "   Auf privaten Geraeten sind Patchstand und Virenschutz nicht kontrollierbar,\n"+
+    "   und die Kanzlei bliebe dennoch datenschutzrechtlich verantwortlich.\n\n"+
+    "5. Berechtigungskonzept nach Need-to-know  -> Vertraulichkeit\n"+
+    "   Jeder Mitarbeiter sieht nur die Mandanten, die er betreut, weil so der\n"+
+    "   Schaden bei einem kompromittierten Konto begrenzt bleibt.\n\n"+
+    "6. Regelmaessige Schulung zu Phishing und Social Engineering  -> alle Ziele\n"+
+    "   Der Mensch ist das haeufigste Einfallstor, und technische Massnahmen\n"+
+    "   greifen nicht, wenn Zugangsdaten freiwillig herausgegeben werden.\n\n"+
+    "ERGAENZEND (DSGVO)\n"+
+    "  Verpflichtung auf Verschwiegenheit, Regelung zur Bildschirmeinsicht\n"+
+    "  durch Dritte im Haushalt, Meldeweg fuer Datenpannen binnen 72 Stunden.",
+  solutionLang:'Sicherheitskonzept',
+  solutionNote:'Achte auf die saubere Trennung der beiden Kategorien — eine als technisch deklarierte Schulung kostet den Punkt, auch wenn die Maßnahme inhaltlich richtig ist. Der Zusatz zur DSGVO ist kein Muss, zeigt aber Verständnis für den Kontext: Bei einer Steuerkanzlei kommt zur Informationssicherheit die berufsrechtliche Verschwiegenheitspflicht hinzu.'
+},
+{
+  id:'ex14', level:2, topic:'Trockenlauf', title:'Verschachtelte Schleife auswerten',
+  task:'<p>Werte den folgenden Algorithmus vollständig aus:</p>'+
+    '<div class="check-prompt">FUNKTION geheim(n)\n  ergebnis &lt;- 0\n  FUER i VON 1 BIS n TUE\n    FUER j VON i BIS n TUE\n      WENN (i + j) MOD 2 = 0 DANN\n        ergebnis &lt;- ergebnis + 1\n      ENDEWENN\n    ENDEFUER\n  ENDEFUER\n  GIB ergebnis ZURUECK\nENDEFUNKTION</div>'+
+    '<p>(a) Erstelle eine Wertetabelle für <code>n = 4</code>. (b) Wie oft wird die innere Schleife insgesamt durchlaufen? (c) Was berechnet der Algorithmus allgemein?</p>',
+  hints:[
+    'Die innere Schleife startet bei i, nicht bei 1 — die Anzahl der Durchläufe sinkt mit jedem i.',
+    'Die Summe i + j ist genau dann gerade, wenn beide gerade oder beide ungerade sind.',
+    'Für Teil (b): Zähle die Durchläufe je i und bilde die Summe.'
+  ],
+  solution:
+    "(a) WERTETABELLE fuer n = 4\n\n"+
+    "  i   j   i+j   MOD 2   ergebnis\n"+
+    "  -----------------------------------\n"+
+    "  -   -    -      -        0      (Start)\n"+
+    "  1   1    2      0        1      gerade -> hochzaehlen\n"+
+    "  1   2    3      1        1\n"+
+    "  1   3    4      0        2\n"+
+    "  1   4    5      1        2\n"+
+    "  2   2    4      0        3\n"+
+    "  2   3    5      1        3\n"+
+    "  2   4    6      0        4\n"+
+    "  3   3    6      0        5\n"+
+    "  3   4    7      1        5\n"+
+    "  4   4    8      0        6\n\n"+
+    "  Rueckgabe: 6\n\n"+
+    "(b) DURCHLAEUFE DER INNEREN SCHLEIFE\n"+
+    "    i=1: 4 Durchlaeufe\n"+
+    "    i=2: 3\n"+
+    "    i=3: 2\n"+
+    "    i=4: 1\n"+
+    "    Summe: 4+3+2+1 = 10 = n x (n+1) / 2\n\n"+
+    "(c) ALLGEMEINE BEDEUTUNG\n"+
+    "    Gezaehlt werden alle Paare (i, j) mit i <= j, bei denen i und j\n"+
+    "    dieselbe Paritaet haben - also beide gerade oder beide ungerade.\n"+
+    "    Bei n = 4 sind das die Paare aus {1,3} und aus {2,4}:\n"+
+    "    (1,1)(1,3)(3,3) und (2,2)(2,4)(4,4) = 6 Paare.\n"+
+    "    Komplexitaet: O(n^2)",
+  solutionLang:'Trockenlauf',
+  solutionNote:'Der Startwert j gleich i ist der Kern dieser Aufgabe: Er halbiert die Durchläufe gegenüber einer normalen Doppelschleife und ergibt die Dreieckszahl n mal n plus 1 geteilt durch 2. Wer j bei 1 starten lässt, kommt auf 16 Durchläufe statt 10. Führe die Wertetabelle immer vollständig — die IHK vergibt Teilpunkte auf korrekte Zwischenzeilen, selbst wenn das Endergebnis abweicht.'
+},
+{
+  id:'ex15', level:3, topic:'IPv6', title:'IPv6-Adresse analysieren und Teilnetze bilden',
+  task:'<p>Ein Unternehmen erhält das IPv6-Präfix <strong>2001:0db8:ac10::/48</strong>. Ein Client meldet die Adresse:</p>'+
+    '<div class="check-prompt">2001:db8:ac10:2a::1e5</div>'+
+    '<p>(a) Schreibe die Client-Adresse ungekürzt aus. (b) Benenne Präfix, Teilnetz-ID und Interface-Identifier. (c) Wie viele Teilnetze mit /64 lassen sich aus dem /48 bilden? (d) Nenne zwei Vorteile von IPv6 gegenüber IPv4 mit Begründung.</p>',
+  hints:[
+    'Zähle die vorhandenen Blöcke und ziehe sie von 8 ab — die Differenz ersetzt das Doppelpunkt-Paar.',
+    'Jeder Block muss am Ende genau vier Hex-Ziffern haben, auch führende Nullen.',
+    'Die Teilnetz-ID liegt zwischen dem /48-Standortpräfix und dem 64-Bit-Interface-Identifier.'
+  ],
+  solution:
+    "(a) UNGEKUERZTE SCHREIBWEISE\n"+
+    "    Vorhandene Bloecke: 2001 | db8 | ac10 | 2a | 1e5  = 5 Bloecke\n"+
+    "    8 - 5 = 3 Nullbloecke ersetzt das ::\n\n"+
+    "    2001:0db8:ac10:002a:0000:0000:0000:01e5\n\n"+
+    "    Beachte: db8 -> 0db8,  2a -> 002a,  1e5 -> 01e5\n\n"+
+    "(b) AUFTEILUNG\n"+
+    "    Standortpraefix (48 Bit): 2001:0db8:ac10\n"+
+    "    Teilnetz-ID     (16 Bit): 002a   (dezimal 42)\n"+
+    "    Interface-ID    (64 Bit): 0000:0000:0000:01e5\n\n"+
+    "(c) ANZAHL DER TEILNETZE\n"+
+    "    64 - 48 = 16 Bit stehen fuer die Teilnetz-ID zur Verfuegung\n"+
+    "    2^16 = 65.536 Teilnetze\n"+
+    "    Kein Abzug, da IPv6 keine Broadcast-Adresse kennt.\n\n"+
+    "(d) ZWEI VORTEILE\n"+
+    "    1. Praktisch unbegrenzter Adressraum (2^128 statt 2^32)\n"+
+    "       Jedes Geraet erhaelt eine eigene globale Adresse, NAT entfaellt.\n"+
+    "       Das ist im IoT-Umfeld entscheidend, wo Millionen Sensoren\n"+
+    "       einzeln adressierbar sein muessen.\n\n"+
+    "    2. Ende-zu-Ende-Erreichbarkeit ohne Adressumsetzung\n"+
+    "       Geraete sind direkt ansprechbar, weil keine NAT-Tabelle\n"+
+    "       dazwischenliegt. Das vereinfacht Fernwartung, VoIP und\n"+
+    "       Peer-to-Peer-Verbindungen erheblich.\n\n"+
+    "    (Weitere moegliche: vereinfachter Header, SLAAC-Autokonfiguration,\n"+
+    "     IPsec von Haus aus vorgesehen, kein Broadcast)",
+  solutionLang:'IPv6',
+  solutionNote:'Teilaufgabe (a) ist die Punktefalle: Es reicht nicht, das Doppelpunkt-Paar aufzulösen, jeder Block muss auf vier Ziffern aufgefüllt werden. Bei (c) ist der fehlende Abzug von zwei Adressen der Unterschied zu IPv4 — wer hier 65.534 schreibt, überträgt IPv4-Denken. Bei (d) zählt die Begründung mehr als die Nennung, formuliere daher immer mit „weil".'
+},
+{
+  id:'ex16', level:3, topic:'Pseudocode', title:'Sortieren mit Abbruchoptimierung',
+  task:'<p>Schreibe einen <strong>optimierten Bubble-Sort</strong> in Pseudocode, der die Sortierung abbricht, sobald in einem Durchlauf kein Tausch mehr stattgefunden hat.</p>'+
+    '<p>Gib zusätzlich an: (a) wie viele Vergleiche der unoptimierte Bubble-Sort bei <code>n = 8</code> maximal durchführt, (b) wie viele Durchläufe dein optimierter Algorithmus bei einem bereits sortierten Array benötigt, und (c) die Komplexität im besten und im schlechtesten Fall.</p>',
+  hints:[
+    'Du brauchst ein boolesches Merkerflag, das zu Beginn jedes Durchlaufs zurückgesetzt wird.',
+    'Die äußere Schleife wird zur kopfgesteuerten Schleife, weil die Anzahl der Durchläufe nicht feststeht.',
+    'Die maximale Vergleichszahl des unoptimierten Verfahrens ist n mal n minus 1 geteilt durch 2.'
+  ],
+  solution:
+    "FUNKTION bubbleSortOptimiert(feld)\n"+
+    "  n        <- LAENGE(feld)\n"+
+    "  getauscht <- WAHR\n"+
+    "  durchlauf <- 0\n"+
+    "\n"+
+    "  SOLANGE getauscht = WAHR TUE\n"+
+    "    getauscht <- FALSCH\n"+
+    "    durchlauf <- durchlauf + 1\n"+
+    "\n"+
+    "    FUER i VON 0 BIS n - durchlauf - 1 TUE\n"+
+    "      WENN feld[i] > feld[i+1] DANN\n"+
+    "        hilf      <- feld[i]\n"+
+    "        feld[i]   <- feld[i+1]\n"+
+    "        feld[i+1] <- hilf\n"+
+    "        getauscht <- WAHR\n"+
+    "      ENDEWENN\n"+
+    "    ENDEFUER\n"+
+    "  ENDESOLANGE\n"+
+    "\n"+
+    "  GIB feld ZURUECK\n"+
+    "ENDEFUNKTION\n\n"+
+    "(a) Unoptimiert bei n = 8:\n"+
+    "    n x (n-1) / 2 = 8 x 7 / 2 = 28 Vergleiche\n\n"+
+    "(b) Bereits sortiertes Array:\n"+
+    "    1 Durchlauf. Es findet kein Tausch statt, getauscht bleibt FALSCH,\n"+
+    "    die aeussere Schleife endet nach dem ersten Durchgang.\n\n"+
+    "(c) Komplexitaet:\n"+
+    "    Bester Fall  (sortiert):  O(n)    - ein Durchlauf ohne Tausch\n"+
+    "    Schlechtester Fall:       O(n^2)  - absteigend sortiertes Array",
+  solutionLang:'Pseudocode',
+  solutionNote:'Zwei Optimierungen stecken in dieser Lösung. Das Merkerflag bricht ab, sobald das Feld sortiert ist — das drückt den besten Fall auf O(n). Die Obergrenze n minus durchlauf minus 1 spart zusätzlich Vergleiche, weil nach jedem Durchlauf das größte verbleibende Element hinten korrekt steht und nicht erneut geprüft werden muss. Der Tausch über eine Hilfsvariable in drei Schritten wird erwartet; wer feld[i] und feld[i+1] direkt zuweist, verliert einen Wert.'
+},
+{
+  id:'ex17', level:3, topic:'Wirtschaft', title:'Make or Buy mit Amortisationsrechnung',
+  task:'<p>Ein Unternehmen mit 40 Mitarbeitern benötigt ein Dokumentenmanagementsystem. Zwei Wege stehen zur Wahl:</p>'+
+    '<div class="check-prompt">EIGENENTWICKLUNG\n  Entwicklung: 120 Personentage à 8 Std. zu 85 €/Std.\n  Laufende Wartung: 18.000 € pro Jahr\n\nSTANDARDSOFTWARE (SaaS)\n  Lizenz: 28 € pro Benutzer und Monat\n  Einmalige Einführung und Schulung: 14.500 €\n\nDurch das System werden jährlich 9.800 € Arbeitszeit eingespart.</div>'+
+    '<p>Vergleiche beide Varianten über <strong>fünf Jahre</strong>, berechne die Amortisationsdauer der günstigeren Variante bezogen auf die Einsparung und sprich eine begründete Empfehlung aus.</p>',
+  hints:[
+    'Rechne die Personentage zuerst in Stunden und dann in Euro um.',
+    'Die SaaS-Lizenz gilt pro Benutzer und Monat — vergiss weder die 40 Mitarbeiter noch die 12 Monate.',
+    'Beim Fünfjahresvergleich gehören die laufenden Kosten fünfmal in die Rechnung, die einmaligen nur einmal.'
+  ],
+  solution:
+    "EIGENENTWICKLUNG\n"+
+    "  Entwicklungskosten: 120 PT x 8 h x 85 EUR = 81.600 EUR (einmalig)\n"+
+    "  Wartung 5 Jahre:    18.000 x 5             = 90.000 EUR\n"+
+    "  ----------------------------------------------------------\n"+
+    "  Gesamtkosten 5 Jahre                       = 171.600 EUR\n\n"+
+    "STANDARDSOFTWARE (SaaS)\n"+
+    "  Lizenz pro Jahr:  40 x 28 x 12             = 13.440 EUR\n"+
+    "  Lizenz 5 Jahre:   13.440 x 5               = 67.200 EUR\n"+
+    "  Einfuehrung und Schulung (einmalig)        = 14.500 EUR\n"+
+    "  ----------------------------------------------------------\n"+
+    "  Gesamtkosten 5 Jahre                       =  81.700 EUR\n\n"+
+    "DIFFERENZ\n"+
+    "  171.600 - 81.700 = 89.900 EUR zugunsten der Standardsoftware\n"+
+    "  Das entspricht rund 52 % geringeren Gesamtkosten.\n\n"+
+    "AMORTISATION DER STANDARDSOFTWARE\n"+
+    "  Einmalige Investition: 14.500 EUR\n"+
+    "  Jaehrlicher Rueckfluss: Einsparung 9.800 - Lizenz 13.440 = -3.640 EUR\n"+
+    "  -> Die Einsparung deckt die laufende Lizenz nicht vollstaendig ab,\n"+
+    "     eine Amortisation allein ueber die Zeitersparnis tritt nicht ein.\n\n"+
+    "  Bezogen nur auf die Einfuehrungskosten gegen die Einsparung:\n"+
+    "  14.500 / 9.800 = 1,48 Jahre = rund 1 Jahr und 6 Monate\n\n"+
+    "EMPFEHLUNG\n"+
+    "  Die Standardsoftware wird empfohlen. Sie kostet ueber fuenf Jahre\n"+
+    "  89.900 EUR weniger, ist sofort verfuegbar und das Risiko der\n"+
+    "  Entwicklung entfaellt. Zu beachten ist, dass die Einsparung von\n"+
+    "  9.800 EUR die laufenden Lizenzkosten nicht deckt - die Investition\n"+
+    "  rechtfertigt sich daher nicht allein monetaer, sondern ueber\n"+
+    "  qualitative Faktoren wie Revisionssicherheit, Rechtskonformitaet\n"+
+    "  und schnelleren Dokumentenzugriff.\n\n"+
+    "  Gegenargument fuer die Eigenentwicklung: volle Anpassbarkeit,\n"+
+    "  Datenhoheit im eigenen Haus, keine Abhaengigkeit vom Anbieter.",
+  solutionLang:'Wirtschaftlichkeitsrechnung',
+  solutionNote:'Die eigentliche Leistung dieser Aufgabe ist der ehrliche Umgang mit der Amortisation: Die Einsparung deckt die laufenden Kosten nicht, und das offen zu benennen ist mehr wert als eine schöngerechnete Zahl. Bei Make-or-Buy-Aufgaben erwartet die IHK außerdem immer die qualitativen Faktoren neben den Zahlen — Verfügbarkeit, Risiko, Abhängigkeit und Datenhoheit.'
+},
+{
+  id:'ex18', level:3, topic:'Struktogramm', title:'Struktogramm für eine Rabattstaffel',
+  task:'<p>Ein Onlineshop berechnet Rabatte nach folgenden Regeln:</p>'+
+    '<div class="check-prompt">Bestellwert unter 100 € → kein Rabatt\nBestellwert ab 100 € bis unter 500 € → 3 %\nBestellwert ab 500 € bis unter 1.000 € → 5 %\nBestellwert ab 1.000 € → 8 %\n\nStammkunden erhalten zusätzlich 2 Prozentpunkte, jedoch höchstens 10 % insgesamt.\nAb einem Bestellwert von 50 € entfallen die Versandkosten von 4,95 €.</div>'+
+    '<p>Entwirf ein <strong>Struktogramm</strong> (Nassi-Shneiderman) in Textform, das den zu zahlenden Endbetrag ermittelt.</p>',
+  hints:[
+    'Mehrfachverzweigungen zeichnest du als Fallunterscheidung mit mehreren Spalten.',
+    'Die Begrenzung auf 10 % ist eine eigene Verzweigung nach der Stammkundenzugabe.',
+    'Die Versandkostenprüfung bezieht sich auf den Bestellwert, nicht auf den rabattierten Betrag — lies die Vorgabe genau.'
+  ],
+  solution:
+    "+---------------------------------------------------------------+\n"+
+    "| Eingabe: bestellwert, istStammkunde                           |\n"+
+    "+---------------------------------------------------------------+\n"+
+    "| rabattsatz <- 0                                               |\n"+
+    "+---------------------------------------------------------------+\n"+
+    "|                    Fallunterscheidung bestellwert             |\n"+
+    "+-------------+-------------+--------------+--------------------+\n"+
+    "|   < 100     | 100 - <500  | 500 - <1000  |     >= 1000        |\n"+
+    "+-------------+-------------+--------------+--------------------+\n"+
+    "| rabattsatz  | rabattsatz  | rabattsatz   | rabattsatz         |\n"+
+    "|   <- 0      |   <- 3      |   <- 5       |   <- 8             |\n"+
+    "+-------------+-------------+--------------+--------------------+\n"+
+    "|                  istStammkunde = WAHR ?                       |\n"+
+    "+-------------------------------+-------------------------------+\n"+
+    "|             JA                |             NEIN              |\n"+
+    "+-------------------------------+-------------------------------+\n"+
+    "| rabattsatz <- rabattsatz + 2  |                               |\n"+
+    "+-------------------------------+        (leer)                 |\n"+
+    "|      rabattsatz > 10 ?        |                               |\n"+
+    "+----------------+--------------+                               |\n"+
+    "|      JA        |     NEIN     |                               |\n"+
+    "+----------------+--------------+-------------------------------+\n"+
+    "| rabattsatz<-10 |   (leer)     |                               |\n"+
+    "+----------------+--------------+-------------------------------+\n"+
+    "| rabattbetrag <- bestellwert * rabattsatz / 100                |\n"+
+    "+---------------------------------------------------------------+\n"+
+    "| endbetrag <- bestellwert - rabattbetrag                       |\n"+
+    "+---------------------------------------------------------------+\n"+
+    "|                  bestellwert >= 50 ?                          |\n"+
+    "+-------------------------------+-------------------------------+\n"+
+    "|             JA                |             NEIN              |\n"+
+    "+-------------------------------+-------------------------------+\n"+
+    "|         (keine Versandkosten) | endbetrag <- endbetrag + 4,95 |\n"+
+    "+-------------------------------+-------------------------------+\n"+
+    "| Ausgabe: endbetrag                                            |\n"+
+    "+---------------------------------------------------------------+\n\n"+
+    "PROBE\n"+
+    "  Stammkunde, Bestellwert 1.200 EUR:\n"+
+    "    Grundrabatt 8 % + 2 = 10 %, Grenze nicht ueberschritten\n"+
+    "    Rabatt 120 EUR -> 1.080 EUR, versandkostenfrei\n\n"+
+    "  Neukunde, Bestellwert 45 EUR:\n"+
+    "    0 % Rabatt -> 45 EUR + 4,95 Versand = 49,95 EUR",
+  solutionLang:'Struktogramm',
+  solutionNote:'Zwei Details entscheiden hier. Erstens die Grenzen: „ab 100 bis unter 500" heißt größer oder gleich 100 und kleiner 500 — überlappende oder lückenhafte Bereiche sind der häufigste Fehler. Zweitens die Reihenfolge: Die Deckelung auf 10 Prozent muss nach der Stammkundenzugabe stehen, sonst greift sie ins Leere. Eine Wertetabelle als Probe an den Bereichsgrenzen kostet eine Minute und findet fast jeden Logikfehler.'
+},
+{
+  id:'ex19', level:3, topic:'Datenbanken', title:'Datenbankentwurf und Speicherbedarf',
+  task:'<p>Ein Fitnessstudio soll ein Buchungssystem erhalten:</p>'+
+    '<div class="check-prompt">Mitglieder buchen Kurse. Ein Kurs findet zu festen Terminen statt und wird von genau einem Trainer geleitet; ein Trainer leitet mehrere Kurse. Zu jedem Kurstermin können sich mehrere Mitglieder anmelden, und ein Mitglied nimmt an mehreren Terminen teil. Jede Anmeldung hat einen Status (gebucht, storniert, wahrgenommen).</div>'+
+    '<p>(a) Entwirf das Relationenmodell in 3. NF. (b) Schreibe die SQL-Anweisung zum Anlegen der Anmeldungstabelle inklusive Schlüsseln. (c) Berechne den Speicherbedarf der Anmeldungstabelle für 800 Mitglieder, die im Schnitt 3 Termine pro Woche über 2 Jahre buchen, bei 48 Byte pro Datensatz.</p>',
+  hints:[
+    'Der Satz zur Anmeldung mit eigenem Status ist der Hinweis auf eine n:m-Beziehung mit Attribut.',
+    'Der Primärschlüssel der Zwischentabelle setzt sich aus beiden Fremdschlüsseln zusammen.',
+    'Beim Speicherbedarf: Mitglieder mal Termine pro Woche mal Wochen mal Jahre mal Byte.'
+  ],
+  solution:
+    "(a) RELATIONENMODELL IN 3. NF\n\n"+
+    "  Mitglied(MitgliedsNr, Nachname, Vorname, Geburtsdatum,\n"+
+    "           Email, Beitrittsdatum)\n\n"+
+    "  Trainer(TrainerNr, Nachname, Vorname, Qualifikation)\n\n"+
+    "  Kurs(KursNr, Bezeichnung, Beschreibung, MaxTeilnehmer,\n"+
+    "       #TrainerNr)\n\n"+
+    "  Kurstermin(TerminNr, Datum, Uhrzeit, Raum, #KursNr)\n\n"+
+    "  Anmeldung(#MitgliedsNr, #TerminNr, Anmeldezeitpunkt, Status)\n"+
+    "            ^ zusammengesetzter Primaerschluessel\n\n"+
+    "  Begruendung: Kurs zu Trainer ist 1:n, daher Fremdschluessel beim\n"+
+    "  Kurs. Mitglied zu Kurstermin ist n:m, daher die eigene Tabelle\n"+
+    "  Anmeldung - dort findet auch das Attribut Status seinen Platz,\n"+
+    "  weil es weder zum Mitglied noch zum Termin allein gehoert.\n\n"+
+    "(b) SQL\n\n"+
+    "  CREATE TABLE anmeldung (\n"+
+    "      mitgliedsnr       INT          NOT NULL,\n"+
+    "      terminnr          INT          NOT NULL,\n"+
+    "      anmeldezeitpunkt  DATETIME     NOT NULL,\n"+
+    "      status            VARCHAR(20)  NOT NULL DEFAULT 'gebucht',\n"+
+    "      PRIMARY KEY (mitgliedsnr, terminnr),\n"+
+    "      FOREIGN KEY (mitgliedsnr) REFERENCES mitglied(mitgliedsnr),\n"+
+    "      FOREIGN KEY (terminnr)    REFERENCES kurstermin(terminnr)\n"+
+    "  );\n\n"+
+    "(c) SPEICHERBEDARF\n\n"+
+    "  Anmeldungen pro Mitglied: 3 pro Woche x 52 Wochen x 2 Jahre = 312\n"+
+    "  Gesamtzahl der Datensaetze: 800 x 312 = 249.600\n"+
+    "  Speicherbedarf: 249.600 x 48 Byte = 11.980.800 Byte\n\n"+
+    "  Umrechnung:\n"+
+    "    11.980.800 / 1024        = 11.700 KiB\n"+
+    "    11.700 / 1024            = ca. 11,43 MiB\n"+
+    "    (dezimal: rund 11,98 MB)\n\n"+
+    "  Antwort: Die Anmeldungstabelle benoetigt rund 11,4 MiB\n"+
+    "  beziehungsweise knapp 12 MB - ohne Index-Overhead.",
+  solutionLang:'Datenbankentwurf',
+  solutionNote:'Der Hinweis auf den Index-Overhead am Ende ist kein Beiwerk, sondern zeigt fachliches Verständnis: Der reine Nutzdatenbedarf ist eine Untergrenze, Indizes und Verwaltungsstrukturen kommen hinzu. Beachte außerdem, dass der zusammengesetzte Primärschlüssel aus Mitglied und Termin eine Doppelbuchung technisch ausschließt — ein Nebeneffekt, den du in der Begründung erwähnen solltest.'
+},
+{
+  id:'ex20', level:3, topic:'Fehlersuche', title:'Fehlerhaften Algorithmus korrigieren',
+  task:'<p>Dieser Algorithmus soll prüfen, ob ein Wort ein <strong>Palindrom</strong> ist (vorwärts wie rückwärts gleich). Er liefert jedoch falsche Ergebnisse.</p>'+
+    '<div class="check-prompt">FUNKTION istPalindrom(wort)\n  n &lt;- LAENGE(wort)\n  i &lt;- 0\n  j &lt;- n\n  SOLANGE i &lt; j TUE\n    WENN wort[i] &lt;&gt; wort[j] DANN\n      GIB FALSCH ZURUECK\n    ENDEWENN\n    i &lt;- i + 1\n  ENDESOLANGE\n  GIB WAHR ZURUECK\nENDEFUNKTION</div>'+
+    '<p>Finde <strong>alle Fehler</strong>, benenne jeweils die Auswirkung und schreibe den korrigierten Algorithmus.</p>',
+  hints:[
+    'Prüfe zuerst die Startwerte: Welchen Index hat das letzte Zeichen eines Arrays?',
+    'Betrachte, welche Variablen sich im Schleifenrumpf ändern — und welche nicht.',
+    'Führe einen Trockenlauf mit dem Wort „otto" durch, dann werden beide Fehler sichtbar.'
+  ],
+  solution:
+    "FEHLER 1: Falscher Startwert fuer j\n"+
+    "  j <- n  zeigt hinter das letzte Zeichen. Bei einem Wort der Laenge 4\n"+
+    "  sind die gueltigen Indizes 0 bis 3, j = 4 liegt ausserhalb.\n"+
+    "  Auswirkung: Zugriffsfehler oder undefinierter Wert bereits im\n"+
+    "  ersten Durchlauf.\n"+
+    "  Korrektur: j <- n - 1\n\n"+
+    "FEHLER 2: j wird nie veraendert\n"+
+    "  Im Schleifenrumpf wird nur i erhoeht, j bleibt konstant.\n"+
+    "  Auswirkung: Es wird immer gegen dasselbe Zeichen verglichen,\n"+
+    "  statt sich von beiden Seiten zur Mitte vorzuarbeiten. Bei \"otto\"\n"+
+    "  wuerde o gegen o, t gegen o verglichen - Ergebnis faelschlich FALSCH.\n"+
+    "  Korrektur: j <- j - 1 im Schleifenrumpf ergaenzen\n\n"+
+    "TROCKENLAUF DES FEHLERHAFTEN CODES mit \"otto\" (n = 4)\n"+
+    "  i=0, j=4 -> wort[4] existiert nicht -> Fehler\n"+
+    "  Selbst mit j=3 korrigiert:\n"+
+    "  i=0, j=3: o = o   -> weiter, i=1\n"+
+    "  i=1, j=3: t <> o  -> gibt FALSCH zurueck, obwohl otto ein\n"+
+    "                       Palindrom ist\n\n"+
+    "KORRIGIERTE FASSUNG\n\n"+
+    "FUNKTION istPalindrom(wort)\n"+
+    "  n <- LAENGE(wort)\n"+
+    "  i <- 0\n"+
+    "  j <- n - 1\n"+
+    "  SOLANGE i < j TUE\n"+
+    "    WENN wort[i] <> wort[j] DANN\n"+
+    "      GIB FALSCH ZURUECK\n"+
+    "    ENDEWENN\n"+
+    "    i <- i + 1\n"+
+    "    j <- j - 1\n"+
+    "  ENDESOLANGE\n"+
+    "  GIB WAHR ZURUECK\n"+
+    "ENDEFUNKTION\n\n"+
+    "PROBE mit \"otto\" (n = 4)\n"+
+    "  i=0, j=3: o = o  -> i=1, j=2\n"+
+    "  i=1, j=2: t = t  -> i=2, j=1\n"+
+    "  i < j ist falsch -> Schleife endet -> GIB WAHR  korrekt\n\n"+
+    "PROBE mit \"otta\"\n"+
+    "  i=0, j=3: o <> a -> GIB FALSCH  korrekt",
+  solutionLang:'Fehlersuche',
+  solutionNote:'Beide Fehler gehören zu den beiden häufigsten Kategorien überhaupt: der Off-by-one-Fehler bei der Array-Obergrenze und die vergessene Aktualisierung einer Schleifenvariable, die eine Endlosschleife oder ein falsches Ergebnis erzeugt. Nenne bei solchen Aufgaben immer die Auswirkung, nicht nur die Zeile — die IHK vergibt den Punkt für das Erkennen der Konsequenz. Beachte nebenbei, dass die Bedingung i < j korrekt ist: Bei ungerader Wortlänge muss das mittlere Zeichen nicht geprüft werden, weil es mit sich selbst identisch ist.'
+}
+,
+{
+  id:'ex21', level:1, topic:'Hardware', title:'Arbeitsplatz-PC konfigurieren und begründen',
+  task:'<p>Für einen CAD-Arbeitsplatz in einem Ingenieurbüro soll ein PC beschafft werden:</p>'+
+    '<div class="check-prompt">Der Mitarbeiter konstruiert 3D-Baugruppen, hat regelmäßig mehrere große Modelle gleichzeitig geöffnet und rendert abends Vorschaubilder. Zwei Monitore sind gewünscht. Das Budget liegt bei 2.500 € netto.</div>'+
+    '<p>Stelle eine Konfiguration zusammen und <strong>begründe jede Komponente mit Bezug auf den Einsatzzweck</strong>. Berechne außerdem den Leistungsbedarf und leite daraus eine Netzteilempfehlung ab.</p>',
+  hints:[
+    'Jede Zeile braucht das Muster: Kennwert, dann „weil", dann der konkrete Bezug zur Aufgabe.',
+    'CAD nutzt beim Konstruieren oft nur wenige Kerne stark, beim Rendern dagegen alle — beides erwähnen.',
+    'Für das Netzteil addierst du die Leistungsaufnahmen und schlägst 20 bis 30 Prozent Reserve auf.'
+  ],
+  solution:
+    "KONFIGURATION\n\n"+
+    "CPU   8 Kerne / 16 Threads, hoher Single-Core-Takt   ca. 125 W\n"+
+    "      weil CAD-Modellierung ueberwiegend Single-Thread-Last erzeugt,\n"+
+    "      das abendliche Rendern aber alle Kerne auslastet.\n\n"+
+    "RAM   64 GB DDR5, 2 x 32 GB                           ca.  15 W\n"+
+    "      weil grosse Baugruppen vollstaendig im Arbeitsspeicher liegen\n"+
+    "      muessen; zwei Riegel wegen Dual Channel.\n\n"+
+    "GPU   professionelle Workstation-Karte, 12 GB          ca. 180 W\n"+
+    "      weil CAD-Anwendungen zertifizierte Treiber voraussetzen und\n"+
+    "      zwei Monitore mit hoher Aufloesung angesteuert werden.\n\n"+
+    "SSD   1 TB NVMe (System + Projekte)                    ca.   8 W\n"+
+    "      weil Ladezeiten grosser Modelle stark von der Zugriffszeit\n"+
+    "      abhaengen. Zusaetzlich 2 TB SATA-SSD als Archiv (ca. 4 W).\n\n"+
+    "Board ATX mit passendem Sockel, 4 RAM-Slots           ca.  45 W\n"+
+    "      weil spaetere Aufruestung auf 128 GB moeglich bleiben soll.\n\n"+
+    "Monitore 2 x 27 Zoll WQHD, IPS, hoehenverstellbar\n"+
+    "      weil IPS blickwinkelstabil und farbtreu ist und die\n"+
+    "      Hoehenverstellung nach ArbStaettV gefordert ist.\n"+
+    "      (eigene Stromversorgung, nicht im Netzteil beruecksichtigt)\n\n"+
+    "NETZTEIL\n"+
+    "  125 + 15 + 180 + 8 + 4 + 45 = 377 W\n"+
+    "  Luefter und Peripherie ca. 25 W  ->  402 W\n"+
+    "  + 25 % Reserve (101 W)           ->  503 W\n"+
+    "  Empfehlung: 550-W-Netzteil, 80 PLUS Gold\n\n"+
+    "  Begruendung der Reserve: Lastspitzen beim Rendern, spaetere\n"+
+    "  Aufruestung und bester Wirkungsgrad bei etwa halber Auslastung.",
+  solutionLang:'Konfiguration',
+  solutionNote:'Die IHK bewertet bei dieser Aufgabenform fast ausschließlich die Begründungen, nicht die konkreten Zahlen. Eine Konfiguration mit 32 statt 64 GB RAM ist voll punktwürdig, wenn die Begründung trägt. Umgekehrt bringt die perfekte Hardwareliste ohne „weil" kaum Punkte. Achte außerdem darauf, die Monitore nicht in die Netzteilrechnung einzubeziehen — sie haben ein eigenes Netzteil.'
+},
+{
+  id:'ex22', level:1, topic:'Verkabelung', title:'Verkabelung für ein Stockwerk planen',
+  task:'<p>In einer Arztpraxis soll das Netzwerk erneuert werden:</p>'+
+    '<div class="check-prompt">• 8 Behandlungsräume mit je einem PC, Entfernung zum Technikraum 15 bis 40 m\n• 1 Röntgenraum, 25 m entfernt, direkt neben dem Röntgengenerator\n• 2 WLAN-Access-Points an der Decke, 30 und 55 m, ohne Steckdose\n• Anbindung an das Nebengebäude, 250 m Luftlinie\n• Der Technikraum enthält Patchfeld und Switch</div>'+
+    '<p>Lege für jede Strecke das Medium fest und begründe. Prüfe außerdem, ob ein Switch mit 370 W PoE-Budget ausreicht, wenn die Access Points PoE+ benötigen.</p>',
+  hints:[
+    'Achte auf Störquellen und auf Entfernungen über 100 m — das sind die Entscheidungskriterien.',
+    'Geräte ohne Steckdose brauchen PoE, das über dasselbe Kabel läuft.',
+    'PoE+ nach 802.3at liefert etwa 25,5 W am Endgerät.'
+  ],
+  solution:
+    "MEDIENWAHL\n\n"+
+    "8 Behandlungsraeume, 15-40 m\n"+
+    "   -> Cat 6a U/UTP, Verlegekabel auf Patchfeld\n"+
+    "      Innerhalb der 100-m-Grenze, keine besonderen Stoerquellen,\n"+
+    "      Cat 6a sichert 10 Gbit/s fuer die Zukunft.\n\n"+
+    "Roentgenraum, 25 m, neben dem Generator\n"+
+    "   -> Cat 6a S/FTP (geschirmt) oder LWL\n"+
+    "      Der Roentgengenerator erzeugt starke elektromagnetische\n"+
+    "      Stoerungen. Geschirmtes Kabel mit beidseitigem Potenzial-\n"+
+    "      ausgleich, im Zweifel Glasfaser wegen galvanischer Trennung.\n\n"+
+    "2 Access Points, 30 m und 55 m, kein Stromanschluss\n"+
+    "   -> Cat 6a mit PoE+ (802.3at)\n"+
+    "      Strom und Daten ueber ein Kabel, damit keine Steckdose an\n"+
+    "      der Decke gesetzt werden muss.\n\n"+
+    "Nebengebaeude, 250 m\n"+
+    "   -> Singlemode-LWL\n"+
+    "      Ueber 100 m ist Kupfer ausgeschlossen. LWL bietet zusaetzlich\n"+
+    "      galvanische Trennung zwischen den Gebaeuden - wichtig wegen\n"+
+    "      Blitzschutz und unterschiedlichem Erdpotenzial.\n\n"+
+    "POE-BUDGET\n"+
+    "   2 Access Points x 25,5 W = 51 W\n"+
+    "   51 W < 370 W  ->  Das Budget reicht deutlich aus.\n"+
+    "   Es bleiben 319 W fuer spaetere Geraete, etwa IP-Telefone\n"+
+    "   oder Kameras.\n\n"+
+    "ERGAENZUNG\n"+
+    "   Alle Verlegekabel enden im Patchfeld des Technikraums,\n"+
+    "   von dort Rangierung mit kurzen Patchkabeln auf die Switch-Ports.\n"+
+    "   Vorteil: Umkonfiguration ohne Neuverlegung.",
+  solutionLang:'Netzplanung',
+  solutionNote:'Drei Signalwörter steuern diese Aufgabe vollständig: die Entfernung über 100 Meter erzwingt Glasfaser, die Störquelle erzwingt Schirmung, und die fehlende Steckdose erzwingt PoE. Wenn du die Aufgabe liest, markiere zuerst diese drei Dinge — dann schreibt sich die Lösung fast von selbst. Der Hinweis auf die galvanische Trennung bei der Gebäudeverbindung hebt die Antwort über den Durchschnitt.'
+},
+{
+  id:'ex23', level:2, topic:'Netzplan', title:'Netzplan mit Verzögerung neu bewerten',
+  task:'<p>Ein Migrationsprojekt umfasst sechs Vorgänge:</p>'+
+    '<div class="check-prompt">Vorgang  Dauer  Vorgänger\n   A       3       —\n   B       7       A\n   C       2       A\n   D       4       C\n   E       6       B, D\n   F       2       E</div>'+
+    '<p>(a) Berechne den vollständigen Netzplan und bestimme Projektdauer und kritischen Pfad.<br>(b) Vorgang C verzögert sich um 5 Tage. Wie wirkt sich das aus?<br>(c) Vorgang B verzögert sich stattdessen um 2 Tage. Wie wirkt sich <em>das</em> aus?</p>',
+  hints:[
+    'Rechne erst vorwärts (Maximum bei mehreren Vorgängern), dann rückwärts (Minimum) und bilde GP = SAZ − FAZ.',
+    'Eine Verzögerung wirkt sich nur dann aufs Projektende aus, wenn sie den Gesamtpuffer übersteigt.',
+    'Auf dem kritischen Pfad ist der Gesamtpuffer null — jede Verzögerung schlägt dort voll durch.'
+  ],
+  solution:
+    "(a) VOLLSTAENDIGER NETZPLAN\n\n"+
+    "  Vorwaerts:\n"+
+    "    A: FAZ=0            D=3  FEZ=3\n"+
+    "    B: FAZ=3            D=7  FEZ=10\n"+
+    "    C: FAZ=3            D=2  FEZ=5\n"+
+    "    D: FAZ=5            D=4  FEZ=9\n"+
+    "    E: FAZ=MAX(10,9)=10 D=6  FEZ=16\n"+
+    "    F: FAZ=16           D=2  FEZ=18\n\n"+
+    "  Rueckwaerts (SEZ von F = 18):\n"+
+    "    F: SEZ=18  SAZ=16\n"+
+    "    E: SEZ=16  SAZ=10\n"+
+    "    D: SEZ=10  SAZ=6\n"+
+    "    C: SEZ=6   SAZ=4\n"+
+    "    B: SEZ=10  SAZ=3\n"+
+    "    A: SEZ=MIN(3,4)=3  SAZ=0     Probe: SAZ = 0  ok\n\n"+
+    "  Gesamtpuffer:\n"+
+    "    A: 0-0  = 0   kritisch\n"+
+    "    B: 3-3  = 0   kritisch\n"+
+    "    C: 4-3  = 1\n"+
+    "    D: 6-5  = 1\n"+
+    "    E: 10-10= 0   kritisch\n"+
+    "    F: 16-16= 0   kritisch\n\n"+
+    "  Projektdauer:    18 Tage\n"+
+    "  Kritischer Pfad: A - B - E - F\n\n"+
+    "(b) VORGANG C VERZOEGERT SICH UM 5 TAGE\n"+
+    "  Gesamtpuffer von C betraegt 1 Tag.\n"+
+    "  Verbrauch: 5 Tage, davon 1 Tag gepuffert -> 4 Tage Ueberhang.\n"+
+    "  Neuer Ablauf: C endet bei 10, D bei 14,\n"+
+    "  E startet bei MAX(10,14)=14 und endet bei 20, F bei 22.\n"+
+    "  Neue Projektdauer: 22 Tage, also 4 Tage Verzug.\n"+
+    "  Der kritische Pfad wechselt zu A - C - D - E - F.\n\n"+
+    "(c) VORGANG B VERZOEGERT SICH UM 2 TAGE\n"+
+    "  B liegt auf dem kritischen Pfad, Gesamtpuffer 0.\n"+
+    "  Jede Verzoegerung schlaegt voll durch.\n"+
+    "  Neue Projektdauer: 18 + 2 = 20 Tage.\n"+
+    "  Der kritische Pfad bleibt A - B - E - F.",
+  solutionLang:'Netzplan',
+  solutionNote:'Teil (b) ist die anspruchsvollere Variante, weil der kritische Pfad wechselt — das wird oft übersehen. Die Regel lautet: Eine Verzögerung wirkt sich um genau den Betrag aufs Projektende aus, um den sie den Gesamtpuffer übersteigt. Bei fünf Tagen Verzögerung und einem Tag Puffer sind das vier Tage. Prüfe danach immer, ob der bisher unkritische Zweig dadurch selbst kritisch geworden ist.'
+},
+{
+  id:'ex24', level:2, topic:'Virtualisierung', title:'Serverkonsolidierung wirtschaftlich bewerten',
+  task:'<p>Ein Unternehmen betreibt sieben physische Server und erwägt eine Virtualisierung:</p>'+
+    '<div class="check-prompt">IST: 7 Server, je 210 W, Betrieb 24/7, Strompreis 0,32 €/kWh\n     Wartungsvertrag 340 € pro Server und Jahr\n     Durchschnittliche Auslastung 14 %\n\nSOLL: 2 Virtualisierungshosts, je 480 W, Anschaffung 17.400 € gesamt\n      Virtualisierungslizenzen 3.200 € einmalig\n      Wartungsvertrag 890 € pro Host und Jahr\n      Migrationsaufwand 12 Personentage à 8 h zu 78 €/h</div>'+
+    '<p>Vergleiche über <strong>fünf Jahre</strong>, berechne die Amortisationsdauer und nenne je zwei nicht-monetäre Vor- und Nachteile.</p>',
+  hints:[
+    'Stromkosten: Watt × Stunden ÷ 1.000 × Preis. Bei 24/7 sind es 8.760 Stunden im Jahr.',
+    'Die einmaligen Kosten fallen nur einmal an, die laufenden fünfmal.',
+    'Für die Amortisation teilst du die einmaligen Kosten durch die jährliche Einsparung.'
+  ],
+  solution:
+    "IST-KOSTEN PRO JAHR\n"+
+    "  Strom:   7 x 210 W x 8.760 h = 12.877.200 Wh = 12.877,2 kWh\n"+
+    "           12.877,2 x 0,32 = 4.120,70 EUR\n"+
+    "  Wartung: 7 x 340          = 2.380,00 EUR\n"+
+    "  -----------------------------------------\n"+
+    "  Summe pro Jahr             = 6.500,70 EUR\n"+
+    "  Ueber 5 Jahre              = 32.503,50 EUR\n\n"+
+    "SOLL-KOSTEN\n"+
+    "  Einmalig:\n"+
+    "     Hardware                 17.400,00\n"+
+    "     Lizenzen                  3.200,00\n"+
+    "     Migration 12 x 8 x 78 =   7.488,00\n"+
+    "     ------------------------------------\n"+
+    "     Summe einmalig           28.088,00 EUR\n\n"+
+    "  Laufend pro Jahr:\n"+
+    "     Strom: 2 x 480 W x 8.760 = 8.409.600 Wh = 8.409,6 kWh\n"+
+    "            8.409,6 x 0,32    = 2.691,07 EUR\n"+
+    "     Wartung: 2 x 890         = 1.780,00 EUR\n"+
+    "     ------------------------------------\n"+
+    "     Summe pro Jahr            = 4.471,07 EUR\n"+
+    "     Ueber 5 Jahre             = 22.355,35 EUR\n\n"+
+    "  Gesamtkosten 5 Jahre = 28.088,00 + 22.355,35 = 50.443,35 EUR\n\n"+
+    "VERGLEICH UEBER 5 JAHRE\n"+
+    "  IST  32.503,50 EUR\n"+
+    "  SOLL 50.443,35 EUR\n"+
+    "  -> Die Virtualisierung ist ueber 5 Jahre um 17.939,85 EUR teurer,\n"+
+    "     wenn die Altserver weiterlaufen koennten.\n\n"+
+    "AMORTISATION DER EINMALKOSTEN\n"+
+    "  Jaehrliche Einsparung im laufenden Betrieb:\n"+
+    "     6.500,70 - 4.471,07 = 2.029,63 EUR\n"+
+    "  Amortisation: 28.088,00 / 2.029,63 = 13,8 Jahre\n"+
+    "  -> Rein ueber die Betriebskosten amortisiert sich das Projekt nicht.\n\n"+
+    "  ABER: Die sieben Altserver muessten ohnehin ersetzt werden.\n"+
+    "  Bei angenommenen 4.000 EUR je Ersatzserver waeren das 28.000 EUR,\n"+
+    "  die entfallen. Damit amortisiert sich das Vorhaben sofort.\n\n"+
+    "NICHT-MONETAERE VORTEILE\n"+
+    "  1. Snapshots und Live-Migration ermoeglichen Wartung ohne\n"+
+    "     Betriebsunterbrechung.\n"+
+    "  2. Neue Server sind in Minuten statt Wochen bereitgestellt;\n"+
+    "     die Auslastung steigt von 14 % auf ein wirtschaftliches Niveau.\n\n"+
+    "NICHT-MONETAERE NACHTEILE\n"+
+    "  1. Der Host wird zum Single Point of Failure - faellt er aus,\n"+
+    "     sind alle Gaeste betroffen. Cluster und gemeinsamer Speicher\n"+
+    "     sind daher noetig.\n"+
+    "  2. Es wird zusaetzliches Spezialwissen benoetigt; ohne Schulung\n"+
+    "     steigt das Betriebsrisiko.",
+  solutionLang:'Wirtschaftlichkeitsrechnung',
+  solutionNote:'Diese Aufgabe hat bewusst ein unbequemes Ergebnis: Die Rechnung spricht zunächst gegen die Virtualisierung. Genau das zu erkennen und zu benennen ist die eigentliche Leistung. Der entscheidende Zusatz ist die Frage nach der Alternative — ein Vergleich gegen den Weiterbetrieb alter Hardware ist unvollständig, wenn diese ohnehin ersetzt werden müsste. Solche Annahmen darfst und sollst du treffen, wenn du sie ausdrücklich kennzeichnest.'
+},
+{
+  id:'ex25', level:2, topic:'Lizenzen', title:'Lizenzbedarf ermitteln und Modell wählen',
+  task:'<p>Eine Spedition plant die Einführung einer Branchensoftware:</p>'+
+    '<div class="check-prompt">• 34 Mitarbeiter insgesamt, davon 22 im Büro und 12 Fahrer\n• Die Fahrer nutzen die App auf 12 Tablets, jeweils nur während ihrer Schicht\n• Im Büro arbeiten 22 Personen an 18 Arbeitsplatzrechnern im Wechsel\n• Zu Spitzenzeiten sind nie mehr als 25 Personen gleichzeitig angemeldet\n\nPreise: Named User 240 €/Jahr · Device 290 €/Jahr · Concurrent 520 €/Jahr</div>'+
+    '<p>Berechne die Jahreskosten für alle drei Modelle und sprich eine begründete Empfehlung aus. Nenne außerdem zwei Risiken einer Unterlizenzierung.</p>',
+  hints:[
+    'Named User zählt Personen, Device zählt Geräte, Concurrent zählt gleichzeitige Anmeldungen.',
+    'Die Tablets sind eigene Geräte und müssen bei der Device-Zählung mit.',
+    'Vergleiche die drei Summen und begründe die Empfehlung mit der Differenz.'
+  ],
+  solution:
+    "LIZENZBEDARF JE MODELL\n\n"+
+    "  Named User : 34 Personen\n"+
+    "               34 x 240 = 8.160 EUR/Jahr\n\n"+
+    "  Device     : 18 Buero-PCs + 12 Tablets = 30 Geraete\n"+
+    "               30 x 290 = 8.700 EUR/Jahr\n\n"+
+    "  Concurrent : 25 gleichzeitige Anmeldungen\n"+
+    "               25 x 520 = 13.000 EUR/Jahr\n\n"+
+    "EMPFEHLUNG\n"+
+    "  Guenstigstes Modell: Named User mit 8.160 EUR pro Jahr.\n"+
+    "  Es ist 540 EUR guenstiger als Device und 4.840 EUR guenstiger\n"+
+    "  als Concurrent.\n\n"+
+    "  Begruendung: Die Zahl der Personen (34) liegt hier nur knapp\n"+
+    "  ueber der Zahl der Geraete (30), und der hohe Stueckpreis der\n"+
+    "  Concurrent-Lizenz macht dieses Modell trotz der geringsten\n"+
+    "  Stueckzahl am teuersten.\n\n"+
+    "  Zu pruefen ist zusaetzlich:\n"+
+    "   - Bei Personalfluktuation sind Named-User-Lizenzen umzumelden;\n"+
+    "     Device-Lizenzen waeren dabei pflegeleichter.\n"+
+    "   - Waechst die Belegschaft auf ueber 36 Personen, wird Device\n"+
+    "     guenstiger. Die Entscheidung sollte daher jaehrlich geprueft\n"+
+    "     werden.\n\n"+
+    "RISIKEN DER UNTERLIZENZIERUNG\n"+
+    "  1. Urheberrechtsverletzung: Der Hersteller kann Schadenersatz\n"+
+    "     und Nachlizenzierung fordern; in schweren Faellen drohen\n"+
+    "     strafrechtliche Folgen fuer die Geschaeftsfuehrung.\n"+
+    "  2. Betriebsrisiko und Reputationsschaden: Bei einem Lizenzaudit\n"+
+    "     koennen Systeme gesperrt werden, und der Vorfall belastet\n"+
+    "     die Geschaeftsbeziehung zum Hersteller.",
+  solutionLang:'Lizenzrechnung',
+  solutionNote:'Die Falle steckt in der Device-Zählung: Die zwölf Tablets sind eigenständige Geräte und dürfen nicht vergessen werden, auch wenn sie nur schichtweise genutzt werden. Und beachte den Hinweis zum Wachstum — bei 36 Personen kippt die Entscheidung. Solche Kipppunkte zu benennen, macht aus einer Rechnung eine Empfehlung, und genau das verlangt der Operator.'
+},
+{
+  id:'ex26', level:2, topic:'Kostenrechnung', title:'Break-Even und Verfahrensvergleich',
+  task:'<p>Ein IT-Dienstleister prüft, ob er den Druckbetrieb selbst übernimmt oder auslagert:</p>'+
+    '<div class="check-prompt">EIGENBETRIEB: Leasing der Drucker 480 €/Monat, Wartung 1.200 €/Jahr,\n              Verbrauchsmaterial 0,032 € pro Seite\n\nDIENSTLEISTER: Grundgebühr 90 €/Monat, 0,058 € pro Seite\n\nAktuelles Druckvolumen: 14.000 Seiten pro Monat</div>'+
+    '<p>(a) Berechne die Jahreskosten beider Varianten beim aktuellen Volumen.<br>(b) Bestimme die kritische Menge pro Jahr, ab der sich der Eigenbetrieb lohnt.<br>(c) Gib eine Empfehlung mit Richtung.</p>',
+  hints:[
+    'Trenne zuerst konsequent nach Fixkosten pro Jahr und variablen Kosten je Seite.',
+    'Für die kritische Menge setzt du beide Kostenfunktionen gleich und löst nach x auf.',
+    'Rechne das Monatsvolumen auf das Jahr hoch, bevor du vergleichst.'
+  ],
+  solution:
+    "KOSTENFUNKTIONEN AUFSTELLEN\n\n"+
+    "  Eigenbetrieb:\n"+
+    "    Fixkosten  = 480 x 12 + 1.200 = 5.760 + 1.200 = 6.960 EUR/Jahr\n"+
+    "    variabel   = 0,032 EUR je Seite\n"+
+    "    K_eigen(x) = 6.960 + 0,032x\n\n"+
+    "  Dienstleister:\n"+
+    "    Fixkosten  = 90 x 12 = 1.080 EUR/Jahr\n"+
+    "    variabel   = 0,058 EUR je Seite\n"+
+    "    K_dienst(x)= 1.080 + 0,058x\n\n"+
+    "(a) AKTUELLES VOLUMEN\n"+
+    "    x = 14.000 x 12 = 168.000 Seiten pro Jahr\n\n"+
+    "    Eigenbetrieb : 6.960 + 0,032 x 168.000 = 6.960 + 5.376 = 12.336 EUR\n"+
+    "    Dienstleister: 1.080 + 0,058 x 168.000 = 1.080 + 9.744 = 10.824 EUR\n\n"+
+    "    Beim aktuellen Volumen ist der Dienstleister um 1.512 EUR\n"+
+    "    pro Jahr guenstiger.\n\n"+
+    "(b) KRITISCHE MENGE\n"+
+    "    6.960 + 0,032x = 1.080 + 0,058x\n"+
+    "    6.960 - 1.080  = 0,058x - 0,032x\n"+
+    "    5.880          = 0,026x\n"+
+    "    x              = 226.154 Seiten pro Jahr\n"+
+    "                   = rund 18.846 Seiten pro Monat\n\n"+
+    "    Probe bei 300.000 Seiten:\n"+
+    "      Eigen  = 6.960 + 9.600  = 16.560 EUR\n"+
+    "      Dienst = 1.080 + 17.400 = 18.480 EUR   -> Eigen guenstiger  ok\n\n"+
+    "(c) EMPFEHLUNG\n"+
+    "    Beim derzeitigen Volumen von 168.000 Seiten pro Jahr wird der\n"+
+    "    Dienstleister empfohlen; er ist 1.512 EUR guenstiger.\n"+
+    "    Der Eigenbetrieb lohnt sich erst ab rund 226.000 Seiten pro\n"+
+    "    Jahr, also ab etwa 18.850 Seiten im Monat.\n"+
+    "    Da das aktuelle Volumen 26 % darunter liegt, ist kurzfristig\n"+
+    "    kein Wechsel sinnvoll. Die Entscheidung sollte bei einem\n"+
+    "    Anstieg des Druckvolumens erneut geprueft werden.",
+  solutionLang:'Kostenvergleich',
+  solutionNote:'Die Probe mit einer Beispielmenge oberhalb der kritischen Menge ist der beste Schutz gegen den häufigsten Fehler dieser Aufgabenform — die vertauschte Richtung der Empfehlung. Sie kostet dreißig Sekunden und sichert den Begründungspunkt. Achte außerdem darauf, das Monatsvolumen konsequent aufs Jahr hochzurechnen, weil die Fixkosten teils monatlich und teils jährlich angegeben sind.'
+},
+{
+  id:'ex27', level:2, topic:'IT-Service', title:'Tickets einordnen und SLA prüfen',
+  task:'<p>Ein Dienstleister hat folgendes SLA vereinbart:</p>'+
+    '<div class="check-prompt">Servicezeit: Mo–Fr, 8:00–17:00 Uhr\nPriorität 1: Reaktion binnen 30 Min, Wiederherstellung binnen 4 Std\nPriorität 2: Reaktion binnen 2 Std, Wiederherstellung binnen 8 Std\nVerfügbarkeit: 99,5 % bezogen auf die Servicezeit</div>'+
+    '<p>Ordne die folgenden Meldungen jeweils als Incident, Problem, Change oder Service Request ein, bestimme die Priorität und prüfe die SLA-Einhaltung:</p>'+
+    '<div class="check-prompt">1) Do 09:12 — „Der Warenwirtschaftsserver ist nicht erreichbar, 40 Nutzer betroffen."\n   Reaktion 09:35, Wiederherstellung 13:40.\n2) Fr 16:40 — „Bitte legen Sie ein Konto für unsere neue Kollegin an."\n   Bearbeitung Mo 09:15.\n3) „Der Server fällt seit drei Wochen jeden Donnerstagvormittag aus."\n4) „Wir möchten am Samstag die Firewall auf Version 12 aktualisieren."</div>'+
+    '<p>Berechne außerdem die maximal zulässige Ausfallzeit pro Jahr.</p>',
+  hints:[
+    'Frage bei jeder Meldung: Ist gerade etwas kaputt, wiederholt es sich, ist es Routine oder eine geplante Änderung?',
+    'Die Reaktionszeit ist erfüllt, sobald die Bearbeitung beginnt — nicht erst bei der Lösung.',
+    'Für die Verfügbarkeit brauchst du die Servicezeit in Stunden pro Jahr, nicht 8.760.'
+  ],
+  solution:
+    "1) INCIDENT, Prioritaet 1\n"+
+    "   Auswirkung hoch (40 Nutzer, zentrales System),\n"+
+    "   Dringlichkeit hoch -> Prioritaet 1.\n"+
+    "   Reaktion:         09:12 -> 09:35 = 23 Min   (Soll 30 Min)  EINGEHALTEN\n"+
+    "   Wiederherstellung:09:12 -> 13:40 = 4 h 28   (Soll 4 h)     VERLETZT\n"+
+    "   Folge: SLA-Verstoss, ggf. Vertragsstrafe. Bei drohendem\n"+
+    "   Fristablauf waere eine hierarchische Eskalation noetig gewesen.\n\n"+
+    "2) SERVICE REQUEST\n"+
+    "   Keine Stoerung, sondern ein Standardvorgang.\n"+
+    "   Eingang Fr 16:40, Servicezeit endet um 17:00.\n"+
+    "   Es verbleiben 20 Min am Freitag, die Uhr steht am Wochenende still\n"+
+    "   und laeuft Mo ab 08:00 weiter. Bearbeitung Mo 09:15:\n"+
+    "   20 Min + 75 Min = 95 Min Servicezeit.\n"+
+    "   Fuer Service Requests ist im SLA keine Frist vereinbart -\n"+
+    "   dies ist eine Luecke, die nachverhandelt werden sollte.\n\n"+
+    "3) PROBLEM\n"+
+    "   Die wiederkehrende Stoerung mit unbekannter Ursache.\n"+
+    "   Die einzelnen Ausfaelle sind Incidents, das dahinterliegende\n"+
+    "   Muster ist ein Problem. Ziel: Ursache finden (naheliegend etwa\n"+
+    "   ein Backup- oder Wartungsjob am Donnerstagvormittag) und\n"+
+    "   dauerhaft beseitigen.\n\n"+
+    "4) CHANGE\n"+
+    "   Geplante Aenderung ausserhalb der Servicezeit.\n"+
+    "   Erforderlich: Change-Antrag, Risikobewertung, Testplan,\n"+
+    "   Rueckfallplan (Rollback) und Information der Anwender.\n\n"+
+    "MAXIMAL ZULAESSIGE AUSFALLZEIT\n"+
+    "   Servicezeit = 9 h/Tag x 5 Tage x 52 Wochen = 2.340 h pro Jahr\n"+
+    "   Erlaubter Ausfall = 2.340 x 0,005 = 11,7 h pro Jahr\n\n"+
+    "   Zum Vergleich: Bezogen auf 8.760 h waeren es 43,8 h.\n"+
+    "   Der Bezugszeitraum halbiert die erlaubte Ausfallzeit fast\n"+
+    "   auf ein Viertel - er ist daher immer genau zu lesen.",
+  solutionLang:'ITSM',
+  solutionNote:'Die Aufgabe prüft drei Dinge gleichzeitig, und die meisten Punkte gehen bei Meldung 1 verloren: Die Reaktionszeit wurde eingehalten, die Wiederherstellungszeit nicht. Wer beide Fristen in einen Topf wirft, kommt zum falschen Ergebnis. Bei Meldung 2 ist der eigentliche Prüfungspunkt, dass die Servicezeit am Wochenende ruht — die Uhr läuft nicht durch. Und bei der Verfügbarkeit entscheidet der Bezugszeitraum über einen Faktor von fast vier.'
+},
+{
+  id:'ex28', level:3, topic:'Cloud', title:'Cloud-Migration bewerten und absichern',
+  task:'<p>Eine Steuerkanzlei mit 28 Mitarbeitern erwägt, ihre Dokumentenverwaltung in die Cloud zu verlagern:</p>'+
+    '<div class="check-prompt">Aktuell: eigener Server (4 Jahre alt, Ersatz in 12 Monaten fällig, ca. 9.000 €),\n         Backup auf NAS, Administration durch einen externen Dienstleister\n         für 280 €/Monat, Stromkosten ca. 55 €/Monat\n\nAngebot: SaaS-Dokumentenmanagement, 19 €/Benutzer/Monat,\n         Einführung und Datenmigration einmalig 6.800 €,\n         Rechenzentrum des Anbieters in Irland</div>'+
+    '<p>(a) Vergleiche über fünf Jahre. (b) Ordne das Angebot einem Servicemodell zu und begründe. (c) Nenne drei datenschutzrechtliche Anforderungen, die vor Vertragsschluss zu klären sind. (d) Nenne zwei Risiken der Migration mit je einer Gegenmaßnahme.</p>',
+  hints:[
+    'Beim Ist-Zustand gehört die anstehende Ersatzbeschaffung in die Fünfjahresrechnung.',
+    'Für das Servicemodell: Wer verwaltet das Betriebssystem, wer die Anwendung?',
+    'Bei (c) denke an Art. 28 DSGVO, an den Serverstandort und daran, wer verantwortlich bleibt.'
+  ],
+  solution:
+    "(a) KOSTENVERGLEICH UEBER 5 JAHRE\n\n"+
+    "  IST (Eigenbetrieb)\n"+
+    "    Ersatzserver in 12 Monaten          9.000,00\n"+
+    "    Administration 280 x 12 x 5        16.800,00\n"+
+    "    Strom 55 x 12 x 5                   3.300,00\n"+
+    "    ------------------------------------------\n"+
+    "    Summe                              29.100,00 EUR\n\n"+
+    "  SOLL (SaaS)\n"+
+    "    Lizenz 28 x 19 x 12 x 5            31.920,00\n"+
+    "    Einfuehrung und Migration           6.800,00\n"+
+    "    ------------------------------------------\n"+
+    "    Summe                              38.720,00 EUR\n\n"+
+    "  Differenz: 9.620 EUR zugunsten des Eigenbetriebs.\n"+
+    "  Die Cloud-Loesung ist ueber fuenf Jahre rund 33 % teurer.\n"+
+    "  Nicht eingerechnet sind Ausfallrisiko, Backup-Aufwand und\n"+
+    "  die interne Arbeitszeit fuer die Serverbetreuung - diese\n"+
+    "  Posten verschieben das Bild zugunsten der Cloud.\n\n"+
+    "(b) SERVICEMODELL\n"+
+    "  Es handelt sich um SaaS (Software as a Service).\n"+
+    "  Begruendung: Der Anbieter stellt die fertige Anwendung\n"+
+    "  einschliesslich Betriebssystem, Laufzeitumgebung und\n"+
+    "  Infrastruktur bereit. Die Kanzlei verwaltet lediglich ihre\n"+
+    "  eigenen Daten und Benutzerkonten - kein Zugriff auf das\n"+
+    "  Betriebssystem, keine eigene Installation.\n\n"+
+    "(c) DATENSCHUTZRECHTLICHE ANFORDERUNGEN\n"+
+    "  1. Auftragsverarbeitungsvertrag nach Art. 28 DSGVO\n"+
+    "     Der Anbieter ist Auftragsverarbeiter, die Kanzlei bleibt\n"+
+    "     Verantwortliche. Der AVV muss Weisungsbindung, Vertraulichkeit,\n"+
+    "     Subunternehmer, Loeschung und Kontrollrechte regeln.\n\n"+
+    "  2. Serverstandort und Drittlandtransfer\n"+
+    "     Irland liegt in der EU, ein Drittlandtransfer findet zunaechst\n"+
+    "     nicht statt. Zu pruefen ist jedoch, ob Subunternehmer oder\n"+
+    "     Support-Zugriffe ausserhalb der EU erfolgen - dann waeren\n"+
+    "     zusaetzliche Garantien noetig.\n\n"+
+    "  3. Technische und organisatorische Massnahmen nach Art. 32\n"+
+    "     Verschluesselung bei Uebertragung und Speicherung, Zugriffs-\n"+
+    "     protokollierung, Mandantentrennung, dokumentiertes Loesch-\n"+
+    "     konzept und ein nachweisbares Backup-Konzept.\n\n"+
+    "  Zusaetzlich: Steuerberater unterliegen der Verschwiegenheits-\n"+
+    "  pflicht nach § 203 StGB. Die Einbindung eines Dienstleisters\n"+
+    "  erfordert daher besondere Sorgfalt und vertragliche Absicherung.\n\n"+
+    "(d) RISIKEN UND GEGENMASSNAHMEN\n"+
+    "  1. Abhaengigkeit vom Anbieter (Lock-in)\n"+
+    "     Ein spaeterer Wechsel oder eine Insolvenz des Anbieters kann\n"+
+    "     den Zugriff auf die Daten gefaehrden.\n"+
+    "     Gegenmassnahme: Vertragliche Zusicherung eines Datenexports\n"+
+    "     in einem offenen Format, geregelte Kuendigungs- und\n"+
+    "     Rueckgabefristen, regelmaessige eigene Exporte.\n\n"+
+    "  2. Abhaengigkeit von der Internetverbindung\n"+
+    "     Bei einem Leitungsausfall ist die Kanzlei arbeitsunfaehig,\n"+
+    "     waehrend ein lokaler Server weiterlaufen wuerde.\n"+
+    "     Gegenmassnahme: Zweiter Internetanschluss eines anderen\n"+
+    "     Anbieters als Rueckfallebene, Router mit automatischem\n"+
+    "     Failover, ergaenzend Mobilfunk als Notzugang.",
+  solutionLang:'Cloud-Bewertung',
+  solutionNote:'Die Fünfjahresrechnung fällt hier gegen die Cloud aus, und es ist richtig, das so zu schreiben — aber unvollständig ohne den Hinweis auf die nicht bezifferten Posten. Prüfer erwarten bei Cloud-Aufgaben genau diese Differenzierung: harte Zahlen auf der einen Seite, nicht quantifizierte Faktoren wie Ausfallrisiko, Skalierbarkeit und interner Aufwand auf der anderen. Bei Teil (c) ist der Kernsatz, dass die Verantwortlichkeit nach DSGVO nie auf den Anbieter übergeht.'
+},
+{
+  id:'ex29', level:3, topic:'IPv4', title:'Netzsegmentierung mit unterschiedlichen Größen',
+  task:'<p>Ein Unternehmen hat das Netz <strong>192.168.8.0/21</strong> zur Verfügung und soll es bedarfsgerecht aufteilen:</p>'+
+    '<div class="check-prompt">Verwaltung   220 Hosts\nProduktion   400 Hosts\nGästenetz     50 Hosts\nVoIP         120 Hosts\nServer        25 Hosts\nManagement    10 Hosts\n2 Router-Kopplungen zu je 2 Hosts</div>'+
+    '<p>Bestimme für jedes Segment das erforderliche Präfix und weise die Netze so zu, dass möglichst wenig Adressraum verschwendet wird (VLSM). Gib jeweils Netzadresse, Maske und Broadcast an.</p>',
+  hints:[
+    'Beginne mit dem größten Bedarf — sonst entstehen Lücken, die sich nicht mehr füllen lassen.',
+    'Für jedes Segment gilt: kleinstes h mit 2^h − 2 ≥ Bedarf, Präfix = 32 − h.',
+    'Das /21 umfasst 192.168.8.0 bis 192.168.15.255, also 2.048 Adressen.'
+  ],
+  solution:
+    "AUSGANGSNETZ\n"+
+    "  192.168.8.0/21 = 2.048 Adressen\n"+
+    "  Bereich: 192.168.8.0 bis 192.168.15.255\n\n"+
+    "PRAEFIX JE SEGMENT (absteigend nach Bedarf sortieren!)\n\n"+
+    "  Produktion  400 Hosts -> 2^9-2 = 510  -> /23  (512 Adressen)\n"+
+    "  Verwaltung  220 Hosts -> 2^8-2 = 254  -> /24  (256 Adressen)\n"+
+    "  VoIP        120 Hosts -> 2^7-2 = 126  -> /25  (128 Adressen)\n"+
+    "  Gaeste       50 Hosts -> 2^6-2 =  62  -> /26  ( 64 Adressen)\n"+
+    "  Server       25 Hosts -> 2^5-2 =  30  -> /27  ( 32 Adressen)\n"+
+    "  Management   10 Hosts -> 2^4-2 =  14  -> /28  ( 16 Adressen)\n"+
+    "  Kopplung 1    2 Hosts -> 2^2-2 =   2  -> /30  (  4 Adressen)\n"+
+    "  Kopplung 2    2 Hosts -> 2^2-2 =   2  -> /30  (  4 Adressen)\n\n"+
+    "ZUWEISUNG (groesstes Netz zuerst, luekenlos aneinander)\n\n"+
+    "  Produktion  192.168.8.0/23\n"+
+    "              Maske 255.255.254.0\n"+
+    "              Hosts 192.168.8.1 - 192.168.9.254\n"+
+    "              Broadcast 192.168.9.255\n\n"+
+    "  Verwaltung  192.168.10.0/24\n"+
+    "              Maske 255.255.255.0\n"+
+    "              Hosts 192.168.10.1 - 192.168.10.254\n"+
+    "              Broadcast 192.168.10.255\n\n"+
+    "  VoIP        192.168.11.0/25\n"+
+    "              Maske 255.255.255.128\n"+
+    "              Hosts 192.168.11.1 - 192.168.11.126\n"+
+    "              Broadcast 192.168.11.127\n\n"+
+    "  Gaeste      192.168.11.128/26\n"+
+    "              Maske 255.255.255.192\n"+
+    "              Hosts 192.168.11.129 - 192.168.11.190\n"+
+    "              Broadcast 192.168.11.191\n\n"+
+    "  Server      192.168.11.192/27\n"+
+    "              Maske 255.255.255.224\n"+
+    "              Hosts 192.168.11.193 - 192.168.11.222\n"+
+    "              Broadcast 192.168.11.223\n\n"+
+    "  Management  192.168.11.224/28\n"+
+    "              Maske 255.255.255.240\n"+
+    "              Hosts 192.168.11.225 - 192.168.11.238\n"+
+    "              Broadcast 192.168.11.239\n\n"+
+    "  Kopplung 1  192.168.11.240/30\n"+
+    "              Hosts 192.168.11.241 - 192.168.11.242\n"+
+    "              Broadcast 192.168.11.243\n\n"+
+    "  Kopplung 2  192.168.11.244/30\n"+
+    "              Hosts 192.168.11.245 - 192.168.11.246\n"+
+    "              Broadcast 192.168.11.247\n\n"+
+    "PROBE\n"+
+    "  Verbraucht: 512+256+128+64+32+16+4+4 = 1.016 Adressen\n"+
+    "  Verfuegbar: 2.048\n"+
+    "  Frei ab 192.168.11.248 bis 192.168.15.255 = 1.032 Adressen\n"+
+    "  -> reichlich Reserve fuer weitere Segmente.",
+  solutionLang:'VLSM',
+  solutionNote:'Die Reihenfolge ist bei VLSM nicht Geschmackssache, sondern Voraussetzung: Vom größten zum kleinsten Netz zuzuweisen ist zwingend, weil ein großes Netz nur an einer durch seine eigene Blockgröße teilbaren Adresse beginnen darf. Wer klein anfängt, blockiert diese Startpunkte und muss von vorn beginnen. Die Probe am Ende — verbrauchte gegen verfügbare Adressen — fängt Rechenfehler zuverlässig ab und wird oft eigens bepunktet.'
+},
+{
+  id:'ex30', level:3, topic:'Gesamtaufgabe', title:'Arbeitsplatz komplett einrichten – Handlungsaufgabe',
+  task:'<p>Diese Aufgabe verbindet mehrere Prüfungsbereiche, so wie es die AP1 in ihren Handlungsschritten tut.</p>'+
+    '<div class="check-prompt">Ein Architekturbüro richtet drei neue Arbeitsplätze im ausgebauten Dachgeschoss ein.\n\n• Die Räume haben je ein großes Dachflächenfenster nach Süden.\n• Der Technikraum liegt im Erdgeschoss, Kabelweg ca. 85 m.\n• Die Mitarbeiter arbeiten mit CAD und benötigen Zugriff auf den Projektserver.\n• Einer der drei Mitarbeiter ist stark sehbehindert.\n• Die Arbeitsplätze sollen im vorhandenen Netz 192.168.40.0/24 liegen;\n  der DHCP-Bereich ist .100 bis .200, der Router hat die .1.</div>'+
+    '<p>Bearbeite: (a) Ergonomische Gestaltung inkl. Barrierefreiheit — je drei Maßnahmen. (b) Verkabelung mit Begründung. (c) Eine gültige statische IP-Konfiguration für einen Netzwerkdrucker samt Begründung. (d) Drei Punkte für das Abnahmeprotokoll.</p>',
+  hints:[
+    'Bei (a): Das Südfenster und die Sehbehinderung sind zwei getrennte Anforderungen.',
+    'Bei (b): Prüfe die Kabellänge gegen die zulässige Höchstlänge.',
+    'Bei (c): Schließe Netzadresse, Broadcast, Router und den gesamten DHCP-Bereich aus.'
+  ],
+  solution:
+    "(a) ERGONOMIE UND BARRIEREFREIHEIT\n\n"+
+    "  Ergonomie (wegen des Suedfensters und der Bildschirmarbeit):\n"+
+    "   1. Bildschirme mit Blickrichtung PARALLEL zum Fenster aufstellen,\n"+
+    "      weder davor (Blendung) noch mit dem Ruecken dazu (Spiegelung).\n"+
+    "   2. Blend- und Sonnenschutz am Dachfenster, etwa Rollos, da die\n"+
+    "      Suedlage ganztaegig direkte Einstrahlung bringt.\n"+
+    "   3. Hoehenverstellbare Tische und Stuehle mit verstellbarer\n"+
+    "      Rueckenlehne, Sehabstand 50-80 cm, oberste Bildschirmzeile\n"+
+    "      unterhalb der Augenhoehe.\n"+
+    "   (weiter moeglich: 500 Lux blendfreie Beleuchtung, mindestens\n"+
+    "    8-10 m2 Flaeche je Arbeitsplatz, Laerm unter 55 dB(A))\n\n"+
+    "  Barrierefreiheit fuer den sehbehinderten Mitarbeiter:\n"+
+    "   1. Grosser, hochaufloesender Monitor (z. B. 32 Zoll) mit\n"+
+    "      Bildschirmlupe und erhoehter Skalierung des Betriebssystems.\n"+
+    "   2. Kontrastreiches Farbschema und Screenreader-Unterstuetzung;\n"+
+    "      Software auf Tastaturbedienbarkeit pruefen (WCAG-Prinzipien\n"+
+    "      wahrnehmbar, bedienbar, verstaendlich, robust).\n"+
+    "   3. Tastatur mit grossen, kontrastreichen Beschriftungen,\n"+
+    "      auf Wunsch Braillezeile; Dokumente mit Alternativtexten.\n\n"+
+    "(b) VERKABELUNG\n\n"+
+    "  Kabelweg 85 m liegt unter der zulaessigen Gesamtlaenge von 100 m,\n"+
+    "  ABER: 85 m Verlegekabel plus zweimal Patchkabel (je ca. 5 m)\n"+
+    "  ergeben 95 m - das ist noch zulaessig, aber knapp.\n"+
+    "  Die Norm sieht hoechstens 90 m fest verlegtes Kabel vor,\n"+
+    "  das ist hier eingehalten.\n\n"+
+    "  Empfehlung: Cat 6a S/FTP, Verlegekabel auf ein Patchfeld im\n"+
+    "  Dachgeschoss, von dort kurze Patchkabel zu einem Etagenswitch.\n"+
+    "  Begruendung: Cat 6a sichert 10 Gbit/s ueber die volle Strecke,\n"+
+    "  was fuer den Zugriff auf grosse CAD-Dateien auf dem Projekt-\n"+
+    "  server sinnvoll ist. Die Schirmung ist bei Kabelwegen entlang\n"+
+    "  der Hauselektrik ratsam.\n\n"+
+    "  Alternative bei groesserer Entfernung oder spaeterer Erweiterung:\n"+
+    "  LWL-Anbindung des Etagenswitches an den Technikraum.\n\n"+
+    "(c) STATISCHE IP FUER DEN NETZWERKDRUCKER\n\n"+
+    "  Ausgeschlossen sind:\n"+
+    "    192.168.40.0    Netzadresse\n"+
+    "    192.168.40.1    Router / Standardgateway\n"+
+    "    192.168.40.100 bis .200  DHCP-Bereich (Adresskonflikt!)\n"+
+    "    192.168.40.255  Broadcast\n\n"+
+    "  Frei bleiben: .2 bis .99 sowie .201 bis .254\n\n"+
+    "  Konfiguration:\n"+
+    "    IP-Adresse       192.168.40.210\n"+
+    "    Subnetzmaske     255.255.255.0\n"+
+    "    Standardgateway  192.168.40.1\n"+
+    "    DNS-Server       laut Firmenvorgabe\n\n"+
+    "  Begruendung der statischen Vergabe: Ein Drucker muss dauerhaft\n"+
+    "  unter derselben Adresse erreichbar sein, damit die auf den\n"+
+    "  Clients hinterlegten Druckerports gueltig bleiben.\n"+
+    "  Saubere Alternative: DHCP-Reservierung auf die MAC-Adresse -\n"+
+    "  dann bleibt die Verwaltung zentral beim DHCP-Server.\n\n"+
+    "(d) ABNAHMEPROTOKOLL - drei Punkte\n\n"+
+    "   1. Funktionspruefung je Arbeitsplatz: Anmeldung an der Domaene,\n"+
+    "      Zugriff auf den Projektserver, Testdruck, Start der\n"+
+    "      CAD-Anwendung mit einer Beispieldatei.\n"+
+    "   2. Nachweis der ergonomischen und barrierefreien Einrichtung:\n"+
+    "      Messwerte fuer Beleuchtung, eingestellte Tischhoehen,\n"+
+    "      installierte Hilfsmittel und erfolgte Einweisung.\n"+
+    "   3. Uebergabe der Dokumentation: Inventarnummern, vergebene\n"+
+    "      IP-Adressen, Patchfeld-Belegung, Lizenznachweise,\n"+
+    "      Ansprechpartner - mit Datum und Unterschrift beider Seiten.",
+  solutionLang:'Handlungsaufgabe',
+  solutionNote:'So sieht eine echte AP1-Handlungsaufgabe aus: mehrere Prüfungsbereiche in einem Szenario, mit Angaben, die alle gebraucht werden. Das Südfenster, die 85 Meter, die Sehbehinderung und der DHCP-Bereich sind jeweils der Auslöser für eine Teilantwort — keine davon ist Dekoration. Trainiere daher, die Aufgabenstellung zuerst durchzugehen und jede Zahl und jeden Nebensatz zu markieren, bevor du schreibst. Was nicht gebraucht wird, ist in der AP1 die Ausnahme.'
+},
+{
+  id:'ex31', level:3, topic:'Kommunikation', title:'Eskaliertes Kundengespräch analysieren',
+  task:'<p>Ein Kunde ruft im Support an:</p>'+
+    '<div class="check-prompt">Kunde:      „Das ist jetzt das dritte Mal diese Woche, dass euer System abstürzt!\n             Arbeitet bei euch eigentlich irgendjemand?"\n\nMitarbeiter:„Also, laut unserem Monitoring war das System durchgehend verfügbar.\n             Da müssen Sie etwas falsch gemacht haben."\n\nKunde:      „Ich mache also etwas falsch, ja? Ich will sofort Ihren Vorgesetzten!"</div>'+
+    '<p>(a) Analysiere die erste Kundenaussage mit dem Vier-Ohren-Modell. (b) Erkläre, warum die Antwort des Mitarbeiters eskalierend wirkt. (c) Formuliere eine bessere Antwort. (d) Ordne den Vorgang in Incident/Problem ein und beschreibe die weitere Bearbeitung.</p>',
+  hints:[
+    'Beim Vier-Ohren-Modell: Sachinhalt, Selbstoffenbarung, Beziehung, Appell — für jede Seite ein Satz.',
+    'Achte darauf, auf welchem Ohr der Mitarbeiter geantwortet hat.',
+    'Eine gute Antwort erkennt das Gefühl an, ohne Schuld einzugestehen, und führt zur Sache zurück.'
+  ],
+  solution:
+    "(a) VIER-OHREN-ANALYSE DER KUNDENAUSSAGE\n\n"+
+    "  Sachinhalt:\n"+
+    "     Das System war diese Woche dreimal nicht nutzbar.\n\n"+
+    "  Selbstoffenbarung:\n"+
+    "     Ich bin veraergert, stehe unter Zeitdruck und fuehle mich\n"+
+    "     mit dem Problem alleingelassen.\n\n"+
+    "  Beziehung:\n"+
+    "     Ich traue euch nicht mehr zu, dass ihr euren Job macht.\n\n"+
+    "  Appell:\n"+
+    "     Nehmt mich ernst und sorgt dafuer, dass es aufhoert!\n\n"+
+    "(b) WARUM DIE ANTWORT ESKALIERT\n\n"+
+    "  Der Mitarbeiter reagiert auf dem Beziehungsohr: Er hoert einen\n"+
+    "  Angriff und verteidigt sich, statt auf der Sachebene zu bleiben.\n\n"+
+    "  Drei konkrete Fehler:\n"+
+    "   1. Er stellt die Wahrnehmung des Kunden in Frage, statt sie\n"+
+    "      zunaechst anzuerkennen (\"laut unserem Monitoring\").\n"+
+    "   2. Er schiebt die Schuld zurueck (\"Da muessen Sie etwas falsch\n"+
+    "      gemacht haben\") - eine Du-Botschaft mit Vorwurf.\n"+
+    "   3. Er stellt keine einzige Frage und sammelt damit keine\n"+
+    "      Information, die zur Loesung fuehren koennte.\n\n"+
+    "  Folge: Der Konflikt steigt von der Verhaertung (Stufe 1) in\n"+
+    "  die Debatte (Stufe 2) - es geht nur noch ums Rechthaben.\n"+
+    "  Der Ruf nach dem Vorgesetzten ist die hierarchische Eskalation\n"+
+    "  durch den Kunden.\n\n"+
+    "(c) BESSERE ANTWORT\n\n"+
+    "  \"Das kann ich gut verstehen, dreimal in einer Woche haelt Sie\n"+
+    "   erheblich auf, und das tut mir leid. Damit ich der Sache auf\n"+
+    "   den Grund gehen kann: Koennen Sie mir sagen, wann der letzte\n"+
+    "   Ausfall ungefaehr war und was auf dem Bildschirm zu sehen war?\n"+
+    "   Ich pruefe das dann gegen unsere Protokolle und melde mich\n"+
+    "   heute bis 16 Uhr mit einem Zwischenstand bei Ihnen.\"\n\n"+
+    "  Warum das wirkt:\n"+
+    "   - Gefuehl anerkannt, ohne ein Verschulden einzuraeumen\n"+
+    "   - offene Frage fuehrt auf die Sachebene zurueck\n"+
+    "   - konkrete, haltbare Zusage mit Zeitpunkt schafft Vertrauen\n\n"+
+    "(d) EINORDNUNG UND WEITERE BEARBEITUNG\n\n"+
+    "  Die einzelnen Ausfaelle sind INCIDENTS.\n"+
+    "  Die dreifache Wiederholung mit unbekannter Ursache begruendet\n"+
+    "  ein PROBLEM - hier ist das Problem Management zustaendig.\n\n"+
+    "  Vorgehen:\n"+
+    "   1. Ticket anlegen bzw. die drei bestehenden Tickets verknuepfen.\n"+
+    "   2. Auswirkung und Dringlichkeit bewerten -> Prioritaet.\n"+
+    "   3. Daten sammeln: genaue Zeitpunkte, Fehlermeldung, betroffene\n"+
+    "      Funktion, weitere betroffene Kunden, Logauswertung.\n"+
+    "   4. Funktionale Eskalation an den Second Level zur Analyse.\n"+
+    "   5. Zwischenmeldung an den Kunden zum zugesagten Zeitpunkt -\n"+
+    "      auch dann, wenn es noch kein Ergebnis gibt.\n"+
+    "   6. Nach Ursachenklaerung: dauerhafte Beseitigung, Eintrag in\n"+
+    "      die Known Error Database, Abschlussmeldung an den Kunden.\n\n"+
+    "  Hinweis: Wenn das Monitoring keine Ausfaelle zeigt, der Kunde\n"+
+    "  aber welche erlebt, liegt die Ursache moeglicherweise nicht\n"+
+    "  beim Server, sondern auf dem Weg dorthin - Netzwerk, Proxy,\n"+
+    "  Client oder Browser. Genau deshalb ist die Sachaufnahme\n"+
+    "  wichtiger als die Rechtfertigung.",
+  solutionLang:'Gesprächsanalyse',
+  solutionNote:'Der letzte Hinweis ist inhaltlich der wertvollste Teil: Ein Monitoring, das keine Ausfälle zeigt, beweist nicht, dass der Kunde keine erlebt hat — es beweist nur, dass der überwachte Teil der Kette lief. Wer das in der Antwort unterbringt, zeigt, dass er die fachliche und die kommunikative Ebene verbindet. Bei Teil (c) gilt: Formuliere eine wörtliche Antwort, keine Beschreibung. Der Operator verlangt eine Formulierung, keine Regel.'
+},
+{
+  id:'ex32', level:3, topic:'Datenschutz', title:'Datenpanne bewerten und Maßnahmen ableiten',
+  task:'<p>Folgender Vorfall wird gemeldet:</p>'+
+    '<div class="check-prompt">Ein Notebook eines Außendienstmitarbeiters wurde am Freitagabend aus dem Auto gestohlen.\nDarauf befinden sich lokal gespeicherte Kundenlisten mit Namen, Anschriften,\nTelefonnummern, Vertragsdaten und teilweise Gesundheitsangaben (Zusatzversicherungen).\n\nDas Gerät war mit einem Windows-Kennwort geschützt, die Festplatte war\nNICHT verschlüsselt. Der Diebstahl wurde am Montagmorgen um 8:30 Uhr gemeldet.</div>'+
+    '<p>(a) Liegt eine meldepflichtige Datenpanne vor? Begründe. (b) Welche Fristen und Pflichten greifen? (c) Nenne vier technische und zwei organisatorische Maßnahmen, die den Vorfall verhindert oder entschärft hätten. (d) Welche Besonderheit ergibt sich aus den Gesundheitsdaten?</p>',
+  hints:[
+    'Prüfe zuerst: Sind personenbezogene Daten betroffen und besteht ein Risiko für die Betroffenen?',
+    'Die 72-Stunden-Frist beginnt mit dem Bekanntwerden, nicht mit dem Vorfall.',
+    'Ein Windows-Kennwort schützt die Daten nicht, wenn die Festplatte ausgebaut werden kann.'
+  ],
+  solution:
+    "(a) MELDEPFLICHTIGE DATENPANNE?\n\n"+
+    "  Ja, eindeutig. Begruendung:\n"+
+    "   - Es sind personenbezogene Daten im Sinne von Art. 4 DSGVO\n"+
+    "     betroffen (Namen, Anschriften, Vertrags- und Gesundheitsdaten).\n"+
+    "   - Es liegt eine Verletzung des Schutzes personenbezogener Daten\n"+
+    "     nach Art. 4 Nr. 12 DSGVO vor: unbefugte Offenlegung bzw.\n"+
+    "     unbefugter Zugang ist moeglich geworden.\n"+
+    "   - Das Windows-Kennwort bietet keinen wirksamen Schutz: Die\n"+
+    "     Festplatte laesst sich ausbauen und an einem anderen Rechner\n"+
+    "     im Klartext auslesen. Die Daten gelten daher als kompromittiert.\n\n"+
+    "  Hinweis zur Gegenprobe: Waere die Festplatte nach dem Stand der\n"+
+    "  Technik verschluesselt gewesen, waere das Risiko fuer die\n"+
+    "  Betroffenen voraussichtlich gering - eine Meldung an die\n"+
+    "  Aufsichtsbehoerde bliebe zwar zu pruefen, die Benachrichtigung\n"+
+    "  der Betroffenen koennte nach Art. 34 Abs. 3 lit. a entfallen.\n\n"+
+    "(b) FRISTEN UND PFLICHTEN\n\n"+
+    "  1. Meldung an die Aufsichtsbehoerde, Art. 33 DSGVO\n"+
+    "     Unverzueglich, moeglichst binnen 72 STUNDEN ab Kenntnisnahme.\n"+
+    "     Die Frist beginnt am Montag um 8:30 Uhr - nicht am Freitag -\n"+
+    "     und endet damit am Donnerstag um 8:30 Uhr.\n"+
+    "     Inhalt: Art der Verletzung, Kategorien und ungefaehre Zahl\n"+
+    "     der Betroffenen und Datensaetze, wahrscheinliche Folgen,\n"+
+    "     ergriffene Massnahmen, Kontaktdaten des Datenschutzbeauftragten.\n\n"+
+    "  2. Benachrichtigung der Betroffenen, Art. 34 DSGVO\n"+
+    "     Da ein HOHES Risiko besteht (unverschluesselte Gesundheits-\n"+
+    "     daten), sind die Betroffenen unverzueglich und in klarer,\n"+
+    "     einfacher Sprache zu informieren.\n\n"+
+    "  3. Dokumentation, Art. 33 Abs. 5 DSGVO\n"+
+    "     Der Vorfall ist intern zu dokumentieren - unabhaengig davon,\n"+
+    "     ob gemeldet wurde. Die Aufsichtsbehoerde kann das pruefen.\n\n"+
+    "  4. Weitere Sofortmassnahmen\n"+
+    "     Diebstahlanzeige bei der Polizei, Sperrung der Zugaenge und\n"+
+    "     Zertifikate des Geraets, Fernloeschung versuchen, Pruefung\n"+
+    "     weiterer betroffener Systeme.\n\n"+
+    "(c) MASSNAHMEN\n\n"+
+    "  Technisch:\n"+
+    "   1. Vollstaendige Festplattenverschluesselung (z. B. BitLocker)\n"+
+    "      mit Pre-Boot-Authentifizierung - die zentrale Massnahme.\n"+
+    "   2. Mobile Device Management mit Fernloeschung und\n"+
+    "      Geraeteortung.\n"+
+    "   3. Zwei-Faktor-Authentifizierung fuer den Zugang zu\n"+
+    "      Kundendaten, damit ein erbeutetes Kennwort nicht genuegt.\n"+
+    "   4. Zentrale Datenhaltung mit VPN-Zugriff statt lokaler\n"+
+    "      Kopien; automatische Bildschirmsperre.\n\n"+
+    "  Organisatorisch:\n"+
+    "   1. Richtlinie zur Mitnahme und Aufbewahrung mobiler Geraete:\n"+
+    "      keine Lagerung im Fahrzeug, Mitnahmepflicht.\n"+
+    "   2. Berechtigungskonzept nach Need-to-know plus regelmaessige\n"+
+    "      Schulung, ergaenzt um einen definierten und geuebten\n"+
+    "      Meldeweg fuer Vorfaelle - der Vorfall wurde erst nach\n"+
+    "      zweieinhalb Tagen gemeldet, das ist zu spaet.\n\n"+
+    "(d) BESONDERHEIT DER GESUNDHEITSDATEN\n\n"+
+    "  Gesundheitsdaten gehoeren zu den besonderen Kategorien\n"+
+    "  personenbezogener Daten nach Art. 9 DSGVO. Daraus folgt:\n"+
+    "   - Die Verarbeitung ist grundsaetzlich untersagt und nur unter\n"+
+    "     den engen Ausnahmen des Art. 9 Abs. 2 zulaessig.\n"+
+    "   - Das Risiko fuer die Betroffenen ist deutlich hoeher, damit\n"+
+    "     ist die Benachrichtigung nach Art. 34 praktisch zwingend.\n"+
+    "   - Es sind erhoehte Schutzmassnahmen nach Art. 32 gefordert;\n"+
+    "     die fehlende Verschluesselung waere hier besonders schwer\n"+
+    "     zu rechtfertigen und erhoeht das zu erwartende Bussgeld.\n"+
+    "   - Eine Datenschutz-Folgenabschaetzung nach Art. 35 war fuer\n"+
+    "     diese Verarbeitung vermutlich ohnehin erforderlich.",
+  solutionLang:'Datenschutzfall',
+  solutionNote:'Zwei Details entscheiden diese Aufgabe. Erstens der Fristbeginn: Die 72 Stunden laufen ab Kenntnisnahme am Montagmorgen, nicht ab dem Diebstahl am Freitag — das wird regelmäßig falsch beantwortet. Zweitens die Wirkung der Verschlüsselung: Sie ist der einzige Grund, aus dem die Benachrichtigung der Betroffenen hätte entfallen können. Diese Gegenprobe zu erwähnen, zeigt, dass du den Zusammenhang zwischen technischer Maßnahme und rechtlicher Folge verstanden hast.'
+}
+,
+{
+  id:'ex33', level:1, topic:'KI', title:'Lernarten und Einsatzszenarien zuordnen',
+  task:'<p>Ordne jedem Vorhaben die passende <strong>Lernart</strong> zu (überwacht, unüberwacht, bestärkend), gib bei überwachtem Lernen zusätzlich an, ob es sich um <strong>Klassifikation oder Regression</strong> handelt, und begründe jeweils in einem Satz:</p>'+
+    '<div class="check-prompt">1) Aus 120.000 geprüften Eingangsrechnungen soll erkannt werden, ob eine neue Rechnung Sachkonto 4200 oder 4400 zugeordnet wird.\n2) Aus Sensordaten einer Maschine soll die verbleibende Restlaufzeit bis zum Ausfall in Stunden geschätzt werden.\n3) Kundendaten eines Onlineshops sollen in Gruppen mit ähnlichem Kaufverhalten aufgeteilt werden – welche Gruppen es gibt, ist unbekannt.\n4) Ein Kommissionierroboter soll den effizientesten Weg durch das Lager selbst finden; kurze Wege werden positiv bewertet, Kollisionen negativ.\n5) Im Netzwerkverkehr sollen ungewöhnliche Muster auffallen, ohne dass bekannt ist, wie ein Angriff aussieht.</div>',
+  hints:[
+    'Die Leitfrage lautet: Steht die richtige Antwort in den Trainingsdaten?',
+    'Klassifikation liefert eine Kategorie, Regression einen Zahlenwert.',
+    'Signalwörter für bestärkendes Lernen sind Belohnung, Bewertung und Versuch und Irrtum.'
+  ],
+  solution:
+    "1) UEBERWACHT - Klassifikation\n"+
+    "   Die 120.000 Rechnungen sind bereits geprueft, das richtige\n"+
+    "   Sachkonto liegt also als Label vor. Ausgabe ist eine Kategorie\n"+
+    "   aus einer festen Menge - daher Klassifikation.\n\n"+
+    "2) UEBERWACHT - Regression\n"+
+    "   Aus historischen Verlaeufen ist bekannt, wann der Ausfall\n"+
+    "   tatsaechlich eintrat. Die Ausgabe ist ein Zahlenwert in Stunden,\n"+
+    "   also Regression. Anwendungsfall: Predictive Maintenance.\n\n"+
+    "3) UNUEBERWACHT - Clustering\n"+
+    "   Es gibt keine Vorgabe, welche Gruppen existieren. Das Modell\n"+
+    "   findet die Struktur selbst. Anwendungsfall: Kundensegmentierung.\n\n"+
+    "4) BESTAERKEND\n"+
+    "   Es gibt keine markierten Trainingsdaten, sondern Belohnung und\n"+
+    "   Bestrafung. Das System lernt eine Handlungsstrategie durch\n"+
+    "   Ausprobieren.\n\n"+
+    "5) UNUEBERWACHT - Anomalieerkennung\n"+
+    "   Das Normalverhalten wird gelernt, Abweichungen davon fallen auf.\n"+
+    "   Es ist ausdruecklich NICHT bekannt, wie ein Angriff aussieht -\n"+
+    "   daher gibt es keine Label und kein ueberwachtes Lernen.",
+  solutionLang:'KI-Zuordnung',
+  solutionNote:'Die Fälle 1 und 2 zeigen den Unterschied zwischen Klassifikation und Regression an derselben Lernart — beide sind überwacht, nur die Ausgabe unterscheidet sich. Fall 5 ist die typische Falle: Betrugs- und Angriffserkennung klingt nach einer Ja-Nein-Entscheidung und damit nach Klassifikation, ist hier aber unüberwacht, weil die Aufgabe ausdrücklich sagt, dass die Angriffsmuster unbekannt sind. Lies bei KI-Zuordnungen immer genau, ob Beispiele mit bekannter Antwort vorliegen.'
+},
+{
+  id:'ex34', level:2, topic:'KI', title:'Modellgüte beurteilen und Maßnahmen ableiten',
+  task:'<p>Ein Modell soll fehlerhafte Bauteile auf Kamerabildern erkennen. Nach dem Training liegen folgende Ergebnisse vor:</p>'+
+    '<div class="check-prompt">Trainingsdaten:  Genauigkeit 99,4 %\nTestdaten:       Genauigkeit 73,1 %\n\nDatensatz: 8.000 Bilder, davon 240 mit Fehler (3 %)\nDas Modell erkennt von 60 fehlerhaften Teilen im Testset nur 14.</div>'+
+    '<p>(a) Welches Problem liegt vor? Begründe anhand der Zahlen. (b) Warum ist die Genauigkeit hier eine irreführende Kennzahl? Belege das mit einer Rechnung. (c) Nenne vier konkrete Gegenmaßnahmen. (d) Welche Folge hätte der Produktiveinsatz in diesem Zustand?</p>',
+  hints:[
+    'Vergleiche zuerst Trainings- und Testgenauigkeit miteinander.',
+    'Rechne aus, welche Genauigkeit ein Modell erreicht, das immer „kein Fehler" sagt.',
+    'Bei (c): Denke an Datenmenge, Datenausgewogenheit, Modellkomplexität und Trainingsdauer.'
+  ],
+  solution:
+    "(a) PROBLEM: OVERFITTING\n"+
+    "    Training 99,4 % gegen Test 73,1 % - eine Luecke von 26,3\n"+
+    "    Prozentpunkten. Das Modell hat die Trainingsbilder samt ihrer\n"+
+    "    Zufaelligkeiten auswendig gelernt und kann nicht auf neue\n"+
+    "    Bilder verallgemeinern.\n\n"+
+    "    Zusaetzlich liegt ein UNAUSGEWOGENER DATENSATZ vor:\n"+
+    "    nur 3 % der Bilder zeigen einen Fehler.\n\n"+
+    "(b) WARUM DIE GENAUIGKEIT IRREFUEHREND IST\n"+
+    "    Ein Modell, das AUSNAHMSLOS \"kein Fehler\" ausgibt,\n"+
+    "    erreicht bereits:\n"+
+    "       7.760 richtige von 8.000 = 97,0 % Genauigkeit\n"+
+    "    ...und findet dabei kein einziges fehlerhaftes Teil.\n\n"+
+    "    Die tatsaechlich relevante Kennzahl ist die Trefferquote\n"+
+    "    (Sensitivitaet / Recall) auf der Fehlerklasse:\n"+
+    "       14 von 60 erkannt = 23,3 %\n"+
+    "    Mehr als drei Viertel der fehlerhaften Teile werden\n"+
+    "    uebersehen. Das Modell ist fuer seinen Zweck unbrauchbar.\n\n"+
+    "(c) GEGENMASSNAHMEN\n"+
+    "    1. Mehr Bilder fehlerhafter Teile beschaffen; falls nicht\n"+
+    "       moeglich, den Datensatz durch Augmentierung erweitern\n"+
+    "       (Drehen, Spiegeln, Helligkeit variieren).\n"+
+    "    2. Datensatz ausbalancieren, etwa durch Ueber- oder\n"+
+    "       Untergewichtung der Klassen beim Training.\n"+
+    "    3. Einfacheres Modell waehlen oder das Training frueher\n"+
+    "       beenden (Early Stopping), um Overfitting zu verringern.\n"+
+    "    4. Kreuzvalidierung einsetzen und die Bewertung auf Recall\n"+
+    "       und Precision umstellen statt auf blosse Genauigkeit.\n\n"+
+    "(d) FOLGE EINES PRODUKTIVEINSATZES\n"+
+    "    Rund 77 % der fehlerhaften Teile gelangen in die Auslieferung.\n"+
+    "    Die Qualitaetssicherung waere schlechter als vorher, weil man\n"+
+    "    sich auf ein System verlaesst, das die eigentliche Aufgabe\n"+
+    "    nicht erfuellt. Konsequenz: kein Produktiveinsatz, stattdessen\n"+
+    "    Nachbesserung und erneute Bewertung; bis dahin bleibt die\n"+
+    "    bisherige Pruefung bestehen.",
+  solutionLang:'Modellbewertung',
+  solutionNote:'Die Rechnung in Teil (b) ist das Herzstück dieser Aufgabe: 97 Prozent Genauigkeit bei völliger Nutzlosigkeit. Sie zeigt, warum bei seltenen Ereignissen — Fehler, Betrug, Krankheit — die Accuracy nichts aussagt und Recall die richtige Kennzahl ist. Teil (d) prüft, ob du eine fachliche Empfehlung aussprechen kannst: Die korrekte Antwort ist, den Produktiveinsatz abzulehnen. Eine KI, die schlechter ist als der bisherige Prozess, darf nicht eingeführt werden, egal wie modern sie wirkt.'
+},
+{
+  id:'ex35', level:3, topic:'KI', title:'KI-Einführung rechtlich und wirtschaftlich bewerten',
+  task:'<p>Ein Personaldienstleister mit 90 Mitarbeitern plant:</p>'+
+    '<div class="check-prompt">• Ein KI-System soll eingehende Bewerbungen vorsortieren und eine Rangfolge erstellen.\n  Trainingsgrundlage sind 12 Jahre eigene Einstellungsentscheidungen.\n• Ein Chatbot auf der Website beantwortet Fragen von Bewerbern.\n• Ein KI-Assistent fasst intern Bewerbungsunterlagen zusammen; genutzt wird ein\n  frei verfügbarer Onlinedienst mit Servern in den USA.\n\nKosten: Lizenz 1.450 €/Monat, Einführung 22.000 €.\nErwartete Einsparung: 18 Std./Woche im Recruiting zu 48 €/Std. Vollkosten (46 Wochen/Jahr).</div>'+
+    '<p>(a) Ordne alle drei Anwendungen den Risikoklassen des AI Act zu und nenne je eine sich daraus ergebende Pflicht. (b) Welches DSGVO-Problem besteht bei Anwendung 1 und bei Anwendung 3? (c) Welches inhaltliche Risiko birgt die Trainingsgrundlage? (d) Rechne die Amortisation. (e) Sprich eine Gesamtempfehlung aus.</p>',
+  hints:[
+    'Bei (a): Frage dich, worüber das System entscheidet und welche Folge das für den Menschen hat.',
+    'Bei (b): Art. 22 DSGVO für die Entscheidung, Art. 28 und Drittlandtransfer für den externen Dienst.',
+    'Bei (c): Was lernt ein Modell aus historischen Personalentscheidungen?'
+  ],
+  solution:
+    "(a) RISIKOKLASSEN NACH AI ACT\n\n"+
+    "  1) Bewerbungsvorsortierung -> HOCHRISIKO\n"+
+    "     Der Zugang zu Beschaeftigung ist im AI Act ausdruecklich als\n"+
+    "     Hochrisikobereich genannt.\n"+
+    "     Pflicht (eine genuegt, hier mehrere):\n"+
+    "      - wirksame menschliche Aufsicht ueber das Ergebnis\n"+
+    "      - Risikomanagement und technische Dokumentation\n"+
+    "      - Pruefung der Datenqualitaet auf Verzerrung\n"+
+    "      - Protokollierung der Systemaktivitaeten\n\n"+
+    "  2) Chatbot fuer Bewerberfragen -> BEGRENZTES RISIKO\n"+
+    "     Pflicht: Transparenz. Der Nutzer muss erkennen koennen,\n"+
+    "     dass er mit einem KI-System und nicht mit einem Menschen\n"+
+    "     kommuniziert.\n\n"+
+    "  3) Interner Zusammenfassungs-Assistent -> in der Anwendung\n"+
+    "     selbst zunaechst MINIMALES bis BEGRENZTES RISIKO.\n"+
+    "     ABER: Er verarbeitet Bewerbungsunterlagen und wirkt damit\n"+
+    "     faktisch am Hochrisikoprozess mit. Entscheidend ist hier\n"+
+    "     ohnehin das Datenschutzrecht (siehe b).\n"+
+    "     Uebergreifend gilt zudem die AI-Literacy-Pflicht: Die\n"+
+    "     Beschaeftigten muessen im Umgang mit KI geschult sein.\n\n"+
+    "(b) DATENSCHUTZPROBLEME\n\n"+
+    "  Anwendung 1 - Art. 22 DSGVO\n"+
+    "     Eine ausschliesslich automatisierte Entscheidung mit\n"+
+    "     erheblicher Beeintraechtigung ist grundsaetzlich unzulaessig.\n"+
+    "     Eine automatisch erzeugte Rangfolge, der ohne eigene Pruefung\n"+
+    "     gefolgt wird, faellt darunter.\n"+
+    "     Erforderlich: echte inhaltliche Pruefung durch eine Person,\n"+
+    "     Information der Bewerber ueber die automatisierte\n"+
+    "     Verarbeitung, Recht auf Darlegung des eigenen Standpunkts.\n"+
+    "     Zusaetzlich: Datenschutz-Folgenabschaetzung nach Art. 35.\n"+
+    "     Und: Mitbestimmung des Betriebsrats nach § 87 BetrVG.\n\n"+
+    "  Anwendung 3 - unzulaessige Uebermittlung\n"+
+    "     Bewerbungsunterlagen sind besonders sensible personenbezogene\n"+
+    "     Daten. Ihre Eingabe in einen frei verfuegbaren Onlinedienst\n"+
+    "     bedeutet:\n"+
+    "      - Uebermittlung an einen Dritten ohne Rechtsgrundlage\n"+
+    "      - kein Auftragsverarbeitungsvertrag nach Art. 28\n"+
+    "      - Drittlandtransfer in die USA ohne geeignete Garantien\n"+
+    "      - moegliche Verwendung der Eingaben zum Training\n"+
+    "     -> in dieser Form unzulaessig. Erforderlich waere ein\n"+
+    "        freigegebener Dienst mit AVV, EU-Serverstandort und\n"+
+    "        vertraglichem Trainingsausschluss.\n\n"+
+    "(c) RISIKO DER TRAININGSGRUNDLAGE\n\n"+
+    "  BIAS durch historische Daten.\n"+
+    "  Das Modell lernt aus 12 Jahren vergangener Entscheidungen -\n"+
+    "  einschliesslich aller darin enthaltenen bewussten oder\n"+
+    "  unbewussten Benachteiligungen nach Geschlecht, Alter, Herkunft\n"+
+    "  oder Lebenslauf-Luecken. Es reproduziert diese Muster und\n"+
+    "  verstaerkt sie, weil es sie als Erfolgsmerkmal interpretiert.\n"+
+    "  Rechtsfolge: moeglicher Verstoss gegen das AGG.\n"+
+    "  Gegenmassnahmen: sensible Merkmale ausschliessen, Ergebnisse\n"+
+    "  nach Gruppen getrennt auswerten, Datensatz auf Ausgewogenheit\n"+
+    "  pruefen, regelmaessige Fairness-Kontrolle.\n\n"+
+    "(d) AMORTISATION\n\n"+
+    "  Einsparung: 18 h x 48 EUR x 46 Wochen = 39.744 EUR pro Jahr\n"+
+    "  Lizenz:     1.450 x 12               = 17.400 EUR pro Jahr\n"+
+    "  Netto-Einsparung pro Jahr            = 22.344 EUR\n\n"+
+    "  Amortisation der Einfuehrung:\n"+
+    "     22.000 / 22.344 = 0,98 Jahre = rund 12 Monate\n\n"+
+    "  Hinweis: Die Einsparung wird nur wirksam, wenn die frei\n"+
+    "  werdende Zeit anders genutzt wird. Zudem entfaellt ein Teil\n"+
+    "  der Ersparnis, weil die nach Art. 22 DSGVO erforderliche\n"+
+    "  menschliche Pruefung Arbeitszeit bindet.\n\n"+
+    "(e) GESAMTEMPFEHLUNG\n\n"+
+    "  Der Chatbot kann mit Kennzeichnungspflicht umgesetzt werden.\n\n"+
+    "  Die Bewerbungsvorsortierung ist nur zulaessig als\n"+
+    "  Entscheidungs-VORBEREITUNG mit verbindlicher menschlicher\n"+
+    "  Pruefung, Dokumentation, Bias-Kontrolle, Information der\n"+
+    "  Bewerber, DSFA und Beteiligung des Betriebsrats.\n\n"+
+    "  Der externe Zusammenfassungsdienst ist in der geplanten Form\n"+
+    "  zu untersagen und durch eine datenschutzkonforme Loesung zu\n"+
+    "  ersetzen.\n\n"+
+    "  Wirtschaftlich ist das Vorhaben mit rund 12 Monaten\n"+
+    "  Amortisation tragfaehig. Die Umsetzung sollte jedoch erst nach\n"+
+    "  Klaerung der rechtlichen Punkte beginnen, da ein Verstoss\n"+
+    "  Bussgelder bis 20 Mio. EUR oder 4 % des Jahresumsatzes sowie\n"+
+    "  AGG-Schadenersatzansprueche nach sich ziehen kann.",
+  solutionLang:'KI-Gesamtbewertung',
+  solutionNote:'Diese Aufgabe verbindet die drei Ebenen, auf denen KI in der AP1 geprüft wird: Einordnung nach AI Act, Zulässigkeit nach DSGVO und Wirtschaftlichkeit. Der Kernsatz für Teil (a) und (e) lautet: Hochrisiko bedeutet nicht verboten, sondern auflagenpflichtig — vor allem mit wirksamer menschlicher Aufsicht. Und beachte den Hinweis bei (d): Wenn eine gesetzliche Pflicht Arbeitszeit bindet, schmälert das die berechnete Einsparung. Diese Rückkopplung zwischen Recht und Rechnung zu sehen, ist genau das, was eine Expertenaufgabe verlangt.'
+}
+,
+{
+  id:'ex36', level:1, topic:'Pseudocode', title:'Größten und kleinsten Wert finden',
+  task:'<p>Schreibe einen <strong>Pseudocode-Algorithmus</strong>, der aus einem Array <code>temperaturen</code> den höchsten und den niedrigsten Wert ermittelt und beide zurückgibt. Das Array enthält mindestens einen Wert und kann auch negative Zahlen enthalten.</p>',
+  hints:[
+    'Setze beide Merker auf das erste Element, nicht auf 0 — sonst scheitert der Algorithmus bei lauter negativen Werten.',
+    'Die Schleife kann bei Index 1 starten, weil Index 0 schon als Startwert dient.',
+    'Zwei getrennte Vergleiche im Schleifenrumpf, kein SONST dazwischen.'
+  ],
+  solution:
+    "FUNKTION minUndMax(temperaturen)\n"+
+    "  maximum <- temperaturen[0]\n"+
+    "  minimum <- temperaturen[0]\n"+
+    "\n"+
+    "  FUER i VON 1 BIS LAENGE(temperaturen) - 1 TUE\n"+
+    "    WENN temperaturen[i] > maximum DANN\n"+
+    "      maximum <- temperaturen[i]\n"+
+    "    ENDEWENN\n"+
+    "    WENN temperaturen[i] < minimum DANN\n"+
+    "      minimum <- temperaturen[i]\n"+
+    "    ENDEWENN\n"+
+    "  ENDEFUER\n"+
+    "\n"+
+    "  GIB minimum, maximum ZURUECK\n"+
+    "ENDEFUNKTION\n\n"+
+    "PROBE mit [-4, -12, -7, -2, -9]\n"+
+    "  Start: maximum = -4, minimum = -4\n"+
+    "  i=1: -12 > -4 nein | -12 < -4 ja  -> minimum = -12\n"+
+    "  i=2:  -7 > -4 nein |  -7 < -12 nein\n"+
+    "  i=3:  -2 > -4 ja   -> maximum = -2\n"+
+    "  i=4:  -9 > -2 nein |  -9 < -12 nein\n"+
+    "  Ergebnis: minimum = -12, maximum = -2   korrekt",
+  solutionLang:'Pseudocode',
+  solutionNote:'Der Prüfungspunkt steckt im Startwert. Wer maximum auf 0 setzt, bekommt bei ausschließlich negativen Temperaturen 0 als Maximum heraus — ein Wert, der im Array gar nicht vorkommt. Das erste Element als Startwert zu nehmen ist die einzige Variante, die immer funktioniert. Beachte außerdem, dass zwischen den beiden Abfragen kein SONST stehen darf: Beim allerersten Vergleich könnten sonst beide Fälle blockieren.'
+},
+{
+  id:'ex37', level:1, topic:'Subnetting', title:'Fünf Adressen zuordnen',
+  task:'<p>Gegeben ist das Netz <strong>192.168.14.0 / 255.255.255.224</strong>.</p>'+
+    '<p>Entscheide für jede Adresse, ob sie ein <strong>gültiger Host</strong>, die <strong>Netzadresse</strong>, die <strong>Broadcast-Adresse</strong> oder <strong>außerhalb dieses Subnetzes</strong> ist. Begründe kurz.</p>'+
+    '<div class="check-prompt">a) 192.168.14.1\nb) 192.168.14.31\nc) 192.168.14.0\nd) 192.168.14.30\ne) 192.168.14.44</div>',
+  hints:[
+    'Bestimme zuerst die Blockgröße: 256 minus den Maskenwert des letzten Oktetts.',
+    'Die Netze beginnen bei Vielfachen der Blockgröße.',
+    'Der Broadcast ist immer die Adresse direkt vor dem nächsten Netzanfang.'
+  ],
+  solution:
+    "GRUNDLAGE\n"+
+    "  Maske 255.255.255.224  ->  /27\n"+
+    "  Blockgroesse = 256 - 224 = 32\n"+
+    "  Netze beginnen bei: .0  .32  .64  .96  .128 ...\n\n"+
+    "  Das Subnetz 192.168.14.0/27 umfasst .0 bis .31\n"+
+    "    Netzadresse  .0\n"+
+    "    Hosts        .1 bis .30   (30 Stueck)\n"+
+    "    Broadcast    .31\n\n"+
+    "ZUORDNUNG\n"+
+    "  a) 192.168.14.1   -> GUELTIGER HOST, erste nutzbare Adresse\n"+
+    "  b) 192.168.14.31  -> BROADCAST, alle Hostbits auf 1\n"+
+    "  c) 192.168.14.0   -> NETZADRESSE, alle Hostbits auf 0\n"+
+    "  d) 192.168.14.30  -> GUELTIGER HOST, letzte nutzbare Adresse\n"+
+    "  e) 192.168.14.44  -> AUSSERHALB, liegt im naechsten Subnetz\n"+
+    "                       192.168.14.32/27 (Bereich .32 bis .63)",
+  solutionLang:'Subnetting',
+  solutionNote:'Fall e) ist die eigentliche Prüfungsfrage. Zwei Adressen können im selben dritten Oktett liegen und trotzdem in verschiedenen Subnetzen sein — das entscheidet allein die Blockgröße. Praktische Folge: Ein Gerät mit .44 erreicht ein Gerät mit .1 nur über einen Router, obwohl die Adressen fast gleich aussehen. Genau danach fragen Störungsszenarien gern.'
+},
+{
+  id:'ex38', level:1, topic:'OSI-Modell', title:'Störungen der richtigen Schicht zuordnen',
+  task:'<p>Ordne jede Störungsmeldung der <strong>OSI-Schicht</strong> zu, auf der die Ursache liegt, nenne die Schicht mit Nummer und Namen und gib jeweils <strong>einen Diagnosebefehl oder Prüfschritt</strong> an:</p>'+
+    '<div class="check-prompt">1) „Die Link-LED an der Netzwerkbuchse leuchtet nicht."\n2) „Der Rechner hat die Adresse 169.254.88.12 und kommt nirgendwo hin."\n3) „ping 8.8.8.8 funktioniert, aber www.ihk.de wird nicht gefunden."\n4) „Die Anwendung erreicht den Server nicht, ping auf den Server klappt aber."\n5) „Der PC bekommt keine Verbindung, obwohl das Kabel steckt — im Switch ist der Port einem anderen VLAN zugeordnet."</div>',
+  hints:[
+    'Arbeite von unten nach oben: Kabel, dann Adressierung im LAN, dann IP, dann Ports, dann Namen.',
+    'Eine 169.254er-Adresse hat eine ganz bestimmte Ursache.',
+    'Wenn die IP erreichbar ist, der Name aber nicht, liegt es an der Namensauflösung.'
+  ],
+  solution:
+    "1) SCHICHT 1 - Bituebertragung\n"+
+    "   Keine physikalische Verbindung. Ursachen: Kabel defekt oder\n"+
+    "   nicht gesteckt, falscher Port, Switch aus, Netzwerkkarte deaktiviert.\n"+
+    "   Pruefschritt: Kabel und Port pruefen, anderes Kabel testen,\n"+
+    "   Link-LED am Switch kontrollieren.\n\n"+
+    "2) SCHICHT 3 - Vermittlung (Ursache auf Schicht 7: DHCP)\n"+
+    "   169.254.x.x ist APIPA - der Client hat keinen DHCP-Server\n"+
+    "   erreicht und sich selbst eine Adresse gegeben. Es fehlt ein\n"+
+    "   Gateway, daher kein Zugriff nach aussen.\n"+
+    "   Befehl: ipconfig /release  dann  ipconfig /renew\n"+
+    "   Zusaetzlich pruefen: laeuft der DHCP-Server, ist der Pool leer,\n"+
+    "   fehlt ein DHCP-Relay im anderen Subnetz?\n\n"+
+    "3) SCHICHT 7 - Anwendung (DNS)\n"+
+    "   Das Routing funktioniert, nur die Namensaufloesung nicht.\n"+
+    "   Befehl: nslookup www.ihk.de\n"+
+    "   Pruefen: ist ein DNS-Server eingetragen, ist er erreichbar?\n\n"+
+    "4) SCHICHT 4 - Transport\n"+
+    "   Der Host ist erreichbar (ICMP kommt durch), aber der Port des\n"+
+    "   Dienstes nicht. Ursachen: Dienst laeuft nicht, Firewall blockiert\n"+
+    "   den Port, falscher Port konfiguriert.\n"+
+    "   Befehl: netstat -an auf dem Server, oder telnet <host> <port>\n\n"+
+    "5) SCHICHT 2 - Sicherung\n"+
+    "   Physikalisch alles in Ordnung, aber die Zuordnung zum VLAN ist\n"+
+    "   falsch - das ist eine Frage der Sicherungsschicht.\n"+
+    "   Pruefschritt: Port-Konfiguration am Switch kontrollieren,\n"+
+    "   VLAN-Zuordnung korrigieren.",
+  solutionLang:'Fehlersuche',
+  solutionNote:'Fall 2 ist knifflig, weil zwei Antworten vertretbar sind: Das Symptom zeigt sich auf Schicht 3, die Ursache liegt bei DHCP auf Schicht 7. Nenne in solchen Fällen beides und erkläre den Zusammenhang — das ist mehr wert als eine einzelne Zahl. Und merke dir das Grundmuster: Immer von unten nach oben prüfen, denn ein Fehler auf Schicht 1 macht jede Analyse weiter oben sinnlos.'
+},
+{
+  id:'ex39', level:1, topic:'SQL', title:'Vier Abfragen schreiben',
+  task:'<p>Gegeben ist die Tabelle:</p>'+
+    '<div class="check-prompt">artikel(artikelnr, bezeichnung, kategorie, preis, bestand, lieferantnr)</div>'+
+    '<p>Schreibe je eine SQL-Abfrage für:</p>'+
+    '<div class="check-prompt">a) Alle Artikel der Kategorie „Netzwerk", sortiert nach Preis absteigend.\nb) Bezeichnung und Preis aller Artikel, deren Bestand unter 10 liegt.\nc) Die Anzahl der Artikel je Kategorie.\nd) Den durchschnittlichen Preis je Kategorie, aber nur für Kategorien mit mehr als 5 Artikeln.</div>',
+  hints:[
+    'Bei c) und d) brauchst du GROUP BY.',
+    'Der Filter auf die Anzahl in d) bezieht sich auf ein Aggregat — das gehört nicht in WHERE.',
+    'ORDER BY steht immer am Ende der Abfrage.'
+  ],
+  solution:
+    "a) SELECT   *\n"+
+    "   FROM     artikel\n"+
+    "   WHERE    kategorie = 'Netzwerk'\n"+
+    "   ORDER BY preis DESC;\n\n"+
+    "b) SELECT bezeichnung, preis\n"+
+    "   FROM   artikel\n"+
+    "   WHERE  bestand < 10;\n\n"+
+    "c) SELECT   kategorie, COUNT(*) AS anzahl\n"+
+    "   FROM     artikel\n"+
+    "   GROUP BY kategorie;\n\n"+
+    "d) SELECT   kategorie, AVG(preis) AS durchschnittspreis\n"+
+    "   FROM     artikel\n"+
+    "   GROUP BY kategorie\n"+
+    "   HAVING   COUNT(*) > 5;\n\n"+
+    "MERKE\n"+
+    "  WHERE  filtert EINZELZEILEN  - vor der Gruppierung\n"+
+    "  HAVING filtert GRUPPEN       - nach der Gruppierung\n\n"+
+    "  Falsch waere:\n"+
+    "     WHERE COUNT(*) > 5     -> Syntaxfehler\n"+
+    "  Richtig kombiniert (nur Artikel unter 100 EUR beruecksichtigen,\n"+
+    "  dann Kategorien mit mehr als 5 solcher Artikel):\n"+
+    "     WHERE preis < 100 GROUP BY kategorie HAVING COUNT(*) > 5",
+  solutionLang:'SQL',
+  solutionNote:'Aufgabe d) trennt die Spreu vom Weizen. Der Filter bezieht sich auf COUNT, also auf ein Aggregat, und muss deshalb in HAVING. Präge dir die Merkregel ein: WHERE sieht einzelne Zeilen, HAVING sieht fertige Gruppen. Der Zusatz am Ende zeigt, dass beide Klauseln in derselben Abfrage vorkommen dürfen — das wird gern als Folgefrage gestellt.'
+},
+{
+  id:'ex40', level:1, topic:'IT-Sicherheit', title:'Maßnahmen und Schutzziele zuordnen',
+  task:'<p>Ordne jede Maßnahme dem <strong>vorrangig geschützten Schutzziel</strong> zu (Vertraulichkeit, Integrität oder Verfügbarkeit) und gib an, ob sie <strong>technisch oder organisatorisch</strong> ist:</p>'+
+    '<div class="check-prompt">1) Tägliche Datensicherung mit einer Kopie im Bankschließfach\n2) Festplattenverschlüsselung aller Notebooks\n3) Prüfsumme (SHA-256) beim Download von Software\n4) Passwortrichtlinie mit Mindestlänge und Wechselintervall\n5) Unterbrechungsfreie Stromversorgung im Serverraum\n6) Vier-Augen-Prinzip bei Überweisungen über 10.000 €\n7) Digitale Signatur unter einem Angebot\n8) Schulung der Mitarbeiter zum Erkennen von Phishing</div>',
+  hints:[
+    'Frage bei jeder Maßnahme: Wovor genau schützt sie — vor Mitlesen, vor unbemerkter Änderung oder vor Ausfall?',
+    'Technisch heißt installiert oder konfiguriert, organisatorisch heißt geregelt oder geschult.',
+    'Eine Maßnahme kann mehreren Zielen dienen — nenne dann das vorrangige und erwähne das zweite.'
+  ],
+  solution:
+    "1) Datensicherung mit Auslagerung\n"+
+    "   Schutzziel : VERFUEGBARKEIT (Wiederherstellung nach Verlust)\n"+
+    "   Art        : technisch (die Sicherung selbst),\n"+
+    "                organisatorisch die Auslagerungsregelung\n"+
+    "   Hinweis    : erfuellt die 3-2-1-Regel und schuetzt gegen\n"+
+    "                Ransomware, weil die Kopie offline liegt.\n\n"+
+    "2) Festplattenverschluesselung\n"+
+    "   Schutzziel : VERTRAULICHKEIT\n"+
+    "   Art        : technisch\n\n"+
+    "3) Pruefsumme beim Download\n"+
+    "   Schutzziel : INTEGRITAET (Datei unveraendert?)\n"+
+    "   Art        : technisch\n\n"+
+    "4) Passwortrichtlinie\n"+
+    "   Schutzziel : VERTRAULICHKEIT\n"+
+    "   Art        : ORGANISATORISCH (eine Regelung)\n"+
+    "                Erzwingt man sie per Gruppenrichtlinie, wird die\n"+
+    "                Umsetzung technisch - die Richtlinie selbst bleibt\n"+
+    "                organisatorisch.\n\n"+
+    "5) USV im Serverraum\n"+
+    "   Schutzziel : VERFUEGBARKEIT\n"+
+    "   Art        : technisch\n"+
+    "   Zusatz     : schuetzt zugleich die Integritaet, weil ein\n"+
+    "                abruptes Abschalten Daten beschaedigen kann.\n\n"+
+    "6) Vier-Augen-Prinzip\n"+
+    "   Schutzziel : INTEGRITAET (keine unbemerkte Manipulation)\n"+
+    "   Art        : ORGANISATORISCH\n\n"+
+    "7) Digitale Signatur\n"+
+    "   Schutzziel : INTEGRITAET und AUTHENTIZITAET,\n"+
+    "                zusaetzlich Verbindlichkeit\n"+
+    "   Art        : technisch\n\n"+
+    "8) Phishing-Schulung\n"+
+    "   Schutzziel : vorrangig VERTRAULICHKEIT,\n"+
+    "                mittelbar alle drei\n"+
+    "   Art        : ORGANISATORISCH",
+  solutionLang:'Zuordnung',
+  solutionNote:'Nummer 4 ist die klassische Stolperstelle: Eine Passwortrichtlinie ist eine Regelung und damit organisatorisch, auch wenn sie technisch durchgesetzt wird. Formuliere in der Prüfung so, dass die Zuordnung aus der Maßnahme selbst hervorgeht. Und bei Nummer 7 lohnt es sich, alle drei Ziele zu nennen — die Signatur ist das Paradebeispiel für eine Maßnahme, die Integrität, Authentizität und Verbindlichkeit gleichzeitig herstellt.'
+},
+{
+  id:'ex41', level:1, topic:'UML', title:'Use-Case-Diagramm aus einem Text entwickeln',
+  task:'<p>Eine Bibliothek beschreibt ihr geplantes System:</p>'+
+    '<div class="check-prompt">„Leser können im Katalog suchen und Medien ausleihen. Beim Ausleihen wird immer geprüft, ob noch offene Gebühren bestehen. Optional kann ein Leser ein bereits verliehenes Medium vormerken. Bibliothekare können Medien einpflegen, Ausleihen zurücknehmen und Mahnungen erstellen. Ein Bibliothekar kann außerdem alles, was ein Leser kann. Das Mahnwesen versendet automatisch E-Mails über einen externen Mailserver."</div>'+
+    '<p>Entwirf das Use-Case-Diagramm in Textform: Akteure, Anwendungsfälle, Systemgrenze und alle Beziehungen mit der richtigen Pfeilart.</p>',
+  hints:[
+    'Auch ein Fremdsystem kann Akteur sein — achte auf den letzten Satz.',
+    '„immer" deutet auf include, „optional" auf extend.',
+    '„kann außerdem alles, was ein Leser kann" ist eine Generalisierung zwischen Akteuren.'
+  ],
+  solution:
+    "AKTEURE (alle AUSSERHALB der Systemgrenze)\n"+
+    "  Leser\n"+
+    "  Bibliothekar        -- Generalisierung --> Leser\n"+
+    "  Mailserver          (Fremdsystem als Akteur)\n\n"+
+    "SYSTEMGRENZE: Bibliothekssystem\n\n"+
+    "ANWENDUNGSFAELLE\n"+
+    "  ( Katalog durchsuchen )\n"+
+    "  ( Medium ausleihen )\n"+
+    "  ( Gebuehren pruefen )\n"+
+    "  ( Medium vormerken )\n"+
+    "  ( Medium einpflegen )\n"+
+    "  ( Ausleihe zuruecknehmen )\n"+
+    "  ( Mahnung erstellen )\n\n"+
+    "VERBINDUNGEN\n"+
+    "  Leser        ---- ( Katalog durchsuchen )\n"+
+    "  Leser        ---- ( Medium ausleihen )\n"+
+    "  Bibliothekar ---- ( Medium einpflegen )\n"+
+    "  Bibliothekar ---- ( Ausleihe zuruecknehmen )\n"+
+    "  Bibliothekar ---- ( Mahnung erstellen )\n"+
+    "  ( Mahnung erstellen ) ---- Mailserver\n\n"+
+    "BEZIEHUNGEN ZWISCHEN ANWENDUNGSFAELLEN\n"+
+    "  ( Medium ausleihen ) --<<include>>--> ( Gebuehren pruefen )\n"+
+    "     Signalwort \"immer\" -> include.\n"+
+    "     Pfeil zeigt vom einschliessenden zum eingeschlossenen Fall.\n\n"+
+    "  ( Medium vormerken ) --<<extend>>--> ( Katalog durchsuchen )\n"+
+    "     Signalwort \"optional\" -> extend.\n"+
+    "     Pfeil zeigt vom erweiternden zum erweiterten Fall,\n"+
+    "     also GENAU UMGEKEHRT zu include.\n\n"+
+    "  Bibliothekar ----|> Leser\n"+
+    "     Generalisierung, geschlossene Dreieckspitze zum\n"+
+    "     allgemeineren Akteur. Der Bibliothekar erbt damit\n"+
+    "     alle Anwendungsfaelle des Lesers.",
+  solutionLang:'UML',
+  solutionNote:'Drei Punkte entscheiden hier. Erstens der Mailserver: Ein Akteur muss kein Mensch sein, und wer ihn vergisst, verliert einen Punkt. Zweitens die Generalisierung zwischen den Akteuren — sie erspart es, alle Leser-Anwendungsfälle noch einmal mit dem Bibliothekar zu verbinden. Drittens die Pfeilrichtungen: Bei include zeigt der Pfeil nach innen zum gemeinsam genutzten Fall, bei extend nach außen zum erweiterten Fall.'
+},
+{
+  id:'ex42', level:1, topic:'Einheiten', title:'Vier Umrechnungen mit Rechenweg',
+  task:'<p>Rechne jeweils um und gib den <strong>vollständigen Rechenweg</strong> an:</p>'+
+    '<div class="check-prompt">a) Wie viele MiB sind 2.516.582.400 Bit?\nb) Ein Video belegt 4,7 GB. Wie lange dauert der Upload über 40 Mbit/s bei 80 % effektiver Auslastung?\nc) Eine Datenbank hat 1,2 Mio. Datensätze à 640 Byte. Wie viel GiB sind das?\nd) Eine Festplatte ist mit 4 TB beschriftet. Wie viel zeigt Windows in GiB an?</div>',
+  hints:[
+    'Bit durch 8 ergibt Byte, danach zweimal durch 1.024 für MiB.',
+    'Bei b) zuerst die Rate reduzieren, dann die Datenmenge in Bit umrechnen.',
+    'Hersteller rechnen dezimal (10^12), Windows binär (2^40 bzw. 2^30).'
+  ],
+  solution:
+    "a) 2.516.582.400 Bit in MiB\n"+
+    "   2.516.582.400 / 8     = 314.572.800 Byte\n"+
+    "   314.572.800 / 1.024   =     307.200 KiB\n"+
+    "   307.200 / 1.024       =         300 MiB\n\n"+
+    "b) 4,7 GB ueber 40 Mbit/s bei 80 %\n"+
+    "   Effektive Rate: 40 x 0,8 = 32 Mbit/s = 32.000.000 Bit/s\n"+
+    "   Datenmenge: 4,7 x 10^9 Byte x 8 = 37,6 x 10^9 Bit\n"+
+    "   t = 37.600.000.000 / 32.000.000 = 1.175 s\n"+
+    "   1.175 / 60 = 19,58 min = 19 Minuten 35 Sekunden\n\n"+
+    "c) 1.200.000 Datensaetze a 640 Byte\n"+
+    "   1.200.000 x 640 = 768.000.000 Byte\n"+
+    "   768.000.000 / 1.024         = 750.000 KiB\n"+
+    "   750.000 / 1.024             = 732,42 MiB\n"+
+    "   732,42 / 1.024              = 0,715 GiB\n"+
+    "   Antwort: rund 0,72 GiB (ohne Index-Overhead)\n\n"+
+    "d) 4 TB Festplatte in GiB\n"+
+    "   Hersteller dezimal: 4 x 10^12 Byte = 4.000.000.000.000 Byte\n"+
+    "   Windows binaer: 1 GiB = 2^30 = 1.073.741.824 Byte\n"+
+    "   4.000.000.000.000 / 1.073.741.824 = 3.725,3 GiB\n"+
+    "   Windows zeigt also rund 3.725 GiB bzw. 3,64 TiB an.\n"+
+    "   Die Platte ist nicht kleiner - sie wird nur anders gezaehlt.",
+  solutionLang:'Umrechnung',
+  solutionNote:'Schreibe jeden Zwischenschritt mit Einheit hin, auch wenn du im Kopf rechnen könntest — die IHK vergibt Teilpunkte auf den Weg. Die beiden häufigsten Fehler sind der vergessene Faktor 8 zwischen Bit und Byte und die Verwechslung von dezimalen und binären Präfixen. Aufgabe d) ist die Standarderklärung für die Frage, warum eine gekaufte Platte kleiner wirkt als beschriftet — sie kommt regelmäßig als Verständnisfrage.'
+},
+{
+  id:'ex43', level:1, topic:'Struktogramm', title:'Zugangskontrolle als Struktogramm',
+  task:'<p>Ein Drehkreuz am Werkstor arbeitet nach folgenden Regeln:</p>'+
+    '<div class="check-prompt">Der Mitarbeiter hält seinen Ausweis an den Leser. Ist der Ausweis ungültig, erscheint „Ausweis ungültig" und das Drehkreuz bleibt gesperrt.\nIst er gültig, wird geprüft, ob die aktuelle Uhrzeit zwischen 6:00 und 20:00 liegt. Ist das der Fall, öffnet das Drehkreuz.\nAußerhalb dieser Zeit öffnet es nur, wenn der Mitarbeiter eine Nachtberechtigung hat; sonst erscheint „Zutritt außerhalb der Betriebszeit".\nJeder Zutrittsversuch — erfolgreich oder nicht — wird protokolliert.</div>'+
+    '<p>Entwirf ein <strong>Struktogramm</strong> in Textform.</p>',
+  hints:[
+    'Es gibt eine äußere Verzweigung (Ausweis gültig?) und darin eine verschachtelte.',
+    'Die Protokollierung betrifft jeden Fall — sie gehört also nach allen Verzweigungen, nicht in jeden Zweig.',
+    'Prüfe die Zeitbedingung mit einem UND: größer oder gleich 6 und kleiner 20.'
+  ],
+  solution:
+    "+--------------------------------------------------------------+\n"+
+    "| Eingabe: ausweisId, uhrzeit, nachtberechtigung               |\n"+
+    "+--------------------------------------------------------------+\n"+
+    "| gueltig <- pruefeAusweis(ausweisId)                          |\n"+
+    "| geoeffnet <- FALSCH                                          |\n"+
+    "+--------------------------------------------------------------+\n"+
+    "|                    gueltig = WAHR ?                          |\n"+
+    "+------------------------------+-------------------------------+\n"+
+    "|             JA               |             NEIN              |\n"+
+    "+------------------------------+-------------------------------+\n"+
+    "|  uhrzeit >= 6 UND            | Ausgabe                       |\n"+
+    "|  uhrzeit < 20 ?              | \"Ausweis ungueltig\"           |\n"+
+    "+---------------+--------------+                               |\n"+
+    "|     JA        |    NEIN      |                               |\n"+
+    "+---------------+--------------+                               |\n"+
+    "| Drehkreuz     | nachtberech- |                               |\n"+
+    "| oeffnen       | tigung ?     |                               |\n"+
+    "| geoeffnet     +------+-------+                               |\n"+
+    "|   <- WAHR     |  JA  | NEIN  |                               |\n"+
+    "|               +------+-------+                               |\n"+
+    "|               | oeff-| Aus-  |                               |\n"+
+    "|               | nen  | gabe  |                               |\n"+
+    "|               | geo. | \"aus- |                               |\n"+
+    "|               | <-   | ser-  |                               |\n"+
+    "|               | WAHR | halb\" |                               |\n"+
+    "+---------------+------+-------+-------------------------------+\n"+
+    "| protokolliere(ausweisId, uhrzeit, geoeffnet)                 |\n"+
+    "+--------------------------------------------------------------+\n\n"+
+    "PROBE\n"+
+    "  gueltiger Ausweis, 14:00, keine Nachtberechtigung\n"+
+    "     -> 14 >= 6 UND 14 < 20 ist wahr -> oeffnet, protokolliert\n\n"+
+    "  gueltiger Ausweis, 22:00, mit Nachtberechtigung\n"+
+    "     -> Zeitbedingung falsch -> Nachtberechtigung ja -> oeffnet\n\n"+
+    "  ungueltiger Ausweis, 10:00\n"+
+    "     -> Meldung, bleibt gesperrt, wird trotzdem protokolliert",
+  solutionLang:'Struktogramm',
+  solutionNote:'Der Prüfungspunkt ist die Position der Protokollierung: Sie steht als eigener Block *nach* allen Verzweigungen, weil sie in jedem Fall ausgeführt wird. Wer sie in jeden einzelnen Zweig schreibt, hat zwar dasselbe Ergebnis, aber dreifachen Code — und genau darauf zielt die Aufgabe. Achte außerdem auf die Grenzen der Zeitbedingung: „zwischen 6:00 und 20:00" heißt größer oder gleich 6 und kleiner 20.'
+},
+{
+  id:'ex44', level:2, topic:'ER-Modell', title:'Vom Formular zum Datenmodell',
+  task:'<p>Eine Autovermietung nutzt bisher dieses Papierformular:</p>'+
+    '<div class="check-prompt">MIETVERTRAG Nr. 2026-0417        Datum: 14.03.2026\nKunde: Nr. 3391, Anna Berger, Hauptstr. 7, 50667 Köln, Führerschein B\nFahrzeug: K-AB 1234, VW Golf, Kompaktklasse, Tagespreis 49,00 €\nStation Abholung: Köln-Süd (Leiter: Herr Vogt)\nStation Rückgabe:  Bonn-Zentrum (Leiter: Frau Klein)\nMietdauer: 14.03. bis 18.03.2026 (5 Tage)\nZusatzleistungen: Navigationsgerät 5,00 €/Tag, Kindersitz 3,00 €/Tag\nGesamtpreis: 285,00 €</div>'+
+    '<p>(a) Entwirf das Relationenmodell in 3. NF. (b) Gib alle Beziehungen mit Kardinalität an. (c) Begründe, warum die Zusatzleistungen eine eigene Konstruktion brauchen. (d) Welches Attribut aus dem Formular darf <strong>nicht</strong> gespeichert werden und warum?</p>',
+  hints:[
+    'Ein Mietvertrag nennt zwei verschiedene Stationen — das ergibt zwei Fremdschlüssel auf dieselbe Tabelle.',
+    'Ein Vertrag kann mehrere Zusatzleistungen haben, eine Zusatzleistung kommt in vielen Verträgen vor.',
+    'Bei (d): Welcher Wert lässt sich jederzeit aus anderen Daten berechnen?'
+  ],
+  solution:
+    "(a) RELATIONENMODELL IN 3. NF\n\n"+
+    "  Kunde(KundenNr, Nachname, Vorname, Strasse, PLZ, Ort,\n"+
+    "        Fuehrerscheinklasse)\n\n"+
+    "  Fahrzeugklasse(KlassenNr, Bezeichnung, Tagespreis)\n\n"+
+    "  Fahrzeug(Kennzeichen, Modell, #KlassenNr)\n\n"+
+    "  Station(StationsNr, Bezeichnung, #LeiterPersonalNr)\n\n"+
+    "  Mitarbeiter(PersonalNr, Nachname, Vorname)\n\n"+
+    "  Mietvertrag(VertragsNr, Datum, Mietbeginn, Mietende,\n"+
+    "              #KundenNr, #Kennzeichen,\n"+
+    "              #AbholStationsNr, #RueckgabeStationsNr)\n\n"+
+    "  Zusatzleistung(LeistungsNr, Bezeichnung, PreisProTag)\n\n"+
+    "  Vertrag_Zusatzleistung(#VertragsNr, #LeistungsNr, Anzahl)\n\n"+
+    "(b) BEZIEHUNGEN\n\n"+
+    "  Kunde            1 : n  Mietvertrag\n"+
+    "  Fahrzeug         1 : n  Mietvertrag\n"+
+    "  Fahrzeugklasse   1 : n  Fahrzeug\n"+
+    "  Station          1 : n  Mietvertrag  (zweimal: Abholung,\n"+
+    "                          Rueckgabe - zwei Fremdschluessel\n"+
+    "                          auf dieselbe Tabelle)\n"+
+    "  Mitarbeiter      1 : 1  Station      (als Leiter)\n"+
+    "  Mietvertrag      n : m  Zusatzleistung\n"+
+    "                          -> Zwischentabelle\n\n"+
+    "(c) WARUM DIE ZUSATZLEISTUNGEN EINE EIGENE KONSTRUKTION BRAUCHEN\n\n"+
+    "  Ein Vertrag kann mehrere Zusatzleistungen enthalten, und eine\n"+
+    "  Zusatzleistung kommt in vielen Vertraegen vor. Das ist eine\n"+
+    "  n:m-Beziehung, die sich nicht mit einem Fremdschluessel abbilden\n"+
+    "  laesst.\n\n"+
+    "  Wuerde man die Zusatzleistungen als Spalten in den Mietvertrag\n"+
+    "  schreiben (Zusatz1, Zusatz2, Zusatz3), entstuenden gleich drei\n"+
+    "  Probleme: die Anzahl waere fest begrenzt, die meisten Felder\n"+
+    "  blieben leer, und eine Preisaenderung muesste an vielen Stellen\n"+
+    "  nachgezogen werden. Ausserdem waere die 1. NF verletzt, sobald\n"+
+    "  man mehrere Leistungen in ein Feld schreibt.\n\n"+
+    "  Die Zwischentabelle traegt zusaetzlich die Anzahl - ein Attribut,\n"+
+    "  das weder zum Vertrag noch zur Leistung allein gehoert, sondern\n"+
+    "  zu ihrer Verbindung.\n\n"+
+    "(d) WAS NICHT GESPEICHERT WERDEN DARF\n\n"+
+    "  Der GESAMTPREIS (285,00 EUR).\n"+
+    "  Er ist ein abgeleiteter Wert und laesst sich jederzeit berechnen:\n"+
+    "     Mietdauer x Tagespreis der Klasse\n"+
+    "   + Summe (Anzahl x PreisProTag) ueber alle Zusatzleistungen\n\n"+
+    "  Wuerde man ihn speichern, entstuende Redundanz und damit die\n"+
+    "  Gefahr von Inkonsistenz: Aendert jemand die Mietdauer, stimmt\n"+
+    "  der gespeicherte Gesamtpreis nicht mehr.\n\n"+
+    "  ACHTUNG - die Ausnahme: In der Praxis speichert man bei\n"+
+    "  abgeschlossenen Vertraegen den Preis dennoch, weil er\n"+
+    "  historisiert werden muss. Spaetere Preisaenderungen duerfen\n"+
+    "  einen alten Vertrag nicht rueckwirkend veraendern. Das ist eine\n"+
+    "  bewusste Denormalisierung - und sie gehoert begruendet in die\n"+
+    "  Antwort.",
+  solutionLang:'Datenmodellierung',
+  solutionNote:'Teil (d) ist die anspruchsvollste Stelle und hat zwei richtige Antworten, je nach Blickwinkel. Rein normalisierungstechnisch ist der Gesamtpreis redundant und gehört nicht in die Tabelle. Fachlich muss er bei abgeschlossenen Verträgen historisiert werden. Wer beides erkennt und die Denormalisierung als bewusste Entscheidung begründet, zeigt genau das Verständnis, das die IHK von einem Anwendungsentwickler erwartet. Die doppelte Beziehung zur Station ist der zweite anspruchsvolle Punkt: Zwei Fremdschlüssel dürfen auf dieselbe Tabelle zeigen.'
+},
+{
+  id:'ex45', level:2, topic:'Netzwerk', title:'Störungsfall im Filialnetz analysieren',
+  task:'<p>Eine Filiale meldet Probleme. Du erhältst folgende Angaben:</p>'+
+    '<div class="check-prompt">Netz der Filiale: 10.20.30.0/25, Gateway 10.20.30.1\nDHCP-Bereich: 10.20.30.50 bis 10.20.30.120\n\nPC-A  IP 10.20.30.64   Maske 255.255.255.128  GW 10.20.30.1   → alles funktioniert\nPC-B  IP 10.20.30.140  Maske 255.255.255.128  GW 10.20.30.1   → erreicht niemanden\nPC-C  IP 10.20.30.77   Maske 255.255.255.0    GW 10.20.30.1   → LAN ok, Internet ok, aber der Server 10.20.31.9 ist nicht erreichbar\nPC-D  IP 169.254.203.4                                        → erreicht niemanden\nDrucker IP 10.20.30.55 (statisch gesetzt)                     → zeitweise nicht erreichbar</div>'+
+    '<p>Analysiere jeden Fall: Was ist die Ursache und wie behebst du sie? Gib für PC-B und den Drucker jeweils eine konkrete korrekte Konfiguration an.</p>',
+  hints:[
+    'Bestimme zuerst den gültigen Adressbereich des /25-Netzes.',
+    'Eine zu weite Subnetzmaske lässt den Rechner glauben, ein fremdes Netz sei lokal.',
+    'Eine statische Adresse innerhalb des DHCP-Bereichs ist ein Klassiker.'
+  ],
+  solution:
+    "GRUNDLAGE\n"+
+    "  10.20.30.0/25, Maske 255.255.255.128\n"+
+    "  Blockgroesse = 256 - 128 = 128\n"+
+    "  Netz      : 10.20.30.0\n"+
+    "  Hosts     : 10.20.30.1 bis 10.20.30.126\n"+
+    "  Broadcast : 10.20.30.127\n"+
+    "  Das naechste Netz beginnt bei 10.20.30.128.\n\n"+
+    "PC-A  10.20.30.64/25\n"+
+    "  Liegt im gueltigen Bereich, Maske und Gateway stimmen.\n"+
+    "  -> korrekt konfiguriert, kein Handlungsbedarf.\n\n"+
+    "PC-B  10.20.30.140/25\n"+
+    "  URSACHE: .140 liegt AUSSERHALB des Netzes - es gehoert bereits\n"+
+    "  zu 10.20.30.128/25. Der PC haelt sein Gateway 10.20.30.1 fuer\n"+
+    "  nicht lokal erreichbar und kann es nicht ansprechen.\n"+
+    "  BEHEBUNG: Adresse in den gueltigen Bereich legen, ausserhalb\n"+
+    "  des DHCP-Pools und nicht die .1.\n"+
+    "     IP-Adresse       10.20.30.20\n"+
+    "     Subnetzmaske     255.255.255.128\n"+
+    "     Standardgateway  10.20.30.1\n"+
+    "  (frei sind .2 bis .49 sowie .121 bis .126)\n\n"+
+    "PC-C  10.20.30.77 mit Maske 255.255.255.0\n"+
+    "  URSACHE: Die Maske ist zu WEIT (/24 statt /25). Der PC glaubt,\n"+
+    "  alles von 10.20.30.0 bis 10.20.30.255 sei sein eigenes Netz.\n"+
+    "  Fuer 10.20.31.9 fragt er dennoch das Gateway - das klappt.\n"+
+    "  Problematisch wird es fuer Ziele zwischen .128 und .255: die\n"+
+    "  sucht er per ARP im LAN, statt sie zu routen.\n"+
+    "  Hinweis: Dass der Server 10.20.31.9 nicht erreichbar ist, liegt\n"+
+    "  daher NICHT an der Maske von PC-C, sondern an einer Route oder\n"+
+    "  Firewall-Regel zwischen den Netzen - das ist getrennt zu pruefen.\n"+
+    "  BEHEBUNG: Maske auf 255.255.255.128 korrigieren, anschliessend\n"+
+    "  Routing und Firewall zwischen 10.20.30.0/25 und 10.20.31.0/24\n"+
+    "  pruefen.\n\n"+
+    "PC-D  169.254.203.4\n"+
+    "  URSACHE: APIPA - es wurde kein DHCP-Server erreicht. Der Client\n"+
+    "  hat sich selbst eine Adresse gegeben, hat aber kein Gateway.\n"+
+    "  MOEGLICHE GRUENDE: Kabel nicht gesteckt, falsches VLAN am Port,\n"+
+    "  DHCP-Server ausgefallen, Adresspool erschoepft (der Bereich\n"+
+    "  .50 bis .120 fasst nur 71 Adressen), fehlendes DHCP-Relay.\n"+
+    "  BEHEBUNG: ipconfig /release und /renew, Kabel und Port pruefen,\n"+
+    "  DHCP-Server und Poolauslastung kontrollieren.\n\n"+
+    "DRUCKER  10.20.30.55 statisch\n"+
+    "  URSACHE: Die Adresse liegt MITTEN IM DHCP-BEREICH (.50 bis .120).\n"+
+    "  Der DHCP-Server kann sie einem anderen Geraet zuweisen - dann\n"+
+    "  entsteht ein Adresskonflikt und der Drucker ist zeitweise weg.\n"+
+    "  Das erklaert genau das sporadische Verhalten.\n"+
+    "  BEHEBUNG, zwei gleichwertige Wege:\n"+
+    "     a) Statische Adresse ausserhalb des Pools:\n"+
+    "        IP 10.20.30.10, Maske 255.255.255.128, GW 10.20.30.1\n"+
+    "     b) Besser: DHCP-RESERVIERUNG auf die MAC-Adresse des\n"+
+    "        Druckers. Dann bleibt die Verwaltung zentral beim\n"+
+    "        DHCP-Server und der Drucker behaelt dauerhaft dieselbe\n"+
+    "        Adresse.",
+  solutionLang:'Netzwerkanalyse',
+  solutionNote:'Diese Aufgabe verbindet vier typische Fehlerbilder in einem Szenario, so wie es die AP1 tut. Der Druckerfall ist der lehrreichste: Das Wort „zeitweise" ist der entscheidende Hinweis — ein dauerhafter Fehler hätte eine andere Ursache, ein sporadischer deutet fast immer auf einen Adresskonflikt. Und bei PC-C lohnt sich die Ehrlichkeit: Die falsche Maske ist ein echter Fehler, erklärt aber das geschilderte Symptom nicht vollständig. Das zu trennen, statt alles auf einen Befund zu schieben, ist genau die Diagnosekompetenz, die geprüft wird.'
+},
+{
+  id:'ex46', level:2, topic:'Wirtschaft', title:'Drei Angebote vollständig bewerten',
+  task:'<p>Für 25 Notebooks liegen drei Angebote vor:</p>'+
+    '<div class="check-prompt">              Listenpreis   Rabatt  Skonto  Versand   Garantie  Support\nAnbieter A    1.090 €/Stk    10 %    2 %     240 €     24 Mon.   E-Mail\nAnbieter B    1.180 €/Stk    18 %    0 %     frei      36 Mon.   Telefon 8-18 Uhr\nAnbieter C    1.020 €/Stk     6 %    3 %     180 €     24 Mon.   Vor-Ort-Service</div>'+
+    '<p>(a) Berechne den Bezugspreis aller drei Angebote (netto). (b) Führe eine Nutzwertanalyse mit den Kriterien Preis 50 %, Garantie 20 %, Support 30 % durch (Skala 1–10). (c) Sprich eine begründete Empfehlung aus und nenne einen Grund, warum die reine Preisbetrachtung hier zu kurz greift.</p>',
+  hints:[
+    'Rechne zuerst mit dem Gesamtlistenpreis für alle 25 Geräte.',
+    'Skonto immer vom Zieleinkaufspreis, Versand erst danach addieren.',
+    'Bei der Nutzwertanalyse: Prüfe zuerst, ob die Gewichte 100 % ergeben.'
+  ],
+  solution:
+    "(a) BEZUGSPREISE\n\n"+
+    "  ANBIETER A\n"+
+    "    Listeneinkaufspreis  25 x 1.090 = 27.250,00\n"+
+    "    - Rabatt 10 %                   - 2.725,00\n"+
+    "    = Zieleinkaufspreis               24.525,00\n"+
+    "    - Skonto 2 %                    -   490,50\n"+
+    "    = Bareinkaufspreis                24.034,50\n"+
+    "    + Bezugskosten                  +   240,00\n"+
+    "    = Bezugspreis                     24.274,50 EUR\n\n"+
+    "  ANBIETER B\n"+
+    "    Listeneinkaufspreis  25 x 1.180 = 29.500,00\n"+
+    "    - Rabatt 18 %                   - 5.310,00\n"+
+    "    = Zieleinkaufspreis               24.190,00\n"+
+    "    - Skonto 0 %                    -     0,00\n"+
+    "    = Bareinkaufspreis                24.190,00\n"+
+    "    + Bezugskosten                  +     0,00\n"+
+    "    = Bezugspreis                     24.190,00 EUR\n\n"+
+    "  ANBIETER C\n"+
+    "    Listeneinkaufspreis  25 x 1.020 = 25.500,00\n"+
+    "    - Rabatt 6 %                    - 1.530,00\n"+
+    "    = Zieleinkaufspreis               23.970,00\n"+
+    "    - Skonto 3 %                    -   719,10\n"+
+    "    = Bareinkaufspreis                23.250,90\n"+
+    "    + Bezugskosten                  +   180,00\n"+
+    "    = Bezugspreis                     23.430,90 EUR\n\n"+
+    "  RANGFOLGE NACH PREIS: C (23.430,90) < B (24.190,00) < A (24.274,50)\n"+
+    "  Spanne: nur 843,60 EUR oder rund 3,6 % - die Angebote liegen\n"+
+    "  sehr eng beieinander.\n\n"+
+    "(b) NUTZWERTANALYSE\n"+
+    "  Probe: 50 + 20 + 30 = 100 %  ok\n\n"+
+    "  Punktvergabe (begruendet):\n"+
+    "    Preis     : C guenstigster = 10, B = 8, A = 7\n"+
+    "    Garantie  : B 36 Monate = 10, A und C 24 Monate = je 6\n"+
+    "    Support   : C Vor-Ort = 10, B Telefon = 7, A nur E-Mail = 4\n\n"+
+    "  Kriterium    Gew.   A          B          C\n"+
+    "  ------------------------------------------------\n"+
+    "  Preis        50 %   7 -> 3,50  8 -> 4,00  10 -> 5,00\n"+
+    "  Garantie     20 %   6 -> 1,20 10 -> 2,00   6 -> 1,20\n"+
+    "  Support      30 %   4 -> 1,20  7 -> 2,10  10 -> 3,00\n"+
+    "  ------------------------------------------------\n"+
+    "  Gesamtnutzwert      5,90       8,10        9,20\n\n"+
+    "(c) EMPFEHLUNG\n\n"+
+    "  Anbieter C wird empfohlen. Er ist zugleich das guenstigste\n"+
+    "  Angebot (23.430,90 EUR) und erreicht mit 9,20 den hoechsten\n"+
+    "  Nutzwert. Der Abstand zu B betraegt 1,10 Punkte, zu A sogar\n"+
+    "  3,30 Punkte.\n\n"+
+    "  WARUM DER REINE PREISVERGLEICH ZU KURZ GREIFT\n\n"+
+    "  Die Preisspanne betraegt nur 843,60 EUR, also 3,6 %. Ein\n"+
+    "  einziger Ausfall, der beim reinen E-Mail-Support von Anbieter A\n"+
+    "  tagelang ungeloest bliebe, kostet schnell mehr als diesen\n"+
+    "  Unterschied - bei 25 Geraeten und einem Arbeitsplatzausfall von\n"+
+    "  nur zwei Tagen zu 300 EUR Tagessatz waeren das bereits 600 EUR.\n\n"+
+    "  Hinzu kommt: Anbieter B bietet zwoelf Monate mehr Garantie. Ein\n"+
+    "  Geraeteausfall im dritten Jahr muesste bei A und C aus eigener\n"+
+    "  Tasche bezahlt werden. Bei einer angenommenen Ausfallquote von\n"+
+    "  8 % waeren das zwei Geraete zu je rund 1.000 EUR - mehr als die\n"+
+    "  gesamte Preisdifferenz.\n\n"+
+    "  Die Entscheidung faellt hier also nicht ueber den Preis, sondern\n"+
+    "  ueber Support und Garantie. Genau dafuer ist die Nutzwertanalyse\n"+
+    "  gedacht: Sie macht nicht-monetaere Kriterien vergleichbar.",
+  solutionLang:'Angebotsvergleich',
+  solutionNote:'Anbieter B ist eine bewusste Falle: Er hat den höchsten Listenpreis *und* den höchsten Rabatt und landet trotzdem in der Mitte. Der Rabattsatz allein sagt nichts aus — nur der Bezugspreis zählt. Teil (c) ist der Punktebringer: Rechne den Preisunterschied gegen ein konkretes Ausfallszenario. Eine Empfehlung, die eine Zahl gegen eine Zahl stellt, ist deutlich mehr wert als der Satz „Support ist auch wichtig".'
+},
+{
+  id:'ex47', level:2, topic:'Trockenlauf', title:'Rekursion und Schleife vergleichen',
+  task:'<p>Zwei Algorithmen berechnen dasselbe:</p>'+
+    '<div class="check-prompt">FUNKTION variante_A(n)              FUNKTION variante_B(n)\n  WENN n &lt;= 1 DANN                  ergebnis &lt;- 1\n    GIB 1 ZURUECK                     FUER i VON 2 BIS n TUE\n  SONST                                 ergebnis &lt;- ergebnis * i\n    GIB n * variante_A(n-1) ZURUECK   ENDEFUER\n  ENDEWENN                            GIB ergebnis ZURUECK\nENDEFUNKTION                        ENDEFUNKTION</div>'+
+    '<p>(a) Was berechnen beide? (b) Erstelle für <code>n = 5</code> je eine Wertetabelle. (c) Wie viele Funktionsaufrufe bzw. Schleifendurchläufe finden statt? (d) Nenne je zwei Vor- und Nachteile der rekursiven Variante.</p>',
+  hints:[
+    'Setze kleine Werte ein: n = 1, n = 2, n = 3 — dann siehst du das Muster.',
+    'Bei der Rekursion wird erst beim Zurückspringen gerechnet, nicht beim Abstieg.',
+    'Denke bei den Nachteilen an den Aufrufstapel.'
+  ],
+  solution:
+    "(a) BEIDE BERECHNEN DIE FAKULTAET n!\n"+
+    "    5! = 5 x 4 x 3 x 2 x 1 = 120\n\n"+
+    "(b) WERTETABELLEN fuer n = 5\n\n"+
+    "  VARIANTE A - rekursiv\n"+
+    "  Ebene  n   Aktion                     Rueckgabe\n"+
+    "  ----------------------------------------------------\n"+
+    "    1    5   5 > 1 -> ruft A(4)         offen\n"+
+    "    2    4   4 > 1 -> ruft A(3)         offen\n"+
+    "    3    3   3 > 1 -> ruft A(2)         offen\n"+
+    "    4    2   2 > 1 -> ruft A(1)         offen\n"+
+    "    5    1   Abbruchbedingung               1\n"+
+    "  --- Aufstieg, jetzt wird gerechnet ---\n"+
+    "    4    2   2 * 1                          2\n"+
+    "    3    3   3 * 2                          6\n"+
+    "    2    4   4 * 6                         24\n"+
+    "    1    5   5 * 24                       120\n\n"+
+    "  VARIANTE B - iterativ\n"+
+    "   i    ergebnis vorher   Rechnung   ergebnis nachher\n"+
+    "  ----------------------------------------------------\n"+
+    "   -           -              -             1\n"+
+    "   2           1            1 * 2           2\n"+
+    "   3           2            2 * 3           6\n"+
+    "   4           6            6 * 4          24\n"+
+    "   5          24           24 * 5         120\n\n"+
+    "(c) AUFRUFE UND DURCHLAEUFE\n\n"+
+    "  Variante A: 5 Funktionsaufrufe - A(5), A(4), A(3), A(2), A(1).\n"+
+    "              Allgemein: n Aufrufe, und ebenso viele Rahmen\n"+
+    "              liegen gleichzeitig auf dem Aufrufstapel.\n\n"+
+    "  Variante B: 4 Schleifendurchlaeufe - i = 2, 3, 4, 5.\n"+
+    "              Allgemein: n - 1 Durchlaeufe.\n\n"+
+    "  Beide haben die Komplexitaet O(n) bei der Rechenzeit.\n"+
+    "  Beim SPEICHER unterscheiden sie sich:\n"+
+    "     rekursiv  O(n)  wegen des Aufrufstapels\n"+
+    "     iterativ  O(1)  nur eine Variable\n\n"+
+    "(d) VOR- UND NACHTEILE DER REKURSION\n\n"+
+    "  Vorteile:\n"+
+    "   1. Naeher an der mathematischen Definition und dadurch oft\n"+
+    "      kuerzer und leichter lesbar.\n"+
+    "   2. Bei rekursiv strukturierten Daten - Baeumen, Verzeichnissen,\n"+
+    "      verschachtelten Strukturen - deutlich eleganter als eine\n"+
+    "      Schleife mit eigener Stapelverwaltung.\n\n"+
+    "  Nachteile:\n"+
+    "   1. Jeder Aufruf belegt einen Rahmen auf dem Aufrufstapel.\n"+
+    "      Bei grossem n droht ein Stapelueberlauf (Stack Overflow).\n"+
+    "   2. Mehr Verwaltungsaufwand je Aufruf, daher in der Regel\n"+
+    "      langsamer als die Schleife.\n\n"+
+    "  Und der Klassiker: Fehlt die Abbruchbedingung, laeuft die\n"+
+    "  Rekursion endlos bis zum Stapelueberlauf. Bei der Schleife\n"+
+    "  waere das Gegenstueck die vergessene Veraenderung der\n"+
+    "  Laufvariablen.",
+  solutionLang:'Trockenlauf',
+  solutionNote:'Der wichtigste Punkt steckt in Teil (b): Bei der Rekursion wird beim Abstieg nichts gerechnet, sondern nur der Stapel aufgebaut. Erst die Abbruchbedingung löst die Rechnung aus, und zwar von innen nach außen. Wer die Tabelle nur mit fünf Zeilen schreibt, hat den Aufstieg vergessen und verliert die Hälfte der Punkte. Bei (c) ist der Unterschied im Speicherbedarf das, was eine gute Antwort ausmacht — die Rechenzeit ist bei beiden gleich.'
+},
+{
+  id:'ex48', level:2, topic:'Projektmanagement', title:'Projekt planen und Engpass erkennen',
+  task:'<p>Eine Arztpraxis führt ein neues Praxisverwaltungssystem ein:</p>'+
+    '<div class="check-prompt">Vorgang                        Dauer   Vorgänger\nA  Anforderungen erheben        4 Tage    —\nB  Anbieter auswählen           6 Tage    A\nC  Hardware beschaffen          8 Tage    B\nD  Netzwerk vorbereiten         5 Tage    A\nE  Software installieren        3 Tage    C, D\nF  Altdaten migrieren           7 Tage    E\nG  Mitarbeiter schulen          4 Tage    E\nH  Testbetrieb                  5 Tage    F, G\nI  Abnahme                      2 Tage    H</div>'+
+    '<p>(a) Berechne den Netzplan vollständig. (b) Bestimme Projektdauer und kritischen Pfad. (c) Die Hardwarelieferung verzögert sich um 3 Tage — wie wirkt sich das aus? (d) Das Projekt muss 4 Tage früher fertig werden. Nenne zwei Ansätze mit Begründung, welche Vorgänge du dafür betrachtest.</p>',
+  hints:[
+    'Vorwärts mit MAX, rückwärts mit MIN. Probe: SAZ des ersten Vorgangs muss 0 sein.',
+    'Verkürzen lohnt nur auf dem kritischen Pfad — alles andere bringt nichts.',
+    'Prüfe bei (c) zuerst, ob C überhaupt Puffer hat.'
+  ],
+  solution:
+    "(a) NETZPLAN\n\n"+
+    "  VORWAERTSRECHNUNG\n"+
+    "    A: FAZ=0             D=4  FEZ=4\n"+
+    "    B: FAZ=4             D=6  FEZ=10\n"+
+    "    D: FAZ=4             D=5  FEZ=9\n"+
+    "    C: FAZ=10            D=8  FEZ=18\n"+
+    "    E: FAZ=MAX(18,9)=18  D=3  FEZ=21\n"+
+    "    F: FAZ=21            D=7  FEZ=28\n"+
+    "    G: FAZ=21            D=4  FEZ=25\n"+
+    "    H: FAZ=MAX(28,25)=28 D=5  FEZ=33\n"+
+    "    I: FAZ=33            D=2  FEZ=35\n\n"+
+    "  RUECKWAERTSRECHNUNG (SEZ von I = 35)\n"+
+    "    I: SEZ=35  SAZ=33\n"+
+    "    H: SEZ=33  SAZ=28\n"+
+    "    F: SEZ=28  SAZ=21\n"+
+    "    G: SEZ=28  SAZ=24\n"+
+    "    E: SEZ=MIN(21,24)=21  SAZ=18\n"+
+    "    C: SEZ=18  SAZ=10\n"+
+    "    D: SEZ=18  SAZ=13\n"+
+    "    B: SEZ=10  SAZ=4\n"+
+    "    A: SEZ=MIN(4,13)=4    SAZ=0    Probe ok\n\n"+
+    "  GESAMTPUFFER (GP = SAZ - FAZ)\n"+
+    "    A: 0-0   = 0   kritisch\n"+
+    "    B: 4-4   = 0   kritisch\n"+
+    "    C: 10-10 = 0   kritisch\n"+
+    "    D: 13-4  = 9\n"+
+    "    E: 18-18 = 0   kritisch\n"+
+    "    F: 21-21 = 0   kritisch\n"+
+    "    G: 24-21 = 3\n"+
+    "    H: 28-28 = 0   kritisch\n"+
+    "    I: 33-33 = 0   kritisch\n\n"+
+    "(b) ERGEBNIS\n"+
+    "    Projektdauer   : 35 Tage\n"+
+    "    Kritischer Pfad: A - B - C - E - F - H - I\n"+
+    "    Puffer: D hat 9 Tage, G hat 3 Tage.\n\n"+
+    "(c) HARDWARE (Vorgang C) VERZOEGERT SICH UM 3 TAGE\n\n"+
+    "    C liegt auf dem kritischen Pfad, Gesamtpuffer 0.\n"+
+    "    Jede Verzoegerung schlaegt voll durch.\n"+
+    "    Neue Projektdauer: 35 + 3 = 38 Tage.\n"+
+    "    Der kritische Pfad bleibt unveraendert.\n\n"+
+    "    Zur Kontrolle: Haette sich stattdessen D um 3 Tage verzoegert,\n"+
+    "    waere nichts passiert - D hat 9 Tage Puffer.\n\n"+
+    "(d) VERKUERZUNG UM 4 TAGE\n\n"+
+    "    Grundsatz: Verkuerzen bringt NUR auf dem kritischen Pfad\n"+
+    "    etwas. Vorgaenge mit Puffer - hier D und G - zu beschleunigen,\n"+
+    "    aendert an der Projektdauer nichts.\n\n"+
+    "    ANSATZ 1: Vorgaenge parallelisieren\n"+
+    "      G (Schulung, 4 Tage) laeuft bereits parallel zu F.\n"+
+    "      Pruefen, ob F (Altdaten migrieren, 7 Tage) teilweise schon\n"+
+    "      vor E beginnen kann - etwa die Datenbereinigung und\n"+
+    "      Probemigration waehrend der Installation.\n"+
+    "      Begruendung: F ist mit 7 Tagen der laengste Vorgang auf dem\n"+
+    "      kritischen Pfad nach C und bietet den groessten Hebel.\n\n"+
+    "    ANSATZ 2: Ressourcen aufstocken\n"+
+    "      C (Hardware beschaffen, 8 Tage) durch einen Lieferanten mit\n"+
+    "      kuerzerer Lieferzeit oder Expressversand verkuerzen.\n"+
+    "      Begruendung: C ist der laengste Einzelvorgang auf dem\n"+
+    "      kritischen Pfad; zwei bis drei Tage sind hier durch\n"+
+    "      Mehrkosten realistisch einkaufbar.\n\n"+
+    "    ZU BEACHTEN\n"+
+    "      Verkuerzt man den kritischen Pfad, kann ein bisher\n"+
+    "      unkritischer Zweig selbst kritisch werden. D hat 9 Tage\n"+
+    "      Puffer, G nur 3 - nach einer Verkuerzung um 4 Tage waere\n"+
+    "      der Zweig ueber G zu pruefen.\n"+
+    "      Ausserdem gilt das magische Dreieck: Zeitverkuerzung geht\n"+
+    "      zulasten von Kosten oder Qualitaet.",
+  solutionLang:'Netzplan',
+  solutionNote:'Teil (d) ist die Stelle, an der sich zeigt, ob der Netzplan verstanden oder nur gerechnet wurde. Die Kernaussage lautet: Verkürzen wirkt ausschließlich auf dem kritischen Pfad. Wer vorschlägt, die Schulung zu beschleunigen, hat die Puffer nicht gelesen. Der Hinweis am Ende — dass ein gepufferter Zweig nach der Verkürzung selbst kritisch werden kann — hebt die Antwort noch einmal ab und wird in Musterlösungen ausdrücklich erwartet.'
+}
+,
+{
+  id:'ex49', level:1, topic:'Netzwerkgrundlagen', title:'Erst schätzen, dann prüfen: MAC und IP',
+  task:'<p><strong>Schritt 1 — schätze zuerst, ohne nachzusehen.</strong> Notiere für jede Aussage spontan „stimmt" oder „stimmt nicht". Erst danach liest du weiter und prüfst.</p>'+
+    '<div class="check-prompt">a) Die IP-Adresse eines Pakets ändert sich bei jedem Router.\nb) Die MAC-Adresse ist weltweit einmalig und lässt sich nicht ändern.\nc) Ein PC löst per ARP die MAC-Adresse des Zielservers im Internet auf.\nd) Ohne MAC-Adresse könnte ein Paket im Zielnetz keinem Gerät zugestellt werden.\ne) Ein Switch benötigt eine IP-Adresse, um Frames weiterzuleiten.</div>'+
+    '<p><strong>Schritt 2:</strong> Begründe jede Entscheidung in einem Satz. <strong>Schritt 3:</strong> Bei welcher Aussage lagst du daneben? Notiere in einem Satz, welche Vorstellung dich in die Irre geführt hat.</p>',
+  hints:[
+    'Denk an das Bild: IP ist die Postanschrift, MAC die Personalausweisnummer.',
+    'Frage bei jeder Aussage, auf welcher OSI-Schicht sie spielt.',
+    'Bei e): Ein Switch arbeitet auf Schicht 2 — wozu bräuchte er eine Schicht-3-Adresse?'
+  ],
+  solution:
+    "a) STIMMT NICHT.\n"+
+    "   Die Ziel-IP bleibt vom Absender bis zum Ziel unveraendert.\n"+
+    "   Die MAC-Adresse ist es, die bei jedem Hop ausgetauscht wird.\n\n"+
+    "b) HALB RICHTIG - und deshalb mit \"stimmt nicht\" zu werten.\n"+
+    "   Sie ist vom Hersteller weltweit einmalig vergeben, laesst sich\n"+
+    "   aber per Software faelschen (MAC-Spoofing). Genau deshalb ist\n"+
+    "   ein MAC-Filter keine echte Sicherheitsmassnahme.\n\n"+
+    "c) STIMMT NICHT.\n"+
+    "   Fuer Ziele ausserhalb des eigenen Netzes loest der PC die MAC\n"+
+    "   des STANDARDGATEWAYS auf. Die MAC des Zielservers sieht er nie.\n\n"+
+    "d) STIMMT.\n"+
+    "   Im letzten Netzsegment erfolgt die Zustellung ueber die\n"+
+    "   MAC-Adresse. Die IP allein genuegt dort nicht.\n\n"+
+    "e) STIMMT NICHT.\n"+
+    "   Ein Switch leitet Frames allein anhand der MAC-Adressen weiter.\n"+
+    "   Eine IP-Adresse braucht er nur, wenn er selbst verwaltet werden\n"+
+    "   soll (Management-Interface eines Managed Switch).\n\n"+
+    "TYPISCHE FEHLVORSTELLUNGEN\n"+
+    "  Zu a) und c): Viele stellen sich eine Ende-zu-Ende-Verbindung\n"+
+    "  vor, bei der beide Adressen konstant bleiben. Tatsaechlich\n"+
+    "  arbeitet jede Schicht nur mit ihrem eigenen Horizont: Schicht 3\n"+
+    "  denkt in der gesamten Reise, Schicht 2 nur im naechsten Schritt.",
+  solutionLang:'Selbsttest',
+  solutionNote:'Diese Aufgabenform arbeitet mit dem Vorhersage-Effekt: Wer erst schätzt und dann prüft, merkt sich die Korrektur deutlich besser als jemand, der nur die richtige Antwort liest. Entscheidend ist Schritt 3 — die falsche Vorstellung ausdrücklich zu benennen. Bei a) und c) ist es fast immer dieselbe: die Annahme, beide Adressen blieben über die ganze Strecke gleich.'
+},
+{
+  id:'ex50', level:1, topic:'Objektorientierung', title:'Fehlersuche im Klassenentwurf',
+  task:'<p>Ein Azubi legt diese Klasse vor. Sie lässt sich übersetzen, hat aber <strong>fünf Entwurfsfehler</strong>.</p>'+
+    '<div class="check-prompt">KLASSE Mitarbeiter\n  OEFFENTLICH name : Text\n  OEFFENTLICH gehalt : Zahl\n  OEFFENTLICH STATISCH aktuellerMitarbeiter : Text\n\n  OEFFENTLICH METHODE setGehalt(g : Zahl)\n    gehalt &lt;- g\n  ENDEMETHODE\n\n  OEFFENTLICH METHODE getGehalt() : Zahl\n    GIB gehalt ZURUECK\n  ENDEMETHODE\n\n  OEFFENTLICH METHODE druckeGehaltsabrechnungAlsPdf()\n    ...\n  ENDEMETHODE\n\n  OEFFENTLICH METHODE sendeAbrechnungPerMail()\n    ...\n  ENDEMETHODE\nENDEKLASSE</div>'+
+    '<p>Finde alle fünf, benenne jeweils den Fachbegriff und schreibe die korrigierte Klasse.</p>',
+  hints:[
+    'Schau zuerst auf die Sichtbarkeiten der Attribute.',
+    'Prüfe, ob der Setter irgendeine Regel durchsetzt.',
+    'Zähle, wie viele verschiedene Aufgaben diese Klasse erledigt.'
+  ],
+  solution:
+    "FEHLER 1 - Attribute sind oeffentlich\n"+
+    "  Verstoss gegen die KAPSELUNG. Jeder kann gehalt direkt auf einen\n"+
+    "  beliebigen Wert setzen, auch auf -5000.\n"+
+    "  Korrektur: PRIVAT.\n\n"+
+    "FEHLER 2 - Setter ohne Validierung\n"+
+    "  setGehalt() reicht den Wert ungeprueft durch. Damit ist die\n"+
+    "  Kapselung nur Fassade - ein oeffentliches Attribut in Verkleidung.\n"+
+    "  Korrektur: Pruefung auf zulaessigen Bereich.\n\n"+
+    "FEHLER 3 - aktuellerMitarbeiter ist faelschlich statisch\n"+
+    "  Ein statisches Attribut existiert EINMAL fuer alle Objekte.\n"+
+    "  Der \"aktuelle Mitarbeiter\" ist aber eine Eigenschaft je Objekt -\n"+
+    "  oder gehoert gar nicht in diese Klasse.\n"+
+    "  Korrektur: entfernen; der Name steht bereits in name.\n\n"+
+    "FEHLER 4 und 5 - niedrige KOHAESION\n"+
+    "  Die Klasse erledigt drei voellig verschiedene Aufgaben:\n"+
+    "  Mitarbeiterdaten halten, PDFs erzeugen, Mails versenden.\n"+
+    "  Verstoss gegen das Single-Responsibility-Prinzip: Ein Wechsel\n"+
+    "  des Mailanbieters wuerde eine Aenderung an der Mitarbeiterklasse\n"+
+    "  erzwingen.\n"+
+    "  Korrektur: in eigene Klassen auslagern.\n\n"+
+    "KORRIGIERTE FASSUNG\n\n"+
+    "KLASSE Mitarbeiter\n"+
+    "  PRIVAT name   : Text\n"+
+    "  PRIVAT gehalt : Zahl\n\n"+
+    "  KONSTRUKTOR Mitarbeiter(n : Text, g : Zahl)\n"+
+    "    name <- n\n"+
+    "    setGehalt(g)\n"+
+    "  ENDEKONSTRUKTOR\n\n"+
+    "  OEFFENTLICH METHODE getName() : Text\n"+
+    "    GIB name ZURUECK\n"+
+    "  ENDEMETHODE\n\n"+
+    "  OEFFENTLICH METHODE getGehalt() : Zahl\n"+
+    "    GIB gehalt ZURUECK\n"+
+    "  ENDEMETHODE\n\n"+
+    "  OEFFENTLICH METHODE setGehalt(g : Zahl)\n"+
+    "    WENN g < 0 DANN\n"+
+    "      Fehler \"Gehalt darf nicht negativ sein\"\n"+
+    "    SONST\n"+
+    "      gehalt <- g\n"+
+    "    ENDEWENN\n"+
+    "  ENDEMETHODE\n"+
+    "ENDEKLASSE\n\n"+
+    "KLASSE AbrechnungsDrucker\n"+
+    "  OEFFENTLICH METHODE alsPdf(m : Mitarbeiter) : Datei ...\n"+
+    "ENDEKLASSE\n\n"+
+    "KLASSE MailVersand\n"+
+    "  OEFFENTLICH METHODE versende(empfaenger : Text, anhang : Datei) ...\n"+
+    "ENDEKLASSE",
+  solutionLang:'Entwurfskritik',
+  solutionNote:'Der Aufgabentyp „finde die Fehler in einem lauffähigen Entwurf" prüft etwas anderes als das Schreiben von Code: Du musst Qualitätsbegriffe anwenden können. Nenne deshalb bei jedem Befund den Fachbegriff — Kapselung, Kohäsion, Single Responsibility — und eine konkrete Folge. Fehler 2 ist der subtilste und wird am häufigsten übersehen: Ein Setter ohne Regel ist keine Kapselung.'
+},
+{
+  id:'ex51', level:1, topic:'Datenschutz', title:'Datenschutz oder Datensicherheit? Sortieren und begründen',
+  task:'<p>Ordne jede Maßnahme zu: <strong>Datenschutz</strong>, <strong>Datensicherheit</strong> oder <strong>beides</strong>. Begründe die Zuordnung jeweils mit der Leitfrage „ob" oder „wie".</p>'+
+    '<div class="check-prompt">1) Der Server steht in einem abgeschlossenen, klimatisierten Raum.\n2) Vor dem Newsletter-Versand wird eine Einwilligung eingeholt.\n3) Bewerbungsunterlagen werden nach sechs Monaten gelöscht.\n4) Das Backup wird verschlüsselt und außer Haus gelagert.\n5) Es gibt ein Verzeichnis von Verarbeitungstätigkeiten.\n6) Zugriff auf die Personalakte haben nur zwei benannte Personen.\n7) Die Produktionsmaschinen protokollieren Temperaturwerte in eine Datenbank, die täglich gesichert wird.\n8) Vor dem Einsatz eines Bewerbermanagement-Systems wird eine Folgenabschätzung durchgeführt.</div>'+
+    '<p>Nenne anschließend die zwei Maßnahmen aus der Liste, die <strong>ohne jeden Personenbezug</strong> auskommen.</p>',
+  hints:[
+    'Datenschutz fragt: Darf ich diese Daten überhaupt verarbeiten?',
+    'Datensicherheit fragt: Wie schütze ich Daten technisch und organisatorisch?',
+    'Achte bei 7) darauf, ob überhaupt personenbezogene Daten im Spiel sind.'
+  ],
+  solution:
+    "1) Abgeschlossener, klimatisierter Serverraum\n"+
+    "   -> DATENSICHERHEIT (baulich). Schuetzt Verfuegbarkeit und\n"+
+    "      Vertraulichkeit, unabhaengig vom Personenbezug.\n\n"+
+    "2) Einwilligung fuer den Newsletter\n"+
+    "   -> DATENSCHUTZ. Rechtsgrundlage nach Art. 6 - die Frage nach\n"+
+    "      dem OB der Verarbeitung.\n\n"+
+    "3) Bewerbungsunterlagen nach 6 Monaten loeschen\n"+
+    "   -> DATENSCHUTZ. Speicherbegrenzung und Zweckbindung.\n\n"+
+    "4) Verschluesseltes Backup ausser Haus\n"+
+    "   -> BEIDES. Technisch Datensicherheit (Verfuegbarkeit und\n"+
+    "      Vertraulichkeit), zugleich eine TOM nach Art. 32 DSGVO,\n"+
+    "      soweit personenbezogene Daten enthalten sind.\n\n"+
+    "5) Verzeichnis von Verarbeitungstaetigkeiten\n"+
+    "   -> DATENSCHUTZ. Rechenschaftspflicht nach Art. 30.\n\n"+
+    "6) Zugriff auf die Personalakte nur fuer zwei Personen\n"+
+    "   -> BEIDES. Berechtigungskonzept ist klassische Datensicherheit\n"+
+    "      und zugleich eine geforderte TOM nach Art. 32.\n\n"+
+    "7) Gesicherte Maschinendaten\n"+
+    "   -> DATENSICHERHEIT. Temperaturwerte sind keine\n"+
+    "      personenbezogenen Daten - die DSGVO greift nicht.\n"+
+    "      ABER: Liessen sich daraus Rueckschluesse auf das Verhalten\n"+
+    "      einzelner Beschaeftigter ziehen, kippt die Einordnung.\n\n"+
+    "8) Folgenabschaetzung vor dem Bewerbersystem\n"+
+    "   -> DATENSCHUTZ. DSFA nach Art. 35, weil ein hohes Risiko\n"+
+    "      fuer die Betroffenen besteht.\n\n"+
+    "OHNE PERSONENBEZUG MOEGLICH\n"+
+    "  Nummer 1 (Serverraum) und Nummer 7 (Maschinendaten).\n"+
+    "  Beide sind reine Datensicherheit - und das ist der Beweis,\n"+
+    "  dass Datensicherheit der weitere Begriff ist: Sie gilt fuer\n"+
+    "  ALLE Daten, der Datenschutz nur fuer personenbezogene.",
+  solutionLang:'Zuordnung',
+  solutionNote:'Die Schlussfrage ist der eigentliche Lerneffekt: Sie zwingt dazu, den Unterschied nicht auswendig zu lernen, sondern an Beispielen zu prüfen. Und der Nachsatz bei Nummer 7 ist prüfungsreif — sobald sich aus Maschinendaten Rückschlüsse auf einzelne Beschäftigte ziehen lassen, sind es personenbezogene Daten, und die Mitbestimmung nach § 87 BetrVG kommt hinzu.'
+},
+{
+  id:'ex52', level:2, topic:'Objektorientierung', title:'Vom Text zum Klassendiagramm – Fitnessstudio',
+  task:'<p>Arbeite in der vorgegebenen Reihenfolge und halte jeden Zwischenschritt schriftlich fest — die Punkte gibt es auf den Weg, nicht nur auf das Diagramm.</p>'+
+    '<div class="check-prompt">„Ein Fitnessstudio verwaltet Mitglieder. Jedes Mitglied hat eine Mitgliedsnummer, einen Namen und ein Eintrittsdatum und schließt genau einen Vertrag ab. Ein Vertrag hat eine Laufzeit und einen Monatsbeitrag; es gibt Basis- und Premiumverträge, die den Beitrag unterschiedlich berechnen. Premiummitglieder dürfen zusätzlich Kurse buchen. Ein Kurs wird von genau einem Trainer geleitet, ein Trainer leitet mehrere Kurse. Zu einem Kurs können sich mehrere Mitglieder anmelden, ein Mitglied besucht mehrere Kurse. Jede Anmeldung hat ein Datum und einen Status."</div>'+
+    '<p>(a) Substantive und Verben markieren. (b) Klassen von Attributen trennen. (c) Beziehungen mit Multiplizitäten. (d) Wo liegt eine Vererbung vor und warum? (e) Wo liegt Polymorphie vor? (f) Zeichne das Diagramm in Textform.</p>',
+  hints:[
+    'Der Satz zur unterschiedlichen Beitragsberechnung ist der Hinweis auf Vererbung und Polymorphie.',
+    'Die Anmeldung hat eigene Attribute — das ist das Signal für eine n:m-Beziehung mit Zwischenklasse.',
+    '„genau einen" und „mehrere" übersetzen sich direkt in Multiplizitäten.'
+  ],
+  solution:
+    "(a) MARKIEREN\n"+
+    "  Substantive: Fitnessstudio, Mitglied, Mitgliedsnummer, Name,\n"+
+    "    Eintrittsdatum, Vertrag, Laufzeit, Monatsbeitrag, Basisvertrag,\n"+
+    "    Premiumvertrag, Kurs, Trainer, Anmeldung, Datum, Status\n"+
+    "  Verben: verwalten, abschliessen, berechnen, buchen, leiten,\n"+
+    "    anmelden, besuchen\n\n"+
+    "(b) TRENNEN\n"+
+    "  KLASSEN  : Mitglied, Vertrag (abstrakt), Basisvertrag,\n"+
+    "             Premiumvertrag, Kurs, Trainer, Anmeldung\n"+
+    "  ATTRIBUTE: Mitgliedsnummer, Name, Eintrittsdatum -> Mitglied\n"+
+    "             Laufzeit, Monatsbeitrag -> Vertrag\n"+
+    "             Datum, Status -> Anmeldung\n"+
+    "  Fitnessstudio ist hier KEINE Klasse - es gibt nur eines und es\n"+
+    "  hat im Text weder Eigenschaften noch Verhalten.\n\n"+
+    "(c) BEZIEHUNGEN\n"+
+    "  Mitglied  1 ----- 1   Vertrag        (\"genau einen\")\n"+
+    "  Trainer   1 ----- 0..* Kurs          (\"mehrere\")\n"+
+    "  Mitglied  1 --- 0..* Anmeldung 0..* --- 1 Kurs\n"+
+    "     Die n:m-Beziehung zwischen Mitglied und Kurs wird ueber die\n"+
+    "     Klasse Anmeldung aufgeloest, weil sie eigene Attribute hat.\n\n"+
+    "(d) VERERBUNG\n"+
+    "  Basisvertrag und Premiumvertrag sind beide EIN Vertrag\n"+
+    "  (Ist-ein-Test bestanden). Gemeinsam sind Laufzeit und\n"+
+    "  Monatsbeitrag - diese wandern in die Oberklasse Vertrag.\n"+
+    "  Vertrag ist ABSTRAKT: Einen \"Vertrag an sich\" gibt es nicht,\n"+
+    "  jeder Vertrag ist entweder Basis oder Premium.\n\n"+
+    "(e) POLYMORPHIE\n"+
+    "  Der Satz \"die den Beitrag unterschiedlich berechnen\" ist der\n"+
+    "  Ausloeser. Die Methode beitragBerechnen() steht in der\n"+
+    "  Oberklasse als ABSTRAKTE Vorgabe und wird in beiden\n"+
+    "  Unterklassen unterschiedlich implementiert.\n"+
+    "  Nutzen: Eine Schleife ueber alle Vertraege ruft schlicht\n"+
+    "  beitragBerechnen() auf - ein spaeterer Studentenvertrag\n"+
+    "  erfordert keine Aenderung an dieser Schleife.\n\n"+
+    "(f) DIAGRAMM\n\n"+
+    "  +------------------------+        +----------------------+\n"+
+    "  |       Mitglied         | 1    1 |   Vertrag  {abstract}|\n"+
+    "  +------------------------+--------+----------------------+\n"+
+    "  | - mitgliedsnummer: int |        | # laufzeit: int      |\n"+
+    "  | - name: String         |        | # monatsbeitrag: dbl |\n"+
+    "  | - eintrittsdatum: Date |        +----------------------+\n"+
+    "  +------------------------+        | + beitragBerechnen() |\n"+
+    "  | + getName(): String    |        |     {abstract}       |\n"+
+    "  +------------------------+        +----------------------+\n"+
+    "        |                                     /_\\\n"+
+    "        | 1                                    |\n"+
+    "        |                        +-------------+-------------+\n"+
+    "        | 0..*                   |                           |\n"+
+    "  +--------------------+  +----------------+  +-------------------+\n"+
+    "  |     Anmeldung      |  |  Basisvertrag  |  |  Premiumvertrag   |\n"+
+    "  +--------------------+  +----------------+  +-------------------+\n"+
+    "  | - datum: Date      |  | + beitragBe-   |  | + beitragBe-      |\n"+
+    "  | - status: String   |  |   rechnen()    |  |   rechnen()       |\n"+
+    "  +--------------------+  +----------------+  | + kursBuchen()    |\n"+
+    "        | 0..*                                +-------------------+\n"+
+    "        | 1\n"+
+    "  +------------------+ 0..*        1 +------------------+\n"+
+    "  |       Kurs       |---------------|     Trainer      |\n"+
+    "  +------------------+               +------------------+\n"+
+    "  | - bezeichnung    |               | - name           |\n"+
+    "  | - maxTeilnehmer  |               | - qualifikation  |\n"+
+    "  +------------------+               +------------------+",
+  solutionLang:'Klassendiagramm',
+  solutionNote:'Die Aufgabe ist bewusst in sechs Schritte zerlegt, weil genau so eine AP1-Aufgabe zerlegt bepunktet wird — du bekommst Punkte für die Substantivliste, für die Multiplizitäten und für die Begründung der Vererbung, auch wenn das Diagramm am Ende nicht perfekt ist. Der Satz „die den Beitrag unterschiedlich berechnen" ist der eingebaute Auslöser für Polymorphie; solche Nebensätze sind in der AP1 nie Dekoration.'
+},
+{
+  id:'ex53', level:2, topic:'Datenschutz', title:'Neues System datenschutzrechtlich prüfen',
+  task:'<p>Eine Spedition mit 45 Beschäftigten plant:</p>'+
+    '<div class="check-prompt">In alle 30 LKW wird ein Telematiksystem eingebaut. Es erfasst laufend Position, Geschwindigkeit, Lenk- und Pausenzeiten sowie das Bremsverhalten. Die Disposition sieht die Fahrzeuge in Echtzeit auf einer Karte. Monatlich wird je Fahrer ein Auswertungsbericht erzeugt, der in die Bewertung einfließen soll. Die Daten liegen beim Anbieter in einem Rechenzentrum in Frankfurt und werden 12 Monate aufbewahrt.</div>'+
+    '<p>(a) Sind personenbezogene Daten betroffen? Begründe. (b) Welche Rechtsgrundlage kommt in Betracht und wo liegt das Problem? (c) Welche fünf Pflichten sind zu erfüllen? (d) Welche Rolle hat der Betriebsrat? (e) Formuliere drei konkrete Änderungen, die das Vorhaben zulässig machen.</p>',
+  hints:[
+    'Prüfe bei (a), ob sich die Fahrzeugdaten einer Person zuordnen lassen.',
+    'Bei (b): Eine Einwilligung im Arbeitsverhältnis ist heikel — warum?',
+    'Bei (e): Denke an Erforderlichkeit, Speicherdauer und die Frage, wofür die Auswertung verwendet wird.'
+  ],
+  solution:
+    "(a) PERSONENBEZUG\n"+
+    "  Ja, eindeutig. Zwar erfasst das System zunaechst Fahrzeugdaten,\n"+
+    "  aber ueber den Fahrtenplan ist jederzeit zuzuordnen, wer das\n"+
+    "  Fahrzeug gefuehrt hat. Damit sind die Personen IDENTIFIZIERBAR -\n"+
+    "  das genuegt nach Art. 4 DSGVO.\n"+
+    "  Der monatliche Bericht je Fahrer macht den Bezug ohnehin\n"+
+    "  ausdruecklich.\n\n"+
+    "(b) RECHTSGRUNDLAGE UND PROBLEM\n"+
+    "  In Betracht kommen:\n"+
+    "   - Art. 6 Abs. 1 lit. b, Vertragserfuellung, soweit die\n"+
+    "     Erfassung fuer die Disposition wirklich erforderlich ist\n"+
+    "   - Art. 6 Abs. 1 lit. c, rechtliche Pflicht, fuer Lenk- und\n"+
+    "     Ruhezeiten nach Fahrpersonalrecht\n"+
+    "   - Art. 6 Abs. 1 lit. f, berechtigtes Interesse, fuer die\n"+
+    "     Ortung waehrend der Fahrt\n\n"+
+    "  DAS PROBLEM: Die LEISTUNGSBEWERTUNG je Fahrer laesst sich auf\n"+
+    "  keine dieser Grundlagen stuetzen. Sie ist fuer die Disposition\n"+
+    "  nicht erforderlich und als Dauerueberwachung unverhaeltnismaessig.\n"+
+    "  Eine Einwilligung hilft hier kaum weiter: Im Arbeitsverhaeltnis\n"+
+    "  gilt sie wegen des Abhaengigkeitsverhaeltnisses nur\n"+
+    "  eingeschraenkt als freiwillig und ist jederzeit widerrufbar.\n\n"+
+    "(c) FUENF PFLICHTEN\n"+
+    "  1. Verzeichnis von Verarbeitungstaetigkeiten ergaenzen (Art. 30)\n"+
+    "  2. Datenschutz-Folgenabschaetzung (Art. 35) - systematische\n"+
+    "     Ueberwachung von Beschaeftigten ist ein klarer Ausloeser\n"+
+    "  3. Auftragsverarbeitungsvertrag mit dem Anbieter (Art. 28);\n"+
+    "     Frankfurt liegt in der EU, ein Drittlandtransfer entfaellt -\n"+
+    "     Subunternehmer und Supportzugriffe sind dennoch zu pruefen\n"+
+    "  4. Information der Beschaeftigten (Art. 13): Zweck, Umfang,\n"+
+    "     Speicherdauer, Rechtsgrundlage, Betroffenenrechte\n"+
+    "  5. Technische und organisatorische Massnahmen (Art. 32):\n"+
+    "     Zugriffsbeschraenkung, Verschluesselung, Protokollierung,\n"+
+    "     Loeschkonzept\n"+
+    "  (zusaetzlich: Datenschutzbeauftragter ist hier ohnehin zu\n"+
+    "   benennen, da eine DSFA erforderlich ist)\n\n"+
+    "(d) ROLLE DES BETRIEBSRATS\n"+
+    "  Das System ist geeignet, Verhalten und Leistung der\n"+
+    "  Beschaeftigten zu ueberwachen. Damit besteht ein zwingendes\n"+
+    "  MITBESTIMMUNGSRECHT nach § 87 Abs. 1 Nr. 6 BetrVG.\n"+
+    "  Ohne Betriebsvereinbarung darf das System nicht eingefuehrt\n"+
+    "  werden - das gilt unabhaengig davon, ob die Verarbeitung\n"+
+    "  datenschutzrechtlich zulaessig waere.\n\n"+
+    "(e) DREI AENDERUNGEN, DIE DAS VORHABEN ZULAESSIG MACHEN\n"+
+    "  1. Leistungsbewertung streichen.\n"+
+    "     Der Monatsbericht darf nicht in die Personalbeurteilung\n"+
+    "     einfliessen. Alternativ: Auswertung nur AGGREGIERT ueber die\n"+
+    "     gesamte Flotte, ohne Zuordnung zu einzelnen Fahrern.\n\n"+
+    "  2. Speicherdauer deutlich verkuerzen.\n"+
+    "     12 Monate sind fuer die Disposition nicht erforderlich.\n"+
+    "     Positionsdaten: wenige Tage. Lenk- und Ruhezeiten: nur so\n"+
+    "     lange, wie das Fahrpersonalrecht es verlangt.\n\n"+
+    "  3. Ortung auf die Arbeitszeit begrenzen.\n"+
+    "     Abschaltmoeglichkeit fuer Pausen und Feierabend, damit keine\n"+
+    "     Bewegungsprofile ausserhalb der Dienstzeit entstehen.\n"+
+    "     Technisch umgesetzt ueber einen Pausenschalter im Fahrzeug.\n\n"+
+    "  Das Ganze wird in einer BETRIEBSVEREINBARUNG festgeschrieben -\n"+
+    "  sie schafft zugleich Rechtssicherheit und Akzeptanz.",
+  solutionLang:'Datenschutzprüfung',
+  solutionNote:'Diese Aufgabenform bewertet nicht, ob du „verboten" sagst, sondern ob du ein Vorhaben zulässig machen kannst. Teil (e) ist deshalb die eigentliche Leistung: konkrete, umsetzbare Änderungen statt allgemeiner Bedenken. Das stärkste Argument im ganzen Fall ist die Erforderlichkeit — für die Disposition braucht es die Position in Echtzeit, für eine Leistungsbewertung braucht es sie nicht. Und vergiss § 87 BetrVG nicht: Er greift unabhängig vom Datenschutzrecht.'
+},
+{
+  id:'ex54', level:2, topic:'Netzwerkgrundlagen', title:'Overhead, Kapselung und echte Datenrate',
+  task:'<p>Eine 6 GB große Videodatei wird über ein Gigabit-Netz kopiert.</p>'+
+    '<div class="check-prompt">MTU: 1.500 Byte · IP-Header 20 Byte · TCP-Header 20 Byte\nEthernet-Rahmen zusätzlich 18 Byte, dazu 12 Byte Paketabstand und 8 Byte Präambel\nLeitung: 1 Gbit/s Vollduplex</div>'+
+    '<p>(a) Wie viele Nutzdaten passen in einen Frame? (b) Wie viele Frames braucht die Datei? (c) Wie hoch ist der Overhead in Prozent? (d) Berechne die theoretische und die realistische Übertragungsdauer. (e) Erkläre in zwei Sätzen, warum die Praxis noch darunter liegt.</p>',
+  hints:[
+    'Von der MTU gehen IP- und TCP-Header ab — was bleibt, sind die Anwendungsdaten.',
+    'Für den Overhead zählst du alles, was neben den Nutzdaten über die Leitung geht.',
+    'Bei (e): Denke an Quittungen, Verbindungsaufbau und die Gegenstelle.'
+  ],
+  solution:
+    "(a) NUTZDATEN JE FRAME\n"+
+    "    MTU 1.500 Byte\n"+
+    "    - IP-Header   20 Byte\n"+
+    "    - TCP-Header  20 Byte\n"+
+    "    ----------------------\n"+
+    "    = 1.460 Byte Anwendungsdaten je Frame\n\n"+
+    "(b) ANZAHL DER FRAMES\n"+
+    "    6 GB = 6.000.000.000 Byte (dezimal)\n"+
+    "    6.000.000.000 / 1.460 = 4.109.589,04\n"+
+    "    -> aufgerundet 4.109.590 Frames\n"+
+    "    (der letzte ist nur teilweise gefuellt)\n\n"+
+    "(c) OVERHEAD\n"+
+    "    Je Frame gehen ueber die Leitung:\n"+
+    "       Nutzdaten          1.460 Byte\n"+
+    "       IP + TCP              40 Byte\n"+
+    "       Ethernet-Rahmen       18 Byte\n"+
+    "       Praeambel              8 Byte\n"+
+    "       Paketabstand          12 Byte\n"+
+    "       ---------------------------\n"+
+    "       gesamt             1.538 Byte\n\n"+
+    "    Overhead = 78 / 1.538 = 5,07 %\n"+
+    "    Nutzanteil = 1.460 / 1.538 = 94,93 %\n\n"+
+    "(d) UEBERTRAGUNGSDAUER\n"+
+    "    Theoretisch (ohne jeden Overhead):\n"+
+    "       6 x 10^9 Byte x 8 = 48 x 10^9 Bit\n"+
+    "       48.000.000.000 / 1.000.000.000 = 48 s\n\n"+
+    "    Realistisch (mit 5,07 % Overhead):\n"+
+    "       Gesamtmenge auf der Leitung:\n"+
+    "       4.109.590 x 1.538 Byte = 6.320.549.420 Byte\n"+
+    "       x 8 = 50.564.395.360 Bit\n"+
+    "       / 1.000.000.000 = 50,6 s\n\n"+
+    "    Also rund 51 statt 48 Sekunden.\n\n"+
+    "(e) WARUM DIE PRAXIS NOCH DARUNTER LIEGT\n"+
+    "    TCP bestaetigt empfangene Daten und wartet bei ausbleibender\n"+
+    "    Quittung; dazu kommen Verbindungsauf- und -abbau sowie die\n"+
+    "    Anlaufphase, in der das Sendefenster erst waechst.\n"+
+    "    Ausserdem begrenzt fast immer ein anderes Glied der Kette -\n"+
+    "    eine Festplatte mit 150 MB/s liefert nur 1,2 Gbit/s brutto\n"+
+    "    und wird damit selbst zum Engpass.\n\n"+
+    "    Deshalb rechnet man in Pruefungsaufgaben mit 80 bis 90 Prozent\n"+
+    "    effektiver Auslastung.",
+  solutionLang:'Netzwerkrechnung',
+  solutionNote:'Diese Aufgabe verbindet Kapselung mit der Übertragungsrechnung und erklärt dabei, woher der Wert „effektive Auslastung" in anderen Aufgaben überhaupt kommt. Teil (e) ist der Verständnisteil: Der reine Protokoll-Overhead erklärt nur 5 Prozent — der große Rest entsteht durch TCP-Quittungen und dadurch, dass meist ein anderes Glied der Kette langsamer ist. Wer das trennt, zeigt, dass er die Zahl nicht nur einsetzt, sondern versteht.'
+}
+];
+EXERCISES.push.apply(EXERCISES, [{"id":"abap-ex1","level":1,"topic":"ABAP · Pseudocode","title":"ABAP · Summe aller geraden Zahlen","task":"<p>Schreibe einen <strong>Pseudocode-Algorithmus</strong>, der aus einer Liste von Ganzzahlen die Summe aller <em>geraden</em> Zahlen berechnet und zurückgibt.</p><ul><li>Eingabe: Liste <code>zahlen</code></li><li>Ausgabe: Summe der geraden Zahlen</li><li>Nutze die IHK-übliche Notation (IF/THEN/ENDIF, FOR EACH/ENDFOR)</li></ul>","hints":["Du brauchst eine Akkumulator-Variable, die vor der Schleife auf 0 gesetzt wird.","Eine Zahl ist gerade, wenn der Rest bei Division durch 2 gleich 0 ist — der Operator heißt meist MOD.","Struktur: Initialisierung → Schleife über alle Elemente → innerhalb der Schleife eine Verzweigung → nach der Schleife RETURN."],"solution":"FUNCTION summeGerade(zahlen)\n  summe <- 0\n  FOR EACH zahl IN zahlen DO\n    IF zahl MOD 2 = 0 THEN\n      summe <- summe + zahl\n    ENDIF\n  ENDFOR\n  RETURN summe\nENDFUNCTION","solutionLang":"Pseudocode","solutionNote":"Klassischer Akkumulator mit Filterbedingung — genau das Muster, das die AP1 in Multiple-Choice-Fragen gerne abfragt (\"Was liefert der Algorithmus für [3,4,7,8]?\" → 12).","course":"abap"},{"id":"abap-ex2","level":1,"topic":"ABAP · Pseudocode → ABAP","title":"ABAP · Lineare Suche übersetzen","task":"<p>Gegeben ist dieser Pseudocode. Übersetze ihn <strong>wörtlich in ABAP</strong> (Methode mit RETURNING-Parameter):</p><div class=\"check-prompt\">FUNCTION findeIndex(zahlen, gesucht)\n  FOR i &lt;- 1 TO LAENGE(zahlen) DO\n    IF zahlen[i] = gesucht THEN\n      RETURN i\n    ENDIF\n  ENDFOR\n  RETURN -1\nENDFUNCTION</div>","hints":["lines( itab ) liefert in ABAP die Anzahl der Zeilen einer internen Tabelle.","Eine DO-Schleife mit Index oder ein LOOP AT mit sy-tabix funktioniert — LOOP AT ist idiomatischer.","Beim frühen Verlassen der Schleife hilft EXIT; den Rückgabewert setzt du vorher auf den Trefferindex."],"solution":"METHOD find_index.\n  rv_index = -1.\n  LOOP AT it_zahlen INTO DATA(zahl).\n    IF zahl = iv_gesucht.\n      rv_index = sy-tabix.\n      EXIT.\n    ENDIF.\n  ENDLOOP.\nENDMETHOD.","solutionLang":"ABAP","solutionNote":"sy-tabix enthält im LOOP den aktuellen Zeilenindex. Idiomatischer wäre in echtem ABAP: line_index( it_zahlen[ table_line = iv_gesucht ] ) — für die Prüfung ist die wörtliche Variante aber richtig.","course":"abap"},{"id":"abap-ex3","level":1,"topic":"ABAP · ABAP Core","title":"ABAP · Interne Tabelle filtern und aufsummieren","task":"<p>Du hast eine interne Tabelle <code>orders</code> mit den Feldern <code>customer_id</code>, <code>amount</code>, <code>status</code>.</p><p>Schreibe ABAP-Code, der die <strong>Summe aller Beträge</strong> berechnet, deren <code>status = 'OPEN'</code> ist — einmal klassisch mit LOOP, einmal mit einem modernen funktionalen Ausdruck.</p>","hints":["Die klassische Variante braucht eine Summenvariable und LOOP AT ... WHERE.","Für die moderne Variante: REDUCE mit INIT, FOR und NEXT — und einer WHERE-Bedingung im FOR-Teil."],"solution":"\" Klassisch\nDATA total TYPE p LENGTH 13 DECIMALS 2.\nLOOP AT orders INTO DATA(order) WHERE status = 'OPEN'.\n  total = total + order-amount.\nENDLOOP.\n\n\" Modern (funktional)\nDATA(total_modern) = REDUCE p_amount(\n  INIT sum = VALUE p_amount( )\n  FOR order IN orders WHERE ( status = 'OPEN' )\n  NEXT sum = sum + order-amount ).","solutionLang":"ABAP","solutionNote":"Beachte die Klammern um die WHERE-Bedingung im FOR-Ausdruck — ein häufiger Syntaxfehler bei Einsteigern.","course":"abap"},{"id":"abap-ex4","level":1,"topic":"ABAP · SQL","title":"ABAP · JOIN mit Filter schreiben","task":"<p>Tabellen: <code>kunde(id, name, land)</code> und <code>bestellung(id, kunde_id, betrag)</code>.</p><p>Schreibe eine SQL-Abfrage, die <strong>Name und Bestellbetrag aller deutschen Kunden</strong> liefert — inklusive Kunden, die noch <em>keine</em> Bestellung haben.</p>","hints":["Welcher JOIN-Typ behält Zeilen der linken Tabelle, auch wenn rechts kein Treffer existiert?","Die Filterbedingung auf das Land gehört in die WHERE-Klausel, weil sie sich auf die linke (immer vorhandene) Tabelle bezieht."],"solution":"SELECT k.name, b.betrag\nFROM kunde k\nLEFT OUTER JOIN bestellung b ON b.kunde_id = k.id\nWHERE k.land = 'DE';","solutionLang":"SQL","solutionNote":"Achtung Prüfungsfalle: Stünde die Filterbedingung auf die RECHTE Tabelle in der WHERE-Klausel (z.B. b.betrag > 100), würde der LEFT JOIN faktisch zu einem INNER JOIN, weil NULL-Zeilen herausgefiltert werden. Solche Bedingungen gehören in die ON-Klausel.","course":"abap"},{"id":"abap-ex5","level":1,"topic":"ABAP · ABAP OO","title":"ABAP · Erste eigene Klasse","task":"<p>Erstelle eine ABAP-Klasse <code>ZCL_RECHNUNG</code> mit:</p><ul><li>privatem Attribut <code>netto</code> (Typ p, 2 Dezimalstellen)</li><li>Konstruktor, der den Nettobetrag entgegennimmt</li><li>öffentlicher Methode <code>get_brutto()</code>, die den Bruttobetrag mit 19% MwSt zurückgibt</li></ul>","hints":["Die Klassendefinition braucht PUBLIC SECTION und PRIVATE SECTION; Attribute, die niemand von außen ändern soll, gehören in die PRIVATE SECTION.","Ein Rückgabewert einer Methode wird mit RETURNING VALUE(rv_name) TYPE ... deklariert.","Clean ABAP: FINAL CREATE PUBLIC ist der Standard-Fall für neue Klassen."],"solution":"CLASS zcl_rechnung DEFINITION PUBLIC FINAL CREATE PUBLIC.\n  PUBLIC SECTION.\n    METHODS constructor IMPORTING iv_netto TYPE p LENGTH 13 DECIMALS 2.\n    METHODS get_brutto RETURNING VALUE(rv_brutto) TYPE p LENGTH 13 DECIMALS 2.\n  PRIVATE SECTION.\n    DATA netto TYPE p LENGTH 13 DECIMALS 2.\nENDCLASS.\n\nCLASS zcl_rechnung IMPLEMENTATION.\n  METHOD constructor.\n    netto = iv_netto.\n  ENDMETHOD.\n\n  METHOD get_brutto.\n    rv_brutto = netto * '1.19'.\n  ENDMETHOD.\nENDCLASS.","solutionLang":"ABAP","solutionNote":"Der Dezimalwert wird als Literal in Hochkommata geschrieben ('1.19'), sonst interpretiert ABAP ihn als Fließkommazahl mit möglichen Rundungsabweichungen — bei Geldbeträgen relevant.","course":"abap"},{"id":"abap-ex6","level":2,"topic":"ABAP · Pseudocode","title":"ABAP · Bubble-Sort im Pseudocode","task":"<p>Schreibe den <strong>Bubble-Sort-Algorithmus</strong> in Pseudocode (aufsteigend sortieren).</p><p>Zusatzfrage: Welche Komplexitätsklasse hat Bubble-Sort im schlechtesten Fall — und wie viele Vergleiche finden bei n = 5 Elementen in der einfachen Variante statt?</p>","hints":["Bubble-Sort braucht zwei verschachtelte Schleifen: die äußere zählt die Durchläufe, die innere vergleicht benachbarte Elemente.","Zum Tauschen zweier Werte brauchst du eine Hilfsvariable (temp).","Zwei verschachtelte Schleifen über dieselbe Menge → quadratische Komplexität."],"solution":"PROCEDURE bubbleSort(zahlen)\n  n <- LAENGE(zahlen)\n  FOR i <- 1 TO n - 1 DO\n    FOR j <- 1 TO n - i DO\n      IF zahlen[j] > zahlen[j + 1] THEN\n        temp <- zahlen[j]\n        zahlen[j] <- zahlen[j + 1]\n        zahlen[j + 1] <- temp\n      ENDIF\n    ENDFOR\n  ENDFOR\nENDPROCEDURE","solutionLang":"Pseudocode","solutionNote":"Komplexität: O(n²) im schlechtesten Fall. Bei n=5 in der optimierten Variante (innere Schleife bis n-i): 4+3+2+1 = 10 Vergleiche. In der naiven Variante (innere Schleife immer bis n-1): 4·4 = 16.","course":"abap"},{"id":"abap-ex7","level":2,"topic":"ABAP · ABAP Core","title":"ABAP · Refactoring: Schleife zu funktionalem Ausdruck","task":"<p>Refaktoriere diesen Code mit modernen ABAP-Ausdrücken — Ziel: keine explizite Schleife mehr, gleiche Funktionalität:</p><div class=\"check-prompt\">DATA lt_namen TYPE STANDARD TABLE OF string.\nLOOP AT lt_kunden INTO DATA(ls_kunde).\n  IF ls_kunde-aktiv = abap_true.\n    APPEND ls_kunde-name TO lt_namen.\n  ENDIF.\nENDLOOP.</div>","hints":["Der VALUE-Konstruktor kann mit FOR über eine Quelltabelle iterieren und dabei eine neue Tabelle aufbauen.","Eine Bedingung im FOR-Teil wird mit WHERE ( ... ) in Klammern geschrieben.","Bei einer Tabelle elementarer Typen (string) ist die Zeile selbst der Wert — die runde Klammer enthält dann direkt den Ausdruck."],"solution":"DATA(lt_namen) = VALUE string_table(\n  FOR kunde IN lt_kunden WHERE ( aktiv = abap_true )\n  ( kunde-name ) ).","solutionLang":"ABAP","solutionNote":"Drei Zeilen statt sieben, ohne Zwischenzustand. Wichtig: Diese Form ist nicht automatisch schneller — der Gewinn ist Lesbarkeit und weniger Fehlerquellen (keine vergessene Initialisierung, kein falsch platziertes APPEND).","course":"abap"},{"id":"abap-ex8","level":2,"topic":"ABAP · Performance","title":"ABAP · LOOP-in-LOOP entschärfen","task":"<p>Dieser Code hat bei 10.000 Bestellungen und 5.000 Kunden ein massives Performance-Problem. Erkläre <strong>warum</strong> und schreibe eine optimierte Variante:</p><div class=\"check-prompt\">LOOP AT lt_bestellungen INTO DATA(ls_best).\n  LOOP AT lt_kunden INTO DATA(ls_kunde).\n    IF ls_kunde-id = ls_best-kunde_id.\n      ls_best-kundenname = ls_kunde-name.\n      MODIFY lt_bestellungen FROM ls_best.\n      EXIT.\n    ENDIF.\n  ENDLOOP.\nENDLOOP.</div>","hints":["Rechne die Zugriffe durch: Wie oft läuft die innere Schleife im ungünstigsten Fall insgesamt?","Ein Sekundärschlüssel (HASHED KEY) auf der Kundentabelle erlaubt einen Zugriff in konstanter Zeit.","Mit ASSIGNING FIELD-SYMBOL vermeidest du zusätzlich das teure MODIFY."],"solution":"\" Kundentabelle mit HASHED-Sekundaerschluessel deklarieren:\nTYPES tt_kunden TYPE STANDARD TABLE OF ty_kunde\n  WITH EMPTY KEY\n  WITH UNIQUE HASHED KEY by_id COMPONENTS id.\n\nLOOP AT lt_bestellungen ASSIGNING FIELD-SYMBOL(<best>).\n  TRY.\n      <best>-kundenname = lt_kunden[ KEY by_id id = <best>-kunde_id ]-name.\n    CATCH cx_sy_itab_line_not_found.\n      CLEAR <best>-kundenname.\n  ENDTRY.\nENDLOOP.","solutionLang":"ABAP","solutionNote":"Vorher: bis zu 10.000 × 5.000 = 50 Mio. Vergleiche — O(n·m). Nachher: 10.000 Hash-Zugriffe in O(1) — also O(n). Zusätzlich entfällt das MODIFY, weil das Field-Symbol direkt die Originalzeile ändert.","course":"abap"},{"id":"abap-ex9","level":2,"topic":"ABAP · ABAP OO","title":"ABAP · Strategy-Pattern implementieren","task":"<p>Implementiere eine Rabattberechnung nach dem <strong>Strategy-Pattern</strong>:</p><ul><li>Interface <code>ZIF_RABATT</code> mit Methode <code>berechne( iv_betrag )</code> → Rückgabe Rabattbetrag</li><li>Zwei Implementierungen: Standardkunde (5%) und Premiumkunde (15%)</li><li>Aufrufender Code, der je nach Kundentyp die passende Strategie wählt</li></ul>","hints":["Das Interface deklariert nur die Methodensignatur, keine Implementierung.","Beide Klassen binden das Interface über INTERFACES zif_rabatt ein und implementieren die Methode mit dem Präfix zif_rabatt~.","Im aufrufenden Code hältst du eine Referenzvariable vom Typ REF TO zif_rabatt — nicht vom Typ einer konkreten Klasse. Das ist der Kern des Musters."],"solution":"INTERFACE zif_rabatt PUBLIC.\n  METHODS berechne IMPORTING iv_betrag TYPE p LENGTH 13 DECIMALS 2\n                   RETURNING VALUE(rv_rabatt) TYPE p LENGTH 13 DECIMALS 2.\nENDINTERFACE.\n\nCLASS zcl_rabatt_standard DEFINITION PUBLIC FINAL CREATE PUBLIC.\n  PUBLIC SECTION.\n    INTERFACES zif_rabatt.\nENDCLASS.\nCLASS zcl_rabatt_standard IMPLEMENTATION.\n  METHOD zif_rabatt~berechne.\n    rv_rabatt = iv_betrag * '0.05'.\n  ENDMETHOD.\nENDCLASS.\n\n\" zcl_rabatt_premium analog mit '0.15'\n\n\" Aufrufender Code:\nDATA(lo_rabatt) = COND #( WHEN kundentyp = 'PREMIUM'\n                           THEN NEW zcl_rabatt_premium( )\n                           ELSE NEW zcl_rabatt_standard( ) ).\nDATA(rabatt) = lo_rabatt->berechne( betrag ).","solutionLang":"ABAP","solutionNote":"Der entscheidende Punkt: Der Code nach der COND-Zuweisung kennt den Kundentyp nicht mehr. Ein neuer Rabatttyp erfordert nur eine neue Klasse plus eine Zeile in der Auswahl — das Open/Closed-Prinzip in der Praxis.","course":"abap"},{"id":"abap-ex10","level":2,"topic":"ABAP · CDS","title":"ABAP · CDS-View mit Assoziation und Statustext","task":"<p>Modelliere eine CDS-View <code>ZI_BestellungMitKunde</code>:</p><ul><li>Basis: Tabelle <code>zorder</code> (Felder: order_id, customer_id, amount, status)</li><li>Assoziation zur View <code>ZI_Customer</code> über <code>customer_id</code></li><li>Ein berechnetes Feld <code>status_text</code>: 'A' → 'Offen', 'C' → 'Abgeschlossen', sonst 'Unbekannt'</li><li>Mit Berechtigungsprüfung</li></ul>","hints":["Die moderne Syntax beginnt mit define view entity — nicht mit dem veralteten define view.","Assoziationen werden zwischen der select-from-Klausel und der geschweiften Feldliste deklariert.","In der ON-Bedingung referenzierst du das eigene Feld über $projection.<feldname>. Vergiss nicht, die Assoziation selbst in der Feldliste zu exponieren."],"solution":"@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: 'Bestellung mit Kunde'\ndefine view entity ZI_BestellungMitKunde\n  as select from zorder as Order\n  association [1..1] to ZI_Customer as _Customer\n    on $projection.customer_id = _Customer.customer_id\n{\n  key Order.order_id,\n      Order.customer_id,\n      Order.amount,\n      case Order.status\n        when 'A' then 'Offen'\n        when 'C' then 'Abgeschlossen'\n        else 'Unbekannt'\n      end as status_text,\n      _Customer\n}","solutionLang":"CDS","solutionNote":"Wird _Customer in der Feldliste exponiert, können Konsumenten über den Pfad (z.B. _Customer.name) auf Kundenfelder zugreifen — der JOIN entsteht dann erst bei tatsächlichem Zugriff (Lazy Evaluation).","course":"abap"},{"id":"abap-ex11","level":2,"topic":"ABAP · SQL","title":"ABAP · Aggregation mit HAVING und Subquery","task":"<p>Tabellen: <code>kunde(id, name)</code>, <code>bestellung(id, kunde_id, betrag, datum)</code>.</p><p>Schreibe eine Abfrage, die die <strong>Namen aller Kunden</strong> liefert, die im Jahr 2026 <strong>mehr als 3 Bestellungen</strong> mit einem <strong>Gesamtbetrag über 5000</strong> aufgegeben haben — sortiert nach Gesamtbetrag absteigend.</p>","hints":["Du brauchst GROUP BY auf Kundenebene und zwei Bedingungen, die sich auf Aggregatwerte beziehen.","Die Jahresbedingung filtert einzelne Zeilen (vor der Gruppierung) → WHERE. Anzahl und Summe filtern Gruppen (nach der Gruppierung) → HAVING.","Der Kundenname kommt aus einem JOIN und muss mit in die GROUP-BY-Klausel."],"solution":"SELECT k.name, SUM(b.betrag) AS gesamt, COUNT(*) AS anzahl\nFROM kunde k\nINNER JOIN bestellung b ON b.kunde_id = k.id\nWHERE b.datum BETWEEN '2026-01-01' AND '2026-12-31'\nGROUP BY k.id, k.name\nHAVING COUNT(*) > 3 AND SUM(b.betrag) > 5000\nORDER BY gesamt DESC;","solutionLang":"SQL","solutionNote":"Typische Prüfungsfalle: Die Jahresbedingung in HAVING statt WHERE zu schreiben ist zwar teils syntaktisch möglich, aber logisch falsch bzw. ineffizient — sie filtert einzelne Zeilen, nicht Gruppen.","course":"abap"},{"id":"abap-ex12","level":3,"topic":"ABAP · RAP","title":"ABAP · Behavior Definition mit Determination & Validation","task":"<p>Entwirf die <strong>Behavior Definition</strong> für ein Business Object <code>ZI_Order</code> (managed, draft-fähig) mit folgenden Anforderungen:</p><ul><li>Standard-CRUD, order_id ist readonly</li><li>Beim Sichern soll <code>total</code> automatisch aus <code>amount</code> + 19% MwSt berechnet werden</li><li>Vor dem Sichern muss geprüft werden, dass <code>amount</code> größer 0 ist</li><li>Eine Aktion <code>release</code> soll die Bestellung freigeben</li><li>Optimistic Concurrency über einen Zeitstempel</li></ul><p>Schreibe zusätzlich die Implementierung der Validierung (Grundgerüst mit failed/reported).</p>","hints":["Determinations und Validations werden im Rumpf der Behavior Definition deklariert, mit Angabe des Auslösezeitpunkts (on save) und der auslösenden Operationen.","Für Optimistic Concurrency brauchst du eine etag-master-Angabe auf ein Zeitstempelfeld, das in der CDS-View mit @Semantics.systemDateTime.lastChangedAt: true annotiert ist.","In der Validierungsimplementierung liest du die betroffenen Instanzen mit READ ENTITIES ... IN LOCAL MODE, prüfst sie, und füllst bei Fehlern failed-order und reported-order."],"solution":"managed implementation in class zbp_i_order unique;\nstrict ( 2 );\n\ndefine behavior for ZI_Order alias Order\npersistent table zorder\ndraft table zorder_d\nlock master\ntotal etag LastChangedAt\netag master LocalLastChangedAt\nauthorization master ( instance )\nwith draft\n{\n  create; update; delete;\n  field ( readonly ) order_id;\n\n  determination calculate_total on save { create; update; }\n  validation check_amount on save { create; update; }\n  action release result [1] $self;\n\n  mapping for zorder corresponding;\n}\n\n\" --- Implementierung der Validierung ---\nMETHOD check_amount.\n  READ ENTITIES OF zi_order IN LOCAL MODE\n    ENTITY Order\n      FIELDS ( amount )\n      WITH CORRESPONDING #( keys )\n    RESULT DATA(orders).\n\n  LOOP AT orders INTO DATA(order).\n    IF order-amount <= 0.\n      APPEND VALUE #( %tky = order-%tky ) TO failed-order.\n      APPEND VALUE #( %tky = order-%tky\n                      %msg = new_message_with_text(\n                               severity = if_abap_behv_message=>severity-error\n                               text     = 'Betrag muss groesser 0 sein' )\n                    ) TO reported-order.\n    ENDIF.\n  ENDLOOP.\nENDMETHOD.","solutionLang":"RAP","solutionNote":"Zentral: Fehler werden NICHT als Exception geworfen, sondern in failed (welche Instanz ist fehlgeschlagen) und reported (welche Meldung wird dem Nutzer angezeigt) geschrieben. Das Framework wertet beides aus und übersetzt es automatisch in UI-Meldungen.","course":"abap"},{"id":"abap-ex13","level":3,"topic":"ABAP · Architektur","title":"ABAP · CDS-Ausdruck, virtuelles Element oder Table Function?","task":"<p><strong>Entscheidungsaufgabe.</strong> Für drei Anforderungen sollst du jeweils begründen, welches CDS-Mittel das richtige ist — einfacher CDS-Ausdruck, virtuelles Element oder Table Function:</p><ol><li>Ein Feld „Rabattklasse\", das aus dem Umsatz per Schwellwerten abgeleitet wird (&lt;1000 = C, &lt;5000 = B, sonst A)</li><li>Ein Feld „Bonitätsscore\", das über einen externen Service pro Kunde berechnet wird</li><li>Eine Auswertung, die je Kunde iterativ die längste ununterbrochene Bestellserie ermittelt</li></ol><p>Begründe jeweils <em>warum</em> — insbesondere im Hinblick auf Optimierbarkeit durch die Datenbank.</p>","hints":["Frage dich bei jeder Anforderung: Lässt sich das rein mengenbasiert und deklarativ ausdrücken?","Virtuelle Elemente werden pro angezeigter Zeile in ABAP berechnet — sie sind nicht filterbar/sortierbar auf Datenbankebene.","Iterative Algorithmen über Zeilenreihenfolge sind der klassische Anwendungsfall für SQLScript und damit Table Functions."],"solution":"1) Rabattklasse  -> Einfacher CDS-Ausdruck (case/when)\n   Reine Mengenlogik auf vorhandenen Spalten. Bleibt deklarativ,\n   voll pushdown-faehig, filter- und sortierbar auf DB-Ebene.\n\n2) Bonitaetsscore -> Virtuelles Element (@ObjectModel.virtualElement)\n   Wert stammt aus einem externen Service, existiert also gar nicht\n   in der Datenbank. Bewusste Konsequenz: nicht filterbar/sortierbar\n   auf DB-Ebene, Berechnung nur fuer die angezeigten Zeilen.\n\n3) Laengste Bestellserie -> CDS Table Function (AMDP/SQLScript)\n   Iterative Logik ueber die Zeilenreihenfolge laesst sich in reinem\n   CDS nicht sauber ausdruecken. SQLScript kann das nah an den Daten\n   berechnen. Preis: HANA-Abhaengigkeit und geringere Optimierbarkeit.","solutionLang":"Begründung","solutionNote":"Die Eskalationsleiter lautet immer: erst deklarativer CDS-Ausdruck, dann virtuelles Element (wenn der Wert gar nicht aus der DB stammen kann), erst zuletzt Table Function/AMDP. Jede Stufe nach unten kostet Optimierbarkeit durch den Datenbank-Optimizer.","course":"abap"},{"id":"abap-ex14","level":3,"topic":"ABAP · Test & OO","title":"ABAP · Nicht testbare Klasse refactoren + Unit-Test","task":"<p>Diese Klasse ist nicht testbar. Analysiere <strong>warum</strong>, refaktoriere sie mit Dependency Injection, und schreibe einen ABAP-Unit-Test mit einem Test Double:</p><div class=\"check-prompt\">CLASS zcl_order_processor DEFINITION PUBLIC FINAL CREATE PUBLIC.\n  PUBLIC SECTION.\n    METHODS process IMPORTING iv_order_id TYPE char10\n                    RETURNING VALUE(rv_ok) TYPE abap_bool.\nENDCLASS.\n\nCLASS zcl_order_processor IMPLEMENTATION.\n  METHOD process.\n    SELECT SINGLE * FROM zorder WHERE order_id = @iv_order_id INTO @DATA(order).\n    IF order-amount &gt; 0.\n      NEW zcl_mail_sender( )-&gt;send( order-email ).\n      rv_ok = abap_true.\n    ENDIF.\n  ENDMETHOD.\nENDCLASS.</div>","hints":["Zwei harte Abhängigkeiten machen den Test unmöglich: ein direkter Datenbankzugriff und eine direkt instanziierte Klasse (NEW im Methodenrumpf).","Extrahiere beide hinter Interfaces (z.B. ZIF_ORDER_READER und ZIF_MAIL_SENDER) und injiziere sie über den Konstruktor.","Im Test erzeugst du Test Doubles mit CL_ABAP_TESTDOUBLE, konfigurierst deren Rückgabewerte und übergibst sie dem Konstruktor."],"solution":"CLASS zcl_order_processor DEFINITION PUBLIC FINAL CREATE PUBLIC.\n  PUBLIC SECTION.\n    METHODS constructor IMPORTING io_reader TYPE REF TO zif_order_reader\n                                  io_mailer TYPE REF TO zif_mail_sender.\n    METHODS process IMPORTING iv_order_id TYPE char10\n                    RETURNING VALUE(rv_ok) TYPE abap_bool.\n  PRIVATE SECTION.\n    DATA reader TYPE REF TO zif_order_reader.\n    DATA mailer TYPE REF TO zif_mail_sender.\nENDCLASS.\n\nCLASS zcl_order_processor IMPLEMENTATION.\n  METHOD constructor.\n    reader = io_reader.\n    mailer = io_mailer.\n  ENDMETHOD.\n\n  METHOD process.\n    DATA(order) = reader->read( iv_order_id ).\n    IF order-amount > 0.\n      mailer->send( order-email ).\n      rv_ok = abap_true.\n    ENDIF.\n  ENDMETHOD.\nENDCLASS.\n\n\" --- Unit-Test ---\nCLASS ltc_processor DEFINITION FOR TESTING\n  DURATION SHORT RISK LEVEL HARMLESS.\n  PRIVATE SECTION.\n    METHODS sends_mail_for_valid_order FOR TESTING.\nENDCLASS.\n\nCLASS ltc_processor IMPLEMENTATION.\n  METHOD sends_mail_for_valid_order.\n    DATA(lo_reader) = CAST zif_order_reader(\n      cl_abap_testdouble=>create( 'zif_order_reader' ) ).\n    cl_abap_testdouble=>configure_call( lo_reader\n      )->returning( VALUE ty_order( amount = 100 email = 'a@b.de' ) ).\n    lo_reader->read( '4711' ).\n\n    DATA(lo_mailer) = CAST zif_mail_sender(\n      cl_abap_testdouble=>create( 'zif_mail_sender' ) ).\n\n    DATA(cut) = NEW zcl_order_processor( io_reader = lo_reader\n                                          io_mailer = lo_mailer ).\n\n    cl_abap_unit_assert=>assert_true( cut->process( '4711' ) ).\n  ENDMETHOD.\nENDCLASS.","solutionLang":"ABAP","solutionNote":"Kernaussage: Der Test wurde nicht durch ein Test-Werkzeug möglich, sondern durch besseres Design. Genau deshalb ist schwere Testbarkeit ein zuverlässiges Warnsignal für Architekturprobleme — nicht ein Problem des Testframeworks.","course":"abap"},{"id":"abap-ex15","level":3,"topic":"ABAP · Security","title":"ABAP · Dynamisches SQL absichern","task":"<p>Dieser Code erlaubt es Anwendern, eine Sortierspalte und einen Suchbegriff anzugeben. Er enthält <strong>zwei</strong> Sicherheitsprobleme. Finde beide und schreibe eine sichere Variante:</p><div class=\"check-prompt\">DATA(lv_where) = |name LIKE '%{ iv_suche }%'|.\nDATA(lv_order) = iv_sortierfeld.\n\nSELECT * FROM kunde\n  WHERE (lv_where)\n  ORDER BY (lv_order)\n  INTO TABLE @DATA(lt_result).</div>","hints":["Problem 1 betrifft den Suchbegriff: Er wird als Bestandteil der Abfrage selbst behandelt, nicht als Datenwert.","Problem 2 betrifft das Sortierfeld: Ein dynamischer Spaltenname lässt sich nicht als Parameter übergeben — was bleibt als Absicherung?","Für dynamische Strukturbestandteile (Spalten-/Tabellennamen) ist eine Freigabeliste (Whitelist) die übliche Lösung."],"solution":"\" Problem 1: Suchbegriff wird als Code statt als Datenwert eingebaut\n\"            -> SQL-Injection moeglich\n\" Problem 2: Sortierfeld kommt ungeprueft aus Nutzereingabe\n\"            -> beliebige Spalten adressierbar\n\n\" Sichere Variante:\nCONSTANTS: BEGIN OF erlaubte_felder,\n             name TYPE string VALUE 'NAME',\n             ort  TYPE string VALUE 'ORT',\n           END OF erlaubte_felder.\n\n\" 1) Sortierfeld gegen Freigabeliste pruefen\nDATA(lv_order) = COND string(\n  WHEN iv_sortierfeld = erlaubte_felder-name THEN 'NAME'\n  WHEN iv_sortierfeld = erlaubte_felder-ort  THEN 'ORT'\n  ELSE 'NAME' ).   \" sicherer Standardwert\n\n\" 2) Suchbegriff als echte Host-Variable uebergeben\nDATA(lv_pattern) = |%{ iv_suche }%|.\n\nSELECT * FROM kunde\n  WHERE name LIKE @lv_pattern\n  ORDER BY (lv_order)\n  INTO TABLE @DATA(lt_result).","solutionLang":"ABAP","solutionNote":"Merksatz: Datenwerte gehören immer in Host-Variablen (@). Strukturbestandteile wie Spalten- oder Tabellennamen können technisch keine Parameter sein — sie brauchen deshalb zwingend eine Freigabeliste mit sicherem Standardwert.","course":"abap"},{"id":"abap-ex16","level":3,"topic":"ABAP · Architektur","title":"ABAP · Extensibility-Strategie begründen","task":"<p><strong>Konzeptaufgabe (typisches Architektur-Gespräch).</strong> Ein Kunde mit S/4HANA möchte drei Erweiterungen. Entscheide für jede: Key-User-Extensibility, Developer-Extensibility (Embedded Steampunk) oder Side-by-Side auf der BTP — und begründe mit Blick auf Upgrade-Fähigkeit und Governance:</p><ol><li>Ein zusätzliches Feld „Interne Projektnummer\" auf der Bestellung, das auch in Listen angezeigt werden soll</li><li>Eine komplexe Preisfindungslogik mit Zugriff auf mehrere S/4-Tabellen, die bei jedem Bestellsichern laufen muss</li><li>Ein kundenspezifisches Partnerportal mit eigener Oberfläche, das Bestellstatus anzeigt und externe Lieferanten anbindet</li></ol>","hints":["Frage 1: Wie tief greift die Anforderung in Logik ein — reicht ein Feld plus UI-Anzeige?","Frage 2: Braucht es vollen ABAP-Sprachumfang und Transaktionsnähe zum Kernprozess?","Frage 3: Wer sind die Nutzer, und soll das Kernsystem für externe Zugriffe geöffnet werden?"],"solution":"1) Projektnummer -> KEY-USER-EXTENSIBILITY\n   Custom Field per Guided UI, danach in der Fiori-App einblenden.\n   Kein Entwicklercode noetig, upgradesicher, geringste Governance-Last.\n\n2) Preisfindungslogik -> DEVELOPER-EXTENSIBILITY (Embedded Steampunk)\n   Braucht vollen Sprachumfang und muss transaktional im Save-Zyklus\n   laufen -> gehoert ins Kernsystem, aber ausschliesslich gegen\n   released APIs (Clean Core). Umsetzung ueber einen freigegebenen BAdI\n   bzw. RAP-Erweiterung, nicht als Modifikation.\n\n3) Partnerportal -> SIDE-BY-SIDE (SAP BTP)\n   Externe Nutzer, eigene UX, eigener Lebenszyklus. Anbindung ueber\n   released APIs und RAP Business Events. Haelt externe Zugriffe und\n   individuelle Logik aus dem Kernsystem heraus und schuetzt dessen\n   Upgrade-Faehigkeit.","solutionLang":"Begründung","solutionNote":"Die Leitfrage bei solchen Entscheidungen ist immer dieselbe: Wie viel individuelle Logik muss das Kernsystem tragen — und rechtfertigt der fachliche Nutzen das Upgrade-Risiko? Je weiter außen die Erweiterung liegt, desto günstiger sind spätere Releasewechsel.","course":"abap"},{"id":"java-ex1","level":1,"topic":"Java · Pseudocode","title":"Java · Summe aller geraden Zahlen","task":"<p>Schreibe einen <strong>Pseudocode-Algorithmus</strong>, der aus einer Liste von Ganzzahlen die Summe aller <em>geraden</em> Zahlen berechnet und zurückgibt. Nutze die IHK-übliche Notation.</p>","hints":["Du brauchst eine Akkumulator-Variable, die vor der Schleife auf 0 gesetzt wird.","Eine Zahl ist gerade, wenn der Rest bei Division durch 2 gleich 0 ist — MOD beziehungsweise % in Java.","Struktur: Initialisierung → Schleife → Verzweigung im Rumpf → nach der Schleife RETURN."],"solution":"FUNCTION summeGerade(zahlen)\n  summe <- 0\n  FOR EACH zahl IN zahlen DO\n    IF zahl MOD 2 = 0 THEN\n      summe <- summe + zahl\n    ENDIF\n  ENDFOR\n  RETURN summe\nENDFUNCTION","solutionLang":"Pseudocode","solutionNote":"Klassischer Akkumulator mit Filterbedingung — genau das Muster, das die AP1 in Multiple-Choice-Fragen abfragt („Was liefert der Algorithmus für [3,4,7,8]?\" → 12).","course":"java"},{"id":"java-ex2","level":1,"topic":"Java · Java-Grundlagen","title":"Java · Pseudocode in Java übersetzen","task":"<p>Übersetze diesen Pseudocode <strong>wörtlich in eine Java-Methode</strong>. Achte auf den Startindex — Java zählt ab 0.</p><div class=\"check-prompt\">FUNCTION findeIndex(zahlen, gesucht)\n  FOR i &lt;- 1 TO LAENGE(zahlen) DO\n    IF zahlen[i] = gesucht THEN\n      RETURN i\n    ENDIF\n  ENDFOR\n  RETURN -1\nENDFUNCTION</div>","hints":["zahlen.length liefert die Anzahl der Elemente eines Arrays.","Die Abbruchbedingung lautet i < zahlen.length, nicht <= — sonst gibt es eine ArrayIndexOutOfBoundsException.","return innerhalb der Schleife verlässt die Methode sofort; ein break ist dann nicht nötig."],"solution":"public static int findeIndex(int[] zahlen, int gesucht) {\n    for (int i = 0; i < zahlen.length; i++) {\n        if (zahlen[i] == gesucht) {\n            return i;\n        }\n    }\n    return -1;\n}","solutionLang":"Java","solutionNote":"Bei primitiven int-Werten ist == korrekt. Bei Objekten (etwa String[] oder Integer[]) müsstest du equals() verwenden — genau der Unterschied aus Modul 7.","course":"java"},{"id":"java-ex3","level":1,"topic":"Java · Collections","title":"Java · Wörter zählen","task":"<p>Gegeben ist eine <code>List&lt;String&gt; woerter</code>. Erstelle eine <code>Map&lt;String, Integer&gt;</code>, die zu jedem Wort angibt, wie oft es vorkommt.</p><p>Löse es einmal mit einer klassischen Schleife und einmal mit einem Stream.</p>","hints":["Die klassische Variante braucht die Prüfung, ob der Schlüssel schon existiert — oder eine Methode, die das für dich erledigt.","Map.merge(schluessel, 1, Integer::sum) ersetzt den ganzen Dreisatz aus containsKey, get und put.","Für die Stream-Variante: Collectors.groupingBy in Kombination mit Collectors.counting()."],"solution":"// Klassisch\nMap<String, Integer> zaehler = new HashMap<>();\nfor (String wort : woerter) {\n    zaehler.merge(wort, 1, Integer::sum);\n}\n\n// Mit Stream (Rückgabetyp Long!)\nMap<String, Long> zaehler2 = woerter.stream()\n        .collect(Collectors.groupingBy(w -> w, Collectors.counting()));","solutionLang":"Java","solutionNote":"Beachte den unterschiedlichen Werttyp: counting() liefert Long, nicht Integer. Wer das übersieht, bekommt beim Zuweisen einen Compilerfehler, der zunächst rätselhaft wirkt.","course":"java"},{"id":"java-ex4","level":1,"topic":"Java · OOP","title":"Java · Erste eigene Klasse","task":"<p>Erstelle eine Klasse <code>Rechnung</code> mit:</p><ul><li>privatem, unveränderlichem Feld <code>netto</code> vom Typ <code>BigDecimal</code></li><li>Konstruktor, der den Nettobetrag entgegennimmt und auf <code>null</code> sowie negative Werte prüft</li><li>Methode <code>getBrutto()</code>, die den Bruttobetrag mit 19 % Mehrwertsteuer liefert</li></ul>","hints":["Felder, die sich nach der Konstruktion nicht ändern sollen, bekommen final.","Objects.requireNonNull(wert, \"meldung\") wirft eine aussagekräftige NullPointerException.","BigDecimal rechnet nicht mit Operatoren: nutze multiply(new BigDecimal(\"1.19\")) — und den String-Konstruktor, nicht den double-Konstruktor."],"solution":"public class Rechnung {\n    private static final BigDecimal MWST = new BigDecimal(\"1.19\");\n    private final BigDecimal netto;\n\n    public Rechnung(BigDecimal netto) {\n        Objects.requireNonNull(netto, \"netto darf nicht null sein\");\n        if (netto.signum() < 0) {\n            throw new IllegalArgumentException(\"netto darf nicht negativ sein: \" + netto);\n        }\n        this.netto = netto;\n    }\n\n    public BigDecimal getBrutto() {\n        return netto.multiply(MWST).setScale(2, RoundingMode.HALF_UP);\n    }\n}","solutionLang":"Java","solutionNote":"setScale(2, RoundingMode.HALF_UP) rundet kaufmännisch auf zwei Stellen. Ohne explizite Rundung liefert BigDecimal alle Nachkommastellen der Multiplikation — bei Geldbeträgen unerwünscht.","course":"java"},{"id":"java-ex5","level":1,"topic":"Java · SQL","title":"Java · JOIN mit Filter schreiben","task":"<p>Tabellen: <code>kunde(id, name, land)</code> und <code>bestellung(id, kunde_id, betrag)</code>.</p><p>Schreibe eine Abfrage, die <strong>Name und Bestellbetrag aller deutschen Kunden</strong> liefert — inklusive der Kunden, die noch <em>keine</em> Bestellung haben.</p>","hints":["Welcher JOIN-Typ behält Zeilen der linken Tabelle, auch wenn rechts kein Treffer existiert?","Die Filterbedingung auf das Land bezieht sich auf die linke Tabelle und darf deshalb in die WHERE-Klausel."],"solution":"SELECT k.name, b.betrag\nFROM kunde k\nLEFT OUTER JOIN bestellung b ON b.kunde_id = k.id\nWHERE k.land = 'DE';","solutionLang":"SQL","solutionNote":"Prüfungsfalle: Stünde eine Bedingung auf die RECHTE Tabelle in der WHERE-Klausel (z. B. b.betrag > 100), würde der LEFT JOIN faktisch zum INNER JOIN — die NULL-Zeilen fielen heraus. Solche Bedingungen gehören in die ON-Klausel.","course":"java"},{"id":"java-ex6","level":2,"topic":"Java · Pseudocode","title":"Java · Bubble-Sort und Komplexität","task":"<p>Schreibe <strong>Bubble-Sort</strong> in Pseudocode (aufsteigend).</p><p>Zusatzfragen: Welche Komplexität hat der Algorithmus im schlechtesten Fall? Wie viele Vergleiche finden bei n = 5 in der optimierten Variante statt?</p>","hints":["Zwei verschachtelte Schleifen: die äußere zählt die Durchläufe, die innere vergleicht Nachbarn.","Zum Tauschen brauchst du eine Hilfsvariable.","Optimierung: Nach dem i-ten Durchlauf stehen die letzten i Elemente bereits richtig — die innere Schleife darf kürzer werden."],"solution":"PROCEDURE bubbleSort(zahlen)\n  n <- LAENGE(zahlen)\n  FOR i <- 1 TO n - 1 DO\n    FOR j <- 1 TO n - i DO\n      IF zahlen[j] > zahlen[j + 1] THEN\n        temp <- zahlen[j]\n        zahlen[j] <- zahlen[j + 1]\n        zahlen[j + 1] <- temp\n      ENDIF\n    ENDFOR\n  ENDFOR\nENDPROCEDURE","solutionLang":"Pseudocode","solutionNote":"Komplexität O(n²). Bei n = 5 optimiert: 4+3+2+1 = 10 Vergleiche; in der naiven Variante mit innerer Schleife bis n-1 wären es 4·4 = 16.","course":"java"},{"id":"java-ex7","level":2,"topic":"Java · Streams","title":"Java · Schleife zu Stream refaktorieren","task":"<p>Refaktoriere diesen Code mit der Stream-API — gleiche Funktionalität, keine explizite Schleife:</p><div class=\"check-prompt\">List&lt;String&gt; namen = new ArrayList&lt;&gt;();\nfor (Kunde k : kunden) {\n    if (k.isAktiv() &amp;&amp; k.getUmsatz() &gt; 1000) {\n        namen.add(k.getName().toUpperCase());\n    }\n}\nCollections.sort(namen);</div>","hints":["Die Kette lautet: Quelle, dann filtern, dann abbilden, dann sortieren, dann einsammeln.","Mehrere Bedingungen kannst du in einem filter() mit && kombinieren oder auf zwei filter()-Aufrufe verteilen.","toList() (ab Java 16) liefert direkt eine unveränderliche Liste — collect(Collectors.toList()) geht auch."],"solution":"List<String> namen = kunden.stream()\n        .filter(Kunde::isAktiv)\n        .filter(k -> k.getUmsatz() > 1000)\n        .map(k -> k.getName().toUpperCase())\n        .sorted()\n        .toList();","solutionLang":"Java","solutionNote":"Zwei getrennte filter()-Aufrufe sind hier lesbarer als einer mit && und kosten praktisch nichts — die Pipeline läuft ohnehin nur einmal über die Daten. Beachte: toList() liefert eine unveränderliche Liste; brauchst du eine änderbare, nimm collect(Collectors.toCollection(ArrayList::new)).","course":"java"},{"id":"java-ex8","level":2,"topic":"Java · Performance","title":"Java · Verschachtelte Schleife entschärfen","task":"<p>Dieser Code ist bei 10.000 Bestellungen und 5.000 Kunden zu langsam. Erkläre <strong>warum</strong> und schreibe eine effiziente Variante:</p><div class=\"check-prompt\">for (Bestellung b : bestellungen) {\n    for (Kunde k : kunden) {\n        if (k.getId().equals(b.getKundeId())) {\n            b.setKundenname(k.getName());\n            break;\n        }\n    }\n}</div>","hints":["Rechne die Zugriffe durch: Wie oft läuft die innere Schleife im ungünstigsten Fall insgesamt?","Eine Map von Kunden-ID auf Kunde erlaubt Zugriff in konstanter Zeit.","Die Map baust du einmal vorab auf — danach ist jede Zuordnung ein einzelner get()-Aufruf."],"solution":"// Problem: O(n · m) — bis zu 50 Millionen Vergleiche\n\n// Lösung: einmal indizieren, dann in O(1) nachschlagen\nMap<String, Kunde> index = kunden.stream()\n        .collect(Collectors.toMap(Kunde::getId, k -> k, (alt, neu) -> alt));\n\nfor (Bestellung b : bestellungen) {\n    Kunde k = index.get(b.getKundeId());\n    if (k != null) {\n        b.setKundenname(k.getName());\n    }\n}","solutionLang":"Java","solutionNote":"Vorher O(n·m), nachher O(n+m). Die Merge-Funktion in toMap() ist Pflicht, sobald doppelte Schlüssel möglich sind — sonst fliegt zur Laufzeit eine IllegalStateException, oft erst mit Produktivdaten.","course":"java"},{"id":"java-ex9","level":2,"topic":"Java · OOP","title":"Java · Strategy-Muster umsetzen","task":"<p>Implementiere eine Rabattberechnung nach dem <strong>Strategy-Muster</strong>:</p><ul><li>ein funktionales Interface <code>Rabattregel</code> mit Methode <code>berechne(BigDecimal betrag)</code></li><li>zwei Regeln: Standardkunde 5 %, Premiumkunde 15 %</li><li>aufrufender Code, der je nach Kundentyp die passende Regel wählt</li></ul>","hints":["Ein Interface mit genau einer abstrakten Methode ist ein funktionales Interface und lässt sich als Lambda umsetzen.","Die Auswahl lässt sich über eine Map<Kundentyp, Rabattregel> lösen — ganz ohne if-Kette.","Der aufrufende Code darf nur das Interface kennen, nie die konkrete Implementierung. Das ist der Kern des Musters."],"solution":"@FunctionalInterface\npublic interface Rabattregel {\n    BigDecimal berechne(BigDecimal betrag);\n}\n\npublic class Rabattrechner {\n    private static final Map<Kundentyp, Rabattregel> REGELN = Map.of(\n            Kundentyp.STANDARD, b -> b.multiply(new BigDecimal(\"0.05\")),\n            Kundentyp.PREMIUM,  b -> b.multiply(new BigDecimal(\"0.15\")));\n\n    public BigDecimal rabatt(Kundentyp typ, BigDecimal betrag) {\n        Rabattregel regel = REGELN.getOrDefault(typ, b -> BigDecimal.ZERO);\n        return regel.berechne(betrag).setScale(2, RoundingMode.HALF_UP);\n    }\n}","solutionLang":"Java","solutionNote":"Der Gewinn zeigt sich bei Erweiterung: Ein neuer Kundentyp erfordert genau einen Map-Eintrag — keine Änderung an bestehender Logik. Das ist das Open/Closed-Prinzip in seiner praktischsten Form.","course":"java"},{"id":"java-ex10","level":2,"topic":"Java · Collections","title":"Java · equals und hashCode korrekt implementieren","task":"<p>Eine Klasse <code>Artikel</code> hat die Felder <code>nummer</code> (fachlicher Schlüssel), <code>bezeichnung</code> und <code>bestand</code> (veränderlich).</p><p>Implementiere <code>equals</code> und <code>hashCode</code> korrekt und begründe, <strong>welche Felder</strong> du verwendest — und welche bewusst nicht.</p>","hints":["Zwei Artikel sind fachlich dann derselbe, wenn ihre Artikelnummer übereinstimmt.","Überlege, was passiert, wenn ein in hashCode verwendetes Feld sich ändert, während das Objekt in einem HashSet liegt.","Objects.hash(...) und das Pattern-Matching-instanceof machen die Implementierung kurz."],"solution":"public class Artikel {\n    private final String nummer;        // fachlicher Schlüssel, unveränderlich\n    private String bezeichnung;\n    private int bestand;                // veränderlich -> NICHT in equals/hashCode\n\n    @Override\n    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (!(o instanceof Artikel a)) return false;\n        return nummer.equals(a.nummer);\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(nummer);\n    }\n}","solutionLang":"Java","solutionNote":"Nur die unveränderliche Artikelnummer gehört hinein. Käme bestand dazu, würde eine Bestandsänderung den hashCode verändern — das Objekt läge dann im falschen Bucket eines HashSet und wäre weder auffindbar noch entfernbar. Dieser Fehler ist in Produktion extrem schwer zu diagnostizieren.","course":"java"},{"id":"java-ex11","level":2,"topic":"Java · Testen","title":"Java · Testfälle nach Äquivalenzklassen entwerfen","task":"<p>Eine Methode <code>boolean istZulaessig(int alter)</code> soll <code>true</code> liefern für Alter von 18 bis einschließlich 65, sonst <code>false</code>.</p><p>Bestimme die <strong>Äquivalenzklassen</strong> und <strong>Grenzwerte</strong> und schreibe dafür einen parametrisierten JUnit-5-Test.</p>","hints":["Drei Klassen: unterhalb des gültigen Bereichs, innerhalb, oberhalb.","Grenzwerte sind jeweils die Werte direkt unter und über jeder Bereichsgrenze.","@ParameterizedTest mit @CsvSource erlaubt Eingabe und Erwartungswert in einer Zeile."],"solution":"// Äquivalenzklassen: <18 ungültig | 18..65 gültig | >65 ungültig\n// Grenzwerte:        17, 18            65, 66\n\n@ParameterizedTest\n@CsvSource({\n    \"17, false\",   // direkt unterhalb der Untergrenze\n    \"18, true\",    // Untergrenze\n    \"40, true\",    // Vertreter der gültigen Klasse\n    \"65, true\",    // Obergrenze\n    \"66, false\"    // direkt oberhalb der Obergrenze\n})\nvoid altersgrenzePruefen(int alter, boolean erwartet) {\n    assertEquals(erwartet, Regel.istZulaessig(alter));\n}","solutionLang":"Java","solutionNote":"Fünf Testfälle decken alle Klassen und alle Grenzen ab. Genau hier entstehen die häufigsten Fehler: Ein < statt <= in der Implementierung fällt nur auf, wenn 65 und 66 beide getestet werden.","course":"java"},{"id":"java-ex12","level":3,"topic":"Java · Nebenläufigkeit","title":"Java · Race Condition finden und beheben","task":"<p>Dieser Zähler liefert unter Last falsche Ergebnisse. Erkläre <strong>warum</strong> und zeige <strong>drei</strong> unterschiedliche korrekte Lösungen mit ihren jeweiligen Vor- und Nachteilen:</p><div class=\"check-prompt\">public class Zaehler {\n    private int wert = 0;\n\n    public void erhoehe() {\n        wert++;\n    }\n    public int getWert() {\n        return wert;\n    }\n}</div>","hints":["wert++ sieht aus wie eine Operation, besteht aber aus drei Schritten: lesen, erhöhen, zurückschreiben.","Neben der Atomarität gibt es ein zweites Problem: Sichtbarkeit zwischen Threads. Löst dein Ansatz beide?","volatile allein reicht nicht — es garantiert Sichtbarkeit, aber keine Atomarität."],"solution":"// Ursache: wert++ ist Lesen + Erhöhen + Schreiben. Zwei Threads können\n// denselben Ausgangswert lesen -> eine Erhöhung geht verloren.\n// Zusätzlich fehlt ohne Synchronisation die Sichtbarkeit zwischen Threads.\n\n// Lösung 1: synchronized — einfach, löst Atomarität UND Sichtbarkeit,\n// aber blockierend (Kontention bei vielen Threads)\npublic synchronized void erhoehe() { wert++; }\npublic synchronized int getWert() { return wert; }\n\n// Lösung 2: AtomicInteger — nicht blockierend (CAS), meist die beste Wahl\nprivate final AtomicInteger wert = new AtomicInteger();\npublic void erhoehe() { wert.incrementAndGet(); }\npublic int getWert() { return wert.get(); }\n\n// Lösung 3: LongAdder — bei sehr hoher Schreiblast schneller als Atomic,\n// dafür ist sum() nur ein Näherungswert während laufender Änderungen\nprivate final LongAdder wert = new LongAdder();\npublic void erhoehe() { wert.increment(); }\npublic long getWert() { return wert.sum(); }","solutionLang":"Java","solutionNote":"Wichtig: Auch getWert() muss synchronisiert sein — sonst sieht ein lesender Thread möglicherweise dauerhaft einen veralteten Wert aus seinem CPU-Cache. Genau dieses Sichtbarkeitsproblem wird beim Absichern von Zählern am häufigsten übersehen.","course":"java"},{"id":"java-ex13","level":3,"topic":"Java · Testen & OOP","title":"Java · Nicht testbare Klasse refaktorieren","task":"<p>Diese Klasse lässt sich nicht sinnvoll testen. Analysiere <strong>warum</strong>, refaktoriere sie mit Dependency Injection und schreibe einen JUnit-Test mit Mockito:</p><div class=\"check-prompt\">public class BestellService {\n    public boolean bestelle(String kundeId) {\n        Kunde k = new MySqlKundeRepository().finde(kundeId);\n        if (k == null) return false;\n        new SmtpMailSender().sende(k.getEmail(), \"Bestätigung\");\n        return true;\n    }\n}</div>","hints":["Zwei harte Abhängigkeiten werden im Methodenrumpf per new erzeugt — sie lassen sich von außen nicht ersetzen.","Extrahiere beide hinter Interfaces und übergib sie im Konstruktor.","Im Test erzeugst du Mocks der Interfaces und prüfst mit verify(), ob die Mail tatsächlich versendet wurde."],"solution":"public class BestellService {\n    private final KundeRepository repo;\n    private final MailSender mailer;\n\n    public BestellService(KundeRepository repo, MailSender mailer) {\n        this.repo   = Objects.requireNonNull(repo);\n        this.mailer = Objects.requireNonNull(mailer);\n    }\n\n    public boolean bestelle(String kundeId) {\n        return repo.finde(kundeId)\n                .map(k -> { mailer.sende(k.getEmail(), \"Bestätigung\"); return true; })\n                .orElse(false);\n    }\n}\n\n// --- Test ---\n@ExtendWith(MockitoExtension.class)\nclass BestellServiceTest {\n    @Mock KundeRepository repo;\n    @Mock MailSender mailer;\n    @InjectMocks BestellService service;\n\n    @Test\n    void versendetMailBeiBekanntemKunden() {\n        when(repo.finde(\"K1\")).thenReturn(Optional.of(new Kunde(\"K1\", \"a@b.de\")));\n\n        assertTrue(service.bestelle(\"K1\"));\n        verify(mailer).sende(\"a@b.de\", \"Bestätigung\");\n    }\n\n    @Test\n    void keineMailBeiUnbekanntemKunden() {\n        when(repo.finde(\"X\")).thenReturn(Optional.empty());\n\n        assertFalse(service.bestelle(\"X\"));\n        verifyNoInteractions(mailer);\n    }\n}","solutionLang":"Java","solutionNote":"Die Kernaussage: Der Test wurde nicht durch ein Werkzeug möglich, sondern durch besseres Design. Zusätzlich ersetzt Optional das null-Rückgabemuster — der Aufrufer kann den Fall „nicht gefunden\" nicht mehr versehentlich übersehen.","course":"java"},{"id":"java-ex14","level":3,"topic":"Java · Architektur","title":"Java · Werttypen statt primitiver Obsession","task":"<p>Diese Signatur birgt einen Fehler, den kein Test zuverlässig findet:</p><div class=\"check-prompt\">public void ueberweise(String vonIban, String nachIban, double betrag)</div><p>Nenne <strong>zwei</strong> konkrete Fehlerquellen und entwirf eine Lösung mit eigenen Werttypen. Begründe, warum der Compiler danach Fehler findet, die vorher erst zur Laufzeit auffielen.</p>","hints":["Beide String-Parameter stehen nebeneinander und haben denselben Typ — was passiert beim Vertauschen?","Welcher Datentyp ist für Geldbeträge ungeeignet und warum?","Ein record mit Validierung im kompakten Konstruktor bündelt Prüfung und Typsicherheit an einer Stelle."],"solution":"// Fehlerquelle 1: vonIban und nachIban sind vertauschbar — der Compiler\n//                 schweigt, das Geld fließt in die falsche Richtung.\n// Fehlerquelle 2: double für Geld -> Rundungsfehler (0.1 + 0.2 != 0.3).\n\npublic record Iban(String wert) {\n    public Iban {\n        Objects.requireNonNull(wert, \"IBAN fehlt\");\n        if (!wert.matches(\"[A-Z]{2}\\\\d{2}[A-Z0-9]{10,30}\")) {\n            throw new IllegalArgumentException(\"Ungültige IBAN: \" + wert);\n        }\n    }\n}\n\npublic record Geldbetrag(BigDecimal wert, Currency waehrung) {\n    public Geldbetrag {\n        if (wert.signum() < 0) throw new IllegalArgumentException(\"negativ\");\n        wert = wert.setScale(2, RoundingMode.HALF_UP);\n    }\n    public Geldbetrag plus(Geldbetrag a) {\n        if (!waehrung.equals(a.waehrung)) throw new IllegalArgumentException(\"Währungen\");\n        return new Geldbetrag(wert.add(a.wert), waehrung);\n    }\n}\n\npublic void ueberweise(Iban von, Iban nach, Geldbetrag betrag) { ... }","solutionLang":"Java","solutionNote":"Der Gewinn ist kategorisch, nicht graduell: Vertauschte Parameter bleiben zwar bei zwei Iban-Werten möglich, aber Betrag und IBAN lassen sich nicht mehr verwechseln, ungültige IBANs entstehen gar nicht erst, und die Währungsprüfung ist zentral statt an jeder Additionsstelle. Aus verstreuten Laufzeitprüfungen wird eine Typgarantie.","course":"java"},{"id":"java-ex15","level":3,"topic":"Java · Datenbank","title":"Java · N+1-Problem erkennen und lösen","task":"<p>Dieser Code lädt 500 Bestellungen und braucht dafür über 500 Datenbankabfragen. Erkläre den Mechanismus und zeige <strong>zwei</strong> Lösungswege — einen für JPA, einen für reines JDBC:</p><div class=\"check-prompt\">List&lt;Bestellung&gt; alle = em.createQuery(\n        \"SELECT b FROM Bestellung b\", Bestellung.class).getResultList();\n\nfor (Bestellung b : alle) {\n    System.out.println(b.getKunde().getName());   // kunde ist LAZY\n}</div>","hints":["Zähle die Abfragen: eine für die Liste, und dann?","Bei JPA lässt sich die Beziehung in derselben Abfrage mitladen.","Bei reinem JDBC löst ein JOIN im SQL das Problem, oder man lädt alle benötigten Kunden in einer zweiten Abfrage mit IN und baut daraus eine Map."],"solution":"// Mechanismus: 1 Abfrage für die Liste + 1 Abfrage je Bestellung beim\n// ersten Zugriff auf die LAZY geladene Beziehung = 1 + N Abfragen.\n\n// Lösung A (JPA): Beziehung in derselben Abfrage mitladen\nList<Bestellung> alle = em.createQuery(\n        \"SELECT b FROM Bestellung b JOIN FETCH b.kunde\", Bestellung.class)\n        .getResultList();\n\n// Lösung B (JDBC): ein JOIN, ein Durchlauf\nString sql = \"\"\"\n        SELECT b.id, b.betrag, k.id AS kunde_id, k.name\n        FROM bestellung b\n        JOIN kunde k ON k.id = b.kunde_id\n        \"\"\";\ntry (PreparedStatement ps = con.prepareStatement(sql);\n     ResultSet rs = ps.executeQuery()) {\n    while (rs.next()) {\n        // Bestellung samt Kundenname in einem Durchgang aufbauen\n    }\n}","solutionLang":"Java","solutionNote":"Zur Diagnose: Schalte im Entwicklungsprofil das SQL-Logging ein. Fast jedes Team findet so beim ersten Mal ein N+1-Problem, das mit 20 Testdatensätzen nie auffiel und mit 20.000 Produktivsätzen die Anwendung lahmlegt.","course":"java"},{"id":"java-ex16","level":3,"topic":"Java · Sicherheit","title":"Java · Unsicheren Code absichern","task":"<p>Dieser Ausschnitt eines Login-Systems enthält <strong>drei</strong> schwerwiegende Sicherheitsprobleme. Finde alle und schreibe eine abgesicherte Version:</p><div class=\"check-prompt\">String sql = \"SELECT * FROM user WHERE name = '\" + name + \"'\";\nResultSet rs = stmt.executeQuery(sql);\n\nif (rs.next()) {\n    String hash = DigestUtils.md5Hex(passwort);\n    if (hash.equals(rs.getString(\"pw_hash\"))) {\n        String token = \"\" + new Random().nextLong();\n        return token;\n    }\n}\nthrow new RuntimeException(\"Login fehlgeschlagen für \" + name + \", SQL war: \" + sql);</div>","hints":["Der erste Fehler steckt in der Art, wie die Abfrage zusammengesetzt wird.","Der zweite betrifft das Hashverfahren: Welche Eigenschaften braucht ein Passwort-Hash?","Der dritte hat mit Vorhersagbarkeit zu tun — und die Fehlermeldung verrät zusätzlich zu viel."],"solution":"// Problem 1: SQL-Injection durch String-Verkettung\n// Problem 2: MD5 ist schnell und ohne Salt -> massenhaft knackbar\n// Problem 3: Random ist vorhersagbar -> Tokens erratbar\n//            (Bonus: Fehlermeldung verrät SQL und Benutzernamen)\n\nString sql = \"SELECT pw_hash FROM user WHERE name = ?\";\ntry (PreparedStatement ps = con.prepareStatement(sql)) {\n    ps.setString(1, name);\n    try (ResultSet rs = ps.executeQuery()) {\n        if (rs.next() && BCrypt.checkpw(passwort, rs.getString(\"pw_hash\"))) {\n            byte[] raw = new byte[32];\n            new SecureRandom().nextBytes(raw);\n            return Base64.getUrlEncoder().withoutPadding().encodeToString(raw);\n        }\n    }\n}\nlog.warn(\"Fehlgeschlagener Login für Benutzer {}\", name);   // Detail nur ins Log\nthrow new LoginException(\"Benutzername oder Passwort falsch\");  // neutral nach außen","solutionLang":"Java","solutionNote":"Beachte die neutrale Fehlermeldung: „Benutzername oder Passwort falsch\" verrät nicht, ob der Benutzer existiert — sonst kann ein Angreifer gültige Kontonamen durchprobieren. Details gehören ins Log, nicht in die Antwort an den Aufrufer.","course":"java"},{"id":"java-ex17","level":2,"topic":"Java · Spring Boot","title":"Java · REST-Endpunkt sauber bauen","task":"<p>Baue einen <code>@RestController</code> für Artikel mit drei Endpunkten:</p><ul><li><code>GET /api/artikel/{id}</code> — liefert einen Artikel oder 404</li><li><code>GET /api/artikel</code> — paginierte Liste</li><li><code>POST /api/artikel</code> — legt an, liefert 201 mit Location-Header</li></ul><p>Nutze Konstruktorinjektion, ein DTO statt der Entity und Bean Validation für die Eingabe.</p>","hints":["Der Rückgabetyp bestimmt den Statuscode: Ein einfaches Objekt ergibt 200, ResponseEntity erlaubt volle Kontrolle.","Für 201 mit Location: ResponseEntity.created(URI.create(...)).body(...).","Ein Pageable-Parameter in der Signatur wird von Spring automatisch aus den Query-Parametern page, size und sort befüllt."],"solution":"@RestController\n@RequestMapping(\"/api/artikel\")\npublic class ArtikelController {\n\n    private final ArtikelService service;\n\n    public ArtikelController(ArtikelService service) {\n        this.service = service;\n    }\n\n    @GetMapping(\"/{id}\")\n    public ArtikelDto lesen(@PathVariable long id) {\n        return service.finde(id)\n                .orElseThrow(() -> new NichtGefundenException(\"Artikel \" + id));\n    }\n\n    @GetMapping\n    public Page<ArtikelDto> liste(Pageable pageable) {\n        return service.liste(pageable);\n    }\n\n    @PostMapping\n    public ResponseEntity<ArtikelDto> anlegen(@Valid @RequestBody NeuerArtikel eingabe) {\n        ArtikelDto neu = service.anlegen(eingabe);\n        return ResponseEntity.created(URI.create(\"/api/artikel/\" + neu.id())).body(neu);\n    }\n}\n\npublic record NeuerArtikel(\n        @NotBlank String bezeichnung,\n        @Positive BigDecimal preis) { }","solutionLang":"Java / Spring Boot","solutionNote":"Die NichtGefundenException wird zentral in einem @RestControllerAdvice auf 404 abgebildet — nicht im Controller selbst. So bleibt jeder Endpunkt frei von Fehlerbehandlung, und das Antwortformat ist überall gleich.","course":"java"},{"id":"java-ex18","level":2,"topic":"Java · Spring Boot","title":"Java · Zentrale Fehlerbehandlung ergänzen","task":"<p>Schreibe ein <code>@RestControllerAdvice</code>, das drei Fälle abdeckt:</p><ul><li><code>NichtGefundenException</code> → 404</li><li>Validierungsfehler → 400 <strong>mit einer Feldliste</strong>, welche Felder warum abgelehnt wurden</li><li>alle übrigen Fehler → 500, ohne interne Details nach außen</li></ul><p>Nutze <code>ProblemDetail</code> als Antwortformat.</p>","hints":["Validierungsfehler kommen als MethodArgumentNotValidException an; getBindingResult().getFieldErrors() liefert die Details.","ProblemDetail.forStatusAndDetail(...) erzeugt das Grundobjekt, setProperty(...) ergänzt eigene Felder.","Beim Auffangfall gilt: Stacktrace ins Log, nach außen nur eine neutrale Meldung."],"solution":"@RestControllerAdvice\npublic class GlobaleFehlerBehandlung {\n\n    private static final Logger log = LoggerFactory.getLogger(GlobaleFehlerBehandlung.class);\n\n    @ExceptionHandler(NichtGefundenException.class)\n    public ProblemDetail nichtGefunden(NichtGefundenException e) {\n        var pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());\n        pd.setTitle(\"Ressource nicht gefunden\");\n        return pd;\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public ProblemDetail ungueltig(MethodArgumentNotValidException e) {\n        var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\n        pd.setTitle(\"Eingabe ungültig\");\n        pd.setProperty(\"felder\", e.getBindingResult().getFieldErrors().stream()\n                .collect(Collectors.toMap(FieldError::getField,\n                                          FieldError::getDefaultMessage, (a, b) -> a)));\n        return pd;\n    }\n\n    @ExceptionHandler(Exception.class)\n    public ProblemDetail unerwartet(Exception e) {\n        String ref = UUID.randomUUID().toString();\n        log.error(\"Unerwarteter Fehler [{}]\", ref, e);      // Details nur ins Log\n        var pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,\n                \"Interner Fehler. Bitte Referenz angeben: \" + ref);\n        pd.setTitle(\"Interner Fehler\");\n        return pd;\n    }\n}","solutionLang":"Java / Spring Boot","solutionNote":"Die Referenz-ID ist der entscheidende Kniff: Der Nutzer bekommt eine harmlose Kennung, der Support findet damit im Log den vollständigen Stacktrace. So bleibt die Antwort sicher und die Fehlersuche trotzdem möglich.","course":"java"},{"id":"java-ex19","level":3,"topic":"Java · Spring Boot","title":"Java · Transaktionsfalle finden","task":"<p>Dieser Service verhält sich nicht wie erwartet: Bei einem Fehler in der Mitte bleiben bereits verarbeitete Datensätze gespeichert, obwohl alles zurückgerollt werden sollte. Finde <strong>beide</strong> Fehler und korrigiere sie:</p><div class=\"check-prompt\">@Service\npublic class ImportService {\n\n    @Transactional\n    public void importiere(List&lt;Zeile&gt; zeilen) throws ImportException {\n        for (Zeile z : zeilen) {\n            verarbeite(z);\n        }\n    }\n\n    @Transactional(propagation = Propagation.REQUIRES_NEW)\n    public void verarbeite(Zeile z) throws ImportException {\n        repo.save(z.zuEntity());\n        if (!z.gueltig()) throw new ImportException(\"ungültig: \" + z);\n    }\n}</div>","hints":["Der erste Fehler betrifft die Art des Aufrufs von verarbeite(). Wie erreicht Spring eine annotierte Methode?","Der zweite betrifft den Exception-Typ. Bei welchen Exceptions rollt Spring standardmäßig zurück?","Frage dich außerdem, ob REQUIRES_NEW hier überhaupt gewollt ist — es entkoppelt die innere Transaktion bewusst von der äußeren."],"solution":"// Fehler 1: verarbeite() wird intern aufgerufen -> der Aufruf geht am Proxy\n//           vorbei, die Annotation wirkt nicht.\n// Fehler 2: ImportException ist eine Checked Exception -> Spring rollt\n//           standardmäßig NICHT zurück.\n// (Bonus: REQUIRES_NEW würde jede Zeile ohnehin separat committen —\n//  genau das Gegenteil der gewünschten Alles-oder-nichts-Semantik.)\n\n@Service\npublic class ImportService {\n\n    private final ZeilenVerarbeiter verarbeiter;   // eigene Bean -> Aufruf über Proxy\n\n    public ImportService(ZeilenVerarbeiter verarbeiter) {\n        this.verarbeiter = verarbeiter;\n    }\n\n    @Transactional(rollbackFor = ImportException.class)\n    public void importiere(List<Zeile> zeilen) throws ImportException {\n        for (Zeile z : zeilen) {\n            verarbeiter.verarbeite(z);      // läuft in derselben Transaktion mit\n        }\n    }\n}\n\n@Component\npublic class ZeilenVerarbeiter {\n    @Transactional(propagation = Propagation.MANDATORY)   // verlangt äußere Transaktion\n    public void verarbeite(Zeile z) throws ImportException { ... }\n}","solutionLang":"Java / Spring Boot","solutionNote":"MANDATORY statt REQUIRES_NEW ist hier die passende Wahl: Es erzwingt, dass die Methode nur innerhalb einer bestehenden Transaktion läuft, und schlägt sonst sofort fehl. Damit wird der Entwurfsfehler beim ersten Test sichtbar, statt erst bei einem Abbruch in Produktion.","course":"java"},{"id":"java-ex20","level":3,"topic":"Java · Spring Boot","title":"Java · Controller-Test ohne Datenbank","task":"<p>Schreibe Tests für den Artikel-Controller aus Aufgabe 17 — <strong>ohne</strong> Datenbank und ohne vollständigen Anwendungskontext. Decke drei Fälle ab:</p><ul><li>Ein bekannter Artikel liefert 200 und den korrekten JSON-Inhalt</li><li>Ein unbekannter Artikel liefert 404</li><li>Eine ungültige Eingabe beim Anlegen liefert 400</li></ul><p>Begründe, warum du <em>nicht</em> <code>@SpringBootTest</code> verwendest.</p>","hints":["Welche Slice-Annotation lädt nur die Web-Schicht mit einem bestimmten Controller?","Der Service wird durch ein Test Double ersetzt — in aktuellen Spring-Versionen mit @MockitoBean.","MockMvc führt die Anfragen aus; mit jsonPath() prüfst du einzelne Felder der Antwort."],"solution":"@WebMvcTest(ArtikelController.class)\nclass ArtikelControllerTest {\n\n    @Autowired MockMvc mvc;\n    @MockitoBean ArtikelService service;\n\n    @Test\n    void liefertArtikel() throws Exception {\n        when(service.finde(1L)).thenReturn(\n                Optional.of(new ArtikelDto(1L, \"Schraube\", new BigDecimal(\"1.50\"))));\n\n        mvc.perform(get(\"/api/artikel/1\"))\n           .andExpect(status().isOk())\n           .andExpect(jsonPath(\"$.bezeichnung\").value(\"Schraube\"))\n           .andExpect(jsonPath(\"$.preis\").value(1.50));\n    }\n\n    @Test\n    void liefert404() throws Exception {\n        when(service.finde(99L)).thenReturn(Optional.empty());\n        mvc.perform(get(\"/api/artikel/99\")).andExpect(status().isNotFound());\n    }\n\n    @Test\n    void lehntLeereBezeichnungAb() throws Exception {\n        mvc.perform(post(\"/api/artikel\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(\"\"\"\n                         {\"bezeichnung\": \"\", \"preis\": 5}\n                         \"\"\"))\n           .andExpect(status().isBadRequest());\n        verifyNoInteractions(service);      // gar nicht erst durchgelassen\n    }\n}","solutionLang":"Java / Spring Boot","solutionNote":"@SpringBootTest würde den gesamten Kontext samt Datenbank und Sicherheitskonfiguration hochfahren — Sekunden pro Test, und bei einem Fehlschlag weißt du nicht, welche Schicht schuld ist. @WebMvcTest prüft genau das, was ein Controller verantwortet: Mapping, Statuscodes, Serialisierung und Validierung.","course":"java"}]);

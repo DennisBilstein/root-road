@@ -23,7 +23,7 @@ for (const track of tracks) {
     page.on('pageerror', (e) => { if (!/Transition was skipped/.test(e.message)) errors.push(e.message); });
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto('/');
-    await page.waitForFunction(() => window.RP_APP_READY);
+    await page.waitForFunction(() => window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
     await page.evaluate((path) => rpChoosePath(path), track.path);
 
     const info = await page.evaluate((modules) => {

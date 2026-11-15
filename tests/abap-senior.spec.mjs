@@ -16,7 +16,7 @@ test('ABAP-Vertiefung rendert alle neuen und überarbeiteten Lektionen mit Praxi
  expect(errors).toEqual([]);
 });
 test('Neue ABAP-Szenarien erklären falsche Antworten und werten alte Evidenz nicht um',async({page})=>{
- await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
+ await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
  const id='abap-m15-senior-authorization';await page.evaluate(id=>{state.currentId=id;renderContent();},id);
  await page.evaluate(id=>rpQuizReveal(id,0),id);
  await page.locator('input[name="rq_'+id+'_0"][value="0"]').check();

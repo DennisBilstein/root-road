@@ -1,2559 +1,3697 @@
-MODULES.push({
- "id": "m42",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Einsteiger · Typen, Arrays und Funktionen kompakt",
- "lessons": [
-  {
-   "id": "m42-l1",
-   "title": "Was PHP ist und wie ein Skript läuft",
-   "minutes": 9,
-   "body": "<p><strong>PHP<\/strong> ist eine serverseitige Skriptsprache. Der Browser sieht nie PHP-Code, sondern nur das, was das Skript ausgibt – meist HTML oder JSON. Rund drei Viertel aller Websites mit bekannter Serversprache laufen mit PHP, darunter WordPress, Shopware, Magento und alles, was mit Laravel gebaut ist.<\/p> <p>Der Ablauf einer Anfrage ist immer gleich:<\/p> <ul><li>Der Browser schickt einen <strong>HTTP-Request<\/strong> an den Webserver (nginx, Apache).<\/li> <li>Der Webserver reicht ihn an <strong>PHP-FPM<\/strong> weiter, das ein Skript startet.<\/li> <li>Das Skript läuft von oben nach unten, schreibt eine Antwort und <em>endet<\/em>.<\/li> <li>Danach ist der gesamte Speicher wieder frei – der nächste Request beginnt bei null.<\/li><\/ul> <p>Dieses <strong>Share-nothing-Prinzip<\/strong> ist der wichtigste Unterschied zu Java oder Node.js: Variablen überleben keinen Request. Was bleiben soll, muss in Datenbank, Session, Cache oder Datei.<\/p> <p>PHP-Code steht zwischen <code>&lt;?php<\/code> und <code>?&gt;<\/code>. In reinen PHP-Dateien lässt man das schließende <code>?&gt;<\/code> weg, damit kein versehentliches Leerzeichen am Dateiende als Ausgabe herausrutscht. Zum Ausprobieren brauchst du keinen Webserver: <code>php -S localhost:8000<\/code> startet einen eingebauten Entwicklungsserver, <code>php datei.php<\/code> führt ein Skript in der Konsole aus und <code>php -a<\/code> öffnet eine interaktive Shell.<\/p>",
-   "code": "<?php\n// hallo.php  -  starten mit:  php -S localhost:8000\ndeclare(strict_types=1);\n\n$name = $_GET['name'] ?? 'Welt';\n$stunde = (int) date('G');\n\n$gruss = $stunde < 12 ? 'Guten Morgen' : 'Hallo';\n\necho \"<h1>{$gruss}, \" . htmlspecialchars($name) . \"!<\/h1>\";\necho '<p>PHP-Version: ' . PHP_VERSION . '<\/p>';\n\n// Aufruf im Browser:  http://localhost:8000/hallo.php?name=Ada",
-   "codeLang": "PHP",
-   "tip": "Gewöhne dir von Anfang an zwei Dinge an: <code>declare(strict_types=1);<\/code> als erste Zeile jeder Datei und <code>htmlspecialchars()<\/code> für jede Ausgabe von Benutzereingaben in HTML. Das erste verhindert stille Typumwandlungen, das zweite verhindert Cross-Site-Scripting. Laravel erledigt das Zweite später für dich, aber du solltest wissen, was dort passiert.",
-   "quiz": [
-    {
-     "q": "Was passiert mit den Variablen eines PHP-Skripts, wenn der Request beendet ist?",
-     "options": [
-      "Sie werden verworfen – jeder Request beginnt neu",
-      "Sie werden automatisch in der Session gespeichert",
-      "Sie bleiben bis zum Neustart des Servers im Speicher"
-     ],
-     "correct": 0,
-     "explain": "Share-nothing: Jeder Request startet mit leerem Speicher. Dauerhaftes gehört in Datenbank, Session oder Cache."
-    },
-    {
-     "q": "Warum lässt man in reinen PHP-Dateien das schließende ?> weg?",
-     "options": [
-      "Weil es seit PHP 8 verboten ist",
-      "Damit kein Leerzeichen oder Zeilenumbruch danach als Ausgabe gesendet wird",
-      "Weil der Code sonst langsamer läuft"
-     ],
-     "correct": 1,
-     "explain": "Ungewollte Ausgabe nach ?> kann z. B. das Setzen von Headern oder Cookies verhindern."
-    },
-    {
-     "q": "Welcher Befehl startet den eingebauten Entwicklungs-Webserver?",
-     "options": [
-      "php -a",
-      "php -S localhost:8000",
-      "php serve"
-     ],
-     "correct": 1,
-     "explain": "php -a ist die interaktive Shell, php serve gibt es nicht – das ist php artisan serve in Laravel."
-    }
-   ]
-  },
-  {
-   "id": "m42-l2",
-   "title": "Variablen, Typen und Vergleiche",
-   "minutes": 11,
-   "body": "<p>Variablen beginnen mit <code>$<\/code> und brauchen keine Deklaration. PHP ist <strong>dynamisch typisiert<\/strong>: Der Typ hängt am Wert, nicht an der Variablen. Die skalaren Typen sind <code>int<\/code>, <code>float<\/code>, <code>string<\/code> und <code>bool<\/code>, dazu kommen <code>array<\/code>, <code>object<\/code>, <code>null<\/code> und <code>callable<\/code>.<\/p> <table class=\"lesson-table\"><tr><th>Operator<\/th><th>Bedeutung<\/th><th>Beispiel<\/th><\/tr> <tr><td><code>==<\/code><\/td><td>gleich nach Typumwandlung<\/td><td><code>\"1\" == 1<\/code> → true<\/td><\/tr> <tr><td><code>===<\/code><\/td><td>gleich <em>und<\/em> gleicher Typ<\/td><td><code>\"1\" === 1<\/code> → false<\/td><\/tr> <tr><td><code>.<\/code><\/td><td>Strings verketten<\/td><td><code>\"a\" . \"b\"<\/code> → \"ab\"<\/td><\/tr> <tr><td><code>??<\/code><\/td><td>Null-Koaleszenz: links, wenn nicht null<\/td><td><code>$x ?? 'Standard'<\/code><\/td><\/tr> <tr><td><code>?-&gt;<\/code><\/td><td>Nullsafe: Aufruf nur, wenn nicht null<\/td><td><code>$user?-&gt;name<\/code><\/td><\/tr> <tr><td><code>&lt;=&gt;<\/code><\/td><td>Raumschiff: -1, 0 oder 1<\/td><td><code>2 &lt;=&gt; 5<\/code> → -1<\/td><\/tr><\/table> <p>Die Regel für Vergleiche ist einfach: <strong>Immer <code>===<\/code> und <code>!==<\/code><\/strong>, außer du willst bewusst umwandeln. Mit <code>==<\/code> gelten zum Beispiel <code>\"10\" == \"1e1\"<\/code> und <code>100 == \"1e2\"<\/code> als wahr, weil beide Seiten als Zahlen gelesen werden.<\/p> <p>Strings in <strong>doppelten Anführungszeichen<\/strong> ersetzen Variablen (<code>\"Hallo $name\"<\/code>), solche in einfachen nicht. Für längere Texte gibt es <strong>Heredoc<\/strong> (<code>&lt;&lt;&lt;TXT<\/code>).<\/p> <p>Mit <code>declare(strict_types=1);<\/code> wirft PHP einen <code>TypeError<\/code>, wenn du einer Funktion mit <code>int<\/code>-Parameter den String <code>\"5\"<\/code> übergibst. Ohne die Zeile wird still umgewandelt – und aus <code>\"5 Äpfel\"<\/code> wird mit einer Warnung die Zahl 5.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$preis  = 19.99;          // float\n$menge  = 3;              // int\n$artikel = 'Kabel';       // string\n$aktiv  = true;           // bool\n$rabatt = null;           // null\n\n$summe = $preis * $menge;                 // 59.97\n$text  = \"{$menge}x {$artikel}: \" . number_format($summe, 2, ',', '.') . ' EUR';\n\n$prozent = $rabatt ?? 0;                  // 0, weil $rabatt null ist\n\nvar_dump('1' == 1);      // bool(true)   - Typumwandlung\nvar_dump('1' === 1);     // bool(false)  - anderer Typ\nvar_dump(0 == 'abc');    // bool(false)  - seit PHP 8 (vorher: true!)\nvar_dump(null ?? 'x');   // string(1) \"x\"\n\necho gettype($preis);    // double\necho get_debug_type($preis); // float  - die modernere Variante",
-   "codeLang": "PHP",
-   "tip": "Typische Fehlerquelle in Altcode: <code>0 == \"abc\"<\/code> war bis PHP 7 wahr, seit PHP 8 ist es falsch. Wenn du alten Code migrierst und sich Verhalten ändert, sind lose Vergleiche oft der Grund. Ein weiterer Klassiker: <code>if (strpos($text, 'a'))<\/code> schlägt fehl, wenn das 'a' an Position 0 steht – nimm <code>str_contains()<\/code>.",
-   "quiz": [
-    {
-     "q": "Was liefert \"1\" === 1?",
-     "options": [
-      "false",
-      "Einen TypeError",
-      "true"
-     ],
-     "correct": 0,
-     "explain": "=== prüft zusätzlich den Typ – string und int sind verschieden."
-    },
-    {
-     "q": "Was bewirkt declare(strict_types=1)?",
-     "options": [
-      "Alle Variablen müssen deklariert werden",
-      "Skalare Parametertypen werden nicht mehr still umgewandelt, sondern es gibt einen TypeError",
-      "PHP prüft den Code vor der Ausführung auf Fehler"
-     ],
-     "correct": 1,
-     "explain": "Es betrifft Funktionsaufrufe aus dieser Datei heraus – die Variablen bleiben dynamisch."
-    },
-    {
-     "q": "Welchen Wert hat $x nach $x = $eingabe ?? \"leer\"; wenn $eingabe den Wert 0 hat?",
-     "options": [
-      "null",
-      "\"leer\"",
-      "0"
-     ],
-     "correct": 2,
-     "explain": "?? greift nur bei null oder nicht gesetzt. Für \"leer bei falsy\" bräuchtest du ?: – was 0 aber auch ersetzen würde."
-    }
-   ]
-  },
-  {
-   "id": "m42-l3",
-   "title": "Kontrollstrukturen und Arrays",
-   "minutes": 12,
-   "body": "<p><code>if<\/code>, <code>else<\/code>, <code>while<\/code>, <code>for<\/code> und <code>foreach<\/code> funktionieren wie in anderen C-ähnlichen Sprachen. Neu seit PHP 8 ist <strong><code>match<\/code><\/strong> – der bessere <code>switch<\/code>:<\/p> <ul><li><code>match<\/code> vergleicht <em>strikt<\/em> mit <code>===<\/code>, <code>switch<\/code> lose mit <code>==<\/code>.<\/li> <li><code>match<\/code> ist ein <strong>Ausdruck<\/strong> und liefert einen Wert zurück.<\/li> <li>Kein <code>break<\/code> nötig, kein versehentliches Durchfallen.<\/li> <li>Trifft kein Zweig zu, wirft <code>match<\/code> einen <code>UnhandledMatchError<\/code> statt still nichts zu tun.<\/li><\/ul> <p><strong>Arrays<\/strong> in PHP sind geordnete Maps. Dasselbe Konstrukt dient als Liste (<code>[1, 2, 3]<\/code>) und als assoziatives Array (<code>['name' =&gt; 'Ada']<\/code>). Die Reihenfolge der Einfügung bleibt erhalten.<\/p> <table class=\"lesson-table\"><tr><th>Funktion<\/th><th>Zweck<\/th><\/tr> <tr><td><code>array_map($fn, $a)<\/code><\/td><td>jedes Element umwandeln<\/td><\/tr> <tr><td><code>array_filter($a, $fn)<\/code><\/td><td>Elemente auswählen – <strong>Schlüssel bleiben erhalten<\/strong><\/td><\/tr> <tr><td><code>array_reduce($a, $fn, $start)<\/code><\/td><td>auf einen Wert verdichten<\/td><\/tr> <tr><td><code>in_array($x, $a, true)<\/code><\/td><td>enthalten? (drittes Argument: strikt)<\/td><\/tr> <tr><td><code>array_key_exists($k, $a)<\/code><\/td><td>Schlüssel vorhanden, auch wenn Wert null<\/td><\/tr> <tr><td><code>usort($a, $fn)<\/code><\/td><td>sortieren mit eigener Vergleichsfunktion<\/td><\/tr><\/table> <p>Arrays werden bei Zuweisung <em>kopiert<\/em> (copy-on-write), Objekte nicht. Wer ein Array in einer Funktion ändert, ändert eine Kopie – außer der Parameter ist mit <code>&amp;<\/code> als Referenz deklariert.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$bestellungen = [\n    ['id' => 1, 'status' => 'offen',     'betrag' => 120.0],\n    ['id' => 2, 'status' => 'versendet', 'betrag' =>  80.5],\n    ['id' => 3, 'status' => 'offen',     'betrag' =>  42.0],\n];\n\n// Filtern: Schluessel bleiben 0 und 2 -> array_values() macht wieder 0, 1\n$offen = array_values(array_filter(\n    $bestellungen,\n    fn (array $b) => $b['status'] === 'offen'\n));\n\n$summe = array_sum(array_column($offen, 'betrag'));    // 162.0\n\nforeach ($bestellungen as $index => $b) {\n    $label = match ($b['status']) {\n        'offen'     => 'wartet auf Versand',\n        'versendet' => 'unterwegs',\n        'storniert' => 'abgebrochen',\n    };\n    echo \"#{$b['id']}: {$label}\\n\";\n}\n\n// Destrukturierung und Spread\n[$erste, $zweite] = $bestellungen;\n$alle = [...$offen, ['id' => 4, 'status' => 'offen', 'betrag' => 9.9]];",
-   "codeLang": "PHP",
-   "tip": "Die häufigste Array-Falle: <code>array_filter()<\/code> behält die Original-Schlüssel. Gibst du das Ergebnis als JSON aus, wird aus einer Liste mit Lücken (<code>0, 2<\/code>) plötzlich ein JSON-<em>Objekt<\/em> <code>{\"0\":…,\"2\":…}<\/code> statt eines Arrays. Ein <code>array_values()<\/code> danach behebt das. In Laravel nimmst du später Collections – dort heißt das <code>-&gt;filter()-&gt;values()<\/code>.",
-   "quiz": [
-    {
-     "q": "Was passiert, wenn kein Zweig eines match-Ausdrucks zutrifft und es keinen default gibt?",
-     "options": [
-      "Es wird ein UnhandledMatchError geworfen",
-      "Der erste Zweig wird ausgeführt",
-      "Er liefert null"
-     ],
-     "correct": 0,
-     "explain": "Genau das macht match sicherer als switch: Vergessene Fälle fallen sofort auf."
-    },
-    {
-     "q": "Welche Aussage über array_filter() stimmt?",
-     "options": [
-      "Es nummeriert die Schlüssel neu",
-      "Es behält die ursprünglichen Schlüssel",
-      "Es ändert das übergebene Array direkt"
-     ],
-     "correct": 1,
-     "explain": "Mit array_values() bekommst du wieder eine lückenlose Liste."
-    },
-    {
-     "q": "Wie vergleicht match die Werte?",
-     "options": [
-      "Mit <=>",
-      "Mit == (lose)",
-      "Mit === (strikt)"
-     ],
-     "correct": 2,
-     "explain": "switch vergleicht lose – match strikt. \"1\" trifft also nicht den Zweig 1."
-    }
-   ]
-  },
-  {
-   "id": "m42-l4",
-   "title": "Funktionen, Typen und Closures",
-   "minutes": 12,
-   "body": "<p>Moderne PHP-Funktionen sind vollständig typisiert. Du kannst Parameter- und Rückgabetypen angeben, und PHP prüft sie zur Laufzeit:<\/p> <ul><li><strong>Nullable<\/strong>: <code>?string<\/code> heißt „string oder null“.<\/li> <li><strong>Union-Typen<\/strong>: <code>int|float<\/code>, <strong>Intersection<\/strong>: <code>Countable&amp;Iterator<\/code>.<\/li> <li><code>void<\/code> (gibt nichts zurück), <code>never<\/code> (kehrt nie zurück, wirft z. B. immer), <code>mixed<\/code> (alles).<\/li> <li><strong>Standardwerte<\/strong> und <strong>benannte Argumente<\/strong>: <code>runden(wert: 3.14159, stellen: 2)<\/code>.<\/li> <li><strong>Variadische<\/strong> Parameter: <code>function summe(int ...$zahlen)<\/code>.<\/li><\/ul> <p>Funktionen sehen standardmäßig <em>keine<\/em> Variablen von außen. Es gibt keinen impliziten Zugriff auf globale Variablen – das ist gewollt. Für anonyme Funktionen gibt es zwei Formen:<\/p> <table class=\"lesson-table\"><tr><th>Form<\/th><th>Zugriff auf äußere Variablen<\/th><th>Rumpf<\/th><\/tr> <tr><td><code>function () use ($x) { … }<\/code><\/td><td>nur explizit per <code>use<\/code>, als Kopie<\/td><td>beliebig viele Anweisungen<\/td><\/tr> <tr><td><code>fn () =&gt; …<\/code><\/td><td>automatisch, als Kopie<\/td><td>genau ein Ausdruck<\/td><\/tr><\/table> <p>Mit <code>use (&amp;$x)<\/code> übergibst du eine Referenz, dann wirken Änderungen nach außen. Seit PHP 8.1 erzeugt <code>strlen(...)<\/code> (drei Punkte) eine Closure aus einer bestehenden Funktion – die <strong>First-class callable syntax<\/strong>.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nfunction brutto(float $netto, float $steuersatz = 0.19): float\n{\n    return round($netto * (1 + $steuersatz), 2);\n}\n\necho brutto(100);                       // 119\necho brutto(100, steuersatz: 0.07);     // 107  (benanntes Argument)\n\nfunction findeKunde(int $id): ?array    // array oder null\n{\n    $kunden = [7 => ['name' => 'Ada']];\n    return $kunden[$id] ?? null;\n}\n\nfunction abbrechen(string $grund): never\n{\n    throw new RuntimeException($grund);\n}\n\n// Closures\n$faktor = 3;\n$mal  = function (int $x) use ($faktor): int { return $x * $faktor; };\n$mal2 = fn (int $x): int => $x * $faktor;     // $faktor automatisch\n\n$zaehler = 0;\n$erhoehe = function () use (&$zaehler): void { $zaehler++; };\n$erhoehe(); $erhoehe();\necho $zaehler;                          // 2\n\n$laengen = array_map(strlen(...), ['PHP', 'Laravel']);   // [3, 7]",
-   "codeLang": "PHP",
-   "tip": "In Code-Reviews wirst du sehen, dass erfahrene Entwickler auf Typen bestehen – nicht aus Pedanterie, sondern weil statische Analysewerkzeuge wie PHPStan mit Typen tausende Fehler finden, bevor ein Test läuft. Ein Rückgabetyp <code>?array<\/code> zwingt außerdem jeden Aufrufer, über den null-Fall nachzudenken.",
-   "quiz": [
-    {
-     "q": "Wie greift eine mit fn () => definierte Arrow Function auf äußere Variablen zu?",
-     "options": [
-      "Automatisch, als Kopie (by value)",
-      "Automatisch, als Referenz",
-      "Gar nicht"
-     ],
-     "correct": 0,
-     "explain": "Änderungen an der Variablen innerhalb der Arrow Function wirken nicht nach außen."
-    },
-    {
-     "q": "Welcher Rückgabetyp passt zu einer Funktion, die immer eine Exception wirft?",
-     "options": [
-      "void",
-      "null",
-      "never"
-     ],
-     "correct": 2,
-     "explain": "void kehrt ohne Wert zurück, never kehrt überhaupt nicht zurück."
-    },
-    {
-     "q": "Was bedeutet der Parametertyp ?string?",
-     "options": [
-      "Ein beliebiger Typ",
-      "Ein optionaler Parameter mit Standardwert",
-      "string oder null"
-     ],
-     "correct": 2,
-     "explain": "Nullable heißt nicht optional: Ohne Standardwert muss das Argument trotzdem übergeben werden."
-    }
-   ]
+function ueUmschalten(exId){
+  var box = document.getElementById('ue_' + exId);
+  if(!box) return;
+  box.hidden = !box.hidden;
+  ue.offen[exId] = !box.hidden;
+  if(!box.hidden){
+    if(!tutor.ready) tutorInit();
+    var f = document.getElementById('ueFeld_' + exId);
+    if(f) f.focus();
   }
- ]
-});
-MODULES.push({
- "id": "m53",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Einsteiger · Arrays, Strings und Datum in der Tiefe",
- "lessons": [
-  {
-   "id": "m53-l1",
-   "title": "Arrays anlegen, lesen und verändern",
-   "minutes": 13,
-   "body": "<p>Ein <strong>Array<\/strong> speichert viele Werte unter einem Namen. Jeder Wert hat einen <strong>Schlüssel<\/strong> (Key): entweder automatisch eine Zahl ab 0 oder ein selbst gewählter String.<\/p> <table class=\"lesson-table\"><tr><th>Aufgabe<\/th><th>Code<\/th><\/tr> <tr><td>anlegen<\/td><td><code>$farben = ['rot', 'grün'];<\/code><\/td><\/tr> <tr><td>hinten anhängen<\/td><td><code>$farben[] = 'blau';<\/code><\/td><\/tr> <tr><td>lesen<\/td><td><code>$farben[0]<\/code> → <code>'rot'<\/code><\/td><\/tr> <tr><td>ändern<\/td><td><code>$farben[1] = 'gelb';<\/code><\/td><\/tr> <tr><td>Anzahl<\/td><td><code>count($farben)<\/code><\/td><\/tr> <tr><td>Schlüssel vorhanden?<\/td><td><code>array_key_exists('k', $a)<\/code> oder <code>isset($a['k'])<\/code><\/td><\/tr> <tr><td>entfernen<\/td><td><code>unset($farben[0]);<\/code><\/td><\/tr><\/table> <p><code>isset()<\/code> und <code>array_key_exists()<\/code> unterscheiden sich in einem Punkt: Steht unter dem Schlüssel der Wert <code>null<\/code>, liefert <code>isset()<\/code> false, <code>array_key_exists()<\/code> aber true.<\/p> <p><code>unset()<\/code> entfernt einen Eintrag, nummeriert die übrigen aber <em>nicht neu<\/em>. Nach <code>unset($farben[0])<\/code> beginnt das Array bei Index 1. Brauchst du wieder eine lückenlose Liste, hilft <code>array_values()<\/code>.<\/p> <p>Arrays können Arrays enthalten. So bildest du Tabellen ab: eine Liste von Zeilen, jede Zeile ein assoziatives Array. Zum Anschauen beim Lernen sind <code>print_r()<\/code> und <code>var_dump()<\/code> unverzichtbar.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Lege ein Array mit drei Kunden an (jeweils <code>name<\/code> und <code>stadt<\/code>). Gib mit <code>foreach<\/code> alle Kunden aus Köln aus. Füge danach einen vierten Kunden hinzu und gib die Anzahl aus.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Zugriff auf einen Schlüssel, den es nicht gibt, erzeugt eine Warnung „Undefined array key“. Mit dem Null-Koaleszenz-Operator bleibt es ruhig: <code>$kunde['telefon'] ?? 'keine Angabe'<\/code>.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$kunden = [\n    ['name' => 'Ada',    'stadt' => 'Koeln',  'telefon' => null],\n    ['name' => 'Grace',  'stadt' => 'Berlin', 'telefon' => '030 123'],\n    ['name' => 'Linus',  'stadt' => 'Koeln',  'telefon' => '0221 99'],\n];\n\n$kunden[] = ['name' => 'Margaret', 'stadt' => 'Hamburg', 'telefon' => null];\necho count($kunden) . PHP_EOL;                         // 4\n\nforeach ($kunden as $k) {\n    if ($k['stadt'] === 'Koeln') {\n        echo $k['name'] . ': ' . ($k['telefon'] ?? 'keine Angabe') . PHP_EOL;\n    }\n}\n\nvar_dump(isset($kunden[0]['telefon']));                // bool(false) - Wert ist null\nvar_dump(array_key_exists('telefon', $kunden[0]));     // bool(true)\n\nunset($kunden[0]);\nprint_r(array_keys($kunden));       // [1, 2, 3]  - keine Neu-Nummerierung\n$kunden = array_values($kunden);    // wieder 0, 1, 2\n\n// Destrukturierung mit Schluesseln\n['name' => $n, 'stadt' => $s] = $kunden[0];\necho \"$n wohnt in $s\" . PHP_EOL;                      // Grace wohnt in Berlin",
-   "codeLang": "PHP",
-   "tip": "Wenn ein Array in deinem Code immer dieselben Schlüssel hat (<code>name<\/code>, <code>stadt<\/code>, <code>telefon<\/code>), ist das ein Zeichen, dass eine kleine Klasse besser passt. Arrays sind flexibel, aber die IDE kann dir bei Tippfehlern in Schlüsseln nicht helfen – bei Eigenschaften einer Klasse schon.",
-   "quiz": [
-    {
-     "q": "Wie hängst du einen Wert hinten an ein Array an?",
-     "options": [
-      "$a[] = 5;",
-      "append($a, 5)",
-      "$a.push(5)"
-     ],
-     "correct": 0,
-     "explain": "Leere eckige Klammern hängen mit dem nächsten freien Index an. array_push() ginge auch."
-    },
-    {
-     "q": "Was liefert isset($a[\"x\"]), wenn $a[\"x\"] den Wert null hat?",
-     "options": [
-      "true",
-      "false",
-      "einen Fehler"
-     ],
-     "correct": 1,
-     "explain": "isset() prüft auf „gesetzt und nicht null“. Für reine Schlüsselprüfung gibt es array_key_exists()."
-    },
-    {
-     "q": "Was passiert mit den Indizes nach unset($liste[0])?",
-     "options": [
-      "Das Array wird geleert",
-      "Sie werden neu nummeriert",
-      "Sie bleiben unverändert, Index 0 fehlt"
-     ],
-     "correct": 2,
-     "explain": "array_values() erzeugt wieder eine lückenlose Liste."
-    }
-   ]
-  },
-  {
-   "id": "m53-l2",
-   "title": "Sortieren und Umformen",
-   "minutes": 13,
-   "body": "<p>PHP hat viele Sortierfunktionen. Sie unterscheiden sich in zwei Fragen: <em>Wonach<\/em> wird sortiert (Wert oder Schlüssel) und <strong>bleiben die Schlüssel<\/strong> erhalten?<\/p> <table class=\"lesson-table\"><tr><th>Funktion<\/th><th>sortiert nach<\/th><th>Schlüssel<\/th><\/tr> <tr><td><code>sort<\/code> / <code>rsort<\/code><\/td><td>Wert auf- / absteigend<\/td><td>werden neu nummeriert<\/td><\/tr> <tr><td><code>asort<\/code> / <code>arsort<\/code><\/td><td>Wert<\/td><td>bleiben erhalten<\/td><\/tr> <tr><td><code>ksort<\/code> / <code>krsort<\/code><\/td><td>Schlüssel<\/td><td>bleiben erhalten<\/td><\/tr> <tr><td><code>usort<\/code><\/td><td>eigene Vergleichsfunktion<\/td><td>werden neu nummeriert<\/td><\/tr> <tr><td><code>uasort<\/code><\/td><td>eigene Vergleichsfunktion<\/td><td>bleiben erhalten<\/td><\/tr><\/table> <p>Alle Sortierfunktionen arbeiten <strong>auf dem Array selbst<\/strong> und geben nur <code>true<\/code> zurück. Der Raumschiff-Operator <code>&lt;=&gt;<\/code> macht Vergleichsfunktionen kurz: Er liefert -1, 0 oder 1. Mehrere Sortierkriterien vergleichst du, indem du Arrays vergleichst: <code>[$a['stadt'], $a['name']] &lt;=&gt; [$b['stadt'], $b['name']]<\/code>.<\/p> <p>Zum Umformen gibt es Funktionen, die neue Arrays zurückgeben und das Original unverändert lassen: <code>array_map<\/code> (umwandeln), <code>array_filter<\/code> (auswählen), <code>array_column<\/code> (eine Spalte herausziehen), <code>array_combine<\/code> (zwei Listen zu Schlüssel und Wert), <code>array_unique<\/code> (Duplikate entfernen) und <code>array_slice<\/code> (Ausschnitt).<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Sortiere die Produktliste aus dem Beispiel absteigend nach Preis, bei gleichem Preis aufsteigend nach Name. Gib danach nur die Namen als kommagetrennten Text aus (<code>array_column<\/code> + <code>implode<\/code>).<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p><code>$sortiert = sort($zahlen);<\/code> – danach ist <code>$sortiert<\/code> nicht das sortierte Array, sondern <code>true<\/code>. Sortiert wurde <code>$zahlen<\/code> selbst.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$produkte = [\n    ['name' => 'Maus',    'preis' => 1990],\n    ['name' => 'Kabel',   'preis' =>  499],\n    ['name' => 'Adapter', 'preis' => 1990],\n];\n\n// Absteigend nach Preis, dann aufsteigend nach Name\nusort($produkte, fn (array $a, array $b) =>\n    [$b['preis'], $a['name']] <=> [$a['preis'], $b['name']]\n);\n\necho implode(', ', array_column($produkte, 'name')) . PHP_EOL;   // Adapter, Maus, Kabel\n\n// Assoziativ sortieren, Schluessel behalten\n$punkte = ['Ada' => 87, 'Grace' => 95, 'Linus' => 71];\narsort($punkte);\nprint_r($punkte);         // Grace => 95, Ada => 87, Linus => 71\n\n// Umformen ohne das Original zu aendern\n$preiseEuro = array_map(fn (array $p) => $p['preis'] / 100, $produkte);\n$guenstig   = array_filter($produkte, fn (array $p) => $p['preis'] < 1000);\n$nachName   = array_combine(array_column($produkte, 'name'), array_column($produkte, 'preis'));\n// ['Adapter' => 1990, 'Maus' => 1990, 'Kabel' => 499]",
-   "codeLang": "PHP",
-   "tip": "Merksatz für die Sortierfunktionen: Ein <strong>a<\/strong> im Namen steht für „assoziativ“ (Schlüssel bleiben), ein <strong>k<\/strong> für „key“ (nach Schlüssel sortieren), ein <strong>r<\/strong> für „reverse“, ein <strong>u<\/strong> für „user“ (eigene Vergleichsfunktion). Damit kannst du die meisten Namen herleiten statt sie auswendig zu lernen.",
-   "quiz": [
-    {
-     "q": "Welche Funktion sortiert nach Wert und behält die Schlüssel?",
-     "options": [
-      "asort",
-      "ksort",
-      "sort"
-     ],
-     "correct": 0,
-     "explain": "Das a steht für assoziativ. ksort sortiert nach Schlüsseln."
-    },
-    {
-     "q": "Was gibt sort($liste) zurück?",
-     "options": [
-      "Das sortierte Array",
-      "true",
-      "Die Anzahl der Elemente"
-     ],
-     "correct": 1,
-     "explain": "Sortiert wird das übergebene Array selbst."
-    },
-    {
-     "q": "Was liefert 3 <=> 7?",
-     "options": [
-      "4",
-      "-1",
-      "0"
-     ],
-     "correct": 1,
-     "explain": "Der Raumschiff-Operator liefert -1, wenn links kleiner ist, 0 bei Gleichheit, 1 wenn links größer ist."
-    }
-   ]
-  },
-  {
-   "id": "m53-l3",
-   "title": "Strings bearbeiten: suchen, zerlegen, ersetzen",
-   "minutes": 13,
-   "body": "<p>Ein großer Teil der Programmierarbeit ist Textverarbeitung: Eingaben säubern, Daten zerlegen, Ausgaben zusammensetzen. Die wichtigsten Funktionen im Überblick:<\/p> <table class=\"lesson-table\"><tr><th>Aufgabe<\/th><th>Funktion<\/th><th>Beispiel → Ergebnis<\/th><\/tr> <tr><td>Leerraum entfernen<\/td><td><code>trim<\/code><\/td><td><code>trim('  Ada ')<\/code> → <code>'Ada'<\/code><\/td><\/tr> <tr><td>enthält …?<\/td><td><code>str_contains<\/code><\/td><td><code>str_contains('Laravel', 'ara')<\/code> → true<\/td><\/tr> <tr><td>beginnt / endet mit<\/td><td><code>str_starts_with<\/code>, <code>str_ends_with<\/code><\/td><td><code>str_ends_with($datei, '.pdf')<\/code><\/td><\/tr> <tr><td>zerlegen<\/td><td><code>explode<\/code><\/td><td><code>explode(';', 'a;b;c')<\/code> → <code>['a','b','c']<\/code><\/td><\/tr> <tr><td>verbinden<\/td><td><code>implode<\/code><\/td><td><code>implode(', ', $liste)<\/code><\/td><\/tr> <tr><td>ersetzen<\/td><td><code>str_replace<\/code><\/td><td><code>str_replace(' ', '-', 'a b')<\/code> → <code>'a-b'<\/code><\/td><\/tr> <tr><td>Länge (UTF-8)<\/td><td><code>mb_strlen<\/code><\/td><td><code>mb_strlen('Müller')<\/code> → 6<\/td><\/tr> <tr><td>Großbuchstaben<\/td><td><code>mb_strtoupper<\/code><\/td><td><code>mb_strtoupper('straße')<\/code> → <code>'STRASSE'<\/code><\/td><\/tr><\/table> <p><strong>Warum mb_?<\/strong> Umlaute belegen in UTF-8 zwei Byte. <code>strlen('Müller')<\/code> zählt Bytes und meldet 7, <code>mb_strlen<\/code> zählt Zeichen und meldet 6. Bei Längenprüfungen, Kürzungen und Großschreibung deutscher Texte nimmst du deshalb immer die <code>mb_<\/code>-Varianten.<\/p> <p>Für Muster wie Postleitzahlen oder Artikelnummern gibt es <strong>reguläre Ausdrücke<\/strong>: <code>preg_match('/^\\d{5}$/', $plz)<\/code> prüft auf genau fünf Ziffern. <code>^<\/code> und <code>$<\/code> verankern Anfang und Ende – ohne sie würde auch „123456“ passen.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Zerlege die CSV-Zeile <code>\"4711;Kabel HDMI;4,99\"<\/code> in Artikelnummer, Name und Preis. Wandle den Preis in Cent um (<code>str_replace<\/code> und Cast nach <code>int<\/code>) und gib alles formatiert aus.<\/p><\/div><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p><code>substr('Müller', 0, 2)<\/code> schneidet mitten im „ü“ ab und erzeugt ein kaputtes Zeichen. Nimm <code>mb_substr<\/code>. Dasselbe gilt für <code>strtoupper<\/code>, das Umlaute nicht großschreibt.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$zeile = \"4711;Kabel HDMI;4,99\";\n[$nummer, $name, $preis] = explode(';', $zeile);\n$preisCent = (int) str_replace(',', '', $preis);           // 499\n\nprintf(\"%s (%s): %d Cent\\n\", $name, $nummer, $preisCent);\n\n// UTF-8 richtig behandeln\nvar_dump(strlen('Müller'));          // int(7)  - Bytes\nvar_dump(mb_strlen('Müller'));       // int(6)  - Zeichen\necho mb_strtoupper('straße') . PHP_EOL;        // STRASSE\n\n// Eingaben saeubern\n$email = mb_strtolower(trim('  Ada@Example.COM '));    // ada@example.com\n\n// Muster pruefen\nforeach (['50667', '5066', '506671', 'abcde'] as $plz) {\n    $ok = preg_match('/^\\d{5}$/', $plz) === 1;\n    echo $plz . ': ' . ($ok ? 'gueltig' : 'ungueltig') . PHP_EOL;\n}\n\n// Slug fuer URLs\n$titel = 'Laravel für Einsteiger';\n$slug  = trim(preg_replace('/[^a-z0-9]+/', '-', mb_strtolower($titel)), '-');\necho $slug . PHP_EOL;                // laravel-f-r-einsteiger  -> in Laravel: Str::slug()",
-   "codeLang": "PHP",
-   "tip": "Das letzte Beispiel zeigt, warum man Rad-Neuerfindungen meidet: Der selbstgebaute Slug zerlegt das „ü“. Laravels <code>Str::slug('Laravel für Einsteiger')<\/code> schreibt Umlaute vorher in ASCII um und liefert eine saubere URL (<code>laravel-fur-einsteiger<\/code>, mit dem Sprachparameter <code>'de'<\/code> als drittem Argument <code>laravel-fuer-einsteiger<\/code>). Kenne die Grundfunktionen, nutze im Projekt aber die erprobten Helfer.",
-   "quiz": [
-    {
-     "q": "Was liefert strlen('Müller') in UTF-8?",
-     "options": [
-      "7",
-      "8",
-      "6"
-     ],
-     "correct": 0,
-     "explain": "strlen zählt Bytes, das ü belegt zwei. mb_strlen liefert 6 Zeichen."
-    },
-    {
-     "q": "Was liefert explode(',', 'a,b,c')?",
-     "options": [
-      "'abc'",
-      "['a', 'b', 'c']",
-      "['a,b,c']"
-     ],
-     "correct": 1,
-     "explain": "explode zerlegt anhand des Trennzeichens in ein Array. Das Gegenstück ist implode."
-    },
-    {
-     "q": "Warum stehen ^ und $ im Muster /^\\d{5}$/?",
-     "options": [
-      "Sie sind Pflicht in jedem Muster",
-      "Für Groß- und Kleinschreibung",
-      "Sie verankern Anfang und Ende, damit genau fünf Ziffern passen"
-     ],
-     "correct": 2,
-     "explain": "Ohne Anker würde auch eine sechsstellige Zahl einen Treffer enthalten."
-    }
-   ]
-  },
-  {
-   "id": "m53-l4",
-   "title": "Datum und Zeit richtig behandeln",
-   "minutes": 12,
-   "body": "<p>Datumsrechnung ist eine der häufigsten Fehlerquellen in Software: Zeitzonen, Sommerzeit, Monatsenden. PHP bietet dafür die Klassen <code>DateTime<\/code> und <code>DateTimeImmutable<\/code>. Nimm grundsätzlich <strong>DateTimeImmutable<\/strong>:<\/p> <ul><li><code>DateTime::modify()<\/code> verändert das Objekt selbst. Wer dasselbe Objekt an zwei Stellen nutzt, verschiebt unbemerkt beide Termine.<\/li> <li><code>DateTimeImmutable::modify()<\/code> gibt ein <em>neues<\/em> Objekt zurück, das Original bleibt.<\/li><\/ul> <table class=\"lesson-table\"><tr><th>Format<\/th><th>Bedeutung<\/th><th>Beispiel<\/th><\/tr> <tr><td><code>d.m.Y<\/code><\/td><td>Tag.Monat.Jahr<\/td><td>09.10.2026<\/td><\/tr> <tr><td><code>H:i<\/code><\/td><td>Stunde:Minute (24 h)<\/td><td>14:05<\/td><\/tr> <tr><td><code>Y-m-d<\/code><\/td><td>ISO-Datum für Datenbanken<\/td><td>2026-10-09<\/td><\/tr> <tr><td><code>D, d M Y<\/code><\/td><td>englische Kurzform<\/td><td>Fri, 09 Oct 2026<\/td><\/tr><\/table> <p>Vorsicht bei Monaten: <code>modify('+1 month')<\/code> auf den 31. Januar ergibt nicht den 28. Februar, sondern den <strong>3. März<\/strong> – PHP rechnet „31. Februar“ und läuft über. Für Monatsenden gibt es <code>modify('last day of next month')<\/code>.<\/p> <p><strong>Zeitzonen:<\/strong> Speichere Zeitpunkte in der Datenbank in <strong>UTC<\/strong> und rechne erst für die Anzeige in <code>Europe/Berlin<\/code> um. So überstehen deine Daten jede Sommerzeitumstellung. Laravel arbeitet mit <strong>Carbon<\/strong>, einer Erweiterung von DateTime mit lesbaren Methoden wie <code>now()-&gt;addDays(14)<\/code>.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Berechne, wie viele Tage es noch bis zu deiner AP1 sind: <code>diff()<\/code> zwischen heute und dem Prüfungsdatum, Ausgabe über <code>-&gt;days<\/code>.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$zone   = new DateTimeZone('Europe/Berlin');\n$heute  = new DateTimeImmutable('today', $zone);\n$frist  = $heute->modify('+14 days');          // $heute bleibt unveraendert\n\necho $heute->format('d.m.Y') . ' -> ' . $frist->format('d.m.Y') . PHP_EOL;\n\n// Die Monatsfalle\n$januar = new DateTimeImmutable('2026-01-31');\necho $januar->modify('+1 month')->format('Y-m-d') . PHP_EOL;                // 2026-03-03\necho $januar->modify('last day of next month')->format('Y-m-d') . PHP_EOL;  // 2026-02-28\n\n// Abstand in Tagen\n$pruefung = new DateTimeImmutable('2027-03-02', $zone);\necho 'Noch ' . $heute->diff($pruefung)->days . ' Tage bis zur AP1' . PHP_EOL;\n\n// Speichern in UTC, anzeigen in Berlin\n$utc = $heute->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');\necho \"In der Datenbank: $utc\" . PHP_EOL;",
-   "codeLang": "PHP",
-   "tip": "Teste Datumslogik immer mit festen Daten statt mit „heute“ – und nimm dabei gezielt die gemeinen Fälle: 31. Januar, 29. Februar, den Tag der Zeitumstellung, Silvester. In Laravel-Tests geht das mit <code>$this-&gt;travelTo(...)<\/code>, ohne die Systemuhr anzufassen.",
-   "quiz": [
-    {
-     "q": "Warum ist DateTimeImmutable meist die bessere Wahl?",
-     "options": [
-      "modify() verändert nicht das Original, sondern liefert ein neues Objekt",
-      "Sie kennt mehr Formate",
-      "Sie ist schneller"
-     ],
-     "correct": 0,
-     "explain": "So können zwei Programmteile nicht versehentlich denselben Termin verschieben."
-    },
-    {
-     "q": "Was ergibt (new DateTimeImmutable('2026-01-31'))->modify('+1 month')?",
-     "options": [
-      "2026-02-28",
-      "2026-03-03",
-      "2026-02-31"
-     ],
-     "correct": 1,
-     "explain": "PHP rechnet den 31. Februar, der in den März überläuft. Für Monatsenden: last day of next month."
-    },
-    {
-     "q": "In welcher Zeitzone sollten Zeitpunkte in der Datenbank gespeichert werden?",
-     "options": [
-      "In der Zeitzone des Benutzers",
-      "In der Zeitzone des Servers",
-      "In UTC"
-     ],
-     "correct": 2,
-     "explain": "UTC kennt keine Sommerzeit. Umgerechnet wird erst für die Anzeige."
-    }
-   ]
+}
+function ueSchreiben(exId, wert){
+  state.ueTexte = state.ueTexte || {};
+  var w = String(wert == null ? '' : wert);
+  if(w.trim()) state.ueTexte[exId] = w; else delete state.ueTexte[exId];
+  clearTimeout(ue.speichern);
+  ue.speichern = setTimeout(saveProgress, 900);
+}
+function ueTaste(ev, exId){
+  if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); uePruefen(exId); }
+}
+function ueLeeren(exId){
+  var f = document.getElementById('ueFeld_' + exId);
+  if(f){ f.value = ''; f.focus(); }
+  ueSchreiben(exId, '');
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueErgZeichnen(exId);
+  var n = document.getElementById('ueNote_' + exId);
+  if(n){ n.className = 'ue-note'; n.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+}
+function ueKnopfStand(exId){
+  var b = document.getElementById('ueBtn_' + exId);
+  if(!b) return;
+  b.disabled = !!ue.busy[exId];
+  b.textContent = ue.busy[exId] ? 'Claude korrigiert …' : 'Lösung prüfen lassen';
+}
+function ueErgZeichnen(exId){
+  var box = document.getElementById('ueErg_' + exId);
+  if(!box) return;
+  var h = ueErgHtml(exId);
+  box.innerHTML = h;
+  box.hidden = !h;
+}
+function ueErgHtml(exId){
+  if(ue.busy[exId]){
+    return '<div class="ue-warten"><span class="kl-spinner" aria-hidden="true"></span>'+
+           '<span>Claude liest deine Lösung gegen die Musterlösung und vergibt Teilpunkte auf den Rechenweg.</span></div>';
   }
- ]
-});
-MODULES.push({
- "id": "m43",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Einsteiger · PHP im Web: Formulare, Sessions, Datenbank",
- "lessons": [
-  {
-   "id": "m43-l1",
-   "title": "Formulare verarbeiten und Ausgaben absichern",
-   "minutes": 11,
-   "body": "<p>PHP stellt Request-Daten in <strong>Superglobals<\/strong> bereit: <code>$_GET<\/code> (Query-String), <code>$_POST<\/code> (Formulardaten), <code>$_FILES<\/code> (Uploads), <code>$_COOKIE<\/code>, <code>$_SERVER<\/code> (Header, Methode, Pfad) und <code>$_SESSION<\/code>. Alles darin kommt vom Client und ist damit <strong>nicht vertrauenswürdig<\/strong>.<\/p> <p>Die Grundregel lautet: <strong>Eingaben validieren, Ausgaben kodieren<\/strong>.<\/p> <ul><li><strong>Validieren<\/strong> beim Eingang: Ist es vorhanden, hat es den richtigen Typ, Bereich und Format? <code>filter_var($email, FILTER_VALIDATE_EMAIL)<\/code> hilft bei Standardformaten.<\/li> <li><strong>Kodieren<\/strong> bei der Ausgabe, passend zum Kontext: in HTML mit <code>htmlspecialchars($s, ENT_QUOTES, 'UTF-8')<\/code>, in SQL über Prepared Statements, in JSON über <code>json_encode()<\/code>.<\/li><\/ul> <p>Ohne Kodierung entsteht <strong>Cross-Site-Scripting (XSS)<\/strong>: Ein Angreifer schickt als Name <code>&lt;script&gt;…&lt;/script&gt;<\/code>, und jeder Besucher führt das Skript aus.<\/p> <p>Nach einem erfolgreichen POST leitet man um, statt direkt HTML auszugeben. Dieses <strong>Post/Redirect/Get<\/strong>-Muster verhindert, dass ein Neuladen der Seite das Formular erneut abschickt.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nfunction e(string $s): string\n{\n    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');\n}\n\n$fehler = [];\n$name   = '';\n$email  = '';\n\nif ($_SERVER['REQUEST_METHOD'] === 'POST') {\n    $name  = trim((string) ($_POST['name'] ?? ''));\n    $email = trim((string) ($_POST['email'] ?? ''));\n\n    if ($name === '' || mb_strlen($name) > 100) {\n        $fehler['name'] = 'Bitte einen Namen mit hoechstens 100 Zeichen angeben.';\n    }\n    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {\n        $fehler['email'] = 'Bitte eine gueltige E-Mail-Adresse angeben.';\n    }\n\n    if ($fehler === []) {\n        // ... speichern ...\n        header('Location: /danke.php', true, 303);   // Post/Redirect/Get\n        exit;\n    }\n}\n?>\n<form method=\"post\">\n  <input name=\"name\"  value=\"<?= e($name) ?>\">\n  <?php if (isset($fehler['name'])): ?><p class=\"fehler\"><?= e($fehler['name']) ?><\/p><?php endif ?>\n  <input name=\"email\" value=\"<?= e($email) ?>\">\n  <button>Senden<\/button>\n<\/form>",
-   "codeLang": "PHP + HTML",
-   "tip": "<code>&lt;?= … ?&gt;<\/code> ist die Kurzform von <code>&lt;?php echo … ?&gt;<\/code> und ist immer aktiv. Achte beim Lesen fremder Templates genau darauf, ob jede Ausgabe durch eine Escape-Funktion läuft. Eine einzige ungeschützte Stelle genügt für XSS – und die steht fast immer in einer Fehlermeldung oder einem „Suchergebnisse für …“.",
-   "quiz": [
-    {
-     "q": "In welchem Moment wird ein Wert für HTML kodiert (htmlspecialchars)?",
-     "options": [
-      "Bei der Ausgabe in den HTML-Kontext",
-      "Beim Empfang im $_POST-Array",
-      "Beim Speichern in der Datenbank"
-     ],
-     "correct": 0,
-     "explain": "Kodiert wird passend zum Ausgabekontext. In der Datenbank liegen die Originaldaten."
-    },
-    {
-     "q": "Wozu dient das Post/Redirect/Get-Muster?",
-     "options": [
-      "Es verschlüsselt Formulardaten",
-      "Es verhindert doppeltes Absenden beim Neuladen",
-      "Es beschleunigt die Seite"
-     ],
-     "correct": 1,
-     "explain": "Nach dem Redirect lädt der Browser eine GET-Seite – ein Reload schickt das Formular nicht erneut."
-    },
-    {
-     "q": "Welche Superglobal enthält die HTTP-Methode der Anfrage?",
-     "options": [
-      "$_ENV",
-      "$_REQUEST",
-      "$_SERVER"
-     ],
-     "correct": 2,
-     "explain": "$_SERVER[\"REQUEST_METHOD\"] liefert z. B. GET oder POST."
-    }
-   ]
-  },
-  {
-   "id": "m43-l2",
-   "title": "Sessions, Cookies und Passwörter",
-   "minutes": 11,
-   "body": "<p>HTTP ist zustandslos. Eine <strong>Session<\/strong> merkt sich Daten zwischen Requests: PHP speichert sie serverseitig und schickt dem Browser nur eine zufällige Session-ID als Cookie. <code>session_start()<\/code> muss <strong>vor jeder Ausgabe<\/strong> aufgerufen werden, weil es einen Header setzt.<\/p> <p>Für Login-Systeme gelten drei feste Regeln:<\/p> <ul><li><strong>Passwörter nie selbst hashen.<\/strong> <code>password_hash($pw, PASSWORD_DEFAULT)<\/code> nimmt einen langsamen, gesalzenen Algorithmus (bcrypt bzw. Argon2), <code>password_verify()<\/code> prüft. MD5 oder SHA-256 sind für Passwörter ungeeignet, weil sie zu schnell sind.<\/li> <li><strong>Nach dem Login<\/strong> <code>session_regenerate_id(true)<\/code> aufrufen. Sonst kann ein Angreifer, der dem Opfer vorher eine Session-ID untergeschoben hat, diese weiterverwenden (<strong>Session Fixation<\/strong>).<\/li> <li><strong>Cookie-Flags<\/strong> setzen: <code>HttpOnly<\/code> (kein Zugriff per JavaScript), <code>Secure<\/code> (nur HTTPS), <code>SameSite=Lax<\/code> (Schutz gegen viele CSRF-Angriffe).<\/li><\/ul> <p>Unterscheide <strong>Authentifizierung<\/strong> (wer bist du?) von <strong>Autorisierung<\/strong> (was darfst du?). Die Session sagt nur, wer eingeloggt ist. Ob dieser Benutzer die Rechnung Nr. 4711 sehen darf, musst du bei jedem Zugriff extra prüfen.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nsession_start([\n    'cookie_httponly' => true,\n    'cookie_secure'   => true,\n    'cookie_samesite' => 'Lax',\n]);\n\n// Registrierung\n$hash = password_hash($_POST['passwort'], PASSWORD_DEFAULT);\n// -> z. B. \"$2y$12$Qm...\"  (Algorithmus, Kosten und Salt stecken im Hash)\n\n// Login\nfunction login(PDO $db, string $email, string $passwort): bool\n{\n    $stmt = $db->prepare('SELECT id, passwort_hash FROM benutzer WHERE email = ?');\n    $stmt->execute([$email]);\n    $user = $stmt->fetch();\n\n    if (!$user || !password_verify($passwort, $user['passwort_hash'])) {\n        return false;                       // gleiche Meldung fuer beide Faelle!\n    }\n\n    if (password_needs_rehash($user['passwort_hash'], PASSWORD_DEFAULT)) {\n        // Hash mit aktuellen Parametern neu speichern ...\n    }\n\n    session_regenerate_id(true);            // Schutz vor Session Fixation\n    $_SESSION['user_id'] = $user['id'];\n    return true;\n}",
-   "codeLang": "PHP",
-   "tip": "Gib bei falschem Login immer dieselbe Meldung aus, egal ob die E-Mail unbekannt oder das Passwort falsch ist. Sonst kann ein Angreifer herausfinden, welche E-Mail-Adressen registriert sind (<em>User Enumeration<\/em>). Laravel macht das in seinen Starter Kits genauso.",
-   "quiz": [
-    {
-     "q": "Warum ist SHA-256 für Passwort-Hashes ungeeignet?",
-     "options": [
-      "Weil es zu schnell ist und Brute-Force damit billig wird",
-      "Weil es in PHP nicht verfügbar ist",
-      "Weil es umkehrbar ist"
-     ],
-     "correct": 0,
-     "explain": "Passwort-Hashes müssen absichtlich langsam sein. password_hash() wählt dafür bcrypt oder Argon2."
-    },
-    {
-     "q": "Wann ruft man session_regenerate_id(true) auf?",
-     "options": [
-      "Bei jedem Request",
-      "Direkt nach erfolgreichem Login",
-      "Beim Logout"
-     ],
-     "correct": 1,
-     "explain": "Die alte, eventuell untergeschobene Session-ID wird dadurch wertlos (Session Fixation)."
-    },
-    {
-     "q": "Was bewirkt das Cookie-Flag HttpOnly?",
-     "options": [
-      "Das Cookie läuft beim Schließen des Browsers ab",
-      "Das Cookie wird nur über HTTP, nicht HTTPS gesendet",
-      "JavaScript kann das Cookie nicht auslesen"
-     ],
-     "correct": 2,
-     "explain": "Damit kann ein XSS-Angriff die Session-ID nicht per document.cookie stehlen."
-    }
-   ]
-  },
-  {
-   "id": "m43-l3",
-   "title": "Datenbankzugriff mit PDO und Prepared Statements",
-   "minutes": 13,
-   "body": "<p><strong>PDO<\/strong> (PHP Data Objects) ist die einheitliche Datenbankschnittstelle von PHP für MySQL, MariaDB, PostgreSQL, SQLite und weitere. Laravel baut intern darauf auf.<\/p> <p>Die wichtigste Regel: <strong>Nie Benutzereingaben in SQL-Strings einbauen.<\/strong> Aus <code>\"… WHERE email = '$email'\"<\/code> wird mit der Eingabe <code>' OR '1'='1<\/code> eine Abfrage, die alle Zeilen liefert – <strong>SQL-Injection<\/strong>. Stattdessen nimmst du <strong>Prepared Statements<\/strong>: Die Abfrage mit Platzhaltern geht getrennt von den Werten an die Datenbank, die Werte können die Struktur nicht mehr verändern.<\/p> <table class=\"lesson-table\"><tr><th>Option<\/th><th>Empfehlung<\/th><th>Warum<\/th><\/tr> <tr><td><code>ATTR_ERRMODE<\/code><\/td><td><code>ERRMODE_EXCEPTION<\/code><\/td><td>Fehler werfen statt still false liefern (Standard seit PHP 8)<\/td><\/tr> <tr><td><code>ATTR_DEFAULT_FETCH_MODE<\/code><\/td><td><code>FETCH_ASSOC<\/code><\/td><td>nur Spaltennamen, keine doppelten Zahl-Indizes<\/td><\/tr> <tr><td><code>ATTR_EMULATE_PREPARES<\/code><\/td><td><code>false<\/code><\/td><td>echte Prepared Statements, korrekte Typen<\/td><\/tr><\/table> <p>Platzhalter gehen nur für <em>Werte<\/em>, nicht für Tabellen- oder Spaltennamen. Wenn der Benutzer eine Sortierspalte wählt, prüfst du sie gegen eine <strong>Whitelist<\/strong>.<\/p> <p>Mehrere Schreibvorgänge, die nur gemeinsam Sinn ergeben (Bestellung und Positionen), gehören in eine <strong>Transaktion<\/strong>: <code>beginTransaction()<\/code>, <code>commit()<\/code>, bei Fehler <code>rollBack()<\/code>.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$db = new PDO(\n    'mysql:host=127.0.0.1;dbname=shop;charset=utf8mb4',\n    'shop_user',\n    getenv('DB_PASSWORD') ?: '',\n    [\n        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,\n        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,\n        PDO::ATTR_EMULATE_PREPARES   => false,\n    ]\n);\n\n// FALSCH - SQL-Injection:\n// $db->query(\"SELECT * FROM kunden WHERE email = '{$_GET['email']}'\");\n\n// RICHTIG - benannte Platzhalter\n$stmt = $db->prepare('SELECT id, name FROM kunden WHERE email = :email');\n$stmt->execute(['email' => $_GET['email'] ?? '']);\n$kunde = $stmt->fetch();                     // array oder false\n\n// Spaltennamen: Whitelist statt Platzhalter\n$erlaubt = ['name', 'erstellt_am'];\n$sort = in_array($_GET['sort'] ?? '', $erlaubt, true) ? $_GET['sort'] : 'name';\n$liste = $db->query(\"SELECT id, name FROM kunden ORDER BY {$sort}\")->fetchAll();\n\n// Transaktion\ntry {\n    $db->beginTransaction();\n    $db->prepare('INSERT INTO bestellungen (kunde_id) VALUES (?)')->execute([$kunde['id']]);\n    $bestellId = (int) $db->lastInsertId();\n    $db->prepare('INSERT INTO positionen (bestellung_id, artikel_id) VALUES (?, ?)')\n       ->execute([$bestellId, 42]);\n    $db->commit();\n} catch (Throwable $e) {\n    $db->rollBack();\n    throw $e;\n}",
-   "codeLang": "PHP",
-   "tip": "Nimm als Zeichensatz immer <code>utf8mb4<\/code>, nicht <code>utf8<\/code>. Das alte MySQL-<code>utf8<\/code> speichert nur bis zu drei Byte pro Zeichen und scheitert an Emojis und manchen asiatischen Schriftzeichen. Das fällt oft erst auf, wenn ein Kunde 🙂 in ein Kommentarfeld schreibt und der Insert abbricht.",
-   "quiz": [
-    {
-     "q": "Warum schützen Prepared Statements vor SQL-Injection?",
-     "options": [
-      "Weil Abfrage und Werte getrennt übertragen werden und Werte die Struktur nicht ändern können",
-      "Weil sie nur SELECT erlauben",
-      "Weil sie Anführungszeichen entfernen"
-     ],
-     "correct": 0,
-     "explain": "Die Datenbank kennt die Struktur der Abfrage, bevor sie die Werte sieht."
-    },
-    {
-     "q": "Ein Benutzer darf die Sortierspalte wählen. Wie baust du sie sicher ein?",
-     "options": [
-      "Als Platzhalter :spalte",
-      "Mit addslashes()",
-      "Durch Prüfung gegen eine Whitelist erlaubter Spaltennamen"
-     ],
-     "correct": 2,
-     "explain": "Platzhalter gelten nur für Werte, nicht für Bezeichner wie Tabellen- oder Spaltennamen."
-    },
-    {
-     "q": "Was passiert bei rollBack() in einer Transaktion?",
-     "options": [
-      "Die Datenbankverbindung wird geschlossen",
-      "Alle Änderungen seit beginTransaction() werden verworfen",
-      "Nur die letzte Anweisung wird zurückgenommen"
-     ],
-     "correct": 1,
-     "explain": "Alles oder nichts – so bleibt die Datenbank konsistent."
-    }
-   ]
+  if(ue.fehler[exId]){
+    return '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Kein Ergebnis</span>'+esc(ue.fehler[exId])+'</div>';
   }
- ]
-});
-MODULES.push({
- "id": "m54",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Dateien, JSON, HTTP und Fehler",
- "lessons": [
-  {
-   "id": "m54-l1",
-   "title": "Dateien lesen und schreiben",
-   "minutes": 12,
-   "body": "<p>Für kleine Dateien genügen zwei Funktionen: <code>file_get_contents()<\/code> liest alles in einen String, <code>file_put_contents()<\/code> schreibt einen String. Mit dem Flag <code>FILE_APPEND<\/code> wird angehängt statt überschrieben, <code>LOCK_EX<\/code> sperrt die Datei während des Schreibens gegen gleichzeitige Zugriffe.<\/p> <p>Große Dateien liest du <strong>zeilenweise<\/strong>, damit nicht die ganze Datei im Speicher landet: mit <code>fopen()<\/code> und <code>fgets()<\/code> oder bequemer mit <code>SplFileObject<\/code>. Für CSV gibt es <code>fgetcsv()<\/code> und <code>fputcsv()<\/code>, die Anführungszeichen und Trennzeichen in den Feldern korrekt behandeln.<\/p> <ul><li>Deutsche Excel-Versionen erwarten das <strong>Semikolon<\/strong> als Trennzeichen.<\/li> <li>Pfade relativ zur aktuellen Datei baust du mit <code>__DIR__<\/code> – sonst hängt das Ergebnis davon ab, aus welchem Verzeichnis das Skript gestartet wurde.<\/li><\/ul> <p><strong>Sicherheit:<\/strong> Verwende nie eine Benutzereingabe direkt als Pfad. Aus <code>?datei=../../.env<\/code> wird sonst ein Lesezugriff auf deine Geheimnisse (<em>Path Traversal<\/em>). Erlaube nur bekannte Namen aus einer Whitelist oder entferne Verzeichnisanteile mit <code>basename()<\/code>.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Schreibe drei Bestellungen als CSV mit Semikolon in <code>bestellungen.csv<\/code>, öffne die Datei in einer Tabellenkalkulation und lies sie anschließend mit <code>SplFileObject<\/code> wieder ein.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$pfad = __DIR__ . '/bestellungen.csv';\n\n// Schreiben\n$datei = new SplFileObject($pfad, 'w');\n$datei->fputcsv(['Nr', 'Kunde', 'Betrag'], ';');\n$datei->fputcsv([1001, 'Ada; Lovelace', '49,90'], ';');   // Semikolon im Feld wird korrekt gequotet\n$datei->fputcsv([1002, 'Grace Hopper', '12,00'], ';');\n$datei = null;                                            // Datei schliessen\n\n// Zeilenweise lesen - auch bei Gigabyte-Dateien speicherschonend\n$datei = new SplFileObject($pfad);\n$datei->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::READ_AHEAD);\n$datei->setCsvControl(';');\nforeach ($datei as $i => $zeile) {\n    if ($i === 0) continue;                               // Kopfzeile\n    [$nr, $kunde, $betrag] = $zeile;\n    echo \"$nr: $kunde - $betrag EUR\" . PHP_EOL;\n}\n\n// Protokoll anhaengen, gesperrt gegen parallele Schreiber\nfile_put_contents(__DIR__ . '/app.log', date('c') . \" Import fertig\\n\", FILE_APPEND | LOCK_EX);\n\n// Path Traversal verhindern\n$erlaubt = ['agb.pdf', 'preise.pdf'];\n$wunsch  = $_GET['datei'] ?? '';\nif (!in_array($wunsch, $erlaubt, true)) {\n    http_response_code(404);\n    exit;\n}\nreadfile(__DIR__ . '/downloads/' . $wunsch);",
-   "codeLang": "PHP",
-   "tip": "Eine CSV-Datei aus einem Fremdsystem enthält oft ein unsichtbares Byte-Order-Mark (BOM) am Anfang. Dann heißt die erste Spalte nicht „Nr“, sondern „\\xEF\\xBB\\xBFNr“, und dein Zugriff per Spaltenname scheitert. Prüfe die erste Zeile und entferne das BOM, bevor du Spaltennamen vergleichst.",
-   "quiz": [
-    {
-     "q": "Warum liest man große Dateien zeilenweise statt mit file_get_contents()?",
-     "options": [
-      "Weil sonst die ganze Datei im Arbeitsspeicher landet",
-      "Weil file_get_contents nur Text kann",
-      "Weil es schneller schreibt"
-     ],
-     "correct": 0,
-     "explain": "SplFileObject oder fgets halten jeweils nur eine Zeile im Speicher."
-    },
-    {
-     "q": "Was bewirkt LOCK_EX bei file_put_contents()?",
-     "options": [
-      "Die Datei wird verschlüsselt",
-      "Die Datei wird während des Schreibens exklusiv gesperrt",
-      "Die Datei wird schreibgeschützt"
-     ],
-     "correct": 1,
-     "explain": "So vermischen sich gleichzeitige Schreibvorgänge nicht."
-    },
-    {
-     "q": "Wie verhinderst du Path Traversal bei einem Download-Skript?",
-     "options": [
-      "Mit einem längeren Pfad",
-      "Mit htmlspecialchars()",
-      "Nur Dateinamen aus einer Whitelist zulassen"
-     ],
-     "correct": 2,
-     "explain": "Benutzereingaben dürfen nie ungeprüft Teil eines Dateipfads werden."
-    }
-   ]
-  },
-  {
-   "id": "m54-l2",
-   "title": "JSON sauber verarbeiten",
-   "minutes": 11,
-   "body": "<p>JSON ist das Austauschformat für APIs, Konfigurationen und Webhooks. In PHP heißen die beiden Werkzeuge <code>json_encode()<\/code> und <code>json_decode()<\/code> – und beide haben Optionen, die man kennen muss.<\/p> <table class=\"lesson-table\"><tr><th>Flag<\/th><th>Wirkung<\/th><\/tr> <tr><td><code>JSON_THROW_ON_ERROR<\/code><\/td><td>wirft eine <code>JsonException<\/code> statt still <code>null<\/code> bzw. <code>false<\/code> zu liefern<\/td><\/tr> <tr><td><code>JSON_UNESCAPED_UNICODE<\/code><\/td><td>„Müller“ statt „Müller“<\/td><\/tr> <tr><td><code>JSON_UNESCAPED_SLASHES<\/code><\/td><td><code>https://…<\/code> statt <code>https:\\/\\/…<\/code><\/td><\/tr> <tr><td><code>JSON_PRETTY_PRINT<\/code><\/td><td>eingerückt, gut lesbar<\/td><\/tr><\/table> <p>Ohne <code>JSON_THROW_ON_ERROR<\/code> liefert <code>json_decode()<\/code> bei kaputtem JSON einfach <code>null<\/code> – genau wie bei dem gültigen JSON <code>null<\/code>. Den Unterschied siehst du nur mit <code>json_last_error()<\/code>. Deshalb gilt: <strong>immer mit JSON_THROW_ON_ERROR<\/strong>.<\/p> <p>Der zweite Parameter von <code>json_decode()<\/code> entscheidet über die Form: <code>true<\/code> liefert assoziative Arrays, <code>false<\/code> (Standard) Objekte vom Typ <code>stdClass<\/code>. Ab PHP 8.3 prüft <code>json_validate()<\/code> ein JSON nur auf Gültigkeit, ohne es komplett aufzubauen.<\/p> <p>Ein von außen kommendes JSON ist eine Eingabe wie jede andere: Nach dem Dekodieren prüfst du, ob die erwarteten Felder da sind und den richtigen Typ haben.<\/p><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Leere PHP-Arrays werden zu <code>[]<\/code>, auch wenn ein Objekt <code>{}<\/code> erwartet wird. Wer <code>{}<\/code> braucht, übergibt <code>new stdClass()<\/code> oder nutzt das Flag <code>JSON_FORCE_OBJECT<\/code>.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n$bestellung = ['kunde' => 'Müller', 'web' => 'https://shop.example', 'positionen' => [['sku' => 'A1', 'menge' => 2]]];\n\n$json = json_encode(\n    $bestellung,\n    JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT\n);\necho $json . PHP_EOL;\n\n// Dekodieren - mit Fehlerbehandlung und Pruefung der Struktur\nfunction leseWebhook(string $roh): array\n{\n    try {\n        $daten = json_decode($roh, true, 512, JSON_THROW_ON_ERROR);\n    } catch (JsonException $e) {\n        throw new InvalidArgumentException('Kein gueltiges JSON: ' . $e->getMessage(), previous: $e);\n    }\n\n    if (!is_array($daten) || !isset($daten['event'], $daten['id']) || !is_string($daten['event'])) {\n        throw new InvalidArgumentException('Unerwartete Struktur');\n    }\n    return $daten;\n}\n\nvar_dump(json_validate('{\"ok\": true}'));   // bool(true)  - ab PHP 8.3\nvar_dump(json_validate('{ok: true}'));     // bool(false)",
-   "codeLang": "PHP",
-   "tip": "Gib in APIs Geldbeträge nie als JSON-Float aus. <code>19.99<\/code> wird beim Client je nach Sprache zu <code>19.989999…<\/code>. Üblich sind Cent als Ganzzahl (<code>1999<\/code>) oder ein String mit fester Genauigkeit (<code>\"19.99\"<\/code>) plus Währungsangabe.",
-   "quiz": [
-    {
-     "q": "Was liefert json_decode() ohne Flags bei kaputtem JSON?",
-     "options": [
-      "null",
-      "einen leeren String",
-      "Eine Exception"
-     ],
-     "correct": 0,
-     "explain": "Darum: JSON_THROW_ON_ERROR, sonst ist kaputtes JSON nicht von einem gültigen null zu unterscheiden."
-    },
-    {
-     "q": "Wofür sorgt JSON_UNESCAPED_UNICODE?",
-     "options": [
-      "Umlaute werden als echte Zeichen statt als \\u-Sequenz ausgegeben",
-      "Das JSON wird kürzer komprimiert",
-      "Unicode wird entfernt"
-     ],
-     "correct": 0,
-     "explain": "Ohne das Flag wird aus „Müller“ „M\\u00fcller“ – gültig, aber schlecht lesbar."
-    },
-    {
-     "q": "Was liefert json_decode($json, true)?",
-     "options": [
-      "Einen String",
-      "stdClass-Objekte",
-      "Assoziative Arrays"
-     ],
-     "correct": 2,
-     "explain": "Mit false (Standard) entstehen stdClass-Objekte."
-    }
-   ]
-  },
-  {
-   "id": "m54-l3",
-   "title": "HTTP-Anfragen an andere Dienste",
-   "minutes": 12,
-   "body": "<p>Moderne Anwendungen sprechen ständig mit anderen Diensten: Zahlungsanbieter, Versanddienstleister, Wetter-APIs. In reinem PHP ist <strong>Guzzle<\/strong> der Standard-HTTP-Client (<code>composer require guzzlehttp/guzzle<\/code>); auch der HTTP-Client von Laravel baut darauf auf.<\/p> <p>Drei Regeln, die in jedem Code-Review geprüft werden:<\/p> <ul><li><strong>Immer ein Timeout.<\/strong> Ohne Timeout wartet dein Prozess unter Umständen minutenlang auf einen hängenden Dienst – und mit ihm der Benutzer.<\/li> <li><strong>Fehler gezielt behandeln.<\/strong> Guzzle wirft standardmäßig eine <code>ClientException<\/code> bei 4xx, eine <code>ServerException<\/code> bei 5xx und eine <code>ConnectException<\/code>, wenn der Dienst gar nicht erreichbar ist.<\/li> <li><strong>Zugangsdaten aus der Umgebung<\/strong> lesen, nie im Code ablegen.<\/li><\/ul> <table class=\"lesson-table\"><tr><th>Option<\/th><th>Zweck<\/th><\/tr> <tr><td><code>base_uri<\/code><\/td><td>gemeinsamer Anfang aller URLs<\/td><\/tr> <tr><td><code>timeout<\/code> / <code>connect_timeout<\/code><\/td><td>Gesamtdauer / Verbindungsaufbau in Sekunden<\/td><\/tr> <tr><td><code>query<\/code><\/td><td>Parameter für den Query-String<\/td><\/tr> <tr><td><code>json<\/code><\/td><td>Body als JSON senden, setzt den Content-Type<\/td><\/tr> <tr><td><code>headers<\/code><\/td><td>z. B. <code>Authorization: Bearer …<\/code><\/td><\/tr><\/table> <p>Ob ein Fehler einen neuen Versuch lohnt, hängt von der Ursache ab: Bei 5xx und Verbindungsfehlern ja, mit wachsender Wartezeit. Bei 4xx nein – die Anfrage selbst ist falsch und wird auch beim zweiten Mal abgelehnt.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nuse GuzzleHttp\\Client;\nuse GuzzleHttp\\Exception\\ClientException;\nuse GuzzleHttp\\Exception\\ConnectException;\nuse GuzzleHttp\\Exception\\ServerException;\n\n$client = new Client([\n    'base_uri'        => 'https://api.versand.example/v2/',\n    'timeout'         => 5.0,\n    'connect_timeout' => 2.0,\n    'headers'         => ['Authorization' => 'Bearer ' . getenv('VERSAND_TOKEN')],\n]);\n\nfunction sendungsstatus(Client $client, string $nummer): ?string\n{\n    for ($versuch = 1; $versuch <= 3; $versuch++) {\n        try {\n            $antwort = $client->get('sendungen/' . rawurlencode($nummer));\n            $daten = json_decode((string) $antwort->getBody(), true, 512, JSON_THROW_ON_ERROR);\n            return $daten['status'] ?? null;\n        } catch (ClientException $e) {\n            if ($e->getResponse()->getStatusCode() === 404) {\n                return null;                       // unbekannte Sendung - kein neuer Versuch\n            }\n            throw $e;                              // andere 4xx: Fehler im eigenen Code\n        } catch (ServerException | ConnectException $e) {\n            if ($versuch === 3) {\n                throw $e;\n            }\n            usleep(200_000 * 2 ** $versuch);       // 0,4 s, dann 0,8 s warten\n        }\n    }\n    return null;\n}",
-   "codeLang": "PHP",
-   "tip": "<code>rawurlencode()<\/code> im Pfad ist kein Detail: Enthält eine Sendungsnummer ein <code>/<\/code> oder <code>?<\/code>, landet die Anfrage sonst an einer ganz anderen Adresse. Alles, was von außen kommt und in eine URL eingesetzt wird, gehört kodiert – Pfadteile mit <code>rawurlencode<\/code>, Query-Parameter über die Option <code>query<\/code>.",
-   "quiz": [
-    {
-     "q": "Warum braucht jede HTTP-Anfrage an einen fremden Dienst ein Timeout?",
-     "options": [
-      "Weil ein hängender Dienst sonst den eigenen Prozess und den Benutzer blockiert",
-      "Weil HTTPS es verlangt",
-      "Weil Guzzle sonst nicht startet"
-     ],
-     "correct": 0,
-     "explain": "Ohne Timeout wartet die Anfrage im schlimmsten Fall sehr lange."
-    },
-    {
-     "q": "Bei welchem Fehler lohnt ein automatischer neuer Versuch?",
-     "options": [
-      "422 Unprocessable",
-      "404 Not Found",
-      "503 Service Unavailable"
-     ],
-     "correct": 2,
-     "explain": "5xx und Verbindungsfehler sind oft vorübergehend. 4xx bedeutet: Die Anfrage selbst ist falsch."
-    },
-    {
-     "q": "Welche Exception wirft Guzzle, wenn der Server gar nicht erreichbar ist?",
-     "options": [
-      "JsonException",
-      "ClientException",
-      "ConnectException"
-     ],
-     "correct": 2,
-     "explain": "ClientException und ServerException gibt es nur, wenn eine Antwort mit Fehlerstatus kam."
-    }
-   ]
-  },
-  {
-   "id": "m54-l4",
-   "title": "Fehler, Exceptions und Logging in der Praxis",
-   "minutes": 12,
-   "body": "<p>Fehlerbehandlung entscheidet darüber, ob du um 3 Uhr nachts in fünf Minuten weißt, was los ist – oder in fünf Stunden. Drei Bausteine gehören zusammen:<\/p> <ul><li><strong>Exceptions<\/strong> für Situationen, die der aufrufende Code behandeln kann oder soll.<\/li> <li><strong>Ein zentraler Handler<\/strong> (<code>set_exception_handler<\/code>) für alles, was niemand gefangen hat: Er protokolliert und zeigt dem Benutzer eine freundliche Seite.<\/li> <li><strong>Strukturiertes Logging<\/strong> mit einer PSR-3-Bibliothek wie <em>Monolog<\/em>: Nachricht plus Kontext als Array, damit sich Logs filtern und auswerten lassen.<\/li><\/ul> <table class=\"lesson-table\"><tr><th>Log-Level<\/th><th>Wann<\/th><\/tr> <tr><td><code>debug<\/code><\/td><td>Details für die Entwicklung<\/td><\/tr> <tr><td><code>info<\/code><\/td><td>normale Ereignisse: Bestellung angelegt<\/td><\/tr> <tr><td><code>warning<\/code><\/td><td>ungewöhnlich, aber behandelt: Fallback genutzt<\/td><\/tr> <tr><td><code>error<\/code><\/td><td>ein Vorgang ist fehlgeschlagen<\/td><\/tr> <tr><td><code>critical<\/code><\/td><td>Teile der Anwendung sind unbenutzbar<\/td><\/tr><\/table> <p><strong>Wo fängt man?<\/strong> Nicht überall. Ein leerer <code>catch<\/code>-Block, der den Fehler verschluckt, ist schlimmer als gar keiner. Fange dort, wo du etwas Sinnvolles tun kannst: einen Ersatzwert liefern, neu versuchen, die Exception in eine fachliche übersetzen. Alles andere lässt du nach oben steigen.<\/p><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Passwörter, Tokens, vollständige Kreditkartennummern und Gesundheitsdaten haben in Logs nichts verloren. Logs werden oft länger aufbewahrt und von mehr Personen gelesen als die Datenbank – ein Datenschutzproblem nach DSGVO.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nuse Monolog\\Handler\\StreamHandler;\nuse Monolog\\Level;\nuse Monolog\\Logger;\n\n$log = new Logger('shop');\n$log->pushHandler(new StreamHandler(__DIR__ . '/logs/app.log', Level::Info));\n\n// Letzte Verteidigungslinie: alles, was niemand gefangen hat\nset_exception_handler(function (Throwable $e) use ($log): void {\n    $log->critical('Unbehandelter Fehler', [\n        'klasse' => $e::class,\n        'nachricht' => $e->getMessage(),\n        'datei' => $e->getFile() . ':' . $e->getLine(),\n    ]);\n    http_response_code(500);\n    echo 'Da ist etwas schiefgelaufen. Wir kuemmern uns darum.';\n});\n\n// Gezielt fangen, wo man etwas tun kann\nfunction wechselkurs(Logger $log): float\n{\n    try {\n        return holeKursVonDerBank();\n    } catch (RuntimeException $e) {\n        $log->warning('Kursdienst nicht erreichbar, nutze Vortageskurs', ['fehler' => $e->getMessage()]);\n        return leseLetztenKurs();\n    }\n}\n\n// Kontext statt zusammengebauter Strings - auswertbar und ohne Geheimnisse\n$log->info('Bestellung angelegt', ['bestellung' => 4711, 'summe_cent' => 7136, 'kunde_id' => 15]);",
-   "codeLang": "PHP",
-   "tip": "Gib jeder Anfrage eine eindeutige ID und schreibe sie in jeden Log-Eintrag sowie in die Fehlerseite („Fehler-ID 8f3c…“). Ruft ein Kunde an, findest du mit dieser ID in Sekunden alle Einträge zu genau seinem Problem. Laravel macht das mit <code>Log::withContext()<\/code> in einer Middleware.",
-   "quiz": [
-    {
-     "q": "Was ist an einem leeren catch-Block problematisch?",
-     "options": [
-      "Er verschluckt den Fehler, niemand erfährt davon",
-      "Er ist in PHP verboten",
-      "Er verlangsamt das Programm"
-     ],
-     "correct": 0,
-     "explain": "Fange nur dort, wo du etwas Sinnvolles tun kannst."
-    },
-    {
-     "q": "Welches Log-Level passt zu „Kursdienst nicht erreichbar, Ersatzwert genutzt“?",
-     "options": [
-      "debug",
-      "warning",
-      "critical"
-     ],
-     "correct": 1,
-     "explain": "Ungewöhnlich, aber behandelt – die Anwendung funktioniert weiter."
-    },
-    {
-     "q": "Warum übergibt man Kontext als Array statt ihn in die Nachricht einzubauen?",
-     "options": [
-      "Weil es weniger Speicher braucht",
-      "Weil Strings verboten sind",
-      "Weil sich strukturierte Logs filtern und auswerten lassen"
-     ],
-     "correct": 2,
-     "explain": "Log-Dienste können dann z. B. alle Einträge zu bestellung = 4711 finden."
-    }
-   ]
+  var r = ue.erg[exId];
+  if(!r) return '';
+  var q = r.max ? r.punkte / r.max : 0;
+  var klasse = q >= 0.8 ? 'gut' : (q >= 0.5 ? 'teils' : 'schwach');
+  var h = '<div class="ue-kopf"><span class="ue-punkte '+klasse+'">'+r.punkte+' / '+r.max+' Punkte</span>'+
+          (r.urteil ? '<span class="ue-urteil">'+esc(r.urteil)+'</span>' : '')+'</div>';
+  if(r.staerken) h += '<div class="kl-rueck gut"><span class="kl-rueck-lbl">Das war richtig</span>'+esc(r.staerken)+'</div>';
+  if(r.luecken)  h += '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Das hat gefehlt</span>'+esc(r.luecken)+'</div>';
+  if(r.tipp)     h += '<div class="kl-rueck tipp"><span class="kl-rueck-lbl">Fürs nächste Mal</span>'+esc(r.tipp)+'</div>';
+  h += '<div class="ex-meta">Eine Einschätzung, kein amtliches Ergebnis — im Zweifel zählt die Musterlösung. '+
+       'Mit „Lösung anzeigen“ vergleichst du selbst.</div>';
+  return h;
+}
+function ueFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'not_declared':
+    case 'capability_disabled':
+    case 'sampling_disabled':
+      return 'Die Prüfung durch Claude ist hier nicht freigegeben. Vergleiche über „Lösung anzeigen“ selbst — '+
+             'oder nimm den Prüfauftrag mit in den Chat.';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und prüfe dann erneut — dein Text bleibt stehen.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und prüfe noch einmal.';
+    case 'prompt_too_large':
+      return 'Deine Lösung ist zu lang für eine Bewertung. Kürze sie auf den Rechenweg und das Ergebnis.';
+    case 'refused':
+      return 'Diese Antwort konnte nicht bewertet werden. Formuliere sie bitte anders.';
+    case 'invalid_json':
+    case 'empty_completion':
+      return 'Die Bewertung kam nicht in verwertbarer Form zurück. Versuch es gleich noch einmal.';
+    default:
+      return 'Die Prüfung hat nicht geklappt. Versuch es gleich noch einmal — dein Text bleibt stehen.';
   }
- ]
-});
-MODULES.push({
- "id": "m44",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Modernes, objektorientiertes PHP",
- "lessons": [
-  {
-   "id": "m44-l1",
-   "title": "Klassen, Konstruktoren und readonly",
-   "minutes": 12,
-   "body": "<p>Klassen in PHP folgen den bekannten OOP-Regeln: Eigenschaften und Methoden mit den Sichtbarkeiten <code>public<\/code>, <code>protected<\/code> und <code>private<\/code>. Modernes PHP spart dabei viel Schreibarbeit:<\/p> <ul><li><strong>Constructor Property Promotion<\/strong> (PHP 8.0): Sichtbarkeit direkt am Konstruktorparameter deklariert Eigenschaft und Zuweisung in einem.<\/li> <li><strong>readonly-Eigenschaften<\/strong> (8.1) dürfen genau einmal gesetzt werden, danach wirft jede Änderung einen Fehler. Eine <code>readonly class<\/code> (8.2) macht alle Eigenschaften readonly.<\/li> <li><strong>Statische<\/strong> Methoden gehören zur Klasse, nicht zum Objekt – praktisch für <strong>benannte Konstruktoren<\/strong> wie <code>Geld::euro(19.99)<\/code>.<\/li><\/ul> <p>Objekte werden als <strong>Handle<\/strong> übergeben: Weist du ein Objekt einer zweiten Variablen zu, zeigen beide auf dasselbe Objekt. Eine echte Kopie erzeugt <code>clone<\/code>.<\/p> <p>Unveränderliche <strong>Value Objects<\/strong> sind ein Kernwerkzeug für sauberen Code: Ein <code>Geld<\/code>-Objekt aus Betrag in Cent und Währung kann nie in einem ungültigen Zustand existieren. Statt es zu ändern, liefern Methoden ein neues Objekt (sogenannte <em>wither<\/em>).<\/p> <p><code>self::<\/code> meint die Klasse, in der der Code steht, <code>static::<\/code> die Klasse, auf der aufgerufen wurde (<strong>Late Static Binding<\/strong>). Für Fabrikmethoden in Basisklassen ist <code>new static()<\/code> darum meist richtig.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nfinal readonly class Geld\n{\n    private function __construct(\n        public int $cent,\n        public string $waehrung,\n    ) {\n        if ($cent < 0) {\n            throw new InvalidArgumentException('Betrag darf nicht negativ sein.');\n        }\n    }\n\n    public static function euro(float $betrag): self\n    {\n        return new self((int) round($betrag * 100), 'EUR');\n    }\n\n    public function plus(Geld $anderes): self\n    {\n        if ($anderes->waehrung !== $this->waehrung) {\n            throw new LogicException('Waehrungen unterschiedlich.');\n        }\n        return new self($this->cent + $anderes->cent, $this->waehrung);\n    }\n\n    public function format(): string\n    {\n        return number_format($this->cent / 100, 2, ',', '.') . ' ' . $this->waehrung;\n    }\n}\n\n$a = Geld::euro(19.99);\n$b = $a->plus(Geld::euro(5));   // $a bleibt unveraendert\necho $b->format();              // 24,99 EUR\n// $b->cent = 0;                // Error: Cannot modify readonly property",
-   "codeLang": "PHP",
-   "tip": "Speichere Geldbeträge nie als <code>float<\/code>. <code>0.1 + 0.2<\/code> ist in Gleitkomma nicht genau <code>0.3<\/code>, und bei Rechnungssummen fallen Rundungsfehler irgendwann einem Buchhalter auf. Ganze Cent als <code>int<\/code> oder eine Bibliothek wie <code>brick/money<\/code> sind der Standard. Die Spalte in der Datenbank ist dann <code>DECIMAL<\/code> oder <code>BIGINT<\/code> für Cent.",
-   "quiz": [
-    {
-     "q": "Was bewirkt Constructor Property Promotion?",
-     "options": [
-      "Ein Konstruktorparameter mit Sichtbarkeit wird zugleich als Eigenschaft deklariert und zugewiesen",
-      "Eigenschaften werden public",
-      "Der Konstruktor wird automatisch generiert"
-     ],
-     "correct": 0,
-     "explain": "public int $cent im Konstruktor ersetzt Deklaration plus $this->cent = $cent."
-    },
-    {
-     "q": "$b = $a; bei einem Objekt $a – was gilt danach?",
-     "options": [
-      "$b ist eine unabhängige Kopie",
-      "$a und $b zeigen auf dasselbe Objekt",
-      "$b ist null"
-     ],
-     "correct": 1,
-     "explain": "Objekte werden per Handle zugewiesen. Eine Kopie erzeugt clone."
-    },
-    {
-     "q": "Warum sollte man Geldbeträge nicht als float speichern?",
-     "options": [
-      "float erlaubt keine negativen Werte",
-      "float ist zu langsam",
-      "Gleitkommazahlen können viele Dezimalwerte nicht exakt darstellen"
-     ],
-     "correct": 2,
-     "explain": "Ganzzahlige Cent oder Dezimaltypen vermeiden Rundungsfehler."
-    }
-   ]
-  },
-  {
-   "id": "m44-l2",
-   "title": "Interfaces, abstrakte Klassen und Traits",
-   "minutes": 12,
-   "body": "<p>Drei Werkzeuge, drei Zwecke:<\/p> <table class=\"lesson-table\"><tr><th><\/th><th>Interface<\/th><th>Abstrakte Klasse<\/th><th>Trait<\/th><\/tr> <tr><td>Inhalt<\/td><td>nur Signaturen und Konstanten<\/td><td>Code plus abstrakte Methoden<\/td><td>Code zum Einkopieren<\/td><\/tr> <tr><td>Beziehung<\/td><td>„kann“ (Vertrag)<\/td><td>„ist ein“ (Vererbung)<\/td><td>keine – reine Wiederverwendung<\/td><\/tr> <tr><td>Anzahl pro Klasse<\/td><td>beliebig viele<\/td><td>genau eine<\/td><td>beliebig viele<\/td><\/tr> <tr><td>Typprüfung möglich<\/td><td>ja<\/td><td>ja<\/td><td>nein<\/td><\/tr><\/table> <p><strong>Programmiere gegen Interfaces.<\/strong> Eine Klasse, die ein <code>Zahlungsanbieter<\/code>-Interface erwartet, funktioniert mit Stripe, PayPal und einem Test-Dummy, ohne geändert zu werden. Das ist die Grundlage des Service Containers in Laravel.<\/p> <p><strong>Traits<\/strong> lösen das Fehlen von Mehrfachvererbung: Ihr Code wird beim Kompilieren in die Klasse kopiert. Laravel nutzt sie stark, etwa <code>HasFactory<\/code>, <code>SoftDeletes<\/code> oder <code>Notifiable<\/code> an Models. Kollidieren zwei Traits mit gleichem Methodennamen, entscheidest du mit <code>insteadof<\/code> und <code>as<\/code>.<\/p> <p>Das Schlüsselwort <strong><code>final<\/code><\/strong> verbietet Vererbung. Viele Teams machen Klassen standardmäßig final und öffnen nur gezielt, denn Vererbung ist die engste Kopplung, die es gibt. Bevorzuge <strong>Komposition<\/strong>: Ein Objekt hat ein anderes, statt eines zu sein.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\ninterface Zahlungsanbieter\n{\n    public function belaste(Geld $betrag, string $kundenRef): string;   // liefert Transaktions-ID\n}\n\nabstract class HttpAnbieter implements Zahlungsanbieter\n{\n    public function __construct(protected string $apiKey) {}\n\n    abstract protected function endpunkt(): string;\n\n    protected function post(array $daten): array\n    {\n        // ... gemeinsamer HTTP-Code fuer alle Anbieter ...\n        return ['id' => 'tx_123'];\n    }\n}\n\nfinal class StripeAnbieter extends HttpAnbieter\n{\n    protected function endpunkt(): string { return 'https://api.stripe.com/v1/charges'; }\n\n    public function belaste(Geld $betrag, string $kundenRef): string\n    {\n        return $this->post(['amount' => $betrag->cent, 'customer' => $kundenRef])['id'];\n    }\n}\n\ntrait ProtokolliertAufrufe\n{\n    protected function log(string $nachricht): void\n    {\n        error_log(static::class . ': ' . $nachricht);\n    }\n}\n\nfinal class Kasse\n{\n    use ProtokolliertAufrufe;\n\n    public function __construct(private Zahlungsanbieter $anbieter) {}   // Komposition\n\n    public function bezahle(Geld $betrag, string $kunde): string\n    {\n        $this->log(\"Belaste {$betrag->format()}\");\n        return $this->anbieter->belaste($betrag, $kunde);\n    }\n}",
-   "codeLang": "PHP",
-   "tip": "Merke dir die Faustregel aus Code-Reviews: Wenn du eine abstrakte Basisklasse nur schreibst, um Code zu teilen, ist ein Trait oder ein injiziertes Hilfsobjekt fast immer besser. Abstrakte Klassen lohnen sich dort, wo es wirklich ein gemeinsames Grundgerüst mit festgelegtem Ablauf gibt (Template-Method-Muster).",
-   "quiz": [
-    {
-     "q": "Was unterscheidet einen Trait von einem Interface?",
-     "options": [
-      "Ein Trait kann nur Konstanten enthalten",
-      "Es gibt keinen Unterschied",
-      "Ein Trait enthält Code, der in die Klasse kopiert wird, und taugt nicht als Typ"
-     ],
-     "correct": 2,
-     "explain": "Gegen einen Trait kann man nicht typisieren (instanceof oder Parametertyp) – gegen ein Interface schon."
-    },
-    {
-     "q": "Von wie vielen Klassen kann eine PHP-Klasse erben?",
-     "options": [
-      "Von beliebig vielen",
-      "Von genau einer",
-      "Von höchstens zwei"
-     ],
-     "correct": 1,
-     "explain": "Für Mehrfach-„Fähigkeiten“ gibt es Interfaces und Traits."
-    },
-    {
-     "q": "Was bewirkt final class?",
-     "options": [
-      "Alle Eigenschaften sind readonly",
-      "Die Klasse kann nicht instanziiert werden",
-      "Von der Klasse kann nicht geerbt werden"
-     ],
-     "correct": 2,
-     "explain": "Nicht instanziierbar ist eine abstrakte Klasse."
-    }
-   ]
-  },
-  {
-   "id": "m44-l3",
-   "title": "Enums und Exceptions",
-   "minutes": 11,
-   "body": "<p><strong>Enums<\/strong> (PHP 8.1) ersetzen Konstanten-Sammlungen und magische Strings. Statt <code>$status = 'versendet'<\/code> mit Tippfehler-Gefahr schreibst du <code>Status::Versendet<\/code>, und der Typ <code>Status<\/code> lässt nur gültige Werte zu.<\/p> <ul><li><strong>Pure Enums<\/strong> haben nur Fälle: <code>case Offen;<\/code><\/li> <li><strong>Backed Enums<\/strong> haben einen skalaren Wert für Datenbank oder API: <code>enum Status: string { case Offen = 'offen'; }<\/code><\/li> <li><code>Status::from('offen')<\/code> wandelt um und wirft bei unbekanntem Wert, <code>tryFrom()<\/code> liefert dann null.<\/li> <li><code>Status::cases()<\/code> liefert alle Fälle – ideal für Auswahllisten.<\/li> <li>Enums können Methoden und Interfaces haben, aber keinen Zustand.<\/li><\/ul> <p><strong>Exceptions<\/strong> melden Fehler, die der Aufrufer behandeln soll. Die Hierarchie: <code>Throwable<\/code> ist die Wurzel. Darunter liegen <code>Error<\/code> für Programmierfehler wie <code>TypeError<\/code> und <code>Exception<\/code> für erwartbare Probleme. Mit <code>catch (Throwable $e)<\/code> fängst du beides.<\/p> <p>Gute Praxis: Eigene, <strong>fachlich benannte<\/strong> Exceptions (<code>LagerbestandZuNiedrig<\/code>) statt generischer <code>Exception<\/code>. Fange nur dort, wo du wirklich etwas tun kannst. Wenn du eine Exception in eine eigene umwandelst, übergib die ursprüngliche als <code>previous<\/code>, sonst ist die Ursache im Log weg.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\nenum BestellStatus: string\n{\n    case Offen     = 'offen';\n    case Bezahlt   = 'bezahlt';\n    case Versendet = 'versendet';\n    case Storniert = 'storniert';\n\n    public function label(): string\n    {\n        return match ($this) {\n            self::Offen     => 'Wartet auf Zahlung',\n            self::Bezahlt   => 'Bezahlt',\n            self::Versendet => 'Unterwegs',\n            self::Storniert => 'Storniert',\n        };\n    }\n\n    public function darfWechselnZu(self $neu): bool\n    {\n        return in_array($neu, match ($this) {\n            self::Offen     => [self::Bezahlt, self::Storniert],\n            self::Bezahlt   => [self::Versendet, self::Storniert],\n            default         => [],\n        }, true);\n    }\n}\n\nfinal class UngueltigerStatuswechsel extends DomainException\n{\n    public static function von(BestellStatus $alt, BestellStatus $neu): self\n    {\n        return new self(\"Wechsel von {$alt->value} nach {$neu->value} nicht erlaubt.\");\n    }\n}\n\n$status = BestellStatus::from('offen');\n$neu    = BestellStatus::tryFrom($_GET['status'] ?? '') ?? BestellStatus::Offen;\n\ntry {\n    if (!$status->darfWechselnZu($neu)) {\n        throw UngueltigerStatuswechsel::von($status, $neu);\n    }\n} catch (UngueltigerStatuswechsel $e) {\n    echo $e->getMessage();\n} finally {\n    // laeuft immer - z. B. Datei schliessen, Lock freigeben\n}",
-   "codeLang": "PHP",
-   "tip": "Das Enum mit <code>darfWechselnZu()<\/code> ist eine kleine <strong>Zustandsmaschine<\/strong>. Die erlaubten Übergänge stehen damit an genau einer Stelle, statt in zehn Controllern als if-Kaskade verteilt zu sein. In Laravel castest du die Datenbankspalte direkt auf das Enum, dann ist <code>$order-&gt;status<\/code> immer ein <code>BestellStatus<\/code>.",
-   "quiz": [
-    {
-     "q": "Was unterscheidet BestellStatus::from() von tryFrom()?",
-     "options": [
-      "from() wirft bei unbekanntem Wert einen Fehler, tryFrom() liefert null",
-      "tryFrom() akzeptiert auch Fallnamen",
-      "from() ist schneller"
-     ],
-     "correct": 0,
-     "explain": "tryFrom() ist richtig für Benutzereingaben, from() für Daten, die gültig sein müssen."
-    },
-    {
-     "q": "Welche Klasse liegt ganz oben in der Fehlerhierarchie von PHP?",
-     "options": [
-      "Exception",
-      "Error",
-      "Throwable"
-     ],
-     "correct": 2,
-     "explain": "Throwable ist ein Interface. Error und Exception implementieren es."
-    },
-    {
-     "q": "Warum übergibt man beim Umwandeln einer Exception die alte als previous?",
-     "options": [
-      "Damit die Exception schneller geworfen wird",
-      "Damit die ursprüngliche Ursache samt Stacktrace erhalten bleibt",
-      "Weil PHP es verlangt"
-     ],
-     "correct": 1,
-     "explain": "Logs und Fehlerdienste zeigen dann die ganze Kette von Ursachen."
-    }
-   ]
-  },
-  {
-   "id": "m44-l4",
-   "title": "Namespaces, Composer und PSR-Standards",
-   "minutes": 12,
-   "body": "<p>Kein modernes PHP-Projekt kommt ohne <strong>Composer<\/strong> aus. Er erledigt zwei Aufgaben:<\/p> <ul><li><strong>Abhängigkeiten<\/strong> installieren: <code>composer require guzzlehttp/guzzle<\/code> lädt das Paket nach <code>vendor/<\/code> und trägt es in <code>composer.json<\/code> ein.<\/li> <li><strong>Autoloading<\/strong>: Klassen werden beim ersten Gebrauch automatisch geladen, ohne einzelne <code>require<\/code>-Zeilen.<\/li><\/ul> <p>Das Autoloading folgt dem Standard <strong>PSR-4<\/strong>: Der Namespace entspricht dem Verzeichnis. Mit <code>\"App\\\\\": \"app/\"<\/code> liegt die Klasse <code>App\\Services\\Kasse<\/code> in <code>app/Services/Kasse.php<\/code>. Ein falsch geschriebener Dateiname führt zu „Class not found“ – auf Linux-Servern zählt auch die Groß- und Kleinschreibung, auf deinem Mac oft nicht.<\/p> <table class=\"lesson-table\"><tr><th>Datei / Befehl<\/th><th>Zweck<\/th><\/tr> <tr><td><code>composer.json<\/code><\/td><td>gewünschte Pakete mit Versionsbereichen<\/td><\/tr> <tr><td><code>composer.lock<\/code><\/td><td>exakt installierte Versionen – <strong>wird committet<\/strong><\/td><\/tr> <tr><td><code>composer install<\/code><\/td><td>installiert genau, was im Lock steht (Server, CI, Kollegen)<\/td><\/tr> <tr><td><code>composer update<\/code><\/td><td>sucht neue Versionen im erlaubten Bereich und schreibt das Lock neu<\/td><\/tr> <tr><td><code>composer audit<\/code><\/td><td>prüft auf bekannte Sicherheitslücken<\/td><\/tr><\/table> <p>Versionsbereiche folgen <strong>Semantic Versioning<\/strong> (MAJOR.MINOR.PATCH). <code>^7.4<\/code> erlaubt alles ab 7.4.0 und unter 8.0.0, also keine Breaking Changes. Die <strong>PSR<\/strong>-Standards der PHP-FIG halten das Ökosystem zusammen: PSR-4 (Autoloading), PSR-3 (Logger), PSR-7/17/18 (HTTP), und für den Code-Stil der Nachfolger von PSR-12, der <strong>PER Coding Style<\/strong>.<\/p>",
-   "code": "{\n    \"name\": \"acme/shop\",\n    \"require\": {\n        \"php\": \"^8.3\",\n        \"guzzlehttp/guzzle\": \"^7.9\"\n    },\n    \"require-dev\": {\n        \"phpunit/phpunit\": \"^11.0\"\n    },\n    \"autoload\": {\n        \"psr-4\": { \"App\\\\\": \"src/\" }\n    },\n    \"autoload-dev\": {\n        \"psr-4\": { \"Tests\\\\\": \"tests/\" }\n    }\n}",
-   "codeLang": "composer.json",
-   "code2": "<?php\n// src/Billing/Rechnung.php\ndeclare(strict_types=1);\n\nnamespace App\\Billing;\n\nuse App\\Geld\\Geld;                       // Import statt vollem Namen\nuse GuzzleHttp\\Client as HttpClient;     // Alias\n\nfinal class Rechnung\n{\n    public function __construct(private HttpClient $http) {}\n}\n\n// public/index.php\n// require __DIR__ . '/../vendor/autoload.php';\n// $rechnung = new \\App\\Billing\\Rechnung(new \\GuzzleHttp\\Client());",
-   "code2Lang": "PHP",
-   "tip": "Wenn auf dem Server etwas anders läuft als lokal, frag zuerst: Wurde dort <code>composer install<\/code> oder <code>composer update<\/code> ausgeführt? Auf Servern und in CI immer <code>install<\/code>, und zwar mit <code>--no-dev --optimize-autoloader<\/code>. Ein <code>update<\/code> in Produktion installiert ungetestete Versionen.",
-   "quiz": [
-    {
-     "q": "Wo liegt bei der PSR-4-Zuordnung „App\\ → src/“ die Klasse App\\Billing\\Rechnung?",
-     "options": [
-      "src/Billing/Rechnung.php",
-      "App/Billing/Rechnung.php",
-      "src/Rechnung.php"
-     ],
-     "correct": 0,
-     "explain": "Der Präfix App\\ wird durch src/ ersetzt, der Rest des Namespaces wird zum Pfad."
-    },
-    {
-     "q": "Warum wird composer.lock ins Repository eingecheckt?",
-     "options": [
-      "Damit alle Umgebungen exakt dieselben Paketversionen installieren",
-      "Weil Composer sonst nicht startet",
-      "Damit das vendor-Verzeichnis nicht nötig ist"
-     ],
-     "correct": 0,
-     "explain": "composer install liest das Lock und liefert reproduzierbare Builds."
-    },
-    {
-     "q": "Welche Versionen erlaubt die Einschränkung ^2.3?",
-     "options": [
-      ">= 2.3.0 und < 2.4.0",
-      "Nur 2.3.0",
-      ">= 2.3.0 und < 3.0.0"
-     ],
-     "correct": 2,
-     "explain": "Das Caret erlaubt Minor- und Patch-Updates, aber keinen neuen Major-Sprung."
-    }
-   ]
+}
+function ueGeloestAnzeigen(exId){
+  var b = document.getElementById('sv_' + exId);
+  if(b){ b.className = 'ex-btn'; b.textContent = '✓ Gelöst'; }
+  var h = document.getElementById('exh_' + exId);
+  if(h && h.getAttribute('data-ok') !== '1'){
+    h.setAttribute('data-ok', '1');
+    h.insertAdjacentHTML('afterbegin', '<span style="color:var(--success);">✓ </span>');
   }
- ]
-});
-MODULES.push({
- "id": "m55",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Modernes PHP und saubere Architektur",
- "lessons": [
-  {
-   "id": "m55-l1",
-   "title": "Generatoren: große Datenmengen mit wenig Speicher",
-   "minutes": 11,
-   "body": "<p>Eine normale Funktion baut ihr Ergebnis komplett auf und gibt es dann zurück. Bei einer Million Zeilen liegt dann eine Million Zeilen im Speicher. Ein <strong>Generator<\/strong> liefert die Werte stattdessen <strong>einzeln auf Anfrage<\/strong>: Jede Funktion mit <code>yield<\/code> ist ein Generator.<\/p> <ul><li>Bei jedem <code>yield<\/code> pausiert die Funktion und gibt einen Wert heraus.<\/li> <li>Die <code>foreach<\/code>-Schleife des Aufrufers holt den nächsten Wert, und die Funktion läuft dort weiter, wo sie pausiert hat.<\/li> <li><code>yield $schluessel =&gt; $wert<\/code> liefert auch Schlüssel, <code>yield from<\/code> reicht die Werte eines anderen Generators durch.<\/li><\/ul> <p>Generatoren sind <em>faul<\/em> (lazy): Bricht der Aufrufer nach zehn Werten ab, wird der Rest gar nicht erst berechnet. Das macht sie ideal für Importe, Exporte und Pipelines, in denen mehrere Schritte hintereinander geschaltet werden.<\/p> <p>Laravel nutzt dasselbe Prinzip in <code>LazyCollection<\/code> und <code>Model::lazy()<\/code> bzw. <code>lazyById()<\/code>.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Schreibe einen Generator <code>zahlen(int $bis)<\/code>, der von 1 bis <code>$bis<\/code> zählt. Miss mit <code>memory_get_peak_usage()<\/code> den Speicher einmal für <code>range(1, 1_000_000)<\/code> und einmal für den Generator.<\/p><\/div>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n/** @return Generator<int, array> */\nfunction leseZeilen(string $pfad): Generator\n{\n    $datei = new SplFileObject($pfad);\n    while (!$datei->eof()) {\n        $zeile = $datei->fgetcsv(';');\n        if ($zeile === [null] || $zeile === false) {\n            continue;\n        }\n        yield $datei->key() => $zeile;         // pausiert hier\n    }\n}\n\nfunction nurGueltige(iterable $zeilen): Generator\n{\n    foreach ($zeilen as $nr => $z) {\n        if (count($z) === 3 && is_numeric(str_replace(',', '.', $z[2]))) {\n            yield $nr => $z;\n        }\n    }\n}\n\n// Pipeline: nichts wird vorab geladen, jede Zeile fliesst einzeln durch\n$summe = 0;\nforeach (nurGueltige(leseZeilen(__DIR__ . '/umsatz.csv')) as $nr => [$datum, $kunde, $betrag]) {\n    $summe += (int) round((float) str_replace(',', '.', $betrag) * 100);\n}\nprintf(\"Umsatz: %.2f EUR, Spitzenspeicher: %d KB\\n\", $summe / 100, memory_get_peak_usage() / 1024);",
-   "codeLang": "PHP",
-   "tip": "Ein Generator lässt sich nur einmal durchlaufen. Brauchst du die Werte zweimal, musst du ihn neu erzeugen oder mit <code>iterator_to_array()<\/code> doch in ein Array umwandeln – womit der Speichervorteil weg ist. Typischer Fehler in Tests: Erst die Anzahl prüfen, dann den Inhalt – beim zweiten Durchlauf ist der Generator leer.",
-   "quiz": [
-    {
-     "q": "Was macht yield in einer Funktion?",
-     "options": [
-      "Gibt einen Wert heraus und pausiert die Funktion bis zum nächsten Abruf",
-      "Wirft eine Exception",
-      "Beendet die Funktion endgültig"
-     ],
-     "correct": 0,
-     "explain": "Die Funktion wird dadurch zum Generator."
-    },
-    {
-     "q": "Warum spart ein Generator Speicher?",
-     "options": [
-      "Er komprimiert die Daten",
-      "Er hält jeweils nur den aktuellen Wert, nicht alle auf einmal",
-      "Er schreibt auf die Festplatte"
-     ],
-     "correct": 1,
-     "explain": "Werte werden erst erzeugt, wenn sie gebraucht werden."
-    },
-    {
-     "q": "Wie oft lässt sich ein Generator mit foreach durchlaufen?",
-     "options": [
-      "Zweimal",
-      "Beliebig oft",
-      "Einmal"
-     ],
-     "correct": 2,
-     "explain": "Danach ist er erschöpft und muss neu erzeugt werden."
-    }
-   ]
-  },
-  {
-   "id": "m55-l2",
-   "title": "SOLID verständlich erklärt",
-   "minutes": 13,
-   "body": "<p>SOLID sind fünf Leitlinien für Klassen, die sich leicht ändern, testen und erweitern lassen. Sie sind keine Gesetze, sondern Fragen, die man sich beim Entwurf stellt:<\/p> <table class=\"lesson-table\"><tr><th>Prinzip<\/th><th>Die Frage dahinter<\/th><th>Warnsignal<\/th><\/tr> <tr><td><strong>S<\/strong>ingle Responsibility<\/td><td>Hat die Klasse genau einen Grund, sich zu ändern?<\/td><td>„RechnungUndMailUndPdf“-Klassen<\/td><\/tr> <tr><td><strong>O<\/strong>pen/Closed<\/td><td>Kann ich Neues ergänzen, ohne Bestehendes umzuschreiben?<\/td><td>wachsende if/switch-Kaskaden über Typen<\/td><\/tr> <tr><td><strong>L<\/strong>iskov Substitution<\/td><td>Funktioniert jede Unterklasse überall dort, wo die Oberklasse erwartet wird?<\/td><td>Unterklasse wirft „nicht unterstützt“<\/td><\/tr> <tr><td><strong>I<\/strong>nterface Segregation<\/td><td>Muss eine Klasse Methoden implementieren, die sie nicht braucht?<\/td><td>leere Methoden in Implementierungen<\/td><\/tr> <tr><td><strong>D<\/strong>ependency Inversion<\/td><td>Hängt meine Fachlogik an Details oder an Abstraktionen?<\/td><td><code>new StripeClient()<\/code> mitten in der Logik<\/td><\/tr><\/table> <p>Das Beispiel zeigt Open/Closed und Dependency Inversion zusammen: Neue Versandarten kommen als neue Klasse hinzu. Die Berechnung selbst wird nie wieder angefasst, und sie kennt nur das Interface.<\/p> <p>Wichtig für die Praxis: SOLID ist ein Werkzeug gegen Schmerzen, die du hast – nicht gegen solche, die du vielleicht einmal haben könntest. Drei Interfaces für eine Klasse, die sich nie ändert, sind Überarchitektur.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\ninterface Versandart\n{\n    public function passtZu(string $land, int $gewichtGramm): bool;\n    public function kostenCent(int $gewichtGramm): int;\n}\n\nfinal class DhlPaket implements Versandart\n{\n    public function passtZu(string $land, int $g): bool { return $land === 'DE' && $g <= 31_500; }\n    public function kostenCent(int $g): int { return $g <= 5_000 ? 549 : 849; }\n}\n\nfinal class Spedition implements Versandart\n{\n    public function passtZu(string $land, int $g): bool { return $g > 31_500; }\n    public function kostenCent(int $g): int { return 4_900 + intdiv($g, 1_000) * 15; }\n}\n\nfinal class Versandrechner\n{\n    /** @param list<Versandart> $arten */\n    public function __construct(private array $arten) {}     // haengt nur am Interface\n\n    public function guenstigste(string $land, int $gewicht): int\n    {\n        $passend = array_filter($this->arten, fn (Versandart $a) => $a->passtZu($land, $gewicht));\n        if ($passend === []) {\n            throw new DomainException('Kein Versand moeglich');\n        }\n        return min(array_map(fn (Versandart $a) => $a->kostenCent($gewicht), $passend));\n    }\n}\n\n// Neue Versandart? Neue Klasse - Versandrechner bleibt unveraendert (Open/Closed)\n$rechner = new Versandrechner([new DhlPaket(), new Spedition()]);\necho $rechner->guenstigste('DE', 3_000);   // 549",
-   "codeLang": "PHP",
-   "tip": "In Bewerbungsgesprächen wird SOLID gern abgefragt. Eine starke Antwort nennt nicht nur die fünf Begriffe, sondern zu mindestens einem ein Beispiel aus eigenem Code: „Unsere Bestellklasse hat Mails verschickt und PDFs erzeugt – wir haben das in eigene Klassen gezogen, seitdem ändern sich Mail-Vorlagen, ohne die Bestelllogik zu berühren.“",
-   "quiz": [
-    {
-     "q": "Wofür steht das S in SOLID?",
-     "options": [
-      "Single Responsibility – eine Klasse, ein Grund zur Änderung",
-      "Separation of Storage",
-      "Static Typing"
-     ],
-     "correct": 0,
-     "explain": "Mehrere unabhängige Änderungsgründe sind das Signal zum Aufteilen."
-    },
-    {
-     "q": "Eine Unterklasse wirft bei einer geerbten Methode „nicht unterstützt“. Welches Prinzip wird verletzt?",
-     "options": [
-      "Interface Segregation",
-      "Liskov Substitution",
-      "Open/Closed"
-     ],
-     "correct": 1,
-     "explain": "Die Unterklasse lässt sich nicht überall dort einsetzen, wo die Oberklasse erwartet wird."
-    },
-    {
-     "q": "Was bedeutet Dependency Inversion?",
-     "options": [
-      "Klassen erben voneinander",
-      "Abhängigkeiten werden umgekehrt sortiert",
-      "Fachlogik hängt an Abstraktionen (Interfaces), nicht an konkreten Details"
-     ],
-     "correct": 2,
-     "explain": "Die konkrete Implementierung wird von außen hineingereicht."
-    }
-   ]
-  },
-  {
-   "id": "m55-l3",
-   "title": "Was PHP 8.4 und 8.5 Neues bringen",
-   "minutes": 12,
-   "body": "<p>PHP erscheint jedes Jahr im November in einer neuen Version. Prüfe mit <code>php -v<\/code>, welche du hast – die folgenden Features funktionieren nur ab der genannten Version.<\/p> <p><strong>PHP 8.4 (November 2024)<\/strong><\/p> <ul><li><strong>Property Hooks<\/strong>: Eigenschaften können eigene <code>get<\/code>- und <code>set<\/code>-Logik haben. Das ersetzt viele Getter und Setter.<\/li> <li><strong>Asymmetrische Sichtbarkeit<\/strong>: <code>public private(set) int $stand<\/code> – öffentlich lesbar, aber nur innerhalb der Klasse schreibbar.<\/li> <li><strong>Methodenaufruf direkt nach new<\/strong>: <code>new Geld(500)-&gt;format()<\/code> ohne zusätzliche Klammern.<\/li> <li><strong>Neue Array-Funktionen<\/strong>: <code>array_find()<\/code>, <code>array_find_key()<\/code>, <code>array_any()<\/code>, <code>array_all()<\/code>.<\/li><\/ul> <p><strong>PHP 8.5 (November 2025)<\/strong><\/p> <ul><li><strong>Pipe-Operator<\/strong> <code>|&gt;<\/code>: Der Wert links wird an die Funktion rechts übergeben. Aus verschachtelten Aufrufen wird eine lesbare Kette von links nach rechts. Arrow Functions auf der rechten Seite stehen in Klammern.<\/li> <li><code>array_first()<\/code> und <code>array_last()<\/code> liefern das erste bzw. letzte Element.<\/li><\/ul> <p>Ob du neue Features einsetzt, entscheidet die PHP-Version auf dem <strong>Server<\/strong>, nicht die auf deinem Rechner. Das <code>\"php\"<\/code>-Feld in <code>composer.json<\/code> hält beides zusammen.<\/p>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n// --- PHP 8.4: Property Hooks und asymmetrische Sichtbarkeit ---\nfinal class Kunde\n{\n    public string $email {\n        set(string $wert) {\n            $this->email = mb_strtolower(trim($wert));   // Normalisierung beim Setzen\n        }\n    }\n\n    public string $anzeigename {\n        get => $this->vorname . ' ' . $this->nachname;    // virtuelle Eigenschaft\n    }\n\n    public private(set) int $bestellungen = 0;           // lesen ja, schreiben nur intern\n\n    public function __construct(public string $vorname, public string $nachname, string $email)\n    {\n        $this->email = $email;\n    }\n\n    public function bestellt(): void { $this->bestellungen++; }\n}\n\n$k = new Kunde('Ada', 'Lovelace', '  ADA@Example.com ');\necho $k->email . ' / ' . $k->anzeigename . PHP_EOL;   // ada@example.com / Ada Lovelace\n// $k->bestellungen = 5;   // Error: Cannot modify private(set) property\n\n// --- PHP 8.4: neue Array-Funktionen ---\n$noten = [2, 1, 4, 3];\nvar_dump(array_find($noten, fn (int $n) => $n > 2));   // int(4)\nvar_dump(array_all($noten, fn (int $n) => $n <= 4));   // bool(true)\n\n// --- PHP 8.5: Pipe-Operator ---\n$slug = '  Laravel für Profis  '\n    |> trim(...)\n    |> mb_strtolower(...)\n    |> (fn (string $s) => preg_replace('/\\s+/', '-', $s));\necho $slug . PHP_EOL;                                   // laravel-für-profis",
-   "codeLang": "PHP",
-   "tip": "Neue Sprachfeatures lohnen sich besonders dort, wo sie Boilerplate ersetzen: Property Hooks statt zehn Getter, <code>private(set)<\/code> statt eines Getters plus privater Eigenschaft. Wenn das Team noch auf einer älteren Version läuft, halte Neuerungen in einer Notiz für das nächste Upgrade fest – Rector kann viele davon später automatisch einbauen.",
-   "quiz": [
-    {
-     "q": "Was bedeutet public private(set) int $stand?",
-     "options": [
-      "Von außen lesbar, aber nur innerhalb der Klasse schreibbar",
-      "Nur einmal schreibbar",
-      "Die Eigenschaft ist komplett privat"
-     ],
-     "correct": 0,
-     "explain": "Asymmetrische Sichtbarkeit gibt es seit PHP 8.4."
-    },
-    {
-     "q": "Was liefert array_find([2, 1, 4, 3], fn ($n) => $n > 2)?",
-     "options": [
-      "[4, 3]",
-      "4",
-      "true"
-     ],
-     "correct": 1,
-     "explain": "array_find liefert das erste passende Element. Für einen Wahrheitswert gibt es array_any."
-    },
-    {
-     "q": "Was macht der Pipe-Operator |> in PHP 8.5?",
-     "options": [
-      "Er vergleicht zwei Werte",
-      "Er leitet Ausgaben in eine Datei um",
-      "Er übergibt den Wert links an die Funktion rechts"
-     ],
-     "correct": 2,
-     "explain": "So werden verschachtelte Funktionsaufrufe zu einer lesbaren Kette."
-    }
-   ]
-  },
-  {
-   "id": "m55-l4",
-   "title": "Dependency Injection und Unit-Tests ohne Framework",
-   "minutes": 12,
-   "body": "<p>Laravel nimmt dir mit dem Service Container viel ab. Damit du verstehst, was dort passiert, lohnt sich ein Blick auf das Prinzip in reinem PHP: <strong>Eine Klasse erzeugt ihre Abhängigkeiten nicht selbst, sondern bekommt sie übergeben.<\/strong><\/p> <ul><li>Ohne DI: <code>$this-&gt;kurse = new EzbWechselkurse();<\/code> – die Klasse ist fest an die EZB gebunden. Ein Test würde jedes Mal echte Kurse aus dem Internet laden.<\/li> <li>Mit DI: Der Konstruktor erwartet ein Interface <code>Wechselkurse<\/code>. Im Programm übergibst du die echte Implementierung, im Test eine Attrappe (<em>Test Double<\/em>).<\/li><\/ul> <p>Für Tests in reinem PHP ist <strong>PHPUnit<\/strong> der Standard (<code>composer require --dev phpunit/phpunit<\/code>). Ein Test ist eine Klasse, die von <code>TestCase<\/code> erbt; jede Testmethode prüft mit Zusicherungen (Assertions) wie <code>assertSame()<\/code> ein Verhalten.<\/p> <table class=\"lesson-table\"><tr><th>Begriff<\/th><th>Bedeutung<\/th><\/tr> <tr><td>Stub<\/td><td>liefert feste Antworten, prüft nichts<\/td><\/tr> <tr><td>Mock<\/td><td>prüft zusätzlich, ob und wie er aufgerufen wurde<\/td><\/tr> <tr><td>Fake<\/td><td>funktionierende, vereinfachte Implementierung (z. B. In-Memory-Speicher)<\/td><\/tr><\/table>",
-   "code": "<?php\ndeclare(strict_types=1);\n\n// src/PreisRechner.php\nnamespace App;\n\ninterface Wechselkurse\n{\n    public function kurs(string $von, string $nach): float;\n}\n\nfinal class PreisRechner\n{\n    public function __construct(private Wechselkurse $kurse) {}\n\n    public function umrechnen(int $cent, string $waehrung): int\n    {\n        return (int) round($cent * $this->kurse->kurs('EUR', $waehrung));\n    }\n}\n\n// tests/PreisRechnerTest.php\nnamespace Tests;\n\nuse App\\PreisRechner;\nuse App\\Wechselkurse;\nuse PHPUnit\\Framework\\Attributes\\Test;\nuse PHPUnit\\Framework\\TestCase;\n\nfinal class PreisRechnerTest extends TestCase\n{\n    #[Test]\n    public function rechnet_mit_dem_aktuellen_kurs_um(): void\n    {\n        $kurse = $this->createStub(Wechselkurse::class);\n        $kurse->method('kurs')->willReturn(1.10);\n\n        $rechner = new PreisRechner($kurse);\n\n        $this->assertSame(1100, $rechner->umrechnen(1000, 'USD'));\n    }\n}\n\n// Ausfuehren:  ./vendor/bin/phpunit tests",
-   "codeLang": "PHP",
-   "tip": "Wenn ein Test schwer zu schreiben ist, ist das selten ein Problem des Tests. Meist erzeugt die Klasse ihre Abhängigkeiten selbst oder macht zu viel. Schwer testbarer Code ist deshalb ein früher, ehrlicher Hinweis auf ein Designproblem.",
-   "quiz": [
-    {
-     "q": "Was ist der Kern von Dependency Injection?",
-     "options": [
-      "Eine Klasse bekommt ihre Abhängigkeiten von außen übergeben",
-      "Abhängigkeiten werden global gespeichert",
-      "Klassen erben voneinander"
-     ],
-     "correct": 0,
-     "explain": "Dadurch lassen sich Implementierungen austauschen – vor allem im Test."
-    },
-    {
-     "q": "Was unterscheidet einen Mock von einem Stub?",
-     "options": [
-      "Ein Mock prüft zusätzlich, ob und wie er aufgerufen wurde",
-      "Ein Stub ist schneller",
-      "Es gibt keinen Unterschied"
-     ],
-     "correct": 0,
-     "explain": "Ein Stub liefert nur feste Antworten."
-    },
-    {
-     "q": "Ein Test lässt sich kaum schreiben, weil die Klasse intern new HttpClient() aufruft. Was ist die beste Lösung?",
-     "options": [
-      "Im Test das Internet abschalten",
-      "Den Test weglassen",
-      "Den Client per Konstruktor übergeben"
-     ],
-     "correct": 2,
-     "explain": "Mit Konstruktor-Injektion kann der Test eine Attrappe übergeben."
-    }
-   ]
+}
+async function uePruefen(exId){
+  var ex = EXERCISES.find(function(e){ return e.id === exId; });
+  if(!ex || ue.busy[exId]) return;
+
+  var feld = document.getElementById('ueFeld_' + exId);
+  var text = (feld ? feld.value : ((state.ueTexte || {})[exId] || '')).trim();
+  var note = document.getElementById('ueNote_' + exId);
+  if(!text){
+    if(note){ note.className = 'ue-note warn'; note.textContent = 'Schreib zuerst etwas ins Feld — ein angefangener Rechenweg reicht.'; }
+    if(feld) feld.focus();
+    return;
   }
- ]
-});
-MODULES.push({
- "id": "m45",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Laravel-Einstieg",
- "lessons": [
-  {
-   "id": "m45-l1",
-   "title": "Installation, Projektstruktur und Konfiguration",
-   "minutes": 12,
-   "body": "<p><strong>Laravel<\/strong> ist das verbreitetste PHP-Framework. Es bringt Routing, ORM, Templates, Authentifizierung, Queues und Tests aus einem Guss mit. Ein neues Projekt legst du mit dem Laravel-Installer (<code>laravel new shop<\/code>) oder mit <code>composer create-project laravel/laravel shop<\/code> an. <code>php artisan serve<\/code> startet es lokal. Die Standard-Datenbank neuer Projekte ist SQLite, du kannst also ohne Datenbankserver loslegen.<\/p> <table class=\"lesson-table\"><tr><th>Verzeichnis<\/th><th>Inhalt<\/th><\/tr> <tr><td><code>app/<\/code><\/td><td>dein Code: Models, Http/Controllers, Providers …<\/td><\/tr> <tr><td><code>bootstrap/app.php<\/code><\/td><td>startet die Anwendung, registriert Routen, Middleware, Exception-Handling<\/td><\/tr> <tr><td><code>config/<\/code><\/td><td>Konfigurationsdateien, lesen Werte aus <code>.env<\/code><\/td><\/tr> <tr><td><code>database/<\/code><\/td><td>Migrationen, Factories, Seeder<\/td><\/tr> <tr><td><code>public/<\/code><\/td><td><em>einziges<\/em> Verzeichnis, das der Webserver ausliefert (<code>index.php<\/code>, Assets)<\/td><\/tr> <tr><td><code>resources/<\/code><\/td><td>Blade-Views, CSS, JavaScript<\/td><\/tr> <tr><td><code>routes/<\/code><\/td><td><code>web.php<\/code>, <code>console.php<\/code>, optional <code>api.php<\/code><\/td><\/tr> <tr><td><code>storage/<\/code><\/td><td>Logs, Cache, kompilierte Views, Uploads<\/td><\/tr> <tr><td><code>tests/<\/code><\/td><td>Feature- und Unit-Tests<\/td><\/tr><\/table> <p>Umgebungsabhängige Werte stehen in <strong><code>.env<\/code><\/strong>: Datenbankzugang, <code>APP_KEY<\/code>, <code>APP_DEBUG<\/code>. Die Datei wird <strong>nie committet<\/strong>, nur die Vorlage <code>.env.example<\/code>. <code>php artisan key:generate<\/code> erzeugt den Schlüssel, mit dem Laravel Cookies und verschlüsselte Werte schützt.<\/p> <p><strong>Artisan<\/strong> ist das Kommandozeilenwerkzeug: <code>make:model<\/code>, <code>make:controller<\/code>, <code>migrate<\/code>, <code>route:list<\/code>, <code>tinker<\/code> (interaktive Shell mit geladener App) und viele mehr. <code>php artisan list<\/code> zeigt alle.<\/p>",
-   "code": "# Neues Projekt\ncomposer create-project laravel/laravel shop\ncd shop\nphp artisan serve                 # http://127.0.0.1:8000\n\n# Code-Geruest erzeugen\nphp artisan make:model Produkt -mfc   # Model + Migration + Factory + Controller\nphp artisan migrate\nphp artisan route:list\n\n# Interaktiv mit der App arbeiten\nphp artisan tinker\n>>> App\\Models\\User::count();\n>>> config('app.name');",
-   "codeLang": "Bash",
-   "tip": "Eine Regel, die viele erst in Produktion lernen: Rufe <code>env()<\/code> <strong>nur in Dateien unter <code>config/<\/code><\/strong> auf und nutze im übrigen Code <code>config('…')<\/code>. Nach <code>php artisan config:cache<\/code> liest Laravel die <code>.env<\/code> nicht mehr, und jedes <code>env()<\/code> außerhalb der Config liefert dann <code>null<\/code>.",
-   "quiz": [
-    {
-     "q": "Welches Verzeichnis muss der Webserver als Document Root ausliefern?",
-     "options": [
-      "public/",
-      "app/",
-      "Das Projektverzeichnis"
-     ],
-     "correct": 0,
-     "explain": "Alles andere – inklusive .env und vendor – darf von außen nicht erreichbar sein."
-    },
-    {
-     "q": "Warum wird die .env-Datei nicht ins Repository eingecheckt?",
-     "options": [
-      "Weil sie zu groß ist",
-      "Weil sie Geheimnisse und umgebungsspezifische Werte enthält",
-      "Weil Git keine Dateien mit Punkt erlaubt"
-     ],
-     "correct": 1,
-     "explain": "Ins Repository gehört nur .env.example mit Platzhaltern."
-    },
-    {
-     "q": "Wo darfst du env() bedenkenlos aufrufen?",
-     "options": [
-      "Nur in Konfigurationsdateien unter config/",
-      "Überall",
-      "Nur in Controllern"
-     ],
-     "correct": 0,
-     "explain": "Nach config:cache liefert env() außerhalb der Config null."
-    }
-   ]
-  },
-  {
-   "id": "m45-l2",
-   "title": "Request-Lebenszyklus und Routing",
-   "minutes": 12,
-   "body": "<p>Jeder Request läuft durch dieselbe Kette:<\/p> <ul><li><code>public/index.php<\/code> lädt den Autoloader und <code>bootstrap/app.php<\/code>.<\/li> <li>Die Anwendung startet, alle <strong>Service Provider<\/strong> registrieren ihre Dienste.<\/li> <li>Der Request passiert die globale <strong>Middleware<\/strong> (Session, CSRF, Wartungsmodus …).<\/li> <li>Der <strong>Router<\/strong> sucht die passende Route und führt deren Middleware aus.<\/li> <li><strong>Controller<\/strong> oder Closure erzeugen eine <strong>Response<\/strong>, die rückwärts durch die Middleware zum Client geht.<\/li><\/ul> <p>Routen definierst du in <code>routes/web.php<\/code>. Wichtige Bausteine:<\/p> <ul><li><strong>Parameter<\/strong>: <code>/produkte/{produkt}<\/code>, optional mit <code>{seite?}<\/code>.<\/li> <li><strong>Route Model Binding<\/strong>: Heißt der Parameter wie ein typisiertes Model-Argument, lädt Laravel den Datensatz automatisch und liefert 404, wenn es ihn nicht gibt.<\/li> <li><strong>Benannte Routen<\/strong>: <code>-&gt;name('produkte.show')<\/code> und <code>route('produkte.show', $p)<\/code> – URLs nie hart in Templates schreiben.<\/li> <li><strong>Gruppen<\/strong> bündeln Präfix, Middleware und Namen.<\/li> <li><strong>Resource-Routen<\/strong>: <code>Route::resource('produkte', …)<\/code> erzeugt die sieben REST-Routen index, create, store, show, edit, update und destroy.<\/li><\/ul>",
-   "code": "<?php\n// routes/web.php\nuse App\\Http\\Controllers\\ProduktController;\nuse App\\Models\\Produkt;\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::get('/', fn () => view('start'))->name('start');\n\n// Route Model Binding: {produkt} -> Produkt $produkt, 404 falls nicht vorhanden\nRoute::get('/produkte/{produkt}', [ProduktController::class, 'show'])\n    ->name('produkte.show');\n\n// Binding ueber eine andere Spalte als id\nRoute::get('/p/{produkt:slug}', [ProduktController::class, 'show']);\n\nRoute::middleware('auth')->prefix('admin')->name('admin.')->group(function () {\n    Route::resource('produkte', ProduktController::class)->except(['show']);\n    // admin.produkte.index, admin.produkte.store, ...\n});\n\n// Fallback fuer alles, was nicht passt\nRoute::fallback(fn () => response()->view('errors.404', status: 404));",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>php artisan route:list<\/code> ist dein bester Freund bei „Warum landet der Request hier?“. Die Reihenfolge in der Routendatei zählt: Steht <code>/produkte/{produkt}<\/code> vor <code>/produkte/neu<\/code>, wird „neu“ als Produkt-ID interpretiert und du bekommst eine 404. Feste Pfade gehören vor Pfade mit Parametern.",
-   "quiz": [
-    {
-     "q": "Was macht Route Model Binding bei einer nicht existierenden ID?",
-     "options": [
-      "Es liefert automatisch eine 404-Antwort",
-      "Es legt einen neuen Datensatz an",
-      "Es übergibt null an den Controller"
-     ],
-     "correct": 0,
-     "explain": "Intern entspricht es findOrFail() – du musst den Fall nicht selbst behandeln."
-    },
-    {
-     "q": "Wie viele Routen erzeugt Route::resource() standardmäßig?",
-     "options": [
-      "4",
-      "5",
-      "7"
-     ],
-     "correct": 2,
-     "explain": "index, create, store, show, edit, update, destroy. Route::apiResource() lässt create und edit weg."
-    },
-    {
-     "q": "Warum verwendet man benannte Routen?",
-     "options": [
-      "Sie sind für Middleware nötig",
-      "Sie sind schneller",
-      "URLs lassen sich ändern, ohne jede Stelle im Code anzupassen"
-     ],
-     "correct": 2,
-     "explain": "route(\"produkte.show\", $p) bleibt gültig, auch wenn der Pfad sich ändert."
-    }
-   ]
-  },
-  {
-   "id": "m45-l3",
-   "title": "Controller und Blade-Templates",
-   "minutes": 13,
-   "body": "<p><strong>Controller<\/strong> nehmen den Request entgegen, rufen die Geschäftslogik auf und geben eine Antwort zurück. Sie sollten <em>dünn<\/em> bleiben – Logik, die mehr als ein paar Zeilen hat, gehört in eigene Klassen (dazu mehr im Expertenteil).<\/p> <p><strong>Blade<\/strong> ist die Template-Sprache von Laravel. Templates liegen in <code>resources/views<\/code> und enden auf <code>.blade.php<\/code>. Sie werden zu reinem PHP kompiliert und gecacht.<\/p> <table class=\"lesson-table\"><tr><th>Syntax<\/th><th>Bedeutung<\/th><\/tr> <tr><td><code>{{ $x }}<\/code><\/td><td>Ausgabe, <strong>automatisch HTML-kodiert<\/strong><\/td><\/tr> <tr><td><code>{!! $x !!}<\/code><\/td><td>Ausgabe <em>ohne<\/em> Kodierung – nur für vertrauenswürdiges HTML<\/td><\/tr> <tr><td><code>@if<\/code>, <code>@foreach<\/code>, <code>@forelse … @empty<\/code><\/td><td>Kontrollstrukturen<\/td><\/tr> <tr><td><code>&lt;x-layout&gt;<\/code> … <code>{{ $slot }}<\/code><\/td><td>Komponenten mit Slots<\/td><\/tr> <tr><td><code>@csrf<\/code>, <code>@method('PUT')<\/code><\/td><td>CSRF-Token, Methoden-Spoofing in Formularen<\/td><\/tr> <tr><td><code>@auth<\/code>, <code>@can('update', $p)<\/code><\/td><td>Anzeige je nach Login und Berechtigung<\/td><\/tr><\/table> <p>Layouts baust du heute mit <strong>Komponenten<\/strong>: Eine Datei <code>resources/views/components/layout.blade.php<\/code> wird als <code>&lt;x-layout&gt;<\/code> verwendet. Benannte Slots (<code>&lt;x-slot:titel&gt;<\/code>) füllen weitere Bereiche. Die ältere Variante mit <code>@extends<\/code> und <code>@section<\/code> funktioniert weiter und begegnet dir in vielen Projekten.<\/p>",
-   "code": "<?php\n// app/Http/Controllers/ProduktController.php\nnamespace App\\Http\\Controllers;\n\nuse App\\Models\\Produkt;\nuse Illuminate\\View\\View;\n\nclass ProduktController extends Controller\n{\n    public function index(): View\n    {\n        $produkte = Produkt::query()\n            ->where('aktiv', true)\n            ->orderBy('name')\n            ->paginate(20);\n\n        return view('produkte.index', ['produkte' => $produkte]);\n    }\n\n    public function show(Produkt $produkt): View\n    {\n        return view('produkte.show', compact('produkt'));\n    }\n}",
-   "codeLang": "PHP · Laravel",
-   "code2": "{{-- resources/views/produkte/index.blade.php --}}\n<x-layout>\n    <x-slot:titel>Produkte<\/x-slot:titel>\n\n    @forelse ($produkte as $produkt)\n        <article>\n            <h2>\n                <a href=\"{{ route('produkte.show', $produkt) }}\">{{ $produkt->name }}<\/a>\n            <\/h2>\n            <p>{{ number_format($produkt->preis_cent / 100, 2, ',', '.') }} EUR<\/p>\n\n            @can('update', $produkt)\n                <a href=\"{{ route('admin.produkte.edit', $produkt) }}\">Bearbeiten<\/a>\n            @endcan\n        <\/article>\n    @empty\n        <p>Keine Produkte gefunden.<\/p>\n    @endforelse\n\n    {{ $produkte->links() }}\n<\/x-layout>",
-   "code2Lang": "Blade",
-   "tip": "Jede Verwendung von <code>{!! !!}<\/code> ist in einem Code-Review eine Rückfrage wert. Muss Benutzer-HTML angezeigt werden (etwa aus einem Rich-Text-Editor), wird es vorher mit einem HTML-Purifier gereinigt. Sonst ist die automatische Kodierung von Blade umgangen, und du hast wieder XSS.",
-   "quiz": [
-    {
-     "q": "Was unterscheidet {{ $x }} von {!! $x !!} in Blade?",
-     "options": [
-      "{!! !!} ist schneller, sonst gleich",
-      "{{ }} funktioniert nur mit Strings",
-      "{{ }} kodiert HTML-Sonderzeichen, {!! !!} gibt den Wert roh aus"
-     ],
-     "correct": 2,
-     "explain": "Roh ausgegebene Benutzereingaben führen zu Cross-Site-Scripting."
-    },
-    {
-     "q": "Wozu dient @method(\"PUT\") in einem Formular?",
-     "options": [
-      "Es ändert die Sendemethode des Browsers",
-      "HTML-Formulare kennen nur GET und POST, ein verstecktes Feld teilt Laravel die eigentliche Methode mit",
-      "Es aktiviert den CSRF-Schutz"
-     ],
-     "correct": 1,
-     "explain": "Laravel liest das Feld _method und routet den POST als PUT."
-    },
-    {
-     "q": "Wie viel Logik gehört in einen Controller?",
-     "options": [
-      "Gar keine, Controller sind optional",
-      "Möglichst viel, damit alles an einer Stelle steht",
-      "Wenig – Request annehmen, Logik aufrufen, Antwort liefern"
-     ],
-     "correct": 2,
-     "explain": "Dünne Controller machen Logik wiederverwendbar (z. B. in Jobs, Commands, API) und testbar."
-    }
-   ]
+  if(note){ note.className = 'ue-note'; note.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    delete ue.erg[exId];
+    ue.fehler[exId] = ueFehlertext('not_granted');
+    ueErgZeichnen(exId);
+    var p = document.getElementById('prompt_' + exId);
+    if(p) p.hidden = false;
+    return;
   }
- ]
-});
-MODULES.push({
- "id": "m46",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Datenbank mit Eloquent",
- "lessons": [
-  {
-   "id": "m46-l1",
-   "title": "Migrationen, Factories und Seeder",
-   "minutes": 12,
-   "body": "<p><strong>Migrationen<\/strong> sind versionierte Änderungen am Datenbankschema – Git für die Tabellenstruktur. Jede Migration hat <code>up()<\/code> (ausführen) und <code>down()<\/code> (rückgängig machen). Laravel merkt sich in der Tabelle <code>migrations<\/code>, welche schon gelaufen sind.<\/p> <ul><li><code>php artisan make:migration create_produkte_table<\/code> legt eine neue an.<\/li> <li><code>php artisan migrate<\/code> führt alle offenen aus, <code>migrate:rollback<\/code> nimmt den letzten Stapel zurück.<\/li> <li><code>migrate:fresh --seed<\/code> löscht alles und baut neu auf – <em>nur lokal<\/em>.<\/li><\/ul> <p>Die wichtigste Regel im Team: <strong>Eine Migration, die schon auf einem Server lief, wird nie mehr geändert.<\/strong> Änderungen kommen als neue Migration dazu. Sonst laufen die Datenbanken der Kollegen und die Produktion auseinander.<\/p> <p><strong>Factories<\/strong> erzeugen Testdaten mit Faker, <strong>Seeder<\/strong> füllen die Datenbank damit. Factories kennen Zustände (<code>-&gt;state()<\/code>) und Beziehungen (<code>-&gt;for($user)<\/code>, <code>-&gt;has(…)<\/code>). Sie sind später auch das Rückgrat jedes Tests.<\/p> <p>Denke beim Schema an <strong>Fremdschlüssel<\/strong> mit Löschregel (<code>cascadeOnDelete<\/code>, <code>nullOnDelete<\/code>) und an <strong>Indizes<\/strong> auf Spalten, nach denen du filterst oder sortierst.<\/p>",
-   "code": "<?php\n// database/migrations/2026_10_08_120000_create_produkte_table.php\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nreturn new class extends Migration\n{\n    public function up(): void\n    {\n        Schema::create('produkte', function (Blueprint $table) {\n            $table->id();\n            $table->foreignId('kategorie_id')->constrained('kategorien')->cascadeOnDelete();\n            $table->string('name');\n            $table->string('slug')->unique();\n            $table->unsignedInteger('preis_cent');\n            $table->string('status')->default('entwurf')->index();\n            $table->boolean('aktiv')->default(true);\n            $table->timestamp('veroeffentlicht_am')->nullable();\n            $table->timestamps();      // created_at, updated_at\n            $table->softDeletes();     // deleted_at\n        });\n    }\n\n    public function down(): void\n    {\n        Schema::dropIfExists('produkte');\n    }\n};",
-   "codeLang": "PHP · Migration",
-   "code2": "<?php\n// database/factories/ProduktFactory.php\nnamespace Database\\Factories;\n\nuse App\\Models\\Kategorie;\nuse Illuminate\\Database\\Eloquent\\Factories\\Factory;\nuse Illuminate\\Support\\Str;\n\nclass ProduktFactory extends Factory\n{\n    public function definition(): array\n    {\n        $name = fake()->unique()->words(3, true);\n\n        return [\n            'kategorie_id' => Kategorie::factory(),\n            'name'         => $name,\n            'slug'         => Str::slug($name),\n            'preis_cent'   => fake()->numberBetween(199, 99900),\n            'aktiv'        => true,\n        ];\n    }\n\n    public function inaktiv(): static\n    {\n        return $this->state(fn () => ['aktiv' => false]);\n    }\n}\n\n// Verwendung:  Produkt::factory()->count(50)->inaktiv()->create();",
-   "code2Lang": "PHP · Factory",
-   "tip": "Achte darauf, dass <code>down()<\/code> wirklich funktioniert, und probiere es lokal einmal aus. Bei großen Tabellen in Produktion gilt außerdem: Ein neuer Index oder eine Spaltenänderung kann die Tabelle für Minuten sperren. Solche Migrationen plant man in ruhigen Zeiten oder mit Online-Schema-Werkzeugen.",
-   "quiz": [
-    {
-     "q": "Eine Migration ist bereits in Produktion gelaufen und enthält einen Fehler. Was tust du?",
-     "options": [
-      "Eine neue Migration schreiben, die den Fehler behebt",
-      "migrate:fresh in Produktion ausführen",
-      "Die Migration korrigieren und erneut ausführen"
-     ],
-     "correct": 0,
-     "explain": "Gelaufene Migrationen bleiben unverändert – sonst laufen die Umgebungen auseinander."
-    },
-    {
-     "q": "Was bewirkt ->constrained()->cascadeOnDelete() an einer foreignId-Spalte?",
-     "options": [
-      "Ein Fremdschlüssel; wird der Elterndatensatz gelöscht, werden die Kinder mitgelöscht",
-      "Die Spalte darf nicht null sein",
-      "Es wird ein Index ohne Fremdschlüssel angelegt"
-     ],
-     "correct": 0,
-     "explain": "Die Alternative nullOnDelete() setzt die Spalte stattdessen auf null."
-    },
-    {
-     "q": "Wofür werden Factories vor allem eingesetzt?",
-     "options": [
-      "Für Datenbank-Backups",
-      "Für Produktionsdaten",
-      "Für Test- und Beispieldaten in Tests und Seedern"
-     ],
-     "correct": 2,
-     "explain": "In Tests erzeugt Produkt::factory()->create() in einer Zeile einen gültigen Datensatz."
+
+  ue.busy[exId] = true;
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueKnopfStand(exId);
+  ueErgZeichnen(exId);
+
+  var max = KL_PUNKTE[ex.level] || 8;
+  var anweisung = [
+    'Du bist Korrektor der IHK-Abschlusspruefung Teil 1 im Beruf Fachinformatiker fuer',
+    'Anwendungsentwicklung. Bewerte die Loesung eines Prueflings zu EINER Aufgabe.',
+    '',
+    'BEWERTUNGSREGELN:',
+    '- Bewerte streng, aber fair, so wie ein echter Korrektor.',
+    '- Der RECHENWEG zaehlt: Teilpunkte fuer richtige Ansaetze, auch wenn das Endergebnis falsch ist.',
+    '- Ein richtiges Ergebnis ohne nachvollziehbaren Weg bekommt nicht die volle Punktzahl.',
+    '- Einheiten, Rundungen und ausformulierte Begruendungen gehoeren dazu.',
+    '- Die Musterloesung ist nicht der einzige Weg: ein anderer, fachlich richtiger Weg ist voll zu werten.',
+    '- Eine leere oder themenfremde Antwort bekommt 0 Punkte.',
+    '- Erfinde keine Paragraphen, Normen, Zahlen oder Fristen.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau dieser Form:',
+    '{"punkte": 6, "max": ' + max + ', "urteil": "ein Halbsatz, z. B. im Kern richtig, Einheit fehlt",',
+    ' "staerken": "ein bis zwei Saetze, was richtig war",',
+    ' "luecken": "ein bis drei Saetze, was fehlt oder falsch ist",',
+    ' "tipp": "ein Satz, worauf der Pruefling beim naechsten Mal achten soll"}',
+    'Auf Deutsch, mit Du-Anrede. Kein Text vor oder nach dem JSON.',
+    '',
+    'AUFGABE (' + max + ' Punkte, Thema: ' + ex.topic + ', Stufe: ' + (LEVEL_NAMES[ex.level] || '') + ')',
+    ex.title,
+    klText(ex.task).slice(0, 1600),
+    '',
+    'MUSTERLOESUNG:',
+    String(ex.solution || '').slice(0, 2400),
+    '',
+    'HINWEIS ZUR BEWERTUNG:',
+    klText(ex.solutionNote || '').slice(0, 800),
+    '',
+    'ANTWORT DES PRUEFLINGS:',
+    text.slice(0, 2400)
+  ].join('\n');
+
+  try{
+    var r = await kiJson(anweisung, 'complex');
+    if(Array.isArray(r)) r = r[0];
+    if(!r || typeof r !== 'object') throw { code:'invalid_json' };
+    var punkte = Math.max(0, Math.min(max, Math.round(Number(r.punkte) || 0)));
+    ue.erg[exId] = {
+      punkte: punkte,
+      max: max,
+      urteil: String(r.urteil || ''),
+      staerken: String(r.staerken || ''),
+      luecken: String(r.luecken || ''),
+      tipp: String(r.tipp || '')
+    };
+    awardXp(10, 'Lösung prüfen lassen', 'uepruef:' + exId);
+    state.tutorFragen = (state.tutorFragen || 0) + 1;
+    if(state.tutorFragen >= 1) grantBadge('tutor_fan');
+    if(state.tutorFragen >= 25) grantBadge('tutor_profi');
+    if(punkte >= max * 0.8 && !state.solved[exId]){
+      state.solved[exId] = Date.now();
+      awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + exId);
+      checkMilestones();
+      ueGeloestAnzeigen(exId);
     }
-   ]
-  },
-  {
-   "id": "m46-l2",
-   "title": "Eloquent-Models und CRUD",
-   "minutes": 12,
-   "body": "<p><strong>Eloquent<\/strong> ist das ORM von Laravel nach dem <strong>Active-Record<\/strong>-Muster: Jede Model-Klasse steht für eine Tabelle, jedes Objekt für eine Zeile. Die Konventionen ersparen Konfiguration – Model <code>Produkt<\/code> sucht die Tabelle <code>produkts<\/code> (englische Pluralregel!). Bei deutschen Namen setzt du deshalb <code>protected $table = 'produkte';<\/code>.<\/p> <p><strong>Mass Assignment<\/strong>: <code>Produkt::create($request-&gt;all())<\/code> würde jedes Feld übernehmen, das ein Angreifer mitschickt – etwa <code>ist_admin<\/code>. Deshalb verlangt Eloquent eine Erlaubnisliste in <code>$fillable<\/code> (oder eine Sperrliste in <code>$guarded<\/code>). Am sichersten ist <code>$request-&gt;validated()<\/code>.<\/p> <p>Mit <strong>Casts<\/strong> wandelt Eloquent Spaltenwerte automatisch: in <code>bool<\/code>, <code>datetime<\/code> (Carbon-Objekt), <code>array<\/code> (JSON-Spalte), <code>encrypted<\/code> oder in ein Enum. Seit Laravel 11 schreibt man sie als Methode <code>casts()<\/code>.<\/p> <table class=\"lesson-table\"><tr><th>Methode<\/th><th>Ergebnis<\/th><\/tr> <tr><td><code>find($id)<\/code><\/td><td>Model oder null<\/td><\/tr> <tr><td><code>findOrFail($id)<\/code><\/td><td>Model oder 404 (ModelNotFoundException)<\/td><\/tr> <tr><td><code>where(…)-&gt;get()<\/code><\/td><td>Collection<\/td><\/tr> <tr><td><code>where(…)-&gt;first()<\/code><\/td><td>erstes Model oder null<\/td><\/tr> <tr><td><code>create([...])<\/code><\/td><td>neues Model, gespeichert<\/td><\/tr> <tr><td><code>updateOrCreate([...], [...])<\/code><\/td><td>Upsert anhand der ersten Bedingung<\/td><\/tr> <tr><td><code>$model-&gt;update([...])<\/code>, <code>-&gt;delete()<\/code><\/td><td>ändern, löschen (bei SoftDeletes nur markieren)<\/td><\/tr><\/table> <p><strong>Scopes<\/strong> kapseln wiederkehrende Bedingungen. <strong>Accessors<\/strong> berechnen Attribute wie <code>$produkt-&gt;preis_formatiert<\/code>.<\/p>",
-   "code": "<?php\n// app/Models/Produkt.php\nnamespace App\\Models;\n\nuse App\\Enums\\ProduktStatus;\nuse Illuminate\\Database\\Eloquent\\Builder;\nuse Illuminate\\Database\\Eloquent\\Casts\\Attribute;\nuse Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\nuse Illuminate\\Database\\Eloquent\\Model;\nuse Illuminate\\Database\\Eloquent\\SoftDeletes;\n\nclass Produkt extends Model\n{\n    use HasFactory, SoftDeletes;\n\n    protected $table = 'produkte';\n\n    protected $fillable = ['kategorie_id', 'name', 'slug', 'preis_cent', 'status', 'aktiv'];\n\n    protected function casts(): array\n    {\n        return [\n            'aktiv'              => 'boolean',\n            'status'             => ProduktStatus::class,   // Backed Enum\n            'veroeffentlicht_am' => 'datetime',\n        ];\n    }\n\n    // Scope: Produkt::aktiv()->get()\n    public function scopeAktiv(Builder $query): void\n    {\n        $query->where('aktiv', true)->whereNotNull('veroeffentlicht_am');\n    }\n\n    // Accessor: $produkt->preis_formatiert\n    protected function preisFormatiert(): Attribute\n    {\n        return Attribute::get(fn () => number_format($this->preis_cent / 100, 2, ',', '.') . ' EUR');\n    }\n}\n\n// Verwendung\n$p = Produkt::create(['name' => 'Kabel', 'slug' => 'kabel', 'preis_cent' => 999, 'kategorie_id' => 1]);\n$p->update(['preis_cent' => 899]);\n$guenstig = Produkt::aktiv()->where('preis_cent', '<', 1000)->orderBy('name')->get();",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>Produkt::all()<\/code> lädt die komplette Tabelle in den Speicher. Bei 200 Datensätzen egal, bei 2 Millionen stürzt der Prozess ab. Gewöhne dir an, immer gezielt mit <code>where<\/code>, <code>paginate<\/code> oder <code>chunkById<\/code> zu arbeiten – auch wenn die Tabelle heute noch klein ist.",
-   "quiz": [
-    {
-     "q": "Wovor schützt $fillable?",
-     "options": [
-      "Vor Mass Assignment – nur freigegebene Felder werden per create/update übernommen",
-      "Vor dem Löschen von Datensätzen",
-      "Vor SQL-Injection"
-     ],
-     "correct": 0,
-     "explain": "Ohne diese Liste könnte ein Angreifer z. B. ist_admin=1 mitschicken."
-    },
-    {
-     "q": "Was liefert Produkt::where(\"aktiv\", true)->get()?",
-     "options": [
-      "Ein einzelnes Model",
-      "Eine Collection von Models",
-      "Ein Array von Arrays"
-     ],
-     "correct": 1,
-     "explain": "first() liefert ein einzelnes Model oder null."
-    },
-    {
-     "q": "Was passiert bei $produkt->delete(), wenn das Model den Trait SoftDeletes nutzt?",
-     "options": [
-      "Es wird eine Exception geworfen",
-      "Die Zeile wird gelöscht",
-      "deleted_at wird gesetzt; normale Abfragen blenden die Zeile aus"
-     ],
-     "correct": 2,
-     "explain": "Mit withTrashed() siehst du sie wieder, mit forceDelete() wird sie wirklich gelöscht."
-    }
-   ]
-  },
-  {
-   "id": "m46-l3",
-   "title": "Beziehungen zwischen Models",
-   "minutes": 12,
-   "body": "<p>Beziehungen sind Methoden am Model, die einen Relation-Typ zurückgeben. Sie spiegeln die Kardinalitäten aus dem ER-Modell:<\/p> <table class=\"lesson-table\"><tr><th>Kardinalität<\/th><th>Seite mit Fremdschlüssel<\/th><th>Gegenseite<\/th><\/tr> <tr><td>1:1<\/td><td><code>belongsTo<\/code><\/td><td><code>hasOne<\/code><\/td><\/tr> <tr><td>1:n<\/td><td><code>belongsTo<\/code> (z. B. Bestellung → Kunde)<\/td><td><code>hasMany<\/code> (Kunde → Bestellungen)<\/td><\/tr> <tr><td>n:m<\/td><td>Zwischentabelle<\/td><td><code>belongsToMany<\/code> auf beiden Seiten<\/td><\/tr> <tr><td>1:n über Zwischenmodell<\/td><td>–<\/td><td><code>hasManyThrough<\/code><\/td><\/tr> <tr><td>an verschiedene Models<\/td><td><code>morphTo<\/code><\/td><td><code>morphMany<\/code> (z. B. Kommentare an Produkt und Beitrag)<\/td><\/tr><\/table> <p>Der Unterschied zwischen Methode und Eigenschaft ist wichtig:<\/p> <ul><li><code>$kunde-&gt;bestellungen()<\/code> (Methode) liefert einen <strong>Query Builder<\/strong> – du kannst weiter filtern.<\/li> <li><code>$kunde-&gt;bestellungen<\/code> (Eigenschaft) lädt die Daten und liefert eine <strong>Collection<\/strong>.<\/li><\/ul> <p>Bei n:m verwaltest du die Zwischentabelle mit <code>attach()<\/code>, <code>detach()<\/code> und <code>sync()<\/code>. Zusätzliche Spalten der Zwischentabelle (Menge, Preis zum Zeitpunkt) holst du mit <code>withPivot()<\/code>.<\/p>",
-   "code": "<?php\nclass Kunde extends Model\n{\n    public function bestellungen(): HasMany\n    {\n        return $this->hasMany(Bestellung::class);\n    }\n}\n\nclass Bestellung extends Model\n{\n    public function kunde(): BelongsTo\n    {\n        return $this->belongsTo(Kunde::class);\n    }\n\n    public function produkte(): BelongsToMany\n    {\n        return $this->belongsToMany(Produkt::class, 'bestellung_produkt')\n            ->withPivot(['menge', 'preis_cent'])\n            ->withTimestamps();\n    }\n}\n\n// Verwendung\n$kunde = Kunde::findOrFail(7);\n\n$offene = $kunde->bestellungen()->where('status', 'offen')->latest()->get();  // Query\n$anzahl = $kunde->bestellungen->count();                                      // Collection\n\n$bestellung = $kunde->bestellungen()->create(['status' => 'offen']);   // setzt kunde_id\n$bestellung->produkte()->attach($produkt->id, ['menge' => 2, 'preis_cent' => $produkt->preis_cent]);\n\nforeach ($bestellung->produkte as $p) {\n    echo \"{$p->name}: {$p->pivot->menge} Stueck\\n\";\n}\n\n$bestellung->produkte()->sync([3 => ['menge' => 1], 5 => ['menge' => 4]]);  // genau diese",
-   "codeLang": "PHP · Laravel",
-   "tip": "Speichere in der Zwischentabelle einer Bestellung immer den Preis <em>zum Bestellzeitpunkt<\/em>. Ändert sich später der Produktpreis, darf sich eine alte Rechnung nicht mitändern. Das ist kein Laravel-Detail, sondern eine Frage des Datenmodells – in Code-Reviews und Prüfungen aber ein echter Pluspunkt.",
-   "quiz": [
-    {
-     "q": "Was liefert $kunde->bestellungen() mit Klammern?",
-     "options": [
-      "Einen Relation-/Query-Builder, auf dem weiter gefiltert werden kann",
-      "Die Anzahl der Bestellungen",
-      "Eine Collection der Bestellungen"
-     ],
-     "correct": 0,
-     "explain": "Ohne Klammern lädt Laravel die Daten und liefert eine Collection."
-    },
-    {
-     "q": "Welche Beziehung definiert das Model, in dessen Tabelle der Fremdschlüssel steht?",
-     "options": [
-      "hasMany",
-      "belongsTo",
-      "belongsToMany"
-     ],
-     "correct": 1,
-     "explain": "Die Bestellung hat die Spalte kunde_id – also gehört sie zu (belongsTo) einem Kunden."
-    },
-    {
-     "q": "Was bewirkt sync([3, 5]) auf einer belongsToMany-Beziehung?",
-     "options": [
-      "Entfernt 3 und 5",
-      "Fügt 3 und 5 hinzu, behält alle anderen",
-      "Danach sind genau 3 und 5 verknüpft, andere werden entfernt"
-     ],
-     "correct": 2,
-     "explain": "attach() fügt hinzu, detach() entfernt, sync() stellt einen exakten Zielzustand her."
-    }
-   ]
-  },
-  {
-   "id": "m46-l4",
-   "title": "N+1-Problem, Eager Loading und Query Builder",
-   "minutes": 13,
-   "body": "<p>Das <strong>N+1-Problem<\/strong> ist der häufigste Performance-Fehler in Laravel-Projekten:<\/p> <ul><li>1 Abfrage lädt 50 Bestellungen.<\/li> <li>In der Schleife löst <code>$bestellung-&gt;kunde-&gt;name<\/code> für <em>jede<\/em> Bestellung eine weitere Abfrage aus.<\/li> <li>Ergebnis: 51 Abfragen statt 2. Bei verschachtelten Beziehungen schnell Hunderte.<\/li><\/ul> <p>Die Lösung ist <strong>Eager Loading<\/strong> mit <code>with()<\/code>: Laravel lädt alle benötigten Kunden in <em>einer<\/em> zweiten Abfrage (<code>WHERE id IN (…)<\/code>) und verteilt sie auf die Bestellungen.<\/p> <table class=\"lesson-table\"><tr><th>Werkzeug<\/th><th>Zweck<\/th><\/tr> <tr><td><code>with('kunde', 'produkte')<\/code><\/td><td>Beziehungen vorab laden<\/td><\/tr> <tr><td><code>with('produkte:id,name')<\/code><\/td><td>nur bestimmte Spalten laden<\/td><\/tr> <tr><td><code>withCount('bestellungen')<\/code><\/td><td>Anzahl als <code>bestellungen_count<\/code>, ohne Models zu laden<\/td><\/tr> <tr><td><code>load('kunde')<\/code><\/td><td>nachträglich für eine schon geladene Collection<\/td><\/tr> <tr><td><code>Model::preventLazyLoading()<\/code><\/td><td>wirft bei vergessenem Eager Loading eine Exception<\/td><\/tr><\/table> <p>Für Auswertungen ist der <strong>Query Builder<\/strong> (<code>DB::table()<\/code>) oft besser als Eloquent: Er erzeugt keine Model-Objekte und ist dadurch bei großen Mengen viel sparsamer. Mehrere zusammengehörige Schreibvorgänge umschließt du mit <code>DB::transaction()<\/code>. Wirft die Closure, wird automatisch zurückgerollt.<\/p>",
-   "code": "<?php\n// FALSCH: 1 + N Abfragen\n$bestellungen = Bestellung::latest()->take(50)->get();\nforeach ($bestellungen as $b) {\n    echo $b->kunde->name;              // jedes Mal SELECT * FROM kunden WHERE id = ?\n}\n\n// RICHTIG: 2 Abfragen\n$bestellungen = Bestellung::with('kunde:id,name')\n    ->withCount('produkte')\n    ->latest()\n    ->take(50)\n    ->get();\n\n// app/Providers/AppServiceProvider.php - Lazy Loading lokal verbieten\npublic function boot(): void\n{\n    Model::preventLazyLoading(! $this->app->isProduction());\n}\n\n// Auswertung mit dem Query Builder - keine Model-Objekte\n$umsatzProMonat = DB::table('bestellungen')\n    ->selectRaw(\"DATE_FORMAT(created_at, '%Y-%m') AS monat, SUM(summe_cent) AS umsatz\")\n    ->where('status', 'bezahlt')\n    ->groupBy('monat')\n    ->orderBy('monat')\n    ->get();\n\n// Grosse Mengen in Haeppchen verarbeiten\nProdukt::where('aktiv', false)->chunkById(500, function ($produkte) {\n    foreach ($produkte as $p) { /* ... */ }\n});\n\n// Transaktion\nDB::transaction(function () use ($kunde, $warenkorb) {\n    $bestellung = $kunde->bestellungen()->create(['status' => 'offen']);\n    foreach ($warenkorb as $pos) {\n        $bestellung->produkte()->attach($pos['id'], ['menge' => $pos['menge']]);\n        Produkt::whereKey($pos['id'])->decrement('bestand', $pos['menge']);\n    }\n});",
-   "codeLang": "PHP · Laravel",
-   "tip": "Installiere lokal <strong>Laravel Debugbar<\/strong> oder nutze <strong>Telescope<\/strong>: Beide zeigen pro Seite die Zahl der Abfragen. Siehst du dieselbe Abfrage 50-mal mit unterschiedlicher ID, hast du ein N+1-Problem. Und <code>selectRaw<\/code> mit Variablen nur mit Platzhaltern (<code>?<\/code> und Bindings), sonst ist die SQL-Injection zurück.",
-   "quiz": [
-    {
-     "q": "Eine Liste mit 100 Beiträgen zeigt jeweils den Autor an und erzeugt 101 Abfragen. Was hilft?",
-     "options": [
-      "Eager Loading mit with(\"autor\")",
-      "Caching der Seite",
-      "Ein Index auf der Tabelle users"
-     ],
-     "correct": 0,
-     "explain": "Mit with() sind es 2 Abfragen. Ein Index macht die 100 Abfragen nur etwas schneller."
-    },
-    {
-     "q": "Was liefert withCount(\"kommentare\")?",
-     "options": [
-      "Alle Kommentare als Collection",
-      "Ein Attribut kommentare_count per Unterabfrage, ohne Kommentare zu laden",
-      "Die Gesamtzahl aller Kommentare in der Datenbank"
-     ],
-     "correct": 1,
-     "explain": "Ideal für Listen, die nur die Anzahl brauchen."
-    },
-    {
-     "q": "Was passiert in DB::transaction(), wenn die Closure eine Exception wirft?",
-     "options": [
-      "Die Exception wird verschluckt",
-      "Die Änderungen bleiben teilweise erhalten",
-      "Alle Änderungen werden zurückgerollt und die Exception wird weitergeworfen"
-     ],
-     "correct": 2,
-     "explain": "Genau deshalb ist DB::transaction() sicherer als manuelles beginTransaction/commit."
-    }
-   ]
+    saveProgress();
+  }catch(e){
+    ue.fehler[exId] = ueFehlertext(e && e.code);
+  }finally{
+    ue.busy[exId] = false;
+    ueKnopfStand(exId);
+    ueErgZeichnen(exId);
   }
- ]
-});
-MODULES.push({
- "id": "m47",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Validierung, Authentifizierung und Rechte",
- "lessons": [
-  {
-   "id": "m47-l1",
-   "title": "Validierung und Form Requests",
-   "minutes": 12,
-   "body": "<p>Laravel validiert Eingaben mit Regeln. <code>$request-&gt;validate([...])<\/code> prüft und liefert <strong>nur die validierten Felder<\/strong> zurück. Schlägt die Prüfung fehl, reagiert Laravel passend zur Anfrage:<\/p> <ul><li><strong>Browser-Formular<\/strong>: Redirect zurück, Fehler und alte Eingaben stehen in der Session (<code>@error<\/code>, <code>old()<\/code>).<\/li> <li><strong>JSON-Anfrage<\/strong> (Header <code>Accept: application/json<\/code>): Antwort <strong>422<\/strong> mit den Fehlern als JSON.<\/li><\/ul> <p>Häufige Regeln: <code>required<\/code>, <code>nullable<\/code>, <code>string<\/code>, <code>integer<\/code>, <code>email<\/code>, <code>max:255<\/code>, <code>min:8<\/code>, <code>in:a,b<\/code>, <code>unique:users,email<\/code>, <code>exists:kategorien,id<\/code>, <code>date<\/code>, <code>after:today<\/code>, <code>confirmed<\/code> (Feld plus <code>_confirmation<\/code>), <code>image<\/code>, <code>mimes:pdf,jpg<\/code>. Für Regeln mit Objekten gibt es Klassen wie <code>Rule::unique(…)-&gt;ignore($id)<\/code>, <code>Rule::enum(Status::class)<\/code> und <code>Password::min(12)<\/code>.<\/p> <p>Ab einer Handvoll Regeln lagerst du sie in einen <strong>Form Request<\/strong> aus (<code>php artisan make:request<\/code>). Er bündelt <code>authorize()<\/code> und <code>rules()<\/code> und wird einfach als Parametertyp in den Controller geschrieben – Laravel validiert, bevor deine Methode überhaupt läuft.<\/p>",
-   "code": "<?php\n// app/Http/Requests/ProduktSpeichernRequest.php\nnamespace App\\Http\\Requests;\n\nuse App\\Enums\\ProduktStatus;\nuse Illuminate\\Foundation\\Http\\FormRequest;\nuse Illuminate\\Validation\\Rule;\n\nclass ProduktSpeichernRequest extends FormRequest\n{\n    public function authorize(): bool\n    {\n        return $this->user()->can('create', \\App\\Models\\Produkt::class);\n    }\n\n    public function rules(): array\n    {\n        return [\n            'name'         => ['required', 'string', 'max:255'],\n            'slug'         => ['required', 'alpha_dash', Rule::unique('produkte', 'slug')->ignore($this->route('produkt'))],\n            'preis_cent'   => ['required', 'integer', 'min:0'],\n            'kategorie_id' => ['required', 'exists:kategorien,id'],\n            'status'       => ['required', Rule::enum(ProduktStatus::class)],\n            'bild'         => ['nullable', 'image', 'max:2048'],   // KB\n        ];\n    }\n\n    public function messages(): array\n    {\n        return ['slug.unique' => 'Diese URL ist schon vergeben.'];\n    }\n}\n\n// Controller - validiert ist es hier schon\npublic function store(ProduktSpeichernRequest $request): RedirectResponse\n{\n    $produkt = Produkt::create($request->validated());\n    return to_route('produkte.show', $produkt)->with('status', 'Gespeichert.');\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Verwende im Controller <code>$request-&gt;validated()<\/code> statt <code>$request-&gt;all()<\/code>. Dann landen nur Felder in der Datenbank, für die es eine Regel gibt – zusätzlich zu <code>$fillable<\/code> eine zweite Sicherung gegen Mass Assignment. Und Validierung im Frontend ist nur Komfort: Die Prüfung im Backend ist die einzige, die zählt.",
-   "quiz": [
-    {
-     "q": "Welchen HTTP-Status liefert eine fehlgeschlagene Validierung bei einer JSON-Anfrage?",
-     "options": [
-      "422",
-      "500",
-      "400"
-     ],
-     "correct": 0,
-     "explain": "422 Unprocessable Content – die Anfrage ist formal korrekt, die Daten aber ungültig."
-    },
-    {
-     "q": "Wann wird die Validierung eines Form Requests ausgeführt?",
-     "options": [
-      "Am Ende der Controller-Methode",
-      "Bevor die Controller-Methode aufgerufen wird",
-      "Erst beim Speichern des Models"
-     ],
-     "correct": 1,
-     "explain": "Ist sie fehlgeschlagen, wird die Controller-Methode gar nicht erst betreten."
-    },
-    {
-     "q": "Warum reicht eine Validierung im Browser (HTML5, JavaScript) nicht aus?",
-     "options": [
-      "Weil Laravel sie nicht erkennt",
-      "Weil sie langsamer ist",
-      "Weil ein Angreifer Requests direkt, ohne Browser, senden kann"
-     ],
-     "correct": 2,
-     "explain": "Clientseitige Prüfungen dienen nur der Bedienbarkeit."
-    }
-   ]
-  },
-  {
-   "id": "m47-l2",
-   "title": "Authentifizierung, Middleware und CSRF",
-   "minutes": 12,
-   "body": "<p>Laravel liefert die Bausteine für Login und Sessions mit. Fertige Oberflächen inklusive Registrierung, Passwort-Reset und E-Mail-Bestätigung bekommst du über die offiziellen <strong>Starter Kits<\/strong> (Livewire, React oder Vue). In älteren Projekten heißen sie <strong>Breeze<\/strong> oder <strong>Jetstream<\/strong>.<\/p> <ul><li><code>Auth::attempt($credentials)<\/code> prüft Zugangsdaten und loggt ein.<\/li> <li><code>auth()-&gt;user()<\/code> bzw. <code>$request-&gt;user()<\/code> liefert den eingeloggten Benutzer.<\/li> <li>Die Middleware <code>auth<\/code> schützt Routen, <code>guest<\/code> ist das Gegenstück, <code>verified<\/code> verlangt eine bestätigte E-Mail.<\/li><\/ul> <p><strong>Middleware<\/strong> sind Filter um den Request: Sie können ihn abweisen, verändern oder die Antwort anpassen. Eigene legst du mit <code>make:middleware<\/code> an und registrierst sie in <code>bootstrap/app.php<\/code>.<\/p> <p><strong>CSRF<\/strong> (Cross-Site Request Forgery): Eine fremde Seite bringt den Browser des eingeloggten Opfers dazu, ein Formular an deine Anwendung zu senden. Der Browser schickt das Session-Cookie mit. Laravel verlangt deshalb bei jedem POST, PUT, PATCH und DELETE ein geheimes Token, das nur deine eigenen Seiten kennen. In Blade-Formularen genügt <code>@csrf<\/code>. Webhooks von Zahlungsanbietern nimmst du gezielt aus und prüfst stattdessen deren Signatur.<\/p>",
-   "code": "<?php\n// app/Http/Middleware/NurAdmins.php\nnamespace App\\Http\\Middleware;\n\nuse Closure;\nuse Illuminate\\Http\\Request;\nuse Symfony\\Component\\HttpFoundation\\Response;\n\nclass NurAdmins\n{\n    public function handle(Request $request, Closure $next): Response\n    {\n        if (! $request->user()?->ist_admin) {\n            abort(403);\n        }\n        return $next($request);          // weiter zur naechsten Schicht\n    }\n}\n\n// bootstrap/app.php\n->withMiddleware(function (Middleware $middleware) {\n    $middleware->alias(['admin' => \\App\\Http\\Middleware\\NurAdmins::class]);\n    $middleware->validateCsrfTokens(except: ['webhooks/stripe']);\n})\n\n// routes/web.php\nRoute::middleware(['auth', 'verified', 'admin'])->group(function () {\n    Route::get('/admin', AdminDashboardController::class);\n});\n\n// Login von Hand (die Starter Kits machen das fuer dich)\nif (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {\n    $request->session()->regenerate();\n    return redirect()->intended('/dashboard');\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Beachte <code>$request-&gt;session()-&gt;regenerate()<\/code> nach dem Login – das ist das Laravel-Gegenstück zu <code>session_regenerate_id()<\/code> aus dem PHP-Grundlagenmodul. Und <code>redirect()-&gt;intended()<\/code> schickt den Benutzer dorthin zurück, wo er vor dem Login-Zwang hinwollte.",
-   "quiz": [
-    {
-     "q": "Was tut eine Middleware, die $next($request) aufruft?",
-     "options": [
-      "Sie reicht den Request an die nächste Schicht bzw. den Controller weiter",
-      "Sie leitet auf die Startseite um",
-      "Sie bricht den Request ab"
-     ],
-     "correct": 0,
-     "explain": "Code vor $next läuft auf dem Hinweg, Code danach kann die Response bearbeiten."
-    },
-    {
-     "q": "Warum braucht ein POST-Formular in Laravel @csrf?",
-     "options": [
-      "Für die Validierung",
-      "Als Schutz gegen gefälschte Anfragen von fremden Seiten",
-      "Damit das Formular schneller ist"
-     ],
-     "correct": 1,
-     "explain": "Ohne gültiges Token antwortet Laravel mit 419 Page Expired."
-    },
-    {
-     "q": "Welche Middleware schützt Routen vor nicht eingeloggten Benutzern?",
-     "options": [
-      "throttle",
-      "guest",
-      "auth"
-     ],
-     "correct": 2,
-     "explain": "guest erlaubt nur nicht eingeloggte Benutzer, z. B. für die Login-Seite."
-    }
-   ]
-  },
-  {
-   "id": "m47-l3",
-   "title": "Autorisierung mit Gates und Policies",
-   "minutes": 11,
-   "body": "<p>Authentifizierung beantwortet „Wer bist du?“, <strong>Autorisierung<\/strong> „Darfst du das?“. Die häufigste Lücke in Webanwendungen (OWASP-Platz 1, <em>Broken Access Control<\/em>) ist eine fehlende Prüfung: Wer <code>/rechnungen/4711<\/code> aufruft, sieht die Rechnung – auch wenn sie einem anderen Kunden gehört.<\/p> <p><strong>Policies<\/strong> bündeln die Regeln für ein Model in einer Klasse (<code>make:policy ProduktPolicy --model=Produkt<\/code>). Jede Methode bekommt den Benutzer und gegebenenfalls das Model und liefert <code>true<\/code> oder <code>false<\/code>. Laravel findet <code>ProduktPolicy<\/code> zu <code>Produkt<\/code> automatisch.<\/p> <table class=\"lesson-table\"><tr><th>Ort<\/th><th>Prüfung<\/th><\/tr> <tr><td>Controller<\/td><td><code>Gate::authorize('update', $produkt);<\/code> → 403 bei Ablehnung<\/td><\/tr> <tr><td>Route<\/td><td><code>-&gt;can('update', 'produkt')<\/code><\/td><\/tr> <tr><td>Form Request<\/td><td><code>authorize()<\/code> mit <code>$this-&gt;user()-&gt;can(…)<\/code><\/td><\/tr> <tr><td>Blade<\/td><td><code>@can('update', $produkt) … @endcan<\/code><\/td><\/tr> <tr><td>beliebig<\/td><td><code>$user-&gt;can('delete', $produkt)<\/code><\/td><\/tr><\/table> <p>Die Methode <code>before()<\/code> in einer Policy läuft vor allen anderen – praktisch für Administratoren. Für Prüfungen ohne Model (etwa „darf das Dashboard sehen“) gibt es <strong>Gates<\/strong> als einfache Closures.<\/p> <p>Ein Detail aus der Praxis: Bei fremden Datensätzen lieber <strong>404 statt 403<\/strong> liefern (<code>Response::denyAsNotFound()<\/code>). So verrät die Antwort nicht, dass Rechnung 4711 existiert.<\/p>",
-   "code": "<?php\n// app/Policies/BestellungPolicy.php\nnamespace App\\Policies;\n\nuse App\\Models\\Bestellung;\nuse App\\Models\\User;\nuse Illuminate\\Auth\\Access\\Response;\n\nclass BestellungPolicy\n{\n    public function before(User $user): ?bool\n    {\n        return $user->ist_admin ? true : null;   // null = normale Pruefung\n    }\n\n    public function view(User $user, Bestellung $bestellung): Response\n    {\n        return $user->id === $bestellung->kunde->user_id\n            ? Response::allow()\n            : Response::denyAsNotFound();\n    }\n\n    public function cancel(User $user, Bestellung $bestellung): bool\n    {\n        return $user->id === $bestellung->kunde->user_id\n            && $bestellung->status === BestellStatus::Offen;\n    }\n}\n\n// Controller\npublic function show(Bestellung $bestellung): View\n{\n    Gate::authorize('view', $bestellung);\n    return view('bestellungen.show', compact('bestellung'));\n}\n\n// Gate ohne Model - AppServiceProvider::boot()\nGate::define('berichte-sehen', fn (User $user) => $user->rolle === 'controlling');",
-   "codeLang": "PHP · Laravel",
-   "tip": "In Laravel 11 und neuer enthält der leere Basis-Controller den Trait <code>AuthorizesRequests<\/code> nicht mehr. <code>$this-&gt;authorize()<\/code> gibt es dort also nicht. Nimm <code>Gate::authorize()<\/code>, oder binde den Trait selbst ein. Und noch wichtiger: Schreibe zu jeder Policy einen Test, der prüft, dass ein <em>fremder<\/em> Benutzer abgewiesen wird.",
-   "quiz": [
-    {
-     "q": "Was ist der Unterschied zwischen Authentifizierung und Autorisierung?",
-     "options": [
-      "Authentifizierung prüft die Identität, Autorisierung die Berechtigung für eine Aktion",
-      "Autorisierung prüft das Passwort",
-      "Es gibt keinen"
-     ],
-     "correct": 0,
-     "explain": "Ein eingeloggter Benutzer ist authentifiziert – darf aber trotzdem nicht alles."
-    },
-    {
-     "q": "Was bewirkt eine before()-Methode in einer Policy, die true zurückgibt?",
-     "options": [
-      "Die Aktion wird erlaubt, ohne dass die eigentliche Policy-Methode läuft",
-      "Die Aktion wird verboten",
-      "Sie wird ignoriert"
-     ],
-     "correct": 0,
-     "explain": "null bedeutet: Entscheidung an die eigentliche Methode weitergeben."
-    },
-    {
-     "q": "Warum liefert man bei fremden Datensätzen manchmal 404 statt 403?",
-     "options": [
-      "Weil 403 in Laravel nicht unterstützt wird",
-      "404 ist schneller",
-      "Damit nicht verraten wird, dass der Datensatz existiert"
-     ],
-     "correct": 2,
-     "explain": "Mit 403 könnte ein Angreifer gültige IDs von ungültigen unterscheiden."
-    }
-   ]
+}
+function shuffled(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
   }
- ]
-});
-MODULES.push({
- "id": "m56",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Blade-Komponenten und Frontend",
- "lessons": [
-  {
-   "id": "m56-l1",
-   "title": "Blade-Komponenten bauen",
-   "minutes": 13,
-   "body": "<p>Komponenten sind wiederverwendbare Bausteine für Oberflächen: Buttons, Hinweisboxen, Formularfelder, Karten. Statt dasselbe HTML in zwanzig Views zu kopieren, schreibst du es einmal und nutzt es als <code>&lt;x-name&gt;<\/code>.<\/p> <table class=\"lesson-table\"><tr><th>Art<\/th><th>Datei<\/th><th>Wann<\/th><\/tr> <tr><td>anonyme Komponente<\/td><td>nur <code>resources/views/components/hinweis.blade.php<\/code><\/td><td>reine Darstellung, wenig Logik<\/td><\/tr> <tr><td>Klassen-Komponente<\/td><td>Klasse in <code>app/View/Components<\/code> plus View (<code>make:component<\/code>)<\/td><td>braucht Daten aus Services oder Berechnungen<\/td><\/tr><\/table> <p>In anonymen Komponenten deklarierst du die erwarteten Werte mit <code>@props<\/code>. Alle weiteren HTML-Attribute (zum Beispiel <code>class<\/code> oder <code>id<\/code>) landen im Objekt <code>$attributes<\/code>. Mit <code>$attributes-&gt;merge(['class' =&gt; '…'])<\/code> ergänzt du Standardklassen, ohne dass der Aufrufer sie überschreibt.<\/p> <p>Werte übergibst du als Attribut: <code>typ=\"warnung\"<\/code> übergibt den String „warnung“, <code>:anzahl=\"$offen\"<\/code> (mit Doppelpunkt) einen PHP-Ausdruck. Der Inhalt zwischen den Tags landet in <code>$slot<\/code>, weitere Bereiche in benannten Slots wie <code>&lt;x-slot:titel&gt;<\/code>.<\/p><div class=\"rb-probier\"><span class=\"rb-box-titel\">Probier es aus<\/span><p>Baue eine Komponente <code>&lt;x-preis :cent=\"1999\" /&gt;<\/code>, die „19,99 €“ ausgibt, und eine Komponente <code>&lt;x-karte&gt;<\/code> mit einem benannten Slot für den Titel.<\/p><\/div>",
-   "code": "{{-- resources/views/components/hinweis.blade.php --}}\n@props(['typ' => 'info', 'titel' => null])\n\n@php\n    $farben = [\n        'info'     => 'border-blue-500 bg-blue-50',\n        'erfolg'   => 'border-green-600 bg-green-50',\n        'warnung'  => 'border-amber-500 bg-amber-50',\n    ];\n@endphp\n\n<div {{ $attributes->merge(['class' => 'rounded border-l-4 p-4 ' . ($farben[$typ] ?? $farben['info'])]) }} role=\"status\">\n    @if ($titel)\n        <p class=\"font-semibold\">{{ $titel }}<\/p>\n    @endif\n    {{ $slot }}\n<\/div>",
-   "codeLang": "Blade",
-   "code2": "{{-- Verwendung in einer View --}}\n<x-hinweis typ=\"erfolg\" titel=\"Gespeichert\" class=\"mb-6\">\n    Deine Adresse wurde aktualisiert.\n<\/x-hinweis>\n\n<x-hinweis typ=\"warnung\" :titel=\"$offeneRechnungen . ' offene Rechnungen'\">\n    Bitte prüfe deine Zahlungen.\n<\/x-hinweis>",
-   "code2Lang": "Blade",
-   "tip": "Halte Komponenten „dumm“: Sie bekommen Daten und stellen sie dar. Datenbankabfragen in einer Komponente führen schnell zu N+1-Problemen, weil dieselbe Komponente in einer Schleife zwanzigmal gerendert wird. Die Daten lädt der Controller, einmal und mit Eager Loading.",
-   "quiz": [
-    {
-     "q": "Wozu dient @props in einer anonymen Komponente?",
-     "options": [
-      "Es deklariert die erwarteten Werte und ihre Standardwerte",
-      "Es definiert eine Route",
-      "Es lädt CSS"
-     ],
-     "correct": 0,
-     "explain": "Alles, was nicht in @props steht, landet als HTML-Attribut in $attributes."
-    },
-    {
-     "q": "Was unterscheidet typ=\"warnung\" von :typ=\"$warnung\"?",
-     "options": [
-      "Nichts",
-      "Ohne Doppelpunkt wird ein String übergeben, mit Doppelpunkt ein PHP-Ausdruck",
-      "Mit Doppelpunkt ist das Attribut optional"
-     ],
-     "correct": 1,
-     "explain": "Der Doppelpunkt sagt Blade: Dies ist PHP-Code, kein Text."
-    },
-    {
-     "q": "Wie fügt man einer Komponente Standardklassen hinzu, ohne die Klassen des Aufrufers zu verlieren?",
-     "options": [
-      "@class im Controller",
-      "$attributes->merge([...])",
-      "class=\"...\" fest im HTML"
-     ],
-     "correct": 1,
-     "explain": "merge kombiniert die Standardklassen mit den übergebenen."
-    }
-   ]
-  },
-  {
-   "id": "m56-l2",
-   "title": "Vite, CSS und JavaScript einbinden",
-   "minutes": 11,
-   "body": "<p>Laravel baut CSS und JavaScript mit <strong>Vite<\/strong>. Während der Entwicklung läuft <code>npm run dev<\/code>: Vite beobachtet deine Dateien und aktualisiert den Browser sofort (Hot Module Replacement). Für den Server erzeugt <code>npm run build<\/code> optimierte Dateien mit Hash im Namen in <code>public/build<\/code>.<\/p> <p>In der Layout-View bindest du die Einstiegsdateien mit der Direktive <code>@vite<\/code> ein. Sie erkennt automatisch, ob der Entwicklungsserver läuft, und setzt sonst die gebauten Dateien aus dem Manifest ein.<\/p> <table class=\"lesson-table\"><tr><th>Datei<\/th><th>Rolle<\/th><\/tr> <tr><td><code>vite.config.js<\/code><\/td><td>Einstiegspunkte und Plugins<\/td><\/tr> <tr><td><code>resources/css/app.css<\/code><\/td><td>CSS-Einstieg, in neuen Projekten mit Tailwind CSS<\/td><\/tr> <tr><td><code>resources/js/app.js<\/code><\/td><td>JavaScript-Einstieg<\/td><\/tr> <tr><td><code>public/build/manifest.json<\/code><\/td><td>Zuordnung Quelldatei → gebaute Datei mit Hash<\/td><\/tr><\/table> <p>Neue Laravel-Projekte bringen <strong>Tailwind CSS<\/strong> mit: Gestaltung über kleine Hilfsklassen direkt im HTML (<code>p-4<\/code>, <code>rounded<\/code>, <code>text-sm<\/code>). Das passt gut zu Blade-Komponenten, weil das Aussehen dann an einer Stelle gekapselt ist.<\/p><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Auf dem Server fehlt das CSS komplett? Fast immer wurde <code>npm run build<\/code> im Deployment vergessen, oder <code>public/build<\/code> steht in der <code>.gitignore<\/code> und das Bauen ist nicht Teil des Deploy-Skripts. Die Fehlermeldung lautet dann „Vite manifest not found“.<\/p><\/div>",
-   "code": "{{-- resources/views/components/layout.blade.php --}}\n<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <title>{{ $titel ?? config('app.name') }}<\/title>\n    @vite(['resources/css/app.css', 'resources/js/app.js'])\n<\/head>\n<body class=\"min-h-screen bg-slate-50 text-slate-900\">\n    <main class=\"mx-auto max-w-4xl p-6\">\n        {{ $slot }}\n    <\/main>\n<\/body>\n<\/html>",
-   "codeLang": "Blade",
-   "tip": "Halte zwei Terminals offen: eines mit <code>php artisan serve<\/code> (oder Herd), eines mit <code>npm run dev<\/code>. Mit <code>composer run dev<\/code> starten neue Laravel-Projekte Server, Vite, Queue-Worker und Log-Anzeige gemeinsam in einem Fenster.",
-   "quiz": [
-    {
-     "q": "Was erzeugt npm run build?",
-     "options": [
-      "Optimierte CSS- und JS-Dateien mit Hash im Namen in public/build",
-      "Die Datenbanktabellen",
-      "Eine neue Laravel-Version"
-     ],
-     "correct": 0,
-     "explain": "npm run dev ist für die Entwicklung, build für den Server."
-    },
-    {
-     "q": "Was bedeutet die Fehlermeldung „Vite manifest not found“ auf dem Server meistens?",
-     "options": [
-      "Die Datenbank fehlt",
-      "npm run build wurde beim Deployment nicht ausgeführt",
-      "PHP ist veraltet"
-     ],
-     "correct": 1,
-     "explain": "Ohne Build fehlen die gebauten Dateien und das Manifest."
-    },
-    {
-     "q": "Wozu dient die Blade-Direktive @vite?",
-     "options": [
-      "Sie minimiert HTML",
-      "Sie startet den Vite-Server",
-      "Sie bindet die passenden CSS- und JS-Dateien ein – im Dev-Modus vom Vite-Server, sonst aus dem Build"
-     ],
-     "correct": 2,
-     "explain": "Die Direktive liest bei Bedarf das Manifest und setzt die Dateinamen mit Hash ein."
-    }
-   ]
-  },
-  {
-   "id": "m56-l3",
-   "title": "Livewire: interaktiv ohne eigenes JavaScript",
-   "minutes": 13,
-   "body": "<p><strong>Livewire<\/strong> macht Blade-Oberflächen interaktiv, ohne dass du ein JavaScript-Framework schreiben musst. Eine Livewire-Komponente besteht aus einer PHP-Klasse mit öffentlichen Eigenschaften und Methoden und einer Blade-View.<\/p> <ul><li><code>wire:model<\/code> verbindet ein Eingabefeld mit einer Eigenschaft der Klasse.<\/li> <li><code>wire:click<\/code> ruft eine Methode der Klasse auf.<\/li> <li>Nach jeder Aktion rendert Livewire die View auf dem Server neu und tauscht nur die geänderten Teile im Browser aus.<\/li><\/ul> <p>Mit <code>wire:model.live<\/code> wird schon während des Tippens synchronisiert, zum Beispiel für eine Live-Suche. Ohne <code>.live<\/code> erst bei der nächsten Aktion – das spart Anfragen.<\/p> <table class=\"lesson-table\"><tr><th>Ansatz<\/th><th>Stärke<\/th><th>Passt für<\/th><\/tr> <tr><td>Blade<\/td><td>einfach, schnell, SEO-freundlich<\/td><td>Inhaltsseiten, klassische Formulare<\/td><\/tr> <tr><td>Livewire<\/td><td>Interaktivität in PHP<\/td><td>Dashboards, Filter, Verwaltungsoberflächen<\/td><\/tr> <tr><td>Inertia + Vue/React<\/td><td>volle SPA-Erfahrung, Routing bleibt in Laravel<\/td><td>Teams mit Frontend-Erfahrung<\/td><\/tr> <tr><td>API + eigenes Frontend<\/td><td>völlige Trennung<\/td><td>Mobile Apps, mehrere Frontends<\/td><\/tr><\/table> <p>Öffentliche Eigenschaften einer Livewire-Komponente sind im Browser sichtbar und vom Benutzer veränderbar. Prüfe in jeder Methode Berechtigungen und validiere Eingaben – genau wie in einem Controller.<\/p>",
-   "code": "<?php\n// app/Livewire/ProduktSuche.php\nnamespace App\\Livewire;\n\nuse App\\Models\\Produkt;\nuse Livewire\\Component;\n\nclass ProduktSuche extends Component\n{\n    public string $suche = '';\n    public bool $nurLieferbar = false;\n\n    public function zuruecksetzen(): void\n    {\n        $this->reset('suche', 'nurLieferbar');\n    }\n\n    public function render()\n    {\n        $produkte = Produkt::query()\n            ->when($this->suche !== '', fn ($q) => $q->where('name', 'like', '%' . $this->suche . '%'))\n            ->when($this->nurLieferbar, fn ($q) => $q->where('bestand', '>', 0))\n            ->orderBy('name')\n            ->limit(20)\n            ->get();\n\n        return view('livewire.produkt-suche', compact('produkte'));\n    }\n}",
-   "codeLang": "PHP · Laravel",
-   "code2": "{{-- resources/views/livewire/produkt-suche.blade.php --}}\n<div>\n    <input type=\"search\" wire:model.live.debounce.300ms=\"suche\" placeholder=\"Produkt suchen …\">\n    <label><input type=\"checkbox\" wire:model.live=\"nurLieferbar\"> nur lieferbar<\/label>\n    <button wire:click=\"zuruecksetzen\">Zurücksetzen<\/button>\n\n    <ul>\n        @forelse ($produkte as $p)\n            <li wire:key=\"p-{{ $p->id }}\">{{ $p->name }}<\/li>\n        @empty\n            <li>Nichts gefunden.<\/li>\n        @endforelse\n    <\/ul>\n<\/div>",
-   "code2Lang": "Blade",
-   "tip": "Das <code>like<\/code> mit <code>'%' . $this-&gt;suche . '%'<\/code> ist sicher, weil der Wert als Binding übergeben wird – es ist kein SQL-String-Bau. Prozentzeichen in der Eingabe wirken aber als Platzhalter. Bei großen Tabellen ist eine führende Wildcard außerdem langsam, weil kein Index greift. Dafür gibt es Volltextsuche oder Scout.",
-   "quiz": [
-    {
-     "q": "Was bewirkt wire:model.live?",
-     "options": [
-      "Das Feld wird schreibgeschützt",
-      "Die Seite lädt neu",
-      "Das Feld wird schon während des Tippens mit der Eigenschaft synchronisiert"
-     ],
-     "correct": 2,
-     "explain": "Ohne .live wird erst bei der nächsten Aktion synchronisiert."
-    },
-    {
-     "q": "Warum muss man öffentliche Livewire-Eigenschaften wie Benutzereingaben behandeln?",
-     "options": [
-      "Weil sie im Browser sichtbar und veränderbar sind",
-      "Weil sie verschlüsselt sind",
-      "Weil Livewire sie nicht speichert"
-     ],
-     "correct": 0,
-     "explain": "Validierung und Berechtigungsprüfung gehören auch in Livewire-Methoden."
-    },
-    {
-     "q": "Welcher Ansatz passt am besten für eine interaktive Verwaltungsoberfläche ohne eigenes Frontend-Team?",
-     "options": [
-      "Eine separate Mobile-App",
-      "Reine Blade-Views",
-      "Livewire"
-     ],
-     "correct": 2,
-     "explain": "Livewire bringt Interaktivität, ohne dass ein JavaScript-Framework geschrieben werden muss."
-    }
-   ]
-  },
-  {
-   "id": "m56-l4",
-   "title": "Formulare mit gutem Nutzererlebnis",
-   "minutes": 11,
-   "body": "<p>Ein Formular ist gut, wenn Benutzer es beim ersten Versuch richtig ausfüllen – und wenn ein Fehler sie nicht alles noch einmal eintippen lässt. Laravel bringt dafür alles mit:<\/p> <ul><li><code>old('feld', $vorgabe)<\/code> füllt das Feld nach einem Validierungsfehler mit der letzten Eingabe.<\/li> <li><code>@error('feld') … @enderror<\/code> zeigt die Meldung direkt am Feld; <code>$message<\/code> enthält den Text.<\/li> <li><code>redirect()-&gt;with('status', '…')<\/code> speichert eine Erfolgsmeldung für genau eine Anfrage (Flash), lesbar mit <code>session('status')<\/code>.<\/li> <li>Deutsche Fehlertexte bekommst du über Sprachdateien (<code>php artisan lang:publish<\/code>) und <code>APP_LOCALE=de<\/code>.<\/li><\/ul> <p>Zur Barrierefreiheit gehört: jedes Feld mit einem <code>&lt;label for&gt;<\/code>, Fehlermeldungen mit <code>aria-describedby<\/code> am Feld verknüpft, und nach dem Absenden der Fokus auf dem ersten fehlerhaften Feld.<\/p> <p>Gegen doppeltes Absenden hilft auf der Oberfläche das Deaktivieren des Buttons und auf dem Server das Post/Redirect/Get-Muster. Für Geld oder Bestellungen zusätzlich ein eindeutiger Schlüssel, damit dieselbe Bestellung nicht zweimal angelegt wird.<\/p>",
-   "code": "<form method=\"POST\" action=\"{{ route('profil.update') }}\" novalidate>\n    @csrf\n    @method('PUT')\n\n    @if (session('status'))\n        <x-hinweis typ=\"erfolg\">{{ session('status') }}<\/x-hinweis>\n    @endif\n\n    <label for=\"email\">E-Mail-Adresse<\/label>\n    <input id=\"email\" name=\"email\" type=\"email\" autocomplete=\"email\"\n           value=\"{{ old('email', $user->email) }}\"\n           @error('email') aria-invalid=\"true\" aria-describedby=\"email-fehler\" @enderror>\n    @error('email')\n        <p id=\"email-fehler\" class=\"text-red-700\">{{ $message }}<\/p>\n    @enderror\n\n    <button type=\"submit\" onclick=\"this.disabled = true; this.form.submit();\">Speichern<\/button>\n<\/form>",
-   "codeLang": "Blade",
-   "tip": "Das Attribut <code>novalidate<\/code> im Beispiel schaltet die Browser-Validierung aus, damit du beim Testen die Laravel-Meldungen siehst. In echten Formularen kannst du beides kombinieren: Browser-Prüfung für schnelles Feedback, Server-Prüfung als einzige verbindliche Instanz.",
-   "quiz": [
-    {
-     "q": "Was bewirkt old(\"email\", $user->email)?",
-     "options": [
-      "Zeigt nach einem Validierungsfehler die letzte Eingabe, sonst den Vorgabewert",
-      "Speichert die E-Mail",
-      "Löscht das Feld"
-     ],
-     "correct": 0,
-     "explain": "So muss niemand nach einem Fehler alles neu eintippen."
-    },
-    {
-     "q": "Wie lange ist ein mit ->with(\"status\", ...) gesetzter Wert verfügbar?",
-     "options": [
-      "Dauerhaft",
-      "Für genau die nächste Anfrage",
-      "Bis zum Logout"
-     ],
-     "correct": 1,
-     "explain": "Solche Flash-Daten sind für Erfolgsmeldungen nach einem Redirect gedacht."
-    },
-    {
-     "q": "Was gehört zu einem barrierefreien Formularfeld?",
-     "options": [
-      "Rote Farbe für Fehler",
-      "Nur ein Platzhaltertext",
-      "Ein label mit for und eine mit aria-describedby verknüpfte Fehlermeldung"
-     ],
-     "correct": 2,
-     "explain": "Screenreader lesen so Beschriftung und Fehlermeldung zum Feld vor. Farbe allein genügt nicht."
-    }
-   ]
+  return a;
+}
+var review = { queue:[], idx:0, picked:-1, right:0, done:0, mode:'due', konf:null };
+var KONF_STUFEN = [
+  { k:'sicher',   t:'Sicher',   s:'Das sitzt' },
+  { k:'unsicher', t:'Unsicher', s:'Eher Gefühl' },
+  { k:'geraten',  t:'Geraten',  s:'Keine Ahnung' }
+];
+function setzeKonf(k){
+  if(review.picked !== -1) return;   /* nach dem Aufdecken nicht mehr aenderbar */
+  review.konf = (review.konf === k) ? null : k;
+  renderContent();
+}
+function merkeKonf(ok){
+  if(!review.konf) return;
+  state.kalib = state.kalib || {};
+  var e = state.kalib[review.konf] || { n:0, r:0 };
+  e.n++; if(ok) e.r++;
+  state.kalib[review.konf] = e;
+}
+function kalibQuote(k){
+  var e = (state.kalib || {})[k];
+  if(!e || !e.n) return null;
+  return e.r / e.n;
+}
+function startReview(mode){
+  var pool;
+  if(mode === 'new'){ pool = shuffled(newCards()).slice(0, 12); }
+  else if(mode === 'weak'){
+    pool = shuffled(CARDS.filter(function(c){
+      var s = state.stats[c.id];
+      return s && s.wrong > 0;
+    })).slice(0, 15);
+  } else { pool = shuffled(dueCards()); }
+  review = { queue:pool, idx:0, picked:-1, right:0, done:0, mode:mode };
+  state.currentId = 'review';
+  render();
+}
+function pickReview(i){
+  if(review.picked !== -1) return;
+  review.picked = i;
+  var card = review.queue[review.idx];
+  var ok = i === card.correct;
+  review.done++;
+  if(ok) review.right++;
+  var hadWrong = state.stats[card.id] && state.stats[card.id].wrong > 0;
+  recordAnswer(card.id, ok);
+  merkeKonf(ok);
+  if(ok && hadWrong) grantBadge('comeback');
+  /* Dreimal daneben und trotzdem geknackt */
+  if(ok && state.stats[card.id] && state.stats[card.id].wrong >= 3) grantBadge('dickkopf');
+
+  var tk = todayKey();
+  if(!state.cardsToday || state.cardsToday.day !== tk) state.cardsToday = { day:tk, n:0 };
+  state.cardsToday.n++;
+  if(state.cardsToday.n >= 25) grantBadge('cards25');
+  if(state.cardsToday.n >= 50) grantBadge('cards50');
+
+  if(ok){
+    var s = state.srs[card.id];
+    awardXp(5 + ((s && s.iv >= 7) ? 3 : 0), 'Karte gewusst');
   }
- ]
-});
-MODULES.push({
- "id": "m57",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Fortgeschritten · Dateien, Mails und Benachrichtigungen",
- "lessons": [
-  {
-   "id": "m57-l1",
-   "title": "Datei-Uploads und das Storage-System",
-   "minutes": 12,
-   "body": "<p>Laravel abstrahiert Speicherorte über <strong>Disks<\/strong>: <code>local<\/code> (privat, <code>storage/app/private<\/code>), <code>public<\/code> (öffentlich über <code>storage/app/public<\/code>) und Cloud-Speicher wie <code>s3<\/code>. Dein Code spricht nur mit <code>Storage::disk('…')<\/code> – der Wechsel vom lokalen Ordner zu S3 ist eine Änderung in der Konfiguration.<\/p> <ul><li>Validieren: <code>['bild' =&gt; ['required', 'image', 'max:2048']]<\/code> (Größe in KB) oder lesbarer mit <code>File::image()-&gt;max('2mb')<\/code>.<\/li> <li>Speichern: <code>$request-&gt;file('bild')-&gt;store('avatare', 'public')<\/code> vergibt einen zufälligen Namen und liefert den Pfad zurück, den du in der Datenbank ablegst.<\/li> <li>Öffentlich zugänglich machen: einmal <code>php artisan storage:link<\/code>, danach <code>Storage::url($pfad)<\/code>.<\/li><\/ul> <p><strong>Private Dateien<\/strong> (Rechnungen, Verträge) gehören nie auf die öffentliche Disk. Sie werden über eine Route ausgeliefert, die vorher die Berechtigung prüft, oder über eine zeitlich begrenzte URL (<code>temporaryUrl<\/code>, bei S3).<\/p><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Den Originalnamen der hochgeladenen Datei zu übernehmen (<code>getClientOriginalName()<\/code>) ist riskant: Er kann Pfadanteile oder gefährliche Endungen enthalten und kollidiert mit gleichnamigen Dateien. Laravel vergibt mit <code>store()<\/code> deshalb einen zufälligen Namen.<\/p><\/div>",
-   "code": "<?php\n// app/Http/Controllers/AvatarController.php\nuse Illuminate\\Http\\Request;\nuse Illuminate\\Support\\Facades\\Storage;\nuse Illuminate\\Validation\\Rule;\nuse Illuminate\\Validation\\Rules\\File;\n\npublic function update(Request $request)\n{\n    $request->validate([\n        'avatar' => ['required', File::image()->max('2mb')->dimensions(Rule::dimensions()->maxWidth(2000))],\n    ]);\n\n    $user = $request->user();\n    $alt  = $user->avatar_pfad;\n\n    $user->update(['avatar_pfad' => $request->file('avatar')->store('avatare', 'public')]);\n\n    if ($alt) {\n        Storage::disk('public')->delete($alt);      // alte Datei aufraeumen\n    }\n\n    return back()->with('status', 'Profilbild aktualisiert.');\n}\n\n// Private Rechnung: Auslieferung nur nach Pruefung\npublic function rechnung(Bestellung $bestellung)\n{\n    Gate::authorize('view', $bestellung);\n    return Storage::disk('local')->download($bestellung->rechnung_pfad, \"Rechnung-{$bestellung->id}.pdf\");\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Bilder, die Benutzer hochladen, sind ungeprüfte Dateien aus dem Internet. Lass sie nie unter ihrem Originalnamen oder mit ausführbarer Endung in einem Verzeichnis liegen, das der Webserver als PHP ausführen würde. Für Thumbnails rechnet man Bilder ohnehin neu – das entfernt nebenbei eingebettete Metadaten wie GPS-Koordinaten.",
-   "quiz": [
-    {
-     "q": "Was liefert $request->file(\"bild\")->store(\"avatare\", \"public\") zurück?",
-     "options": [
-      "Den gespeicherten Pfad mit zufälligem Dateinamen",
-      "true",
-      "Die Datei als String"
-     ],
-     "correct": 0,
-     "explain": "Den Pfad speicherst du in der Datenbank, um die Datei später zu finden."
-    },
-    {
-     "q": "Wozu dient php artisan storage:link?",
-     "options": [
-      "Es verknüpft public/storage mit storage/app/public, damit öffentliche Dateien erreichbar sind",
-      "Es lädt Dateien zu S3 hoch",
-      "Es löscht alte Uploads"
-     ],
-     "correct": 0,
-     "explain": "Danach liefert Storage::url() eine funktionierende Adresse."
-    },
-    {
-     "q": "Wie liefert man eine private Rechnung aus?",
-     "options": [
-      "Per E-Mail an alle",
-      "Über die public-Disk",
-      "Über eine Route, die vorher die Berechtigung prüft"
-     ],
-     "correct": 2,
-     "explain": "Private Dateien dürfen nie direkt über eine öffentliche URL erreichbar sein."
+  renderContent();
+}
+function rateAndNext(rating){
+  var card = review.queue[review.idx];
+  rateCard(card.id, rating);
+  review.idx++;
+  review.picked = -1;
+  review.konf = null;
+  renderContent();
+  renderSidebar();
+}
+function renderReview(){
+  var due = dueCards().length, fresh = newCards().length;
+
+  if(!review.queue.length || review.idx >= review.queue.length){
+    var finished = review.done > 0;
+    var h = '<div class="breadcrumb">Training</div><h1>Wiederholen</h1>';
+    if(finished){
+      var pct = Math.round((review.right / review.done) * 100);
+      h += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+           '<div class="score-sub">'+review.right+' von '+review.done+' richtig · Session abgeschlossen</div></div>';
+    } else {
+      h += '<p class="intro-sub">Aktives Abrufen schlägt Wiederlesen — deutlich. Jede Frage aus allen '+TOTAL+' Lektionen wird hier nach dem Vergessenskurven-Prinzip wieder vorgelegt: richtig beantwortete Karten kommen in immer größeren Abständen, falsche noch am selben Tag.</p>';
     }
-   ]
-  },
-  {
-   "id": "m57-l2",
-   "title": "E-Mails mit Mailables",
-   "minutes": 12,
-   "body": "<p>Jede E-Mail ist in Laravel eine eigene Klasse, ein <strong>Mailable<\/strong> (<code>php artisan make:mail BestellBestaetigung --markdown=mail.bestellung<\/code>). Seit Laravel 10 beschreibt man sie mit drei Methoden:<\/p> <ul><li><code>envelope()<\/code> – Betreff, Absender, Antwortadresse.<\/li> <li><code>content()<\/code> – welche View, mit welchen Daten.<\/li> <li><code>attachments()<\/code> – Anhänge, z. B. die Rechnung als PDF.<\/li><\/ul> <p>Öffentliche Eigenschaften des Mailables stehen in der View automatisch zur Verfügung. Markdown-Mails nutzen fertige Bausteine wie <code>&lt;x-mail::button&gt;<\/code> und <code>&lt;x-mail::table&gt;<\/code> und sehen in allen Mailprogrammen ordentlich aus.<\/p> <p>Verschickt wird mit <code>Mail::to($kunde)-&gt;send(...)<\/code>. Weil der Versand Sekunden dauern kann, schickst du Mails im Produktivbetrieb mit <code>-&gt;queue(...)<\/code> über die Warteschlange.<\/p> <p>Lokal sollen keine echten Mails rausgehen. Mit <code>MAIL_MAILER=log<\/code> landen sie im Log; bequemer ist ein lokales Postfach wie <strong>Mailpit<\/strong>, das alle Mails abfängt und im Browser anzeigt.<\/p>",
-   "code": "<?php\n// app/Mail/BestellBestaetigung.php\nnamespace App\\Mail;\n\nuse App\\Models\\Bestellung;\nuse Illuminate\\Bus\\Queueable;\nuse Illuminate\\Contracts\\Queue\\ShouldQueue;\nuse Illuminate\\Mail\\Attachment;\nuse Illuminate\\Mail\\Mailable;\nuse Illuminate\\Mail\\Mailables\\Content;\nuse Illuminate\\Mail\\Mailables\\Envelope;\nuse Illuminate\\Queue\\SerializesModels;\n\nclass BestellBestaetigung extends Mailable implements ShouldQueue\n{\n    use Queueable, SerializesModels;\n\n    public function __construct(public Bestellung $bestellung) {}\n\n    public function envelope(): Envelope\n    {\n        return new Envelope(subject: \"Deine Bestellung #{$this->bestellung->id}\");\n    }\n\n    public function content(): Content\n    {\n        return new Content(markdown: 'mail.bestellung');\n    }\n\n    public function attachments(): array\n    {\n        return [Attachment::fromStorageDisk('local', $this->bestellung->rechnung_pfad)->as('Rechnung.pdf')];\n    }\n}\n\n// Versand\nMail::to($bestellung->kunde->email)->send(new BestellBestaetigung($bestellung));   // ShouldQueue -> landet in der Queue",
-   "codeLang": "PHP · Laravel",
-   "tip": "Für die Vorschau beim Gestalten brauchst du keinen Versand: Gibt eine Route das Mailable zurück (<code>return new BestellBestaetigung($bestellung);<\/code>), rendert Laravel es direkt im Browser. Diese Route gehört natürlich nur in die lokale Umgebung.",
-   "quiz": [
-    {
-     "q": "Welche Methode eines Mailables legt den Betreff fest?",
-     "options": [
-      "envelope()",
-      "build()",
-      "content()"
-     ],
-     "correct": 0,
-     "explain": "content() wählt die View, attachments() die Anhänge."
-    },
-    {
-     "q": "Warum verschickt man Mails im Betrieb über die Queue?",
-     "options": [
-      "Damit sie verschlüsselt werden",
-      "Weil der Versand dauern kann und den Request nicht blockieren soll",
-      "Weil send() nicht funktioniert"
-     ],
-     "correct": 1,
-     "explain": "Mit ShouldQueue am Mailable oder Mail::queue() läuft der Versand im Hintergrund."
-    },
-    {
-     "q": "Wie verhinderst du, dass lokal echte Mails verschickt werden?",
-     "options": [
-      "Gar nicht",
-      "MAIL_MAILER=log oder ein lokales Postfach wie Mailpit",
-      "Indem man das Internet trennt"
-     ],
-     "correct": 1,
-     "explain": "Beides fängt Mails ab, bevor sie einen echten Empfänger erreichen."
-    }
-   ]
-  },
-  {
-   "id": "m57-l3",
-   "title": "Benachrichtigungen über mehrere Kanäle",
-   "minutes": 11,
-   "body": "<p>Eine <strong>Notification<\/strong> ist eine Nachricht an einen Benutzer, die über mehrere Kanäle gehen kann: E-Mail, Datenbank (für die Glocke in der Oberfläche), SMS oder Slack. Welche Kanäle es sind, entscheidet die Methode <code>via()<\/code> – auch abhängig von den Einstellungen des Benutzers.<\/p> <ul><li><code>toMail()<\/code> baut die E-Mail, <code>toArray()<\/code> die Daten für den Datenbankkanal.<\/li> <li>Das User-Model braucht den Trait <code>Notifiable<\/code>; verschickt wird mit <code>$user-&gt;notify(new …)<\/code>.<\/li> <li>Für den Datenbankkanal legt <code>php artisan make:notifications-table<\/code> die Tabelle an.<\/li> <li>Gelesen werden sie mit <code>$user-&gt;unreadNotifications<\/code>, als gelesen markiert mit <code>markAsRead()<\/code>.<\/li><\/ul> <p>Mailable oder Notification? Faustregel: Ein Mailable ist eine gestaltete E-Mail. Eine Notification ist ein <em>Ereignis für einen Benutzer<\/em>, das eventuell auch per Mail kommt.<\/p>",
-   "code": "<?php\n// app/Notifications/BestellungVersendet.php\nnamespace App\\Notifications;\n\nuse App\\Models\\Bestellung;\nuse Illuminate\\Bus\\Queueable;\nuse Illuminate\\Contracts\\Queue\\ShouldQueue;\nuse Illuminate\\Notifications\\Messages\\MailMessage;\nuse Illuminate\\Notifications\\Notification;\n\nclass BestellungVersendet extends Notification implements ShouldQueue\n{\n    use Queueable;\n\n    public function __construct(public Bestellung $bestellung) {}\n\n    public function via(object $notifiable): array\n    {\n        return $notifiable->mails_erwuenscht ? ['mail', 'database'] : ['database'];\n    }\n\n    public function toMail(object $notifiable): MailMessage\n    {\n        return (new MailMessage)\n            ->subject('Deine Bestellung ist unterwegs')\n            ->greeting(\"Hallo {$notifiable->name},\")\n            ->line(\"Bestellung #{$this->bestellung->id} wurde versendet.\")\n            ->action('Sendung verfolgen', route('bestellungen.show', $this->bestellung));\n    }\n\n    public function toArray(object $notifiable): array\n    {\n        return ['bestellung_id' => $this->bestellung->id, 'text' => 'Bestellung versendet'];\n    }\n}\n\n// Ausloesen\n$bestellung->kunde->user->notify(new BestellungVersendet($bestellung));",
-   "codeLang": "PHP · Laravel",
-   "tip": "Gib Benutzern Kontrolle über Kanäle und Häufigkeit. Eine Notification, die man nicht abbestellen kann, wird als Spam markiert – und dann kommen auch die wichtigen Mails nicht mehr an. Die Einstellung gehört ins Profil, und <code>via()<\/code> richtet sich danach.",
-   "quiz": [
-    {
-     "q": "Welche Methode einer Notification bestimmt die Kanäle?",
-     "options": [
-      "via()",
-      "channels()",
-      "toArray()"
-     ],
-     "correct": 0,
-     "explain": "via() kann abhängig vom Empfänger unterschiedliche Kanäle zurückgeben."
-    },
-    {
-     "q": "Was braucht ein Model, damit man ihm Notifications schicken kann?",
-     "options": [
-      "Den Trait Notifiable",
-      "Das Interface Mailable",
-      "Eine eigene Tabelle"
-     ],
-     "correct": 0,
-     "explain": "Dann steht $user->notify() zur Verfügung."
-    },
-    {
-     "q": "Wofür liefert toArray() die Daten?",
-     "options": [
-      "Für Logs",
-      "Für den Datenbankkanal, etwa die Glocke in der Oberfläche",
-      "Für die E-Mail"
-     ],
-     "correct": 1,
-     "explain": "Die Daten landen als JSON in der notifications-Tabelle."
-    }
-   ]
+    h += '<div class="today-grid" style="margin-top:20px;">';
+    h += '<div class="today-item '+(due?'due accent':'')+'" onclick="startReview(\'due\')"><span class="ti-label">Heute fällig</span><span class="ti-value">'+due+'</span><span class="ti-sub">'+(due?'Jetzt wiederholen':'Alles erledigt 🎉')+'</span></div>';
+    h += '<div class="today-item" onclick="startReview(\'new\')"><span class="ti-label">Neue Karten</span><span class="ti-value">'+fresh+'</span><span class="ti-sub">12 neue lernen</span></div>';
+    var weakCount = CARDS.filter(function(c){ var s = state.stats[c.id]; return s && s.wrong > 0; }).length;
+    h += '<div class="today-item '+(weakCount?'weak':'')+'" onclick="startReview(\'weak\')"><span class="ti-label">Fehlerkarten</span><span class="ti-value">'+weakCount+'</span><span class="ti-sub">Gezielt nachholen</span></div>';
+    h += '</div>';
+
+    var learned = CARDS.filter(function(c){ return !!state.srs[c.id]; }).length;
+    h += '<div class="ex-panel" style="margin-top:22px;"><strong>Dein Kartenstand:</strong> '+learned+' von '+CARDS.length+' Karten im System. '+
+         (learned < CARDS.length ? 'Karten landen automatisch hier, sobald du das Quiz einer Lektion beantwortest — oder du startest sie direkt über „Neue Karten".' : 'Alle Karten sind eingeplant.')+'</div>';
+    return h;
   }
- ]
-});
-MODULES.push({
- "id": "m58",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Experte · Eloquent für Profis",
- "lessons": [
-  {
-   "id": "m58-l1",
-   "title": "Fortgeschrittene Abfragen: whereHas, Aggregate, Subqueries",
-   "minutes": 13,
-   "body": "<p>Viele Fragen an die Datenbank betreffen Beziehungen: „Kunden mit offenen Bestellungen“, „Produkte nach Umsatz“, „die letzte Bestellung jedes Kunden“. Eloquent hat dafür Werkzeuge, die all das in <em>einer<\/em> Abfrage lösen – statt Daten zu laden und in PHP zu filtern.<\/p> <table class=\"lesson-table\"><tr><th>Werkzeug<\/th><th>Frage<\/th><\/tr> <tr><td><code>whereHas('bestellungen', fn ($q) =&gt; …)<\/code><\/td><td>Hat der Kunde mindestens eine passende Bestellung?<\/td><\/tr> <tr><td><code>doesntHave('bestellungen')<\/code><\/td><td>Kunden ohne Bestellung<\/td><\/tr> <tr><td><code>withCount<\/code>, <code>withSum('positionen', 'summe_cent')<\/code><\/td><td>Anzahl bzw. Summe als zusätzliche Spalte<\/td><\/tr> <tr><td><code>withExists('reklamationen')<\/code><\/td><td>Boolesche Spalte <code>reklamationen_exists<\/code><\/td><\/tr> <tr><td><code>hasOne(…)-&gt;latestOfMany()<\/code><\/td><td>die neueste Bestellung als eigene Beziehung<\/td><\/tr> <tr><td><code>addSelect([... =&gt; Subquery])<\/code><\/td><td>beliebiger Wert aus einer Unterabfrage<\/td><\/tr><\/table> <p><code>latestOfMany()<\/code> ist besonders praktisch: Die Beziehung <code>letzteBestellung<\/code> lässt sich mit <code>with()<\/code> eager laden, ohne dass für jeden Kunden alle Bestellungen geladen werden.<\/p>",
-   "code": "<?php\nclass Kunde extends Model\n{\n    public function bestellungen(): HasMany\n    {\n        return $this->hasMany(Bestellung::class);\n    }\n\n    public function letzteBestellung(): HasOne\n    {\n        return $this->hasOne(Bestellung::class)->latestOfMany();\n    }\n}\n\n// Kunden mit offener Bestellung ueber 100 EUR, mit Umsatz und letzter Bestellung\n$kunden = Kunde::query()\n    ->whereHas('bestellungen', fn ($q) => $q->where('status', 'offen')->where('summe_cent', '>', 10_000))\n    ->withSum('bestellungen', 'summe_cent')            // bestellungen_sum_summe_cent\n    ->withCount('bestellungen')\n    ->with('letzteBestellung')\n    ->orderByDesc('bestellungen_sum_summe_cent')\n    ->paginate(25);\n\n// Subquery: Datum der letzten Anmeldung als Spalte\n$users = User::addSelect([\n    'letzte_anmeldung' => Anmeldung::select('created_at')\n        ->whereColumn('user_id', 'users.id')\n        ->latest()\n        ->limit(1),\n])->get();",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>whereHas<\/code> erzeugt eine <code>EXISTS<\/code>-Unterabfrage. Bei großen Tabellen braucht die Fremdschlüsselspalte (<code>kunde_id<\/code>) und die Filterspalte (<code>status<\/code>) einen Index, sonst wird die Abfrage langsam. Schau dir mit <code>-&gt;toRawSql()<\/code> oder Debugbar an, was Eloquent tatsächlich erzeugt.",
-   "quiz": [
-    {
-     "q": "Was liefert Kunde::whereHas(\"bestellungen\")?",
-     "options": [
-      "Nur Kunden mit mindestens einer Bestellung",
-      "Die Anzahl der Bestellungen",
-      "Alle Bestellungen"
-     ],
-     "correct": 0,
-     "explain": "Mit einer Closure lassen sich die Bestellungen zusätzlich filtern."
-    },
-    {
-     "q": "Unter welchem Namen steht das Ergebnis von withSum(\"bestellungen\", \"summe_cent\")?",
-     "options": [
-      "summe",
-      "bestellungen_sum_summe_cent",
-      "sum_bestellungen"
-     ],
-     "correct": 1,
-     "explain": "Muster: beziehung_sum_spalte."
-    },
-    {
-     "q": "Wozu dient hasOne(...)->latestOfMany()?",
-     "options": [
-      "Es sortiert alle Bestellungen",
-      "Es löscht alte Datensätze",
-      "Es macht den neuesten Datensatz einer hasMany-Beziehung als eigene, eager ladbare Beziehung verfügbar"
-     ],
-     "correct": 2,
-     "explain": "So lädt with(\"letzteBestellung\") nur je einen Datensatz pro Kunde."
-    }
-   ]
-  },
-  {
-   "id": "m58-l2",
-   "title": "Eigene Casts und Value Objects",
-   "minutes": 12,
-   "body": "<p>Mit Casts wandelt Eloquent Spaltenwerte automatisch. Die eingebauten (<code>boolean<\/code>, <code>datetime<\/code>, <code>array<\/code>, <code>encrypted<\/code>, Enums) decken viel ab. Für eigene Fachtypen schreibst du einen <strong>Custom Cast<\/strong>: eine Klasse mit <code>get()<\/code> (Datenbank → PHP) und <code>set()<\/code> (PHP → Datenbank).<\/p> <p>Ein Klassiker ist Geld: In der Datenbank liegt ein Integer in Cent, im Code soll es ein <code>Geld<\/code>-Objekt sein, das rechnen und formatieren kann. Der Cast sorgt dafür, dass niemand mehr versehentlich Euro und Cent verwechselt.<\/p> <ul><li><code>php artisan make:cast GeldCast<\/code> erzeugt das Gerüst.<\/li> <li>Im Model: <code>'preis' =&gt; GeldCast::class<\/code> in <code>casts()<\/code>.<\/li> <li>Für verschlüsselte Spalten gibt es <code>encrypted<\/code>, <code>encrypted:array<\/code> und <code>encrypted:collection<\/code> – der Schlüssel ist <code>APP_KEY<\/code>.<\/li><\/ul> <p>Accessors mit <code>Attribute::make(get: …, set: …)<\/code> reichen für einfache Umformungen. Ein Cast lohnt sich, sobald derselbe Fachtyp in mehreren Models vorkommt.<\/p>",
-   "code": "<?php\n// app/Casts/GeldCast.php\nnamespace App\\Casts;\n\nuse App\\Support\\Geld;\nuse Illuminate\\Contracts\\Database\\Eloquent\\CastsAttributes;\nuse Illuminate\\Database\\Eloquent\\Model;\nuse InvalidArgumentException;\n\nclass GeldCast implements CastsAttributes\n{\n    public function get(Model $model, string $key, mixed $value, array $attributes): ?Geld\n    {\n        return $value === null ? null : Geld::cent((int) $value);\n    }\n\n    public function set(Model $model, string $key, mixed $value, array $attributes): ?int\n    {\n        if ($value === null) {\n            return null;\n        }\n        if (!$value instanceof Geld) {\n            throw new InvalidArgumentException(\"$key muss ein Geld-Objekt sein.\");\n        }\n        return $value->cent;\n    }\n}\n\n// Model\nprotected function casts(): array\n{\n    return [\n        'preis'        => GeldCast::class,\n        'iban'         => 'encrypted',          // verschluesselt in der Datenbank\n        'einstellungen' => 'array',\n    ];\n}\n\n// Verwendung\n$produkt->preis = Geld::euro(19.99);\necho $produkt->preis->plus(Geld::euro(5))->format();   // 24,99 EUR",
-   "codeLang": "PHP · Laravel",
-   "tip": "Verschlüsselte Spalten lassen sich nicht durchsuchen oder sortieren – die Datenbank sieht nur Chiffretext. Wenn du nach einer IBAN suchen musst, speichere zusätzlich einen Hash (z. B. HMAC der normalisierten IBAN) in einer eigenen, indizierten Spalte.",
-   "quiz": [
-    {
-     "q": "Welche beiden Methoden hat ein Custom Cast?",
-     "options": [
-      "get() und set()",
-      "encode() und decode()",
-      "load() und save()"
-     ],
-     "correct": 0,
-     "explain": "get wandelt den Datenbankwert in den PHP-Typ, set zurück."
-    },
-    {
-     "q": "Welcher Schlüssel wird für den Cast encrypted verwendet?",
-     "options": [
-      "DB_PASSWORD",
-      "APP_KEY",
-      "Ein Schlüssel pro Zeile"
-     ],
-     "correct": 1,
-     "explain": "Wer APP_KEY verliert oder wechselt, kann diese Spalten nicht mehr lesen."
-    },
-    {
-     "q": "Warum lassen sich verschlüsselte Spalten nicht direkt durchsuchen?",
-     "options": [
-      "Weil Laravel es verbietet",
-      "Weil sie zu lang sind",
-      "Weil die Datenbank nur den Chiffretext sieht"
-     ],
-     "correct": 2,
-     "explain": "Eine Lösung ist ein zusätzlicher, indizierter Hash zum Suchen."
-    }
-   ]
-  },
-  {
-   "id": "m58-l3",
-   "title": "Polymorphe Beziehungen",
-   "minutes": 12,
-   "body": "<p>Manchmal gehört ein Datensatz zu <em>verschiedenen<\/em> Arten von Models: Kommentare an Produkten und an Blogbeiträgen, Bilder an Kategorien und an Benutzern. Statt für jede Kombination eine eigene Tabelle zu bauen, nutzt man eine <strong>polymorphe Beziehung<\/strong>.<\/p> <ul><li>Die Tabelle <code>kommentare<\/code> bekommt zwei Spalten: <code>kommentierbar_id<\/code> und <code>kommentierbar_type<\/code>.<\/li> <li>In der Migration erzeugt <code>$table-&gt;morphs('kommentierbar')<\/code> beide Spalten plus Index.<\/li> <li>Das Model <code>Kommentar<\/code> hat <code>morphTo()<\/code>, Produkt und Beitrag haben <code>morphMany(Kommentar::class, 'kommentierbar')<\/code>.<\/li><\/ul> <p>Standardmäßig steht in der <code>_type<\/code>-Spalte der volle Klassenname, etwa <code>App\\Models\\Produkt<\/code>. Benennst du die Klasse später um, passen alte Daten nicht mehr. Mit einer <strong>Morph Map<\/strong> speicherst du stattdessen kurze, stabile Namen wie <code>produkt<\/code>. <code>Relation::enforceMorphMap()<\/code> erzwingt das für alle polymorphen Beziehungen.<\/p> <p>Der Preis der Flexibilität: Die Datenbank kann für <code>kommentierbar_id<\/code> keinen echten Fremdschlüssel prüfen, weil die Zieltabelle wechselt. Aufräumen beim Löschen musst du selbst übernehmen, etwa in einem <code>deleting<\/code>-Event.<\/p>",
-   "code": "<?php\n// Migration\nSchema::create('kommentare', function (Blueprint $table) {\n    $table->id();\n    $table->morphs('kommentierbar');          // kommentierbar_id + kommentierbar_type + Index\n    $table->foreignId('user_id')->constrained()->cascadeOnDelete();\n    $table->text('text');\n    $table->timestamps();\n});\n\n// Models\nclass Kommentar extends Model\n{\n    protected $table = 'kommentare';\n\n    public function kommentierbar(): MorphTo\n    {\n        return $this->morphTo();\n    }\n}\n\nclass Produkt extends Model\n{\n    public function kommentare(): MorphMany\n    {\n        return $this->morphMany(Kommentar::class, 'kommentierbar');\n    }\n}\n\n// AppServiceProvider::boot() - stabile Namen statt Klassennamen\nRelation::enforceMorphMap([\n    'produkt' => Produkt::class,\n    'beitrag' => Beitrag::class,\n]);\n\n// Verwendung\n$produkt->kommentare()->create(['user_id' => $user->id, 'text' => 'Top Kabel!']);\n$k = Kommentar::with('kommentierbar')->latest()->first();\necho $k->kommentierbar::class;                // App\\Models\\Produkt",
-   "codeLang": "PHP · Laravel",
-   "tip": "Richte die Morph Map am ersten Tag ein, nicht erst, wenn schon Millionen Zeilen mit Klassennamen in der Datenbank stehen. Ein späterer Umstieg braucht eine Datenmigration, die jede <code>_type<\/code>-Spalte umschreibt.",
-   "quiz": [
-    {
-     "q": "Welche zwei Spalten braucht eine polymorphe Beziehung?",
-     "options": [
-      "..._id und ..._type",
-      "model und key",
-      "parent_id und child_id"
-     ],
-     "correct": 0,
-     "explain": "Die _type-Spalte sagt, zu welchem Model die _id gehört."
-    },
-    {
-     "q": "Wozu dient Relation::enforceMorphMap()?",
-     "options": [
-      "Es beschleunigt Abfragen",
-      "Es speichert kurze, stabile Namen statt Klassennamen in der _type-Spalte",
-      "Es erzeugt Fremdschlüssel"
-     ],
-     "correct": 1,
-     "explain": "So überstehen die Daten eine Umbenennung der Klasse."
-    },
-    {
-     "q": "Was ist ein Nachteil polymorpher Beziehungen?",
-     "options": [
-      "Sie funktionieren nur mit MySQL",
-      "Sie sind langsam",
-      "Die Datenbank kann keinen echten Fremdschlüssel prüfen"
-     ],
-     "correct": 2,
-     "explain": "Aufräumen beim Löschen muss die Anwendung selbst übernehmen."
-    }
-   ]
-  },
-  {
-   "id": "m58-l4",
-   "title": "Globale Scopes, Soft Deletes und Pruning",
-   "minutes": 11,
-   "body": "<p>Ein <strong>globaler Scope<\/strong> hängt an jede Abfrage eines Models automatisch eine Bedingung an. Soft Deletes sind selbst ein Beispiel: Der Trait <code>SoftDeletes<\/code> registriert einen Scope, der <code>deleted_at IS NULL<\/code> ergänzt.<\/p> <ul><li>Eigene globale Scopes eignen sich für Regeln, die <em>immer<\/em> gelten, etwa „nur Datensätze des aktuellen Mandanten“.<\/li> <li>Ausnahmen machst du mit <code>withoutGlobalScope(...)<\/code>, bei Soft Deletes mit <code>withTrashed()<\/code> oder <code>onlyTrashed()<\/code>.<\/li><\/ul> <p>Daten, die nicht ewig liegen dürfen – alte Warenkörbe, abgelaufene Tokens, Logs nach Ablauf der Aufbewahrungsfrist – räumt <strong>Pruning<\/strong> auf. Das Model bekommt den Trait <code>Prunable<\/code> und eine Methode <code>prunable()<\/code>, die beschreibt, was weg darf. Der Scheduler ruft dann regelmäßig <code>model:prune<\/code> auf.<\/p> <p>Das hat auch eine rechtliche Seite: Die DSGVO verlangt Speicherbegrenzung. Pruning ist die technische Umsetzung von Löschfristen.<\/p><div class=\"rb-falle\"><span class=\"rb-box-titel\">Typischer Fehler<\/span><p>Ein globaler Scope ist unsichtbar. Wer <code>Produkt::count()<\/code> schreibt und sich über ein zu kleines Ergebnis wundert, hat den Scope vergessen. Setze globale Scopes deshalb sparsam ein und dokumentiere sie im Model.<\/p><\/div>",
-   "code": "<?php\n// Mandantentrennung als globaler Scope\n#[ScopedBy(MandantScope::class)]\nclass Rechnung extends Model\n{\n    use SoftDeletes, MassPrunable;\n\n    // Pruning: Rechnungen 10 Jahre nach Jahresende loeschen (Aufbewahrungsfrist)\n    public function prunable(): Builder\n    {\n        return static::onlyTrashed()->where('deleted_at', '<', now()->subYears(10)->endOfYear());\n    }\n}\n\nclass MandantScope implements Scope\n{\n    public function apply(Builder $builder, Model $model): void\n    {\n        $builder->where($model->getTable() . '.mandant_id', auth()->user()?->mandant_id);\n    }\n}\n\n// routes/console.php\nSchedule::command('model:prune')->daily();\n\n// Ausnahmen bewusst und sichtbar\nRechnung::withoutGlobalScope(MandantScope::class)->count();   // alle Mandanten (Admin-Report)\nRechnung::withTrashed()->find($id);                            // auch geloeschte",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>MassPrunable<\/code> löscht per einzelner DELETE-Abfrage und ist dadurch schnell, löst aber keine Model-Events aus. Musst du beim Löschen Dateien entfernen oder andere Aktionen anstoßen, nimm <code>Prunable<\/code> und eine Methode <code>pruning()<\/code>, die vor jedem einzelnen Löschen läuft.",
-   "quiz": [
-    {
-     "q": "Was macht ein globaler Scope?",
-     "options": [
-      "Er hängt an jede Abfrage eines Models automatisch eine Bedingung an",
-      "Er macht Abfragen schneller",
-      "Er gilt für alle Models der Anwendung"
-     ],
-     "correct": 0,
-     "explain": "SoftDeletes ist selbst ein globaler Scope."
-    },
-    {
-     "q": "Wie findest du auch soft-gelöschte Datensätze?",
-     "options": [
-      "->all()",
-      "->withTrashed()",
-      "->forceDelete()"
-     ],
-     "correct": 1,
-     "explain": "onlyTrashed() liefert ausschließlich die gelöschten."
-    },
-    {
-     "q": "Welcher Befehl räumt Models mit dem Trait Prunable auf?",
-     "options": [
-      "php artisan migrate:fresh",
-      "php artisan model:prune",
-      "php artisan db:wipe"
-     ],
-     "correct": 1,
-     "explain": "Er wird typischerweise täglich über den Scheduler aufgerufen."
-    }
-   ]
+
+  var card = review.queue[review.idx];
+  var revealed = review.picked !== -1;
+  var s = srsOf(card.id);
+  var html = '<div class="srs-stage">';
+  html += '<div class="srs-progress"><span>'+(review.idx+1)+' / '+review.queue.length+'</span>'+
+          '<div class="srs-bar"><div style="width:'+Math.round((review.idx/review.queue.length)*100)+'%"></div></div>'+
+          '<span>'+review.right+' richtig</span>'+
+          '<button class="ex-btn" style="padding:4px 10px;" onclick="review.queue=[];renderContent();">Beenden</button></div>';
+
+  html += '<div class="srs-card">';
+  html += '<div class="srs-meta"><span class="badge topic">'+esc(card.moduleTitle)+'</span>'+
+          (s ? '<span class="mastery-pill">Intervall: '+(s.iv||0)+' Tage</span>' : '<span class="mastery-pill mid">neue Karte</span>')+'</div>';
+  html += '<div class="srs-q">'+esc(card.q)+'</div>';
+
+  if(!revealed){
+    html += '<div class="konf"><span class="konf-frage">Wie sicher bist du — <em>bevor</em> du antwortest?</span>'+
+      '<div class="konf-reihe">';
+    KONF_STUFEN.forEach(function(st){
+      html += '<button type="button" class="konf-btn'+(review.konf === st.k ? ' an' : '')+'" '+
+        'aria-pressed="'+(review.konf === st.k ? 'true' : 'false')+'" '+
+        'onclick="setzeKonf(\''+st.k+'\')">'+st.t+
+        '<span class="konf-sub">'+st.s+'</span></button>';
+    });
+    html += '</div></div>';
+  } else if(review.konf){
+    var korrekt = review.picked === card.correct;
+    var urteil = (review.konf === 'sicher' && !korrekt)
+      ? { cls:'warn', txt:'Du warst dir sicher und lagst daneben. Genau diese Karten kosten in der Prüfung Punkte — sie kommt bewusst bald wieder.' }
+      : (review.konf === 'geraten' && korrekt)
+        ? { cls:'ok', txt:'Geraten und getroffen. Das zählt noch nicht als Wissen — die Karte bleibt im kurzen Takt.' }
+        : { cls:'', txt:'Einschätzung und Ergebnis passen zusammen.' };
+    html += '<div class="konf-echo '+urteil.cls+'">'+urteil.txt+'</div>';
   }
- ]
-});
-MODULES.push({
- "id": "m48",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Experte · REST-APIs mit Laravel",
- "lessons": [
-  {
-   "id": "m48-l1",
-   "title": "API-Routen, Ressourcen und Statuscodes",
-   "minutes": 13,
-   "body": "<p>Für eine JSON-API richtest du mit <code>php artisan install:api<\/code> die Datei <code>routes/api.php<\/code> ein (Präfix <code>/api<\/code>, keine Session, kein CSRF) und installierst gleichzeitig <strong>Sanctum<\/strong> für Tokens. <code>Route::apiResource()<\/code> erzeugt die fünf Routen index, store, show, update und destroy.<\/p> <p>Gib Models <strong>nie direkt<\/strong> als JSON zurück. Sonst landet jede neue Datenbankspalte automatisch in der API – auch <code>passwort_hash<\/code> oder interne Notizen. <strong>API Resources<\/strong> (<code>make:resource<\/code>) legen genau fest, welche Felder in welchem Format herausgehen. <code>whenLoaded()<\/code> bindet Beziehungen nur ein, wenn sie per Eager Loading geladen wurden, und verhindert so N+1 in der API.<\/p> <table class=\"lesson-table\"><tr><th>Status<\/th><th>Bedeutung<\/th><th>Typischer Fall<\/th><\/tr> <tr><td>200 OK<\/td><td>Erfolg mit Inhalt<\/td><td>GET, PUT<\/td><\/tr> <tr><td>201 Created<\/td><td>angelegt<\/td><td>POST, mit <code>Location<\/code>-Header<\/td><\/tr> <tr><td>204 No Content<\/td><td>Erfolg ohne Inhalt<\/td><td>DELETE<\/td><\/tr> <tr><td>401 Unauthorized<\/td><td>nicht angemeldet<\/td><td>Token fehlt oder ungültig<\/td><\/tr> <tr><td>403 Forbidden<\/td><td>angemeldet, aber nicht berechtigt<\/td><td>Policy lehnt ab<\/td><\/tr> <tr><td>404 Not Found<\/td><td>Ressource unbekannt<\/td><td>Route Model Binding<\/td><\/tr> <tr><td>422 Unprocessable<\/td><td>Validierung fehlgeschlagen<\/td><td>Form Request<\/td><\/tr> <tr><td>429 Too Many Requests<\/td><td>Rate Limit erreicht<\/td><td><code>throttle<\/code><\/td><\/tr><\/table> <p><code>paginate()<\/code> an einer Resource-Collection liefert die Daten automatisch mit <code>links<\/code> und <code>meta<\/code> (aktuelle Seite, Gesamtzahl). Für sehr große Tabellen ist <code>cursorPaginate()<\/code> schneller, weil es kein <code>OFFSET<\/code> braucht.<\/p>",
-   "code": "<?php\n// routes/api.php\nRoute::middleware('auth:sanctum')->prefix('v1')->group(function () {\n    Route::apiResource('produkte', Api\\ProduktController::class);\n});\n\n// app/Http/Resources/ProduktResource.php\nclass ProduktResource extends JsonResource\n{\n    public function toArray(Request $request): array\n    {\n        return [\n            'id'        => $this->id,\n            'name'      => $this->name,\n            'preis'     => ['cent' => $this->preis_cent, 'waehrung' => 'EUR'],\n            'status'    => $this->status->value,\n            'kategorie' => new KategorieResource($this->whenLoaded('kategorie')),\n            'erstellt'  => $this->created_at->toIso8601String(),\n        ];\n    }\n}\n\n// app/Http/Controllers/Api/ProduktController.php\nclass ProduktController extends Controller\n{\n    public function index()\n    {\n        return ProduktResource::collection(\n            Produkt::with('kategorie')->aktiv()->paginate(25)\n        );\n    }\n\n    public function store(ProduktSpeichernRequest $request)\n    {\n        $produkt = Produkt::create($request->validated());\n\n        return (new ProduktResource($produkt))\n            ->response()\n            ->setStatusCode(201)\n            ->header('Location', route('produkte.show', $produkt));\n    }\n\n    public function destroy(Produkt $produkt)\n    {\n        Gate::authorize('delete', $produkt);\n        $produkt->delete();\n        return response()->noContent();          // 204\n    }\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Versioniere öffentliche APIs von Anfang an (<code>/api/v1<\/code>). Eine Feldumbenennung, die für dein eigenes Frontend trivial ist, bricht die Integration eines Kunden, den du nicht kennst. Mit Resources kannst du eine <code>V2\\ProduktResource<\/code> neben die alte stellen, ohne Model oder Datenbank anzufassen.",
-   "quiz": [
-    {
-     "q": "Warum gibt man in einer API nicht einfach das Eloquent-Model als JSON zurück?",
-     "options": [
-      "Weil sonst jede Spalte – auch sensible oder neue – ungewollt nach außen geht",
-      "Weil es langsamer ist",
-      "Weil Models nicht serialisierbar sind"
-     ],
-     "correct": 0,
-     "explain": "API Resources definieren einen stabilen, bewusst gewählten Vertrag."
-    },
-    {
-     "q": "Welcher Statuscode passt zu einem erfolgreichen POST, der eine Ressource anlegt?",
-     "options": [
-      "200",
-      "201",
-      "204"
-     ],
-     "correct": 1,
-     "explain": "201 Created, idealerweise mit Location-Header auf die neue Ressource."
-    },
-    {
-     "q": "Ein angemeldeter Benutzer will ein fremdes Produkt löschen. Welcher Statuscode ist richtig?",
-     "options": [
-      "422",
-      "401",
-      "403"
-     ],
-     "correct": 2,
-     "explain": "401 heißt „nicht angemeldet“, 403 „angemeldet, aber nicht berechtigt“."
+
+  html += '<div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    var cls = '';
+    if(revealed){
+      if(i === card.correct) cls = ' correct';
+      else if(i === review.picked) cls = ' wrong';
     }
-   ]
-  },
-  {
-   "id": "m48-l2",
-   "title": "Token-Authentifizierung mit Sanctum",
-   "minutes": 12,
-   "body": "<p><strong>Laravel Sanctum<\/strong> deckt zwei Fälle ab:<\/p> <ul><li><strong>API-Tokens<\/strong> für mobile Apps, Skripte und Fremdsysteme. Der Client schickt <code>Authorization: Bearer &lt;token&gt;<\/code>.<\/li> <li><strong>SPA-Authentifizierung<\/strong> für dein eigenes JavaScript-Frontend auf derselben Domain. Das läuft über das normale Session-Cookie mit CSRF-Schutz – ohne Token im JavaScript, das durch XSS gestohlen werden könnte.<\/li><\/ul> <p>Tokens werden in der Tabelle <code>personal_access_tokens<\/code> nur als <strong>SHA-256-Hash<\/strong> gespeichert. Den Klartext siehst du genau einmal, direkt nach <code>createToken()<\/code>. Danach kann ihn niemand mehr auslesen, auch du nicht.<\/p> <p><strong>Abilities<\/strong> begrenzen, was ein Token darf (<code>produkte:lesen<\/code>). Gib jedem Token nur die Rechte, die der Client wirklich braucht, und setze ein Ablaufdatum. Die Abilities ersetzen keine Policy: Ein Token mit <code>produkte:schreiben<\/code> darf trotzdem nur <em>eigene<\/em> Produkte ändern.<\/p> <p>Brauchst du einen vollständigen OAuth2-Server, also Drittanbieter-Apps mit Zustimmungsdialog, ist <strong>Laravel Passport<\/strong> das passende Paket. Für die meisten Projekte reicht Sanctum.<\/p>",
-   "code": "<?php\n// Token ausstellen - z. B. in einem Login-Endpunkt fuer die Mobile-App\nRoute::post('/v1/tokens', function (Request $request) {\n    $daten = $request->validate([\n        'email'    => ['required', 'email'],\n        'password' => ['required'],\n        'geraet'   => ['required', 'string', 'max:100'],\n    ]);\n\n    $user = User::where('email', $daten['email'])->first();\n\n    if (! $user || ! Hash::check($daten['password'], $user->password)) {\n        throw ValidationException::withMessages(['email' => 'Zugangsdaten ungueltig.']);\n    }\n\n    $token = $user->createToken(\n        $daten['geraet'],\n        ['produkte:lesen', 'bestellungen:anlegen'],\n        now()->addDays(30)\n    );\n\n    return ['token' => $token->plainTextToken];   // nur jetzt im Klartext!\n})->middleware('throttle:5,1');                    // 5 Versuche pro Minute\n\n// Ability pruefen - die Aliase 'abilities' und 'ability' vorher in\n// bootstrap/app.php registrieren (Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities ...)\nRoute::middleware(['auth:sanctum', 'abilities:bestellungen:anlegen'])\n    ->post('/v1/bestellungen', [BestellungController::class, 'store']);\n\n// Token widerrufen (Logout auf diesem Geraet)\n$request->user()->currentAccessToken()->delete();",
-   "codeLang": "PHP · Laravel",
-   "tip": "Den Login-Endpunkt immer mit einem engen Rate Limit versehen. Sonst testet ein Angreifer tausende Passwörter pro Minute. Und Tokens gehören bei Mobile-Apps in den sicheren Speicher des Betriebssystems (Keychain, Keystore), nicht in einfache Einstellungsdateien.",
-   "quiz": [
-    {
-     "q": "Wie speichert Sanctum API-Tokens in der Datenbank?",
-     "options": [
-      "Als SHA-256-Hash",
-      "Verschlüsselt mit APP_KEY",
-      "Im Klartext"
-     ],
-     "correct": 0,
-     "explain": "Deshalb ist der Klartext nur direkt nach createToken() verfügbar."
-    },
-    {
-     "q": "Welche Sanctum-Variante ist für das eigene Vue- oder React-Frontend auf derselben Domain gedacht?",
-     "options": [
-      "API-Tokens im localStorage",
-      "SPA-Authentifizierung über Session-Cookie",
-      "Passport mit OAuth2"
-     ],
-     "correct": 1,
-     "explain": "Ein Token im localStorage könnte per XSS gestohlen werden – ein HttpOnly-Cookie nicht."
-    },
-    {
-     "q": "Ein Token hat die Ability produkte:schreiben. Darf es damit jedes Produkt ändern?",
-     "options": [
-      "Nur Produkte ohne Bestellungen",
-      "Ja, die Ability erlaubt alles",
-      "Nein, die Policy prüft weiterhin, ob der Benutzer das konkrete Produkt ändern darf"
-     ],
-     "correct": 2,
-     "explain": "Abilities begrenzen das Token. Die Policy prüft die Berechtigung für den einzelnen Datensatz."
-    }
-   ]
-  },
-  {
-   "id": "m48-l3",
-   "title": "Rate Limiting, Fehlerformat und Idempotenz",
-   "minutes": 12,
-   "body": "<p>Eine produktionsreife API braucht mehr als funktionierende Endpunkte:<\/p> <ul><li><strong>Rate Limiting<\/strong> schützt vor Missbrauch und Überlast. Benannte Limiter definierst du in <code>AppServiceProvider::boot()<\/code> mit <code>RateLimiter::for()<\/code>, die Route nutzt sie über <code>throttle:name<\/code>. Laravel liefert <code>429<\/code> und die Header <code>Retry-After<\/code> und <code>X-RateLimit-Remaining<\/code>.<\/li> <li><strong>Einheitliches Fehlerformat<\/strong>: Clients sollen Fehler maschinell verarbeiten können. In <code>bootstrap/app.php<\/code> kannst du im Abschnitt <code>withExceptions()<\/code> steuern, wie Exceptions als JSON gerendert werden. Mit <code>APP_DEBUG=false<\/code> erscheinen dabei nie Stacktraces.<\/li> <li><strong>Idempotenz<\/strong>: Netzwerke verlieren Antworten. Der Client weiß dann nicht, ob die Bestellung angelegt wurde, und sendet erneut. GET, PUT und DELETE sind von Natur aus idempotent, POST nicht. Die Lösung ist ein <strong>Idempotency-Key<\/strong>-Header: Der Server merkt sich den Schlüssel und liefert beim zweiten Mal die erste Antwort, statt doppelt zu buchen.<\/li><\/ul> <p>Für die Dokumentation erzeugen Pakete wie <strong>Scramble<\/strong> eine OpenAPI-Beschreibung direkt aus Routen, Form Requests und Resources. Sie bleibt dadurch automatisch aktuell.<\/p>",
-   "code": "<?php\n// app/Providers/AppServiceProvider.php\npublic function boot(): void\n{\n    RateLimiter::for('api', function (Request $request) {\n        return $request->user()\n            ? Limit::perMinute(120)->by($request->user()->id)\n            : Limit::perMinute(20)->by($request->ip());\n    });\n}\n\n// bootstrap/app.php - einheitliches Fehlerformat fuer die API\n->withExceptions(function (Exceptions $exceptions) {\n    // FachlicherKonflikt: gemeinsame Basisklasse, z. B. fuer\n    // UngueltigerStatuswechsel und LagerbestandZuNiedrig\n    $exceptions->render(function (FachlicherKonflikt $e, Request $request) {\n        if ($request->is('api/*')) {\n            return response()->json([\n                'fehler' => ['code' => Str::snake(class_basename($e)), 'nachricht' => $e->getMessage()],\n            ], 409);\n        }\n    });\n})\n\n// Idempotenz bei POST /api/v1/bestellungen\npublic function store(BestellungRequest $request, BestellungAnlegen $anlegen)\n{\n    $schluessel = $request->header('Idempotency-Key');\n    abort_unless($schluessel, 400, 'Idempotency-Key fehlt.');\n    $schluessel = \"idem:{$request->user()->id}:{$schluessel}\";   // pro Benutzer\n\n    $bestellungId = Cache::lock(\"{$schluessel}:lock\", 10)->block(5, function () use ($request, $anlegen, $schluessel) {\n        // Zweiter Aufruf mit gleichem Schluessel: liefert die ID der ersten Bestellung\n        return Cache::remember($schluessel, now()->addDay(),\n            fn () => $anlegen->ausfuehren($request->user(), $request->positionen())->id);\n    });\n\n    return (new BestellungResource(Bestellung::findOrFail($bestellungId)))\n        ->response()\n        ->setStatusCode(201);\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>409 Conflict<\/code> ist der passende Status, wenn eine Aktion fachlich nicht zum aktuellen Zustand passt, etwa „Bestellung ist bereits versendet“. Viele APIs liefern hier fälschlich 400 oder 500. Wer die Statuscodes sauber trennt, erspart Integrationspartnern viel Rätselraten.",
-   "quiz": [
-    {
-     "q": "Welche HTTP-Methode ist von Natur aus NICHT idempotent?",
-     "options": [
-      "DELETE",
-      "POST",
-      "PUT"
-     ],
-     "correct": 1,
-     "explain": "Zweimal POST legt zwei Ressourcen an – deshalb gibt es Idempotency-Keys."
-    },
-    {
-     "q": "Welcher Header teilt dem Client nach einem 429 mit, wann er es erneut versuchen darf?",
-     "options": [
-      "Retry-After",
-      "Expires",
-      "Location"
-     ],
-     "correct": 0,
-     "explain": "Laravel setzt ihn automatisch beim throttle-Middleware."
-    },
-    {
-     "q": "Welcher Statuscode passt, wenn eine bereits versendete Bestellung storniert werden soll?",
-     "options": [
-      "500",
-      "404",
-      "409"
-     ],
-     "correct": 2,
-     "explain": "409 Conflict: Die Anfrage widerspricht dem aktuellen Zustand der Ressource."
-    }
-   ]
+    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' onclick="pickReview('+i+')">'+esc(opt)+'</button>';
+  });
+  html += '</div>';
+
+  if(revealed){
+    html += '<div class="srs-explain">'+(review.picked === card.correct ? '✓ ' : '✗ ')+esc(card.explain)+
+            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
+    html += '<div><div class="ti-label" style="margin-bottom:6px;">Wie sicher saß das?</div><div class="rate-row">'+
+      '<button class="rate-btn again" onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
+      '<button class="rate-btn" onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
+      '<button class="rate-btn" onclick="rateAndNext(2)">Gut<span class="rt-sub"><kbd>3</kbd> normal</span></button>'+
+      '<button class="rate-btn easy" onclick="rateAndNext(3)">Einfach<span class="rt-sub"><kbd>4</kbd> langes Intervall</span></button>'+
+      '</div></div>';
   }
- ]
-});
-MODULES.push({
- "id": "m49",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Experte · Architektur: Container, Provider, Events",
- "lessons": [
-  {
-   "id": "m49-l1",
-   "title": "Service Container und Dependency Injection",
-   "minutes": 13,
-   "body": "<p>Der <strong>Service Container<\/strong> ist das Herz von Laravel. Er weiß, wie man Objekte baut, und liefert sie dort, wo sie gebraucht werden – <strong>Dependency Injection<\/strong>. Eine Klasse holt sich ihre Abhängigkeiten nicht selbst (<code>new StripeClient(...)<\/code>), sondern bekommt sie im Konstruktor.<\/p> <ul><li><strong>Auto-Wiring<\/strong>: Konkrete Klassen ohne skalare Parameter baut der Container per Reflection selbst. Du musst nichts registrieren.<\/li> <li><strong>Interfaces<\/strong> brauchen eine <strong>Bindung<\/strong>: welches Interface zu welcher Implementierung.<\/li> <li><code>bind()<\/code> erzeugt bei jeder Anfrage ein neues Objekt, <code>singleton()<\/code> eins pro Anwendung bzw. Request, <code>scoped()<\/code> eins pro Request, auch unter Octane oder in Queue-Workern.<\/li> <li><strong>Kontextuelle Bindung<\/strong>: <code>when(A::class)-&gt;needs(I::class)-&gt;give(B::class)<\/code>.<\/li><\/ul> <p>Injiziert wird überall, wo Laravel Objekte erzeugt: Controller (Konstruktor und Methoden), Jobs (<code>handle()<\/code>), Listener, Commands, Middleware. Manuell geht es mit <code>app(Klasse::class)<\/code>.<\/p> <p>Der eigentliche Gewinn zeigt sich im Test: Du tauschst die echte Implementierung gegen eine Attrappe aus, ohne den Code zu ändern, der sie benutzt.<\/p>",
-   "code": "<?php\ninterface Wechselkurse\n{\n    public function kurs(string $von, string $nach): float;\n}\n\nfinal class EzbWechselkurse implements Wechselkurse\n{\n    public function __construct(private HttpFactory $http) {}   // auto-wired\n\n    public function kurs(string $von, string $nach): float\n    {\n        // ... HTTP-Abruf bei der EZB ...\n        return 1.08;\n    }\n}\n\nfinal class PreisRechner\n{\n    public function __construct(private Wechselkurse $kurse) {}  // Interface!\n\n    public function inWaehrung(int $cent, string $waehrung): int\n    {\n        return (int) round($cent * $this->kurse->kurs('EUR', $waehrung));\n    }\n}\n\n// app/Providers/AppServiceProvider.php\npublic function register(): void\n{\n    $this->app->singleton(Wechselkurse::class, EzbWechselkurse::class);\n}\n\n// Controller - PreisRechner wird mitsamt Abhaengigkeiten gebaut\npublic function show(Produkt $produkt, PreisRechner $rechner) { /* ... */ }\n\n// Test - Implementierung austauschen\n$this->app->instance(Wechselkurse::class, new class implements Wechselkurse {\n    public function kurs(string $von, string $nach): float { return 2.0; }\n});",
-   "codeLang": "PHP · Laravel",
-   "tip": "Wenn eine Klasse mehr als vier oder fünf Konstruktor-Abhängigkeiten hat, tut sie meist zu viel. Der Container macht es leicht, beliebig viele Dienste zu injizieren – die Anzahl ist aber ein ehrlicher Messwert für die Verantwortung einer Klasse. Teile sie dann auf.",
-   "quiz": [
-    {
-     "q": "Wann muss ein Typ im Container explizit gebunden werden?",
-     "options": [
-      "Wenn ein Interface oder eine Klasse mit nicht auflösbaren Parametern verlangt wird",
-      "Nie – der Container errät alles",
-      "Immer"
-     ],
-     "correct": 0,
-     "explain": "Konkrete Klassen mit auflösbaren Abhängigkeiten baut der Container per Auto-Wiring."
-    },
-    {
-     "q": "Was unterscheidet singleton() von bind()?",
-     "options": [
-      "singleton() liefert stets dieselbe Instanz, bind() jedes Mal eine neue",
-      "bind() ist nur für Interfaces",
-      "Kein Unterschied"
-     ],
-     "correct": 0,
-     "explain": "scoped() verhält sich wie singleton, wird aber pro Request bzw. Job zurückgesetzt."
-    },
-    {
-     "q": "Was ist der größte praktische Vorteil von Dependency Injection?",
-     "options": [
-      "Schnellere Ausführung",
-      "Kürzerer Code",
-      "Abhängigkeiten lassen sich austauschen, etwa in Tests"
-     ],
-     "correct": 2,
-     "explain": "Der Code hängt am Interface, nicht an der konkreten Implementierung."
+  html += '</div></div>';
+  return html;
+}
+var PART_TITLES = {};
+MODULES.forEach(function(m){ PART_TITLES[m.part] = m.partTitle; });
+var ZUSATZ_TEILE = [10, 11];
+var EXAM_MODES = {
+  kurz:     { label:'Kurztest',        n:15, min:12, parts:null, desc:'15 Fragen quer durch den gesamten Kurs. Ideal als tägliche Standortbestimmung.' },
+  standard: { label:'Vollprüfung',     n:30, min:30, parts:null, desc:'30 Fragen, gewichtet nach deiner Fehlerquote \u2014 Schwaches kommt \u00f6fter. Querschnitt — realistischer Querschnitt über Algorithmen, Datenbanken, UML, Netzwerk, Sicherheit und Wirtschaft.' },
+  ap1:      { label:'Prüfungslänge',   n:40, min:90, parts:null, desc:'40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1. Zwei Minuten pro Frage, so wie am Prüfungstag.' },
+  fehler:   { label:'Fehlerheft',      n:20, min:20, parts:null, nurFehler:true, desc:'Nur Fragen, die dir schon einmal danebengegangen sind.' },
+  php:      { label:'PHP & Laravel',   n:20, min:25, parts:[10], desc:'20 Fragen aus dem Zusatzteil PHP & Laravel \u2014 vom Einsteiger bis zum Experten. Z\u00e4hlt nicht zur AP1.' },
+  git:      { label:'Git',             n:15, min:15, parts:[11], desc:'15 Fragen zu Git und Zusammenarbeit. Z\u00e4hlt nicht zur AP1.' },
+  weak:     { label:'Schwachstellen',  n:20, min:20, parts:null, weak:true, desc:'20 Fragen bevorzugt aus Themen, in denen du bisher Fehler gemacht hast.' }
+};
+var exam = { active:false, mode:null, qs:[], answers:[], idx:0, endsAt:0, timer:null, finished:false, result:null };
+function stopExamTimer(){ if(exam.timer){ clearInterval(exam.timer); exam.timer = null; } }
+function gewichtetZiehen(pool, n){
+  var rest = pool.map(function(c){
+    var t = state.stats[c.id];
+    var g = 1.0;
+    if(t && (t.right + t.wrong) > 0){
+      var q = t.right / (t.right + t.wrong);
+      g = 0.35 + (1 - q) * 2.4;
     }
-   ]
-  },
-  {
-   "id": "m49-l2",
-   "title": "Service Provider und Facades",
-   "minutes": 11,
-   "body": "<p><strong>Service Provider<\/strong> sind der Ort, an dem die Anwendung zusammengesetzt wird. Jeder hat zwei Phasen:<\/p> <ul><li><code>register()<\/code> – <em>nur<\/em> Bindungen in den Container eintragen. Andere Dienste sind hier eventuell noch nicht verfügbar.<\/li> <li><code>boot()<\/code> – läuft, nachdem <em>alle<\/em> Provider registriert sind. Hier konfigurierst du Rate Limiter, Gates, Observer, Macros und Model-Einstellungen.<\/li><\/ul> <p>Eigene Provider legst du mit <code>make:provider<\/code> an. Sie landen in <code>bootstrap/providers.php<\/code>.<\/p> <p><strong>Facades<\/strong> wie <code>Cache::get()<\/code> sehen aus wie statische Aufrufe, sind aber keine. Jede Facade leitet den Aufruf an ein Objekt aus dem Container weiter: <code>Cache::get('x')<\/code> entspricht <code>app('cache')-&gt;get('x')<\/code>. Dadurch bleiben sie testbar, denn <code>Cache::shouldReceive()<\/code> oder <code>Mail::fake()<\/code> tauschen das Objekt dahinter aus.<\/p> <table class=\"lesson-table\"><tr><th>Variante<\/th><th>Beispiel<\/th><th>Stärke<\/th><\/tr> <tr><td>Facade<\/td><td><code>Cache::get('k')<\/code><\/td><td>kurz, gut lesbar, fakebar<\/td><\/tr> <tr><td>Helper<\/td><td><code>cache('k')<\/code><\/td><td>noch kürzer<\/td><\/tr> <tr><td>Injektion<\/td><td><code>__construct(CacheRepository $cache)<\/code><\/td><td>Abhängigkeit sichtbar im Konstruktor<\/td><\/tr><\/table> <p>In Controllern und Laravel-nahem Code sind Facades üblich. In Fachlogik, die du auch ohne Laravel denken willst, ist Konstruktor-Injektion die klarere Wahl.<\/p>",
-   "code": "<?php\n// app/Providers/ShopServiceProvider.php\nnamespace App\\Providers;\n\nuse App\\Models\\Bestellung;\nuse App\\Observers\\BestellungObserver;\nuse Illuminate\\Database\\Eloquent\\Model;\nuse Illuminate\\Support\\ServiceProvider;\nuse Illuminate\\Support\\Str;\n\nclass ShopServiceProvider extends ServiceProvider\n{\n    public function register(): void\n    {\n        $this->app->singleton(Wechselkurse::class, fn ($app) => new EzbWechselkurse(\n            $app->make(\\Illuminate\\Http\\Client\\Factory::class),\n        ));\n    }\n\n    public function boot(): void\n    {\n        Model::shouldBeStrict(! $this->app->isProduction());  // Lazy Loading u. a. melden\n        Bestellung::observe(BestellungObserver::class);\n\n        Str::macro('artikelnummer', fn (int $id) => 'ART-' . str_pad((string) $id, 6, '0', STR_PAD_LEFT));\n    }\n}\n\n// bootstrap/providers.php\nreturn [\n    App\\Providers\\AppServiceProvider::class,\n    App\\Providers\\ShopServiceProvider::class,\n];",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>Model::shouldBeStrict()<\/code> schaltet drei Schutzmechanismen auf einmal ein: Fehler bei Lazy Loading, bei Zugriff auf nicht geladene Attribute und bei stillem Verwerfen von Feldern außerhalb von <code>$fillable<\/code>. Lokal und in Tests ist das Gold wert, in Produktion lässt man es aus.",
-   "quiz": [
-    {
-     "q": "Was gehört in die register()-Methode eines Service Providers?",
-     "options": [
-      "Ausschließlich Bindungen in den Container",
-      "Datenbankabfragen",
-      "Routen und Views"
-     ],
-     "correct": 0,
-     "explain": "In register() sind andere Dienste womöglich noch nicht verfügbar. Alles andere gehört in boot()."
-    },
-    {
-     "q": "Was passiert technisch bei Cache::get(\"x\")?",
-     "options": [
-      "Eine statische Methode der Klasse Cache wird ausgeführt",
-      "Der Aufruf wird an das Cache-Objekt im Container weitergeleitet",
-      "Es wird direkt Redis angesprochen"
-     ],
-     "correct": 1,
-     "explain": "Darum lassen sich Facades in Tests faken."
-    },
-    {
-     "q": "Wann läuft boot() eines Providers?",
-     "options": [
-      "Nur in der Konsole",
-      "Vor allen register()-Methoden",
-      "Nachdem alle Provider registriert wurden"
-     ],
-     "correct": 2,
-     "explain": "So kann boot() sich auf alle registrierten Dienste verlassen."
-    }
-   ]
-  },
-  {
-   "id": "m49-l3",
-   "title": "Events, Listener und Observer",
-   "minutes": 11,
-   "body": "<p><strong>Events<\/strong> entkoppeln „etwas ist passiert“ von „was daraufhin passieren soll“. Der Code, der eine Bestellung anlegt, löst <code>BestellungAufgegeben<\/code> aus. Ob danach eine Mail verschickt, das Lager benachrichtigt und eine Statistik aktualisiert wird, entscheiden die <strong>Listener<\/strong>. Ein neuer Listener ändert den bestehenden Code nicht.<\/p> <ul><li><code>make:event<\/code> und <code>make:listener<\/code> erzeugen die Klassen. Laravel findet Listener automatisch über den Typ-Hint in <code>handle()<\/code>.<\/li> <li>Listener mit <code>implements ShouldQueue<\/code> laufen im Hintergrund über die Queue.<\/li> <li><code>ShouldDispatchAfterCommit<\/code> am Event (oder <code>$afterCommit<\/code> am Listener) sorgt dafür, dass erst nach erfolgreichem Datenbank-Commit verarbeitet wird.<\/li><\/ul> <p><strong>Observer<\/strong> reagieren auf Model-Lebenszyklus-Ereignisse: <code>creating<\/code>, <code>created<\/code>, <code>updating<\/code>, <code>updated<\/code>, <code>deleting<\/code>, <code>deleted<\/code> und weitere. Typische Aufgaben sind das Setzen von Slugs oder das Leeren von Caches.<\/p> <p>Aber Vorsicht: Observer sind <strong>unsichtbar<\/strong>. Wer <code>$bestellung-&gt;save()<\/code> liest, sieht nicht, dass dabei Mails verschickt werden. Und Massenoperationen wie <code>Produkt::where(…)-&gt;update([...])<\/code> lösen <em>keine<\/em> Model-Events aus. Fachlich wichtige Abläufe gehören deshalb besser in ein explizites Event oder eine Action.<\/p>",
-   "code": "<?php\n// app/Events/BestellungAufgegeben.php\nclass BestellungAufgegeben implements ShouldDispatchAfterCommit\n{\n    use Dispatchable, SerializesModels;\n\n    public function __construct(public Bestellung $bestellung) {}\n}\n\n// app/Listeners/BestaetigungSenden.php\nclass BestaetigungSenden implements ShouldQueue\n{\n    public function handle(BestellungAufgegeben $event): void\n    {\n        Mail::to($event->bestellung->kunde->email)\n            ->send(new BestellBestaetigung($event->bestellung));\n    }\n}\n\n// Ausloesen - irgendwo in der Fachlogik\nBestellungAufgegeben::dispatch($bestellung);\n\n// Observer per Attribut am Model registrieren\n#[ObservedBy(ProduktObserver::class)]\nclass Produkt extends Model { /* ... */ }\n\nclass ProduktObserver\n{\n    public function saving(Produkt $produkt): void\n    {\n        $produkt->slug ??= Str::slug($produkt->name);\n    }\n\n    public function saved(Produkt $produkt): void\n    {\n        Cache::forget(\"produkt:{$produkt->id}\");\n    }\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Das <code>AfterCommit<\/code> ist kein Detail. Ohne es kann ein Queue-Worker den Job schneller abholen, als die Transaktion committet – er findet die Bestellung dann noch nicht in der Datenbank. Solche Fehler treten nur unter Last auf und sind entsprechend schwer zu finden.",
-   "quiz": [
-    {
-     "q": "Was ist der Hauptvorteil von Events und Listenern?",
-     "options": [
-      "Lose Kopplung – neue Reaktionen ohne Änderung des auslösenden Codes",
-      "Weniger Datenbankabfragen",
-      "Schnellere Ausführung"
-     ],
-     "correct": 0,
-     "explain": "Der auslösende Code kennt seine Listener nicht."
-    },
-    {
-     "q": "Lösen Produkt::where(\"aktiv\", false)->update([...]) Model-Events wie updated aus?",
-     "options": [
-      "Ja, für jedes betroffene Model",
-      "Nein, Massen-Updates laufen direkt in der Datenbank ohne Model-Events",
-      "Nur bei SoftDeletes"
-     ],
-     "correct": 1,
-     "explain": "Es werden keine Models geladen, also gibt es auch keine Events."
-    },
-    {
-     "q": "Wozu dient ShouldDispatchAfterCommit?",
-     "options": [
-      "Das Event wird in der Datenbank gespeichert",
-      "Das Event wird erst nach erfolgreichem Commit der laufenden Transaktion ausgelöst",
-      "Das Event wird synchron ausgeführt"
-     ],
-     "correct": 1,
-     "explain": "Sonst könnte ein Listener Daten suchen, die noch nicht committet sind – oder nach einem Rollback nie existieren."
-    }
-   ]
-  },
-  {
-   "id": "m49-l4",
-   "title": "Schlanke Controller: Actions und Services",
-   "minutes": 12,
-   "body": "<p>Mit dem Projekt wächst die Frage: <strong>Wo gehört die Geschäftslogik hin?<\/strong> Steht sie im Controller, kann sie weder ein Artisan-Command noch ein Job noch die API wiederverwenden. Ein bewährtes Muster sind <strong>Action-Klassen<\/strong>: eine Klasse pro Anwendungsfall mit einer öffentlichen Methode.<\/p> <ul><li>Der <strong>Controller<\/strong> übersetzt HTTP in einen Aufruf und das Ergebnis zurück in HTTP.<\/li> <li>Die <strong>Action<\/strong> enthält den Anwendungsfall: Transaktion, Prüfungen, Speichern, Event auslösen.<\/li> <li><strong>Models<\/strong> kennen ihre eigenen Regeln (Statusübergänge, Berechnungen am eigenen Datensatz).<\/li><\/ul> <p>Für die Übergabe vieler Werte eignen sich <strong>DTOs<\/strong> (Data Transfer Objects): kleine readonly-Klassen statt loser Arrays. Die IDE kennt dann die Felder, und Tippfehler fallen sofort auf.<\/p> <p>Übertreib es nicht. Für ein einfaches CRUD-Formular ist <code>Produkt::create($request-&gt;validated())<\/code> im Controller völlig in Ordnung. Schichten lohnen sich dort, wo Logik wiederverwendet wird oder komplex genug ist, um eigene Tests zu verdienen. Nach Fachbereichen geordnete Ordner (<code>app/Bestellwesen<\/code>, <code>app/Katalog<\/code>) helfen bei großen Projekten mehr als technische (<code>app/Services<\/code>).<\/p>",
-   "code": "<?php\n// app/Bestellwesen/Daten/Warenkorb.php\nfinal readonly class WarenkorbPosition\n{\n    public function __construct(public int $produktId, public int $menge) {}\n}\n\n// app/Bestellwesen/Actions/BestellungAnlegen.php\nfinal class BestellungAnlegen\n{\n    public function __construct(private PreisRechner $preise) {}\n\n    /** @param list<WarenkorbPosition> $positionen */\n    public function ausfuehren(User $user, array $positionen): Bestellung\n    {\n        return DB::transaction(function () use ($user, $positionen) {\n            $bestellung = $user->kunde->bestellungen()->create(['status' => BestellStatus::Offen]);\n\n            foreach ($positionen as $pos) {\n                $produkt = Produkt::lockForUpdate()->findOrFail($pos->produktId);\n\n                if ($produkt->bestand < $pos->menge) {\n                    throw LagerbestandZuNiedrig::fuer($produkt);\n                }\n\n                $bestellung->produkte()->attach($produkt->id, [\n                    'menge' => $pos->menge, 'preis_cent' => $produkt->preis_cent,\n                ]);\n                $produkt->decrement('bestand', $pos->menge);\n            }\n\n            BestellungAufgegeben::dispatch($bestellung);\n            return $bestellung;\n        });\n    }\n}\n\n// Controller - nur noch Uebersetzung HTTP <-> Anwendungsfall\npublic function store(BestellungRequest $request, BestellungAnlegen $anlegen): RedirectResponse\n{\n    $bestellung = $anlegen->ausfuehren($request->user(), $request->positionen());\n    return to_route('bestellungen.show', $bestellung);\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "<code>lockForUpdate()<\/code> sperrt die Produktzeile bis zum Ende der Transaktion. Ohne die Sperre können zwei gleichzeitige Bestellungen beide den Bestand 1 lesen, beide bestätigen – und du hast etwas verkauft, das nicht da ist. Solche Race Conditions entstehen erst in Produktion, wenn echte Last kommt.",
-   "quiz": [
-    {
-     "q": "Was ist die Aufgabe des Controllers im Action-Muster?",
-     "options": [
-      "Er übersetzt den HTTP-Request in einen Aufruf und das Ergebnis in eine Response",
-      "Er greift direkt auf die Datenbank zu",
-      "Er enthält die gesamte Geschäftslogik"
-     ],
-     "correct": 0,
-     "explain": "Die Action ist dadurch auch aus Jobs, Commands und der API nutzbar."
-    },
-    {
-     "q": "Wozu dient lockForUpdate() beim Prüfen des Lagerbestands?",
-     "options": [
-      "Es macht die Abfrage schneller",
-      "Es sperrt die Zeile bis zum Transaktionsende und verhindert so gleichzeitige Überverkäufe",
-      "Es verhindert das Löschen des Produkts für immer"
-     ],
-     "correct": 1,
-     "explain": "Pessimistisches Sperren gegen Race Conditions."
-    },
-    {
-     "q": "Wann ist eine eigene Action-Klasse übertrieben?",
-     "options": [
-      "Bei Abläufen mit Transaktion und Events",
-      "Bei einfachen CRUD-Operationen ohne weitere Logik",
-      "Bei Logik, die Web und API gemeinsam nutzen"
-     ],
-     "correct": 1,
-     "explain": "Architektur soll Komplexität beherrschen, nicht erzeugen."
-    }
-   ]
+    return { c:c, g:g };
+  });
+  var raus = [];
+  var ziel = Math.min(n, rest.length);
+  while(raus.length < ziel && rest.length){
+    var summe = rest.reduce(function(a, x){ return a + x.g; }, 0);
+    var wurf = Math.random() * summe, i = 0;
+    while(i < rest.length - 1 && wurf > rest[i].g){ wurf -= rest[i].g; i++; }
+    raus.push(rest[i].c);
+    rest.splice(i, 1);
   }
- ]
-});
-MODULES.push({
- "id": "m59",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Experte · Integrationen, Suche und Echtzeit",
- "lessons": [
-  {
-   "id": "m59-l1",
-   "title": "Der HTTP-Client von Laravel",
-   "minutes": 12,
-   "body": "<p>Laravel legt über Guzzle eine schlanke, gut testbare Schicht: die Facade <code>Http<\/code>. Alles, was du in reinem PHP mühsam gebaut hast – Timeouts, Wiederholungen, Token, Fehlerbehandlung –, wird zu einer lesbaren Kette.<\/p> <table class=\"lesson-table\"><tr><th>Methode<\/th><th>Zweck<\/th><\/tr> <tr><td><code>timeout(5)<\/code> / <code>connectTimeout(2)<\/code><\/td><td>Zeitlimits in Sekunden<\/td><\/tr> <tr><td><code>retry(3, 200)<\/code><\/td><td>bis zu 3 Versuche, 200 ms Pause dazwischen<\/td><\/tr> <tr><td><code>withToken($t)<\/code><\/td><td>Header <code>Authorization: Bearer …<\/code><\/td><\/tr> <tr><td><code>acceptJson()<\/code><\/td><td>Header <code>Accept: application/json<\/code><\/td><\/tr> <tr><td><code>throw()<\/code><\/td><td>wirft bei 4xx/5xx eine <code>RequestException<\/code><\/td><\/tr> <tr><td><code>Http::pool(...)<\/code><\/td><td>mehrere Anfragen parallel<\/td><\/tr><\/table> <p>Ohne <code>throw()<\/code> wirft der Client bei Fehlerstatus <em>keine<\/em> Exception – du prüfst selbst mit <code>$antwort-&gt;successful()<\/code> oder <code>$antwort-&gt;failed()<\/code>. Das ist bequem, aber leicht zu vergessen.<\/p> <p>Wiederkehrende Einstellungen für einen Dienst bündelst du in einem <strong>Macro<\/strong> im Service Provider. Dann schreibt jeder im Team <code>Http::versand()-&gt;get(...)<\/code>, und Basis-URL, Token und Timeouts stehen an genau einer Stelle.<\/p>",
-   "code": "<?php\n// AppServiceProvider::boot()\nHttp::macro('versand', function () {\n    return Http::baseUrl(config('services.versand.url'))\n        ->withToken(config('services.versand.token'))\n        ->acceptJson()\n        ->timeout(5)\n        ->connectTimeout(2)\n        ->retry(3, 200, fn (Throwable $e) => $e instanceof ConnectionException\n            || ($e instanceof RequestException && $e->response->serverError()));\n});\n\n// Verwendung\n$antwort = Http::versand()->get('sendungen/' . rawurlencode($nummer));\n\nif ($antwort->notFound()) {\n    return null;\n}\n$status = $antwort->throw()->json('status');       // wirft bei anderen Fehlern\n\n// Mehrere Dienste parallel abfragen\n$antworten = Http::pool(fn (Pool $pool) => [\n    $pool->as('dhl')->timeout(5)->get('https://api.dhl.example/preise'),\n    $pool->as('dpd')->timeout(5)->get('https://api.dpd.example/preise'),\n]);\n$dhlPreis = $antworten['dhl']->json('preis');",
-   "codeLang": "PHP · Laravel",
-   "tip": "Die Closure im dritten Parameter von <code>retry()<\/code> entscheidet, ob ein Fehler einen neuen Versuch lohnt. Ohne sie wiederholt Laravel auch bei 401 oder 422 – also Anfragen, die beim zweiten Mal genauso abgelehnt werden. Wiederhole nur bei Verbindungsfehlern und 5xx.",
-   "quiz": [
-    {
-     "q": "Was passiert bei einer 500-Antwort, wenn man throw() nicht aufruft?",
-     "options": [
-      "Es wird keine Exception geworfen; man muss successful()/failed() selbst prüfen",
-      "Die Anfrage wird automatisch wiederholt",
-      "Laravel wirft automatisch eine Exception"
-     ],
-     "correct": 0,
-     "explain": "Mit ->throw() wird bei 4xx/5xx eine RequestException geworfen."
-    },
-    {
-     "q": "Wozu dient ein Http::macro()?",
-     "options": [
-      "Um Anfragen zu verschlüsseln",
-      "Um wiederkehrende Einstellungen für einen Dienst an einer Stelle zu bündeln",
-      "Um Antworten zu cachen"
-     ],
-     "correct": 1,
-     "explain": "Basis-URL, Token und Timeouts stehen dann nur einmal im Code."
-    },
-    {
-     "q": "Was macht Http::pool()?",
-     "options": [
-      "Es begrenzt die Anfragen pro Minute",
-      "Es führt mehrere Anfragen parallel aus",
-      "Es speichert Verbindungen dauerhaft"
-     ],
-     "correct": 1,
-     "explain": "Die Gesamtdauer richtet sich dann nach der langsamsten Anfrage, nicht nach der Summe."
-    }
-   ]
-  },
-  {
-   "id": "m59-l2",
-   "title": "Webhooks sicher empfangen",
-   "minutes": 12,
-   "body": "<p>Ein <strong>Webhook<\/strong> ist eine HTTP-Anfrage, die ein fremder Dienst an deine Anwendung schickt, wenn dort etwas passiert – „Zahlung eingegangen“, „Paket zugestellt“. Weil jeder diese Adresse aufrufen kann, gelten vier Regeln:<\/p> <ol><li><strong>Signatur prüfen.<\/strong> Der Dienst signiert den Body mit einem gemeinsamen Geheimnis (meist HMAC-SHA256). Du berechnest die Signatur nach und vergleichst mit <code>hash_equals()<\/code> – nie mit <code>===<\/code>, weil ein normaler Stringvergleich durch Zeitmessung angreifbar ist.<\/li> <li><strong>Den rohen Body verwenden.<\/strong> Die Signatur gilt für die exakten Bytes. Wer erst JSON dekodiert und wieder kodiert, verändert Leerzeichen oder Reihenfolge – die Prüfung schlägt fehl.<\/li> <li><strong>Idempotent verarbeiten.<\/strong> Dienste schicken denselben Webhook bei Zeitüberschreitung erneut. Speichere die Ereignis-ID und ignoriere Wiederholungen.<\/li> <li><strong>Schnell antworten.<\/strong> Bestätige mit 200 und verarbeite in einem Job. Wer zu lange braucht, bekommt den Webhook nochmal.<\/li><\/ol> <p>Die Webhook-Route liegt außerhalb des CSRF-Schutzes (<code>validateCsrfTokens(except: [...])<\/code>) – deshalb ist die Signatur die einzige Sicherung.<\/p>",
-   "code": "<?php\n// routes/web.php\nRoute::post('/webhooks/zahlung', ZahlungsWebhook::class)->middleware('throttle:60,1');\n\n// app/Http/Controllers/ZahlungsWebhook.php\nclass ZahlungsWebhook extends Controller\n{\n    public function __invoke(Request $request)\n    {\n        $roh       = $request->getContent();                       // exakte Bytes\n        $signatur  = (string) $request->header('X-Signatur');\n        $erwartet  = hash_hmac('sha256', $roh, config('services.zahlung.webhook_secret'));\n\n        if (!hash_equals($erwartet, $signatur)) {                  // zeitkonstanter Vergleich\n            abort(401);\n        }\n\n        $ereignis = json_decode($roh, true, 512, JSON_THROW_ON_ERROR);\n\n        // Idempotenz: dieselbe Ereignis-ID nur einmal verarbeiten\n        $neu = WebhookEreignis::firstOrCreate(\n            ['anbieter_id' => $ereignis['id']],\n            ['typ' => $ereignis['typ'], 'nutzlast' => $ereignis]\n        )->wasRecentlyCreated;\n\n        if ($neu) {\n            VerarbeiteZahlung::dispatch($ereignis['id']);           // eigentliche Arbeit im Job\n        }\n\n        return response()->noContent();                            // schnell bestaetigen\n    }\n}",
-   "codeLang": "PHP · Laravel",
-   "tip": "Viele Anbieter signieren zusätzlich einen Zeitstempel und erwarten, dass du Webhooks älter als einige Minuten ablehnst. Das verhindert, dass ein abgefangener, gültiger Webhook später noch einmal eingespielt wird (Replay-Angriff). Lies dazu immer die Dokumentation des jeweiligen Anbieters.",
-   "quiz": [
-    {
-     "q": "Warum vergleicht man Signaturen mit hash_equals() statt mit ===?",
-     "options": [
-      "hash_equals vergleicht in konstanter Zeit und verhindert Timing-Angriffe",
-      "=== funktioniert nicht mit Hashes",
-      "hash_equals ist schneller"
-     ],
-     "correct": 0,
-     "explain": "Ein normaler Vergleich bricht beim ersten Unterschied ab – das lässt sich messen."
-    },
-    {
-     "q": "Warum berechnet man die Signatur über den rohen Body?",
-     "options": [
-      "Weil JSON zu groß ist",
-      "Weil Dekodieren und neu Kodieren die Bytes verändern kann",
-      "Weil Laravel es verlangt"
-     ],
-     "correct": 1,
-     "explain": "Die Signatur gilt für exakt die empfangenen Bytes."
-    },
-    {
-     "q": "Ein Webhook kommt zweimal mit derselben Ereignis-ID. Was ist richtig?",
-     "options": [
-      "Mit 500 antworten",
-      "Beide verarbeiten",
-      "Den zweiten anhand der gespeicherten ID erkennen und ignorieren"
-     ],
-     "correct": 2,
-     "explain": "Idempotente Verarbeitung verhindert doppelte Buchungen."
-    }
-   ]
-  },
-  {
-   "id": "m59-l3",
-   "title": "Volltextsuche mit Laravel Scout",
-   "minutes": 11,
-   "body": "<p>Eine Suche mit <code>LIKE '%kabel%'<\/code> findet „Kabel“, aber nicht „Kabeln“, ignoriert Tippfehler und wird bei großen Tabellen langsam. <strong>Laravel Scout<\/strong> verbindet Models mit einer echten Suchmaschine.<\/p> <table class=\"lesson-table\"><tr><th>Treiber<\/th><th>Einsatz<\/th><\/tr> <tr><td><code>collection<\/code><\/td><td>Tests und Prototypen, filtert in PHP<\/td><\/tr> <tr><td><code>database<\/code><\/td><td>kleine bis mittlere Datenmengen, nutzt Volltextindizes der Datenbank<\/td><\/tr> <tr><td><code>meilisearch<\/code>, <code>typesense<\/code><\/td><td>selbst gehostete Suchmaschinen: tippfehlertolerant, schnell, Facetten<\/td><\/tr> <tr><td><code>algolia<\/code><\/td><td>gehosteter Dienst<\/td><\/tr><\/table> <p>Das Model bekommt den Trait <code>Searchable<\/code>. Mit <code>toSearchableArray()<\/code> bestimmst du, welche Felder in den Index wandern. Scout hält den Index automatisch aktuell: Beim Speichern und Löschen eines Models wird er mitgezogen – mit <code>SCOUT_QUEUE=true<\/code> im Hintergrund.<\/p> <p>Gesucht wird mit <code>Produkt::search('kabel hdmi')<\/code>. Das Ergebnis lässt sich filtern, paginieren und mit <code>-&gt;query(fn ($q) =&gt; $q-&gt;with('kategorie'))<\/code> um Eager Loading ergänzen.<\/p>",
-   "code": "<?php\nclass Produkt extends Model\n{\n    use Searchable;\n\n    public function toSearchableArray(): array\n    {\n        return [\n            'id'        => $this->id,\n            'name'      => $this->name,\n            'beschreibung' => strip_tags($this->beschreibung),\n            'kategorie' => $this->kategorie?->name,\n            'preis_cent'=> $this->preis_cent,\n        ];\n    }\n\n    // Nur aktive Produkte in den Index\n    public function shouldBeSearchable(): bool\n    {\n        return $this->aktiv;\n    }\n}\n\n// Bestehende Daten einmalig indexieren\n// php artisan scout:import \"App\\Models\\Produkt\"\n\n// Suchen\n$treffer = Produkt::search((string) $request->input('q', ''))\n    ->where('kategorie', 'Kabel')\n    ->query(fn ($q) => $q->with('kategorie'))\n    ->paginate(20);",
-   "codeLang": "PHP · Laravel",
-   "tip": "Beginne mit dem <code>database<\/code>-Treiber. Er braucht keine zusätzliche Infrastruktur und reicht für Tausende Produkte. Erst wenn Tippfehlertoleranz, Facetten oder Millionen Datensätze gefragt sind, lohnt eine eigene Suchmaschine – und der Umstieg ist dank Scout eine Konfigurationsänderung.",
-   "quiz": [
-    {
-     "q": "Welcher Trait macht ein Model mit Scout durchsuchbar?",
-     "options": [
-      "Searchable",
-      "Scoutable",
-      "Indexable"
-     ],
-     "correct": 0,
-     "explain": "Danach steht Model::search() zur Verfügung."
-    },
-    {
-     "q": "Wozu dient toSearchableArray()?",
-     "options": [
-      "Es bestimmt, welche Felder in den Suchindex kommen",
-      "Es sortiert Suchergebnisse",
-      "Es löscht den Index"
-     ],
-     "correct": 0,
-     "explain": "So landen keine unnötigen oder sensiblen Felder im Index."
-    },
-    {
-     "q": "Wie indexierst du bereits vorhandene Datensätze?",
-     "options": [
-      "Gar nicht, das passiert automatisch",
-      "php artisan scout:import",
-      "php artisan migrate"
-     ],
-     "correct": 1,
-     "explain": "Automatisch aktualisiert werden nur Datensätze, die nach der Einrichtung gespeichert werden."
-    }
-   ]
-  },
-  {
-   "id": "m59-l4",
-   "title": "Echtzeit mit Broadcasting und Reverb",
-   "minutes": 12,
-   "body": "<p>Manche Oberflächen sollen sich ohne Neuladen aktualisieren: der Bestellstatus, ein neuer Chat-Eintrag, die Zahl der Benutzer online. Dafür hält der Browser eine <strong>WebSocket<\/strong>-Verbindung zu einem Server offen, über den Laravel Ereignisse sendet. Dieses Prinzip heißt <strong>Broadcasting<\/strong>.<\/p> <ul><li><code>php artisan install:broadcasting<\/code> richtet alles ein, inklusive <strong>Reverb<\/strong>, dem WebSocket-Server von Laravel (<code>php artisan reverb:start<\/code>).<\/li> <li>Ein Event mit <code>implements ShouldBroadcast<\/code> wird automatisch an die Browser gesendet.<\/li> <li><code>broadcastOn()<\/code> legt den Kanal fest: öffentlich (<code>Channel<\/code>), privat (<code>PrivateChannel<\/code>) oder mit Anwesenheitsliste (<code>PresenceChannel<\/code>).<\/li> <li>Wer einen privaten Kanal abonnieren darf, regelst du in <code>routes/channels.php<\/code>.<\/li> <li>Im Browser hört <strong>Laravel Echo<\/strong> auf die Ereignisse.<\/li><\/ul> <p>Broadcasting läuft über die Queue: Ohne laufenden Queue-Worker kommen keine Ereignisse an. Das ist die häufigste Ursache, wenn „nichts passiert“.<\/p>",
-   "code": "<?php\n// app/Events/BestellstatusGeaendert.php\nclass BestellstatusGeaendert implements ShouldBroadcast\n{\n    use Dispatchable, InteractsWithSockets, SerializesModels;\n\n    public function __construct(public Bestellung $bestellung) {}\n\n    public function broadcastOn(): array\n    {\n        return [new PrivateChannel('bestellungen.' . $this->bestellung->id)];\n    }\n\n    public function broadcastWith(): array\n    {\n        return ['status' => $this->bestellung->status->value];   // nur das Noetige senden\n    }\n}\n\n// routes/channels.php - wer darf mithoeren?\nBroadcast::channel('bestellungen.{bestellung}', function (User $user, Bestellung $bestellung) {\n    return $user->id === $bestellung->kunde->user_id;\n});\n\n// Ausloesen\nBestellstatusGeaendert::dispatch($bestellung);",
-   "codeLang": "PHP · Laravel",
-   "code2": "// resources/js/bestellung.js\nimport Echo from 'laravel-echo';\n\nwindow.Echo.private(`bestellungen.${bestellungId}`)\n    .listen('BestellstatusGeaendert', (e) => {\n        document.querySelector('#status').textContent = e.status;\n    });",
-   "code2Lang": "JavaScript",
-   "tip": "<code>broadcastWith()<\/code> ist kein Detail: Ohne diese Methode wird das komplette Model mit allen öffentlichen Eigenschaften gesendet – womöglich mit Feldern, die der Empfänger nicht sehen soll. Sende nur, was die Oberfläche wirklich braucht.",
-   "quiz": [
-    {
-     "q": "Was ist Laravel Reverb?",
-     "options": [
-      "Der WebSocket-Server von Laravel für Broadcasting",
-      "Ein Cache-Treiber",
-      "Eine Template-Engine"
-     ],
-     "correct": 0,
-     "explain": "Gestartet wird er mit php artisan reverb:start."
-    },
-    {
-     "q": "Wo regelst du, wer einen privaten Kanal abonnieren darf?",
-     "options": [
-      "In routes/channels.php",
-      "In der .env",
-      "Im Event selbst"
-     ],
-     "correct": 0,
-     "explain": "Die Closure bekommt den Benutzer und liefert true oder false."
-    },
-    {
-     "q": "Broadcast-Ereignisse kommen nicht im Browser an. Was prüfst du zuerst?",
-     "options": [
-      "Ob Vite läuft",
-      "Ob ein Queue-Worker läuft",
-      "Ob die Datenbank voll ist"
-     ],
-     "correct": 1,
-     "explain": "Broadcasting läuft über die Queue."
-    }
-   ]
+  return raus;
+}
+function startExam(modeId){
+  var mode = EXAM_MODES[modeId];
+  var pool = CARDS.slice();
+  if(mode.parts) pool = pool.filter(function(c){ return mode.parts.indexOf(c.part) !== -1; });
+  else if(!mode.allPaths) pool = pool.filter(function(c){ return c.part >= 1 && c.part <= 9; });
+  if(mode.nurFehler){
+    pool = shuffled(pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; }));
+  } else if(mode.weak){
+    var bad = pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; });
+    var rest = pool.filter(function(c){ return bad.indexOf(c) === -1; });
+    pool = shuffled(bad).concat(shuffled(rest));
+  } else {
+    /* Gewichtete Ziehung: Schwaches kommt oefter, Ungestelltes bekommt mittleres Gewicht. */
+    pool = gewichtetZiehen(pool, mode.n);
   }
- ]
-});
-MODULES.push({
- "id": "m50",
- "part": 10,
- "partTitle": "PHP & Laravel",
- "title": "Experte · Queues, Cache und Performance",
- "lessons": [
-  {
-   "id": "m50-l1",
-   "title": "Jobs und Queues",
-   "minutes": 13,
-   "body": "<p>Alles, was länger als ein paar hundert Millisekunden dauert oder von externen Diensten abhängt, gehört <strong>nicht in den Request<\/strong>: Mails, PDF-Erzeugung, Bildbearbeitung, Importe, Webhooks an Dritte. Ein <strong>Job<\/strong> beschreibt die Arbeit, die <strong>Queue<\/strong> speichert ihn, ein <strong>Worker<\/strong> (<code>php artisan queue:work<\/code>) arbeitet ihn im Hintergrund ab.<\/p> <table class=\"lesson-table\"><tr><th>Treiber<\/th><th>Einsatz<\/th><\/tr> <tr><td><code>sync<\/code><\/td><td>führt sofort aus – nur für lokale Tests<\/td><\/tr> <tr><td><code>database<\/code><\/td><td>Standard in neuen Projekten, ohne Zusatzdienst<\/td><\/tr> <tr><td><code>redis<\/code><\/td><td>Produktion mit Last, dazu <strong>Horizon<\/strong> als Dashboard<\/td><\/tr> <tr><td><code>sqs<\/code><\/td><td>AWS, verwaltet<\/td><\/tr><\/table> <p>Jobs müssen damit rechnen, <em>mehrfach<\/em> zu laufen: Ein Worker stürzt mitten im Job ab, und der Job wird erneut ausgeführt. Schreibe sie deshalb <strong>idempotent<\/strong> – also so, dass ein zweiter Lauf keinen Schaden anrichtet. Die Steuerung übernehmen <code>$tries<\/code>, <code>$backoff<\/code> (Wartezeit zwischen Versuchen), <code>$timeout<\/code> und <code>failed()<\/code> für den endgültigen Fehlschlag. Gescheiterte Jobs landen in <code>failed_jobs<\/code> und lassen sich mit <code>queue:retry<\/code> erneut anstoßen.<\/p> <p>Models im Konstruktor werden nur als ID serialisiert (<code>SerializesModels<\/code>) und im Worker frisch geladen. Mehrere Jobs lassen sich als <strong>Kette<\/strong> (<code>Bus::chain<\/code>, nacheinander) oder als <strong>Batch<\/strong> (<code>Bus::batch<\/code>, parallel mit Fortschritt) zusammenfassen.<\/p>",
-   "code": "<?php\n// app/Jobs/RechnungErzeugen.php\nclass RechnungErzeugen implements ShouldQueue, ShouldBeUnique\n{\n    use Queueable;\n\n    public int $tries = 5;\n    public int $timeout = 120;\n\n    public function __construct(public Bestellung $bestellung) {}\n\n    public function backoff(): array\n    {\n        return [10, 60, 300];             // Sekunden zwischen den Versuchen\n    }\n\n    public function uniqueId(): string\n    {\n        return (string) $this->bestellung->id;\n    }\n\n    public function handle(PdfDienst $pdf): void\n    {\n        if ($this->bestellung->rechnung_pfad) {\n            return;                       // idempotent: schon erledigt\n        }\n        $pfad = $pdf->rechnung($this->bestellung);\n        $this->bestellung->update(['rechnung_pfad' => $pfad]);\n    }\n\n    public function failed(Throwable $e): void\n    {\n        Log::error('Rechnung fehlgeschlagen', ['bestellung' => $this->bestellung->id, 'fehler' => $e->getMessage()]);\n    }\n}\n\n// Ausloesen\nRechnungErzeugen::dispatch($bestellung)->onQueue('dokumente')->afterCommit();\n\n// Worker starten (Produktion: per Supervisor oder systemd dauerhaft)\n// php artisan queue:work redis --queue=hoch,default,dokumente --max-time=3600",
-   "codeLang": "PHP · Laravel",
-   "tip": "Queue-Worker sind <strong>langlaufende Prozesse<\/strong>. Sie laden deinen Code einmal und behalten ihn. Nach jedem Deployment muss deshalb <code>php artisan queue:restart<\/code> laufen, sonst arbeiten die Worker mit altem Code weiter. Das ist einer der häufigsten Deployment-Fehler bei Laravel.",
-   "quiz": [
-    {
-     "q": "Warum sollte ein Job idempotent sein?",
-     "options": [
-      "Weil er nach Abstürzen oder Timeouts erneut ausgeführt werden kann",
-      "Weil Laravel es technisch erzwingt",
-      "Damit er schneller läuft"
-     ],
-     "correct": 0,
-     "explain": "Eine zweite Ausführung darf z. B. keine zweite Rechnung oder doppelte Abbuchung erzeugen."
-    },
-    {
-     "q": "Was muss nach einem Deployment mit laufenden Queue-Workern passieren?",
-     "options": [
-      "Nichts",
-      "php artisan queue:restart, damit die Worker den neuen Code laden",
-      "Die Tabelle jobs leeren"
-     ],
-     "correct": 1,
-     "explain": "Worker halten den Code im Speicher, bis sie neu starten."
-    },
-    {
-     "q": "Wie wird ein Eloquent-Model im Job-Konstruktor in die Queue geschrieben?",
-     "options": [
-      "Als JSON der API Resource",
-      "Komplett mit allen Attributen",
-      "Nur als Klassenname und ID; der Worker lädt es neu"
-     ],
-     "correct": 2,
-     "explain": "Dafür sorgt SerializesModels. Der Worker arbeitet so mit aktuellen Daten."
-    }
-   ]
-  },
-  {
-   "id": "m50-l2",
-   "title": "Caching-Strategien",
-   "minutes": 11,
-   "body": "<p>Ein Cache speichert teure Ergebnisse für einen schnellen Zugriff. In Laravel wählst du den Treiber in <code>config/cache.php<\/code>: <code>database<\/code> (Standard), <code>redis<\/code>, <code>memcached<\/code>, <code>file<\/code>, <code>array<\/code> (nur für Tests).<\/p> <ul><li><code>Cache::remember($key, $ttl, $fn)<\/code> – holt aus dem Cache oder berechnet und speichert.<\/li> <li><code>Cache::flexible($key, [$frisch, $max], $fn)<\/code> – <em>stale-while-revalidate<\/em>: liefert kurz abgelaufene Werte sofort aus und berechnet im Hintergrund neu.<\/li> <li><code>Cache::forget($key)<\/code> – gezielt invalidieren, etwa im Observer nach dem Speichern.<\/li> <li><code>Cache::lock($name, $sek)<\/code> – atomare Sperre über mehrere Server hinweg.<\/li><\/ul> <p>„There are only two hard things in Computer Science: cache invalidation and naming things.“ Die beiden üblichen Strategien zur Invalidierung sind:<\/p> <table class=\"lesson-table\"><tr><th>Strategie<\/th><th>Funktionsweise<\/th><th>Risiko<\/th><\/tr> <tr><td>Ablaufzeit (TTL)<\/td><td>Wert verfällt nach x Sekunden<\/td><td>bis zu x Sekunden veraltete Daten<\/td><\/tr> <tr><td>Ereignisgesteuert<\/td><td>bei Änderung löschen<\/td><td>eine vergessene Schreibstelle hinterlässt veraltete Werte<\/td><\/tr> <tr><td>Versionierter Schlüssel<\/td><td><code>produkt:{id}:{updated_at}<\/code><\/td><td>alte Schlüssel bleiben bis zum Verfall liegen<\/td><\/tr><\/table> <p>Bei sehr vielen gleichzeitigen Anfragen auf einen gerade abgelaufenen Schlüssel berechnen alle gleichzeitig neu – der <strong>Cache-Stampede<\/strong>. <code>flexible()<\/code> oder ein Lock verhindern das.<\/p>",
-   "code": "<?php\n// Teure Startseiten-Daten fuer 10 Minuten\n$bestseller = Cache::remember('startseite:bestseller', now()->addMinutes(10), function () {\n    return Produkt::aktiv()\n        ->withCount('bestellungen')\n        ->orderByDesc('bestellungen_count')\n        ->take(12)\n        ->get();\n});\n\n// Stale-while-revalidate: 5 Min. frisch, bis 15 Min. ausliefern und im Hintergrund erneuern\n$kennzahlen = Cache::flexible('dashboard:kennzahlen', [300, 900], fn () => Kennzahlen::berechnen());\n\n// Versionierter Schluessel - keine explizite Invalidierung noetig\n$html = Cache::rememberForever(\n    \"produkt:{$produkt->id}:{$produkt->updated_at->timestamp}:karte\",\n    fn () => view('produkte._karte', compact('produkt'))->render()\n);\n\n// Atomare Sperre: nur ein Server fuehrt den Import aus\nCache::lock('import:lieferant-42', 600)->get(function () {\n    app(LieferantenImport::class)->ausfuehren(42);\n});",
-   "codeLang": "PHP · Laravel",
-   "tip": "Cache nie als Pflaster für langsame Abfragen nehmen, bevor du sie verstanden hast. Ein fehlender Index oder ein N+1-Problem gehört behoben. Ein Cache darüber versteckt das Problem nur – bis zu dem Moment, in dem er leer ist und alle Anfragen gleichzeitig durchschlagen.",
-   "quiz": [
-    {
-     "q": "Was macht Cache::remember()?",
-     "options": [
-      "Es liefert den gecachten Wert oder berechnet ihn, speichert ihn und liefert ihn",
-      "Es löscht den Schlüssel nach dem Lesen",
-      "Es speichert immer neu"
-     ],
-     "correct": 0,
-     "explain": "Das ist das Standardmuster „cache-aside“."
-    },
-    {
-     "q": "Was ist ein Cache-Stampede?",
-     "options": [
-      "Ein voller Cache-Speicher",
-      "Viele Anfragen berechnen einen gerade abgelaufenen Wert gleichzeitig neu",
-      "Ein Angriff auf Redis"
-     ],
-     "correct": 1,
-     "explain": "Abhilfe schaffen Locks oder stale-while-revalidate mit Cache::flexible()."
-    },
-    {
-     "q": "Welcher Treiber eignet sich nur für Tests?",
-     "options": [
-      "database",
-      "redis",
-      "array"
-     ],
-     "correct": 2,
-     "explain": "Der array-Cache lebt nur im Speicher des aktuellen Prozesses."
-    }
-   ]
-  },
-  {
-   "id": "m50-l3",
-   "title": "Performance messen und optimieren",
-   "minutes": 12,
-   "body": "<p>Optimiere nie nach Gefühl. <strong>Erst messen<\/strong>, dann die größte Bremse beheben, dann wieder messen. Werkzeuge: <strong>Debugbar<\/strong> und <strong>Telescope<\/strong> lokal, <strong>Laravel Pulse<\/strong> oder ein APM-Dienst in Produktion, <code>EXPLAIN<\/code> in der Datenbank.<\/p> <p>Die häufigsten Bremsen, in der Reihenfolge ihres Vorkommens:<\/p> <ul><li><strong>N+1-Abfragen<\/strong> → <code>with()<\/code>, <code>withCount()<\/code>.<\/li> <li><strong>Fehlende Indizes<\/strong> auf Spalten in <code>WHERE<\/code>, <code>ORDER BY<\/code> und Joins → Index in einer Migration.<\/li> <li><strong>Zu viele Daten<\/strong>: <code>SELECT *<\/code> mit großen Textspalten, Laden aller Zeilen → <code>select()<\/code>, <code>paginate()<\/code>, <code>chunkById()<\/code>, <code>lazyById()<\/code>.<\/li> <li><strong>Arbeit im Request<\/strong>, die in eine Queue gehört.<\/li> <li><strong>Prüfung per count<\/strong>: <code>-&gt;count() &gt; 0<\/code> statt <code>-&gt;exists()<\/code>.<\/li><\/ul> <p>Auf dem Server gehören dazu: <strong>OPcache<\/strong> aktivieren (kompilierter Bytecode im Speicher, oft doppelte Geschwindigkeit), <code>composer install --optimize-autoloader<\/code> und <code>php artisan optimize<\/code>. Letzteres cacht Konfiguration, Routen, Events und Views.<\/p> <p><strong>Laravel Octane<\/strong> hält die Anwendung zwischen Requests im Speicher (FrankenPHP, Swoole, RoadRunner) und spart den Bootvorgang. Das hebt aber das Share-nothing-Prinzip auf: Statische Eigenschaften und Singletons überleben Requests, und Daten können zwischen Benutzern durchsickern.<\/p>",
-   "code": "<?php\n// Index fuer haeufige Abfrage: WHERE status = ? ORDER BY created_at DESC\nSchema::table('bestellungen', function (Blueprint $table) {\n    $table->index(['status', 'created_at']);       // zusammengesetzter Index\n});\n\n// Nur benoetigte Spalten, existenzpruefung ohne Zaehlen\n$hatOffene = $kunde->bestellungen()->where('status', 'offen')->exists();\n\n$liste = Bestellung::query()\n    ->select(['id', 'kunde_id', 'status', 'summe_cent', 'created_at'])\n    ->with('kunde:id,name')\n    ->where('status', 'offen')\n    ->latest()\n    ->paginate(50);\n\n// Export von 2 Mio. Zeilen mit konstantem Speicher\n$datei = fopen(storage_path('app/export.csv'), 'w');\nBestellung::where('jahr', 2026)->lazyById(1000)->each(function (Bestellung $b) use ($datei) {\n    fputcsv($datei, [$b->id, $b->summe_cent, $b->created_at->toDateString()]);\n});\nfclose($datei);\n\n// Langsame Abfragen protokollieren - AppServiceProvider::boot()\nDB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {\n    Log::warning('Langsame Abfragen', ['sql' => $event->sql, 'ms' => $event->time]);\n});",
-   "codeLang": "PHP · Laravel",
-   "tip": "Bei einem zusammengesetzten Index zählt die Reihenfolge der Spalten. <code>['status', 'created_at']<\/code> hilft bei „WHERE status = ? ORDER BY created_at“, aber kaum bei einer Abfrage, die nur nach <code>created_at<\/code> filtert. Die Spalte mit dem Gleichheitsvergleich gehört nach vorn.",
-   "quiz": [
-    {
-     "q": "Was ist der erste Schritt jeder Performance-Optimierung?",
-     "options": [
-      "Messen, wo die Zeit tatsächlich verloren geht",
-      "Auf Octane umstellen",
-      "Caching einbauen"
-     ],
-     "correct": 0,
-     "explain": "Ohne Messung optimiert man oft die falsche Stelle."
-    },
-    {
-     "q": "Warum ist ->exists() besser als ->count() > 0?",
-     "options": [
-      "exists() bricht nach dem ersten Treffer ab, count() muss alle Zeilen zählen",
-      "count() ist fehlerhaft",
-      "Es gibt keinen Unterschied"
-     ],
-     "correct": 0,
-     "explain": "Bei großen Tabellen ist der Unterschied erheblich."
-    },
-    {
-     "q": "Welches Risiko bringt Laravel Octane mit sich?",
-     "options": [
-      "Es unterstützt keine Datenbanken",
-      "Es ist langsamer",
-      "Zustand in statischen Eigenschaften und Singletons überlebt Requests und kann zwischen Benutzern durchsickern"
-     ],
-     "correct": 2,
-     "explain": "Das Share-nothing-Prinzip von klassischem PHP-FPM gilt dort nicht mehr."
-    }
-   ]
-  },
-  {
-   "id": "m50-l4",
-   "title": "Scheduler und Artisan-Commands",
-   "minutes": 10,
-   "body": "<p>Statt vieler Cron-Einträge auf dem Server brauchst du mit Laravel genau <em>einen<\/em>:<\/p> <p><code>* * * * * cd /var/www/shop &amp;&amp; php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1<\/code><\/p> <p>Alle geplanten Aufgaben stehen dann versioniert im Code, in <code>routes/console.php<\/code>. Lokal startest du <code>php artisan schedule:work<\/code>, und <code>schedule:list<\/code> zeigt den Plan mit den nächsten Ausführungszeiten.<\/p> <ul><li>Zeitpläne: <code>everyFiveMinutes()<\/code>, <code>hourly()<\/code>, <code>dailyAt('03:00')<\/code>, <code>weekdays()<\/code>, <code>cron('…')<\/code>.<\/li> <li><code>withoutOverlapping()<\/code> – startet nicht, solange der letzte Lauf noch arbeitet.<\/li> <li><code>onOneServer()<\/code> – bei mehreren Servern läuft die Aufgabe nur auf einem (braucht einen gemeinsamen Cache wie Redis).<\/li> <li><code>runInBackground()<\/code>, <code>onFailure()<\/code>, <code>pingOnSuccess($url)<\/code> für Monitoring.<\/li><\/ul> <p>Eigene <strong>Artisan-Commands<\/strong> (<code>make:command<\/code>) kapseln Wartungsaufgaben, Importe und Berichte. Die Signatur beschreibt Argumente und Optionen, Laravel erzeugt daraus die Hilfe. Ein Command mit <code>--dry-run<\/code>-Option, die nur anzeigt statt zu ändern, ist bei riskanten Aufgaben guter Stil.<\/p>",
-   "code": "<?php\n// app/Console/Commands/AlteWarenkoerbeLoeschen.php\nclass AlteWarenkoerbeLoeschen extends Command\n{\n    protected $signature = 'shop:warenkoerbe-aufraeumen\n                            {--tage=30 : Warenkoerbe aelter als so viele Tage}\n                            {--dry-run : Nur anzeigen, nichts loeschen}';\n\n    protected $description = 'Loescht verwaiste Warenkoerbe';\n\n    public function handle(): int\n    {\n        $grenze = now()->subDays((int) $this->option('tage'));\n        $query  = Warenkorb::whereNull('bestellung_id')->where('updated_at', '<', $grenze);\n\n        $anzahl = $query->count();\n        if ($this->option('dry-run')) {\n            $this->info(\"{$anzahl} Warenkoerbe wuerden geloescht.\");\n            return self::SUCCESS;\n        }\n\n        $query->delete();\n        $this->info(\"{$anzahl} Warenkoerbe geloescht.\");\n        return self::SUCCESS;\n    }\n}\n\n// routes/console.php\nuse Illuminate\\Support\\Facades\\Schedule;\n\nSchedule::command('shop:warenkoerbe-aufraeumen --tage=14')->dailyAt('03:15')->onOneServer();\nSchedule::job(new LagerAbgleich)->everyFifteenMinutes()->withoutOverlapping();\nSchedule::command('queue:prune-failed --hours=168')->weekly();",
-   "codeLang": "PHP · Laravel",
-   "tip": "Plane nächtliche Aufgaben nicht alle auf 0:00 oder 3:00 – dann laufen Backups, Importe und Berichte gleichzeitig und bremsen sich gegenseitig. Krumme Zeiten wie 3:15 oder 4:40 verteilen die Last. Und lass sich jede kritische Aufgabe per Ping bei einem Monitoring melden, denn ein stiller Cron-Ausfall fällt sonst erst nach Wochen auf.",
-   "quiz": [
-    {
-     "q": "Wie viele Cron-Einträge braucht ein Laravel-Server für beliebig viele geplante Aufgaben?",
-     "options": [
-      "Genau einen, der jede Minute schedule:run aufruft",
-      "Keinen",
-      "Einen pro Aufgabe"
-     ],
-     "correct": 0,
-     "explain": "Der Scheduler entscheidet selbst, welche Aufgabe gerade fällig ist."
-    },
-    {
-     "q": "Was bewirkt withoutOverlapping()?",
-     "options": [
-      "Die Aufgabe startet nicht, solange ein vorheriger Lauf noch aktiv ist",
-      "Die Aufgabe läuft auf mehreren Servern parallel",
-      "Die Aufgabe läuft nur einmal"
-     ],
-     "correct": 0,
-     "explain": "Wichtig für Aufgaben, die gelegentlich länger dauern als ihr Intervall."
-    },
-    {
-     "q": "Wozu dient onOneServer() bei mehreren Webservern?",
-     "options": [
-      "Die Aufgabe läuft auf keinem Server",
-      "Die Aufgabe läuft nur auf dem schnellsten Server",
-      "Die Aufgabe läuft pro Zeitpunkt nur auf einem der Server"
-     ],
-     "correct": 2,
-     "explain": "Dazu ist ein gemeinsamer Cache-Treiber wie Redis oder database nötig."
-    }
-   ]
+  if(!pool.length){
+    showToast('<span class="t-xp">Nichts dabei</span><span class="t-reason">Es gibt noch keine passenden Fragen für diesen Modus.</span>');
+    return;
   }
- ]
+  var qs = pool.slice(0, Math.min(mode.n, pool.length));
+  exam = { active:true, mode:modeId, qs:qs, answers:qs.map(function(){ return -1; }), idx:0,
+           endsAt: Date.now() + mode.min * 60000, timer:null, finished:false, result:null };
+  stopExamTimer();
+  exam.timer = setInterval(tickExam, 1000);
+  state.currentId = 'exam';
+  render();
+}
+function tickExam(){
+  var el = document.getElementById('examTimer');
+  var left = exam.endsAt - Date.now();
+  if(left <= 0){ finishExam(true); return; }
+  if(!el) return;
+  var s = Math.floor(left / 1000);
+  var mm = String(Math.floor(s / 60)).padStart(2,'0');
+  var ss = String(s % 60).padStart(2,'0');
+  el.textContent = mm + ':' + ss;
+  el.className = 'timer' + (left < 60000 ? ' crit' : (left < 300000 ? ' warn' : ''));
+}
+function answerExam(i){
+  exam.answers[exam.idx] = i;
+  renderContent();
+}
+function gotoExamQ(i){ exam.idx = i; renderContent(); }
+function nextExamQ(d){
+  exam.idx = Math.max(0, Math.min(exam.qs.length - 1, exam.idx + d));
+  renderContent();
+}
+function finishExam(auto){
+  if(exam.finished) return;
+  if(!auto){
+    var open = exam.answers.filter(function(a){ return a === -1; }).length;
+    if(open > 0 && !window.confirm(open + ' Frage(n) noch unbeantwortet. Trotzdem abgeben?')) return;
+  }
+  stopExamTimer();
+  exam.finished = true;
+  var right = 0, byPart = {};
+  exam.qs.forEach(function(c, i){
+    var ok = exam.answers[i] === c.correct;
+    if(ok) right++;
+    recordAnswer(c.id, ok);
+    if(!ok) rateCard(c.id, 0); else if(!state.srs[c.id]) rateCard(c.id, 2);
+    var p = byPart[c.part] || (byPart[c.part] = { right:0, total:0 });
+    p.total++; if(ok) p.right++;
+  });
+  exam.result = { right:right, total:exam.qs.length, byPart:byPart, auto:!!auto };
+  state.exams.push({ ts:Date.now(), score:right, total:exam.qs.length, mode:exam.mode,
+                     byPart:JSON.parse(JSON.stringify(byPart)) });
+  var quote = Math.round((right / exam.qs.length) * 100);
+  awardXp(right * 3, 'Prüfung: ' + right + '/' + exam.qs.length + ' richtig');
+  if(quote >= 70) grantBadge('exam_pass');
+  if(quote >= 90) grantBadge('exam_ace');
+  if(right === exam.qs.length && exam.qs.length > 0) grantBadge('exam_perfect');
+  var gesamt = (EXAM_MODES[exam.mode] || {}).min * 60000;
+  if(quote >= 70 && !auto && gesamt && (exam.endsAt - Date.now()) > gesamt / 2) grantBadge('speedster');
+  /* Nach einer verhauenen Pruefung direkt eine bestanden */
+  var vorher = state.exams[state.exams.length - 2];
+  if(quote >= 70 && vorher && (vorher.score / vorher.total) < 0.5) grantBadge('phoenix');
+  /* Knapp vor Ablauf der Zeit bestanden */
+  if(quote >= 70 && gesamt && (exam.endsAt - Date.now()) < 60000) grantBadge('nervenstark');
+  saveProgress();
+  renderContent();
+  renderSidebar();
+}
+function renderExam(){
+  if(!exam.active){
+    var h = '<div class="breadcrumb">Training</div><h1>Prüfungssimulator</h1>'+
+      '<p class="intro-sub">Unter Zeitdruck abrufen zu können ist eine eigene Fähigkeit — und genau die entscheidet in der AP1, wo rund 95 % der Aufgaben Multiple Choice sind. Nach jedem Durchlauf siehst du, welcher Themenbereich dich ausgebremst hat.</p>';
+    h += '<div class="exam-setup">';
+    Object.keys(EXAM_MODES).forEach(function(k){
+      var m = EXAM_MODES[k];
+      h += '<div class="exam-mode" onclick="startExam(\''+k+'\')"><h3>'+m.label+'</h3>'+
+           '<p>'+m.desc+'</p><p style="margin-top:8px;"><span class="badge topic">'+m.n+' Fragen</span> <span class="badge topic">'+m.min+' Min.</span></p></div>';
+    });
+    h += '</div>';
+
+    if(state.exams.length){
+      h += '<h2 class="sec-h">Deine letzten Durchläufe</h2>';
+      h += '<table class="lesson-table"><tr><th>Datum</th><th>Modus</th><th>Ergebnis</th><th>Quote</th></tr>';
+      state.exams.slice(-8).reverse().forEach(function(e){
+        var pct = Math.round((e.score / e.total) * 100);
+        var d = new Date(e.ts);
+        h += '<tr><td>'+d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+'</td>'+
+             '<td>'+((EXAM_MODES[e.mode]||{}).label || e.mode)+'</td>'+
+             '<td>'+e.score+'/'+e.total+'</td>'+
+             '<td style="color:'+(pct>=70?'var(--success)':'var(--danger)')+';font-weight:600;">'+pct+'%</td></tr>';
+      });
+      h += '</table>';
+      var best = state.exams.reduce(function(a,e){ return Math.max(a, e.score/e.total); }, 0);
+      h += '<div class="ex-panel">Bestquote bisher: <strong>'+Math.round(best*100)+'%</strong>. Als Richtwert gilt eine Quote ab 70 % als solide Prüfungsvorbereitung — darunter lohnt gezieltes Nacharbeiten über den Modus „Schwachstellen".</div>';
+    }
+    return h;
+  }
+
+  if(exam.finished){
+    var r = exam.result;
+    var pct = Math.round((r.right / r.total) * 100);
+    var h2 = '<div class="breadcrumb">Ergebnis</div><h1>'+(EXAM_MODES[exam.mode]||{}).label+'</h1>';
+    if(r.auto) h2 += '<div class="ex-panel" style="border-left:3px solid var(--danger);">⏱ Zeit abgelaufen — automatisch abgegeben.</div>';
+    h2 += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+          '<div class="score-sub">'+r.right+' von '+r.total+' Fragen richtig</div></div>';
+
+    h2 += '<h2 class="sec-h">Nach Themenbereich</h2>';
+    Object.keys(r.byPart).sort().forEach(function(p){
+      var v = r.byPart[p], q = Math.round((v.right / v.total) * 100);
+      var col = q >= 80 ? 'var(--success)' : (q >= 50 ? 'var(--accent2)' : 'var(--danger)');
+      h2 += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+            '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+            '<span class="tval">'+v.right+'/'+v.total+'</span></div>';
+    });
+
+    var wrong = exam.qs.filter(function(c,i){ return exam.answers[i] !== c.correct; });
+    if(wrong.length){
+      h2 += '<h2 class="sec-h">Das saß noch nicht ('+wrong.length+')</h2>';
+      h2 += '<p style="font-size:.85rem;color:var(--text-dim);">Alle davon liegen jetzt im Wiederholungs-Trainer und kommen heute noch einmal.</p>';
+      exam.qs.forEach(function(c, i){
+        if(exam.answers[i] === c.correct) return;
+        h2 += '<div class="ex-card"><div class="ex-head"><h3>'+esc(c.q)+'</h3><span class="badge topic">'+esc(c.moduleTitle)+'</span></div>'+
+              '<p style="font-size:.87rem;margin:0 0 6px;"><span style="color:var(--danger);">Deine Antwort:</span> '+
+              (exam.answers[i] === -1 ? '<em>nicht beantwortet</em>' : esc(c.options[exam.answers[i]]))+'<br>'+
+              '<span style="color:var(--success);">Richtig:</span> '+esc(c.options[c.correct])+'</p>'+
+              '<p style="font-size:.85rem;color:var(--text-dim);margin:0;">'+esc(c.explain)+'</p>'+
+              '<div class="ex-actions"><button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
+      });
+    } else {
+      h2 += '<div class="ex-panel" style="border-left:3px solid var(--success);">Fehlerfrei — stark. Erhöhe beim nächsten Mal Umfang oder Tempo.</div>';
+    }
+    h2 += '<div class="ex-actions" style="margin-top:20px;"><button class="check-btn" onclick="exam.active=false;renderContent();">Neuen Durchlauf starten</button>'+
+          '<button class="ex-btn" onclick="startReview(\'weak\')">Fehlerkarten jetzt wiederholen</button></div>';
+    return h2;
+  }
+
+  var card = exam.qs[exam.idx];
+  var picked = exam.answers[exam.idx];
+  var h3 = '<div class="exam-bar"><span class="timer" id="examTimer">--:--</span>'+
+    '<span style="font-size:.85rem;color:var(--text-dim);">Frage '+(exam.idx+1)+'/'+exam.qs.length+'</span>'+
+    '<button class="check-btn" style="padding:7px 14px;" onclick="finishExam(false)">Abgeben</button>'+
+    '<div class="exam-qnav">';
+  exam.qs.forEach(function(q, i){
+    h3 += '<button class="qdot'+(exam.answers[i] !== -1 ? ' answered' : '')+(i === exam.idx ? ' current' : '')+'" onclick="gotoExamQ('+i+')">'+(i+1)+'</button>';
+  });
+  h3 += '</div></div>';
+
+  h3 += '<div class="srs-card"><div class="srs-meta"><span class="badge topic">Teil '+card.part+'</span></div>'+
+        '<div class="srs-q">'+esc(card.q)+'</div><div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    h3 += '<button class="srs-opt" style="'+(picked === i ? 'border-color:var(--accent);background:var(--part-bg);font-weight:600;' : '')+'" onclick="answerExam('+i+')">'+esc(opt)+'</button>';
+  });
+  h3 += '</div><div class="ex-actions">'+
+        '<button class="ex-btn" onclick="nextExamQ(-1)" '+(exam.idx===0?'disabled':'')+'>← Zurück</button>'+
+        '<button class="ex-btn primary" onclick="nextExamQ(1)" '+(exam.idx===exam.qs.length-1?'disabled':'')+'>Weiter →</button>'+
+        '<button class="ex-btn" onclick="answerExam(-1)">Antwort verwerfen</button>'+
+        '</div></div>';
+  h3 += '<p class="ex-meta">Während der Prüfung gibt es bewusst kein Feedback — die Auswertung kommt erst nach der Abgabe, wie in der echten Prüfung.</p>';
+  return h3;
+}
+var tracer = { id:null, step:0, fb:null, finalFb:null, finished:false };
+function startTrace(id){
+  tracer = { id:id, step:0, fb:null, finalFb:null, finished:false };
+  state.currentId = 'tracer';
+  render();
+}
+function traceById(id){ return TRACES.find(function(t){ return t.id===id; }); }
+function normVal(s){
+  return String(s).toLowerCase().replace(/\s+/g,'').replace(/[\[\]]/g,'').replace(/;/g,',');
+}
+function traceAdvance(force){
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  if(!pending) return;
+  if(pending.ask && !force){
+    var inp = document.getElementById('predictInput');
+    var val = inp ? inp.value : '';
+    if(!val.trim()){ tracer.fb = { ok:false, msg:'Trag einen Wert ein — raten ist erlaubt, Überspringen lernt nichts.' }; renderContent(); return; }
+    var ok = normVal(val) === normVal(pending.values[pending.ask]);
+    if(!ok){
+      tracer.fb = { ok:false, msg:'Noch nicht. Rechne die Zeile Schritt für Schritt nach — oder lass dir den Wert zeigen.' };
+      renderContent(); return;
+    }
+    tracer.fb = { ok:true, msg:'Richtig.' };
+    awardXp(15, 'Vorhersage getroffen', 'trace:' + tracer.id + ':' + (tracer.step + 1));
+  } else {
+    tracer.fb = force && pending.ask ? { ok:false, msg:'Wert aufgedeckt — schau dir die Zeile genau an, bevor du weitergehst.' } : null;
+  }
+  tracer.step++;
+  if(tracer.step >= t.steps.length - 1) tracer.finished = true;
+  renderContent();
+  var box = document.getElementById('predictInput');
+  if(box) box.focus();
+}
+function checkFinal(){
+  var t = traceById(tracer.id);
+  var inp = document.getElementById('finalInput');
+  var val = inp ? inp.value : '';
+  var ok = normVal(val) === normVal(t.result);
+  tracer.finalFb = ok
+    ? { ok:true, msg:'✓ Richtig — genau das liefert der Algorithmus zurück.' }
+    : { ok:false, msg:'✗ Nicht ganz. Sieh dir die letzte Zeile der Tabelle an: Welcher Wert steht dort in der Ergebnisvariablen?' };
+  if(ok){
+    if(state.tracesDone.indexOf(t.id) === -1) state.tracesDone.push(t.id);
+    awardXp(40, 'Trockendurchlauf gelöst', 'tracedone:' + t.id);
+    checkMilestones();
+  }
+  renderContent();
+}
+function renderTracer(){
+  if(!tracer.id){
+    var h = '<div class="breadcrumb">Training</div><h1>Algorithmus-Trainer</h1>'+
+      '<p class="intro-sub">Die häufigste Aufgabenform der AP1 lautet sinngemäß: „Was liefert dieser Algorithmus für Eingabe X?" Genau das übst du hier — Zeile für Zeile, mit einer Wertetabelle, wie du sie in der Prüfung auf Papier führen würdest. An kritischen Stellen musst du den nächsten Wert selbst vorhersagen, bevor er aufgedeckt wird.</p>';
+    h += '<div class="module-grid" style="margin-top:22px;">';
+    TRACES.forEach(function(t){
+      h += '<div class="module-card" onclick="startTrace(\''+t.id+'\')">'+
+           '<div class="mnum">'+(t.level===1?'EINSTEIGER':'FORTGESCHRITTEN')+'</div>'+
+           '<h3>'+esc(t.title)+'</h3><p class="mono" style="font-size:.78rem;">'+esc(t.input)+'</p>'+
+           '<p style="margin-top:6px;">'+t.steps.filter(function(s){return s.ask;}).length+' Vorhersagen · '+t.steps.length+' Schritte</p></div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  var html = '<div class="breadcrumb">Algorithmus-Trainer</div>';
+  html += '<div class="lesson-head"><div><h1>'+esc(t.title)+'</h1>'+
+          '<div class="meta-row"><span class="mono">'+esc(t.input)+'</span><span>Schritt '+(tracer.step+1)+'/'+t.steps.length+'</span></div></div>'+
+          '<button class="ex-btn" onclick="tracer.id=null;renderContent();">Andere Aufgabe</button></div>';
+  html += '<p style="font-size:.9rem;">'+t.intro+'</p>';
+
+  var cur = t.steps[tracer.step];
+  html += '<div class="trace-wrap"><div class="trace-code">';
+  t.code.forEach(function(line, i){
+    html += '<span class="trace-line'+(i === cur.line ? ' active' : '')+'">'+esc(line)+'</span>';
+  });
+  html += '</div><div style="overflow-x:auto;"><table class="trace-table"><tr><th>#</th>';
+  t.vars.forEach(function(v){ html += '<th>'+esc(v)+'</th>'; });
+  html += '</tr>';
+  for(var i = 0; i <= tracer.step; i++){
+    var st = t.steps[i];
+    html += '<tr'+(i === tracer.step ? ' class="now"' : '')+'><td>'+(i+1)+'</td>';
+    t.vars.forEach(function(v){ html += '<td>'+esc(st.values[v] !== undefined ? st.values[v] : '—')+'</td>'; });
+    html += '</tr>';
+  }
+  html += '</table></div></div>';
+
+  html += '<div class="ex-panel"><strong>Zeile '+(cur.line+1)+':</strong> '+esc(cur.note)+'</div>';
+
+  if(pending){
+    if(pending.ask){
+      html += '<div class="predict-box"><label for="predictInput">Vorhersage: Welchen Wert hat <span class="mono">'+esc(pending.ask)+'</span> nach dem nächsten Schritt?</label>'+
+        '<div class="predict-row"><input class="predict-input" id="predictInput" autocomplete="off" placeholder="z. B. '+(pending.ask==='zahlen'?'[2, 5, 9, 1]':'12')+'" onkeydown="if(event.key===\'Enter\')traceAdvance(false)">'+
+        '<button class="check-btn" onclick="traceAdvance(false)">Prüfen</button>'+
+        '<button class="ex-btn" onclick="traceAdvance(true)">Zeigen</button></div>';
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'">'+esc(tracer.fb.msg)+'</div>';
+      html += '</div>';
+    } else {
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'" style="margin-bottom:10px;">'+esc(tracer.fb.msg)+'</div>';
+      html += '<button class="check-btn" onclick="traceAdvance(false)">Nächster Schritt →</button>';
+    }
+  } else {
+    html += '<div class="predict-box"><label for="finalInput">Letzte Frage: Was liefert der Algorithmus zurück?</label>'+
+      '<div class="predict-row"><input class="predict-input" id="finalInput" autocomplete="off" onkeydown="if(event.key===\'Enter\')checkFinal()">'+
+      '<button class="check-btn" onclick="checkFinal()">Prüfen</button></div>';
+    if(tracer.finalFb){
+      html += '<div class="predict-fb '+(tracer.finalFb.ok?'ok':'no')+'">'+esc(tracer.finalFb.msg)+'</div>';
+      if(tracer.finalFb.ok){
+        html += '<div class="callout callout-tip" style="margin-bottom:0;"><div class="callout-label">★ Was du daraus mitnimmst</div><p>'+t.lesson+'</p></div>';
+      }
+    }
+    html += '</div>';
+    html += '<div class="ex-actions"><button class="ex-btn" onclick="tracer.id=null;renderContent();">Nächste Aufgabe wählen</button>'+
+            '<button class="ex-btn" onclick="startTrace(\''+t.id+'\')">Nochmal von vorn</button></div>';
+  }
+  return html;
+}
+var SEARCH_INDEX = [];
+var indexFertig = false;
+var indexNachladen = false;
+function buildIndex(){
+  var textOffen = false;
+  MODULES.forEach(function(m){
+    m.lessons.forEach(function(l){
+      if(l.lazy) textOffen = true;
+      var text = ['body','body2','body3','tip','code','code2','code3','code4']
+                   .map(function(k){ return l[k] || ''; }).join(' ');
+      SEARCH_INDEX.push({ id:l.id, kind:'lesson', title:l.title, sub:'Teil '+m.part+' · '+m.title,
+                          hay:(l.title + ' ' + m.title + ' ' + text).replace(/<[^>]+>/g,' ').toLowerCase() });
+    });
+  });
+  EXERCISES.forEach(function(x){
+    SEARCH_INDEX.push({ id:'exercises', kind:'exercise', title:x.title, sub:'Übung · '+x.topic+' · '+(['','Einsteiger','Fortgeschritten','Experte'][x.level]),
+                        hay:(x.title + ' ' + x.topic + ' ' + x.task).replace(/<[^>]+>/g,' ').toLowerCase() });
+  });
+  TRACES.forEach(function(t){
+    SEARCH_INDEX.push({ id:'trace:'+t.id, kind:'trace', title:t.title, sub:'Algorithmus-Trainer · '+t.input,
+                        hay:(t.title + ' ' + t.input + ' ' + t.code.join(' ')).toLowerCase() });
+  });
+  [['review','Wiederholen (Spaced Repetition)','Training'],
+   ['exam','Prüfungssimulator','Training'],
+   ['tracer','Algorithmus-Trainer','Training'],
+   ['subnet','Subnetting-Trainer','Training'],
+   ['tutor','AP1-Tutor','Training'],
+   ['exercises','Übungsaufgaben','Praxis'],
+   ['cheatsheet','Spickzettel','Referenz'],
+   ['glossar','Syntax-Glossar','Referenz · Befehle nachschlagen (let, const, JOIN, rebase)'],
+   ['intro','Kursübersicht','Start']].forEach(function(a){
+    SEARCH_INDEX.push({ id:a[0], kind:'nav', title:a[1], sub:a[2], hay:(a[1]+' '+a[2]).toLowerCase() });
+  });
+  indexFertig = true;
+  /* Lektionstexte sind beim Start nicht geladen: Die Suche arbeitet sofort mit Titeln und ergänzt den Volltext, sobald alle Texte da sind. */
+  if(textOffen && !indexNachladen && typeof rpHydrateAll === 'function'){
+    indexNachladen = true;
+    rpHydrateAll().then(function(){
+      SEARCH_INDEX.length = 0; indexFertig = false; buildIndex();
+      var feld = document.getElementById('kpFeld');
+      if(kp.offen && feld) kpSuchen(feld.value);
+    }, function(){ indexNachladen = false; });
+  }
+}
+function renderKiEinstellungen(){
+  var an = !!tutor.fn;
+  var h = '<h2 class="sec-h">Tutor-Verbindung</h2>';
+  h += '<div class="ex-panel">';
+  h += '<p style="margin-bottom:12px;">Status: <span class="sync-hint'+(an ? ' on' : '')+'">'+
+       esc(kiHerkunftText())+'</span></p>';
+  h += '<p style="margin-bottom:14px;">Auf claude.ai laeuft der Tutor ueber dein eigenes Konto. '+
+       'Wird der Kurs auf einem eigenen Server betrieben, traegst du hier die Adresse deines '+
+       'Dienstes ein &mdash; der API-Schluessel bleibt dabei auf dem Server und niemals im Browser.</p>';
+  h += '<div class="sb-grid">';
+  h += '<label class="sb-field"><span>Bezugsquelle</span>'+
+       '<select class="sb-input" onchange="kiModusSetzen(this.value)">'+
+       ['auto','artifact','backend','aus'].map(function(m){
+         var t = { auto:'Automatisch', artifact:'Nur Claude (Artifact)',
+                   backend:'Nur eigener Dienst', aus:'Tutor abschalten' }[m];
+         return '<option value="'+m+'"'+(KI.modus === m ? ' selected' : '')+'>'+t+'</option>';
+       }).join('')+'</select></label>';
+  h += '<label class="sb-field"><span>Adresse des eigenen Dienstes</span>'+
+       '<input class="sb-input" type="url" spellcheck="false" placeholder="https://api.deine-domain.de/tutor" '+
+       'value="'+esc(KI.endpunkt)+'" oninput="kiEndpunktSetzen(this.value)"></label>';
+  h += '</div>';
+  h += '<div class="ex-actions"><button class="ex-btn primary" type="button" '+
+       'onclick="tutorNeuVerbinden()">Verbindung neu aufbauen</button></div>';
+  h += '<details class="kl-details"><summary>Welches Protokoll der Dienst sprechen muss</summary>'+
+       codeBlock(
+         "POST <deine Adresse>\n"+
+         "Content-Type: application/json\n\n"+
+         "{ \"nachrichten\": [ {\"role\":\"user\",\"content\":\"...\"} ],\n"+
+         "  \"modus\": \"text\" | \"json\",\n"+
+         "  \"stufe\": \"fast\" | \"default\" | \"complex\" }\n\n"+
+         "Antwort, Weg a - laufender Text:\n"+
+         "  Content-Type: text/event-stream\n"+
+         "  data: {\"text\":\"bisheriger Text\"}\n"+
+         "  data: [DONE]\n\n"+
+         "Antwort, Weg b - eine JSON-Antwort:\n"+
+         "  {\"text\":\"...\",\"truncated\":false}\n"+
+         "  bei modus \"json\" direkt das gewuenschte Objekt\n\n"+
+         "Der Server haelt den API-Schluessel, setzt Zeitlimits\n"+
+         "und begrenzt die Anfragen je Nutzer.",
+         'Schnittstelle')+'</details>';
+  h += '</div>';
+  return h;
+}
+function renderProfile(){
+  var lp = levelProgress();
+  var xp = state.xp || 0;
+  var mastered = Object.keys(state.srs).filter(function(k){ return (state.srs[k].iv || 0) >= 21; }).length;
+  var bestExam = state.exams.reduce(function(a,e){ return Math.max(a, e.score / e.total); }, 0);
+  var earned = BADGES.filter(function(b){ return state.badges[b.id]; }).length;
+
+  var h = '<div class="breadcrumb">Profil</div>';
+  h += renderRangkarte();
+  h += renderKennzahlen();
+  h += '<h2 class="sec-h">Rangleiter</h2>';
+  h += '<p class="intro-sub">Fünfundzwanzig Stufen vom Kabelträger bis zum Architekten der Matrix. XP gibt es für jede abgeschlossene Lektion, jede richtige Erstantwort und jede gelöste Aufgabe.</p>';
+  h += renderLeiter();
+  h += renderPruefungsverlauf();
+  h += '<h2 class="sec-h">Abzeichen</h2>';
+  h += renderAbzeichen();
+
+  h += renderKalibrierung();
+
+  h += '<h2 class="sec-h">Fortschritt nach Kursteil</h2>';
+  PARTS.forEach(function(p){
+    var ls = [];
+    MODULES.filter(function(m){ return m.part === p; }).forEach(function(m){ ls = ls.concat(m.lessons); });
+    var done = ls.filter(function(l){ return state.completed.has(l.id); }).length;
+    var q = ls.length ? Math.round((done / ls.length) * 100) : 0;
+    var col = q >= 80 ? 'var(--success)' : (q >= 40 ? 'var(--accent)' : 'var(--accent2)');
+    h += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+         '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+         '<span class="tval">'+done+'/'+ls.length+'</span></div>';
+  });
+
+  h += '<h2 class="sec-h">Zahlen</h2>';
+  h += '<div class="stat-row">'+
+    '<div class="stat-tile"><div class="num">'+state.completed.size+'</div><div class="lbl">Lektionen fertig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.srs).length+'</div><div class="lbl">Karten aktiv</div></div>'+
+    '<div class="stat-tile"><div class="num">'+mastered+'</div><div class="lbl">Karten gefestigt</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.solved).length+'</div><div class="lbl">Übungen gelöst</div></div>'+
+    '<div class="stat-tile"><div class="num">'+state.tracesDone.length+'/'+TRACES.length+'</div><div class="lbl">Durchläufe</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(bestExam ? Math.round(bestExam*100)+'%' : '—')+'</div><div class="lbl">Beste Prüfung</div></div>'+
+    '</div>';
+
+  h += renderKiEinstellungen();
+
+  h += '<h2 class="sec-h">Dein Lernplan</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:14px;">Mit einem Prüfungstermin rechnet dir die Heute-Ansicht aus, '+
+    'wie viele Lektionen pro Tag noch nötig sind. Das Tagesziel steuert den Ring — lieber klein ansetzen '+
+    'und täglich erreichen als groß und selten.</p>'+
+    '<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Prüfungstermin</span>'+
+        '<input type="date" id="pruefDatum" class="dat-feld" value="'+esc(state.pruefungsdatum || '')+'" '+
+        'onchange="setzePruefung(this.value)">'+
+      '</label>'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Lektionen pro Tag</span>'+
+        '<input type="number" id="tagesZiel" class="dat-feld" min="1" max="30" '+
+        'style="width:90px;" value="'+(state.tagesziel || 3)+'" onchange="setzeZiel(this.value)">'+
+      '</label>'+
+      '<button class="ex-btn" onclick="fokusUmschalten()">Lesemodus umschalten</button>'+
+      '<button class="ex-btn" onclick="selectLesson(\'tasten\')">Tastaturkürzel</button>'+
+    '</div></div>';
+
+  h += '<h2 class="sec-h">Geräte und Sicherung</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:10px;"><strong>Status:</strong> <span id="syncHint" class="sync-hint">wird geprüft …</span></p>'+
+    '<p style="margin-bottom:10px;">Auf claude.ai gleicht sich dein Fortschritt zwischen allen Geräten ab, an denen du mit demselben Konto angemeldet bist. '+
+    'Für eine lokal gespeicherte Kopie oder als Sicherung nutzt du den Export: Er legt deinen kompletten Stand als Text in die Zwischenablage. '+
+    'Beim Import wird <em>zusammengeführt</em>, nicht überschrieben — abgeschlossene Lektionen, XP und Abzeichen gehen also nie verloren.</p>'+
+    '<div class="ex-actions">'+
+      '<button class="ex-btn primary" onclick="exportProgress()">Fortschritt exportieren</button>'+
+      '<button class="ex-btn" onclick="showImport()">Fortschritt importieren</button>'+
+      '<button class="ex-btn" id="ioApply" hidden onclick="applyImport()">Übernehmen</button>'+
+    '</div>'+
+    '<textarea class="io-area" id="ioArea" hidden spellcheck="false"></textarea>'+
+    '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Wie XP entstehen:</strong> Lektion abschließen +'+xpAnzeige(50)+' · Quizfrage erstmals richtig +'+xpAnzeige(10)+' · Karteikarte gewusst +'+xpAnzeige(5)+' (gefestigte Karten +'+xpAnzeige(8)+') · Vorhersage im Algorithmus-Trainer +'+xpAnzeige(15)+' · Trockendurchlauf gelöst +'+xpAnzeige(40)+' · Übungsaufgabe gelöst +'+xpAnzeige(30)+' · Prüfung '+xpAnzeige(3)+' XP je richtiger Antwort · Abzeichen +'+xpAnzeige(25)+'. Punkte gibt es pro Aufgabe nur einmal — Wiederholen zählt fürs Gedächtnis, nicht fürs Punktekonto.</div>';
+  return h;
+}
+var subnet = { task:null, checked:false, right:0, total:0, streak:0, kind:0 };
+function sbRand(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function sbPick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function sbToInt(a, b, c, d){ return ((a * 16777216) + (b * 65536) + (c * 256) + d); }
+function sbToIp(n){
+  n = n >>> 0;
+  return [Math.floor(n / 16777216) % 256, Math.floor(n / 65536) % 256,
+          Math.floor(n / 256) % 256, n % 256].join('.');
+}
+function sbMaskInt(p){ return p === 0 ? 0 : (4294967296 - Math.pow(2, 32 - p)); }
+function sbMaskStr(p){ return sbToIp(sbMaskInt(p)); }
+function sbNorm(s){ return String(s == null ? '' : s).replace(/\s+/g, '').replace(/,/g, '.').toLowerCase(); }
+function sbBase(prefix){
+  var r = sbRand(1, 3), a, b;
+  if(r === 1){ a = 10;  b = sbRand(0, 255); }
+  else if(r === 2){ a = 172; b = sbRand(16, 31); }
+  else { a = 192; b = 168; }
+  if(r === 3 && prefix < 16) prefix = 16;
+  var ip = sbToInt(a, b, sbRand(0, 255), sbRand(1, 254));
+  return (ip - (ip % Math.pow(2, 32 - prefix))) + sbRand(1, Math.min(200, Math.pow(2, 32 - prefix) - 2));
+}
+function makeSubnetTask(){
+  var kind = sbRand(1, 4);
+  var p, ipInt, netInt, size, t;
+
+  if(kind === 1){
+    /* Adresse analysieren */
+    p = sbRand(24, 30);
+    ipInt = sbBase(p);
+    size = Math.pow(2, 32 - p);
+    netInt = ipInt - (ipInt % size);
+    t = {
+      kind: 1,
+      titel: 'Adresse analysieren',
+      frage: 'Gegeben ist die Adresse <strong>' + sbToIp(ipInt) + ' / ' + p + '</strong> ' +
+             '(Subnetzmaske ' + sbMaskStr(p) + ').<br>Bestimme Netzadresse, Broadcast-Adresse, den ersten und letzten nutzbaren Host sowie die Anzahl nutzbarer Hosts.',
+      felder: [
+        { k:'netz',  l:'Netzadresse',        ph:'z. B. 192.168.1.0' },
+        { k:'bc',    l:'Broadcast-Adresse',  ph:'z. B. 192.168.1.255' },
+        { k:'first', l:'Erster Host',        ph:'z. B. 192.168.1.1' },
+        { k:'last',  l:'Letzter Host',       ph:'z. B. 192.168.1.254' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: {
+        netz:  sbToIp(netInt),
+        bc:    sbToIp(netInt + size - 1),
+        first: sbToIp(netInt + 1),
+        last:  sbToIp(netInt + size - 2),
+        hosts: String(size - 2)
+      },
+      weg:
+        'Maske /' + p + ' = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse im letzten Oktett: 256 - ' + (sbMaskInt(p) % 256) + ' = ' + Math.min(size, 256) + '\n' +
+        'Netzadresse   = alle Hostbits auf 0   -> ' + sbToIp(netInt) + '\n' +
+        'Broadcast     = alle Hostbits auf 1   -> ' + sbToIp(netInt + size - 1) + '\n' +
+        'Erster Host   = Netzadresse + 1       -> ' + sbToIp(netInt + 1) + '\n' +
+        'Letzter Host  = Broadcast - 1         -> ' + sbToIp(netInt + size - 2) + '\n' +
+        'Hostbits      = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts= 2^' + (32 - p) + ' - 2 = ' + size + ' - 2 = ' + (size - 2)
+    };
+  } else if(kind === 2){
+    /* Maske und Praefix umrechnen */
+    p = sbRand(17, 30);
+    var hin = sbRand(0, 1) === 1;
+    t = {
+      kind: 2,
+      titel: 'Maske und Praefix umrechnen',
+      frage: hin
+        ? 'Wandle das Praefix <strong>/' + p + '</strong> in die Subnetzmaske in Dezimalschreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.'
+        : 'Wandle die Subnetzmaske <strong>' + sbMaskStr(p) + '</strong> in die CIDR-Schreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.',
+      felder: hin
+        ? [ { k:'maske', l:'Subnetzmaske', ph:'z. B. 255.255.255.0' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ]
+        : [ { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 24' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ],
+      loesung: hin
+        ? { maske: sbMaskStr(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) }
+        : { cidr: String(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) },
+      weg:
+        '/' + p + ' bedeutet ' + p + ' gesetzte Bits von links.\n' +
+        'Maske: ' + sbMaskStr(p) + '\n' +
+        'Merkreihe der Oktettwerte: 128 192 224 240 248 252 254 255\n' +
+        'Hostbits = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts = 2^' + (32 - p) + ' - 2 = ' + (Math.pow(2, 32 - p) - 2)
+    };
+  } else if(kind === 3){
+    /* Vom Hostbedarf zum Praefix */
+    var ziel = sbPick([6, 12, 25, 30, 50, 60, 100, 120, 200, 250, 400, 500]);
+    var hb = 1;
+    while(Math.pow(2, hb) - 2 < ziel) hb++;
+    p = 32 - hb;
+    t = {
+      kind: 3,
+      titel: 'Vom Hostbedarf zum Praefix',
+      frage: 'Ein Subnetz soll mindestens <strong>' + ziel + ' Hosts</strong> aufnehmen koennen. ' +
+             'Bestimme das groesstmoegliche Praefix (also das kleinste ausreichende Netz), die zugehoerige Subnetzmaske und die tatsaechlich nutzbare Hostanzahl.',
+      felder: [
+        { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'maske', l:'Subnetzmaske',       ph:'z. B. 255.255.255.192' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: { cidr: String(p), maske: sbMaskStr(p), hosts: String(Math.pow(2, hb) - 2) },
+      weg:
+        'Gesucht: kleinstes h mit 2^h - 2 >= ' + ziel + '\n' +
+        '  2^' + (hb - 1) + ' - 2 = ' + (Math.pow(2, hb - 1) - 2) + '  -> zu wenig\n' +
+        '  2^' + hb + ' - 2 = ' + (Math.pow(2, hb) - 2) + '  -> ausreichend\n' +
+        'Hostbits = ' + hb + '\n' +
+        'Praefix  = 32 - ' + hb + ' = /' + p + '\n' +
+        'Maske    = ' + sbMaskStr(p)
+    };
+  } else {
+    /* Netz aufteilen */
+    var start = sbRand(24, 27);
+    var anzahl = sbPick([2, 4, 8, 16]);
+    var zusatz = Math.round(Math.log(anzahl) / Math.log(2));
+    p = start + zusatz;
+    if(p > 30){ p = 30; zusatz = p - start; anzahl = Math.pow(2, zusatz); }
+    var basis = sbBase(start);
+    var basisNet = basis - (basis % Math.pow(2, 32 - start));
+    var block = Math.pow(2, 32 - p);
+    t = {
+      kind: 4,
+      titel: 'Netz aufteilen',
+      frage: 'Das Netz <strong>' + sbToIp(basisNet) + ' / ' + start + '</strong> soll in ' +
+             '<strong>' + anzahl + ' gleich grosse Subnetze</strong> geteilt werden. ' +
+             'Bestimme das neue Praefix, die Blockgroesse, die Anzahl nutzbarer Hosts je Subnetz und die Netzadresse des <strong>zweiten</strong> Subnetzes.',
+      felder: [
+        { k:'cidr',  l:'Neues Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'block', l:'Blockgroesse (Adressen)',  ph:'nur die Zahl' },
+        { k:'hosts', l:'Nutzbare Hosts je Subnetz', ph:'nur die Zahl' },
+        { k:'netz2', l:'Netzadresse Subnetz 2',    ph:'z. B. 192.168.1.64' }
+      ],
+      loesung: {
+        cidr:  String(p),
+        block: String(block),
+        hosts: String(block - 2),
+        netz2: sbToIp(basisNet + block)
+      },
+      weg:
+        'Benoetigte zusaetzliche Netzbits: 2^x >= ' + anzahl + '  ->  x = ' + zusatz + '\n' +
+        'Neues Praefix = /' + start + ' + ' + zusatz + ' = /' + p + '\n' +
+        'Maske         = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse  = 2^(32-' + p + ') = ' + block + ' Adressen\n' +
+        'Hosts je Netz = ' + block + ' - 2 = ' + (block - 2) + '\n' +
+        'Subnetz 1     = ' + sbToIp(basisNet) + '\n' +
+        'Subnetz 2     = ' + sbToIp(basisNet) + ' + ' + block + ' = ' + sbToIp(basisNet + block)
+    };
+  }
+  return t;
+}
+function newSubnetTask(){
+  subnet.task = makeSubnetTask();
+  subnet.checked = false;
+  render();
+}
+function checkSubnetTask(){
+  var t = subnet.task;
+  if(!t || subnet.checked) return;
+  var alleRichtig = true;
+  t.eingabe = {};
+  t.felder.forEach(function(f){
+    var el = document.getElementById('sb_' + f.k);
+    var v = el ? el.value : '';
+    t.eingabe[f.k] = v;
+    if(sbNorm(v) !== sbNorm(t.loesung[f.k])) alleRichtig = false;
+  });
+  subnet.checked = true;
+  subnet.total++;
+  if(alleRichtig){
+    subnet.right++;
+    subnet.streak++;
+    state.subnetSolved = (state.subnetSolved || 0) + 1;
+    awardXp(10, 'Subnetting-Aufgabe geloest');
+    if(state.subnetSolved >= 10) grantBadge('subnet10');
+    if(state.subnetSolved >= 50) grantBadge('subnet50');
+    if(subnet.streak >= 10) grantBadge('subnet_serie');
+  } else {
+    subnet.streak = 0;
+  }
+  t.korrekt = alleRichtig;
+  render();
+}
+function renderSubnet(){
+  if(!subnet.task) subnet.task = makeSubnetTask();
+  var t = subnet.task;
+
+  var h = '<div class="breadcrumb">Training</div><h1>Subnetting-Trainer</h1>';
+  h += '<p class="intro-sub">Subnetting lernt man nicht durch Lesen, sondern durch Wiederholung. Dieser Trainer erzeugt bei jedem Klick eine neue Aufgabe aus vier Typen &mdash; Adresse analysieren, Maske umrechnen, Praefix aus dem Hostbedarf bestimmen und ein Netz aufteilen. Jede geloeste Aufgabe bringt '+xpAnzeige(10)+' XP.</p>';
+
+  h += '<div class="stat-row" style="margin-bottom:18px;">'+
+    '<div class="stat-tile"><div class="num">'+subnet.right+'</div><div class="lbl">richtig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.total+'</div><div class="lbl">bearbeitet</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(subnet.total ? Math.round(subnet.right/subnet.total*100)+'%' : '&mdash;')+'</div><div class="lbl">Quote</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.streak+'</div><div class="lbl">Serie</div></div>'+
+    '</div>';
+
+  h += '<div class="ex-card">';
+  h += '<div class="ex-head"><h3>'+esc(t.titel)+'</h3><span class="badge topic">Aufgabentyp '+t.kind+'</span></div>';
+  h += '<div class="ex-task"><p>'+t.frage+'</p></div>';
+
+  h += '<div class="sb-grid">';
+  t.felder.forEach(function(f){
+    var val = (t.eingabe && t.eingabe[f.k] != null) ? esc(t.eingabe[f.k]) : '';
+    var cls = '';
+    if(subnet.checked){
+      cls = (sbNorm(val) === sbNorm(t.loesung[f.k])) ? ' sb-ok' : ' sb-bad';
+    }
+    h += '<label class="sb-field"><span>'+esc(f.l)+'</span>'+
+         '<input type="text" id="sb_'+f.k+'" class="sb-input'+cls+'" value="'+val+'" '+
+         'placeholder="'+esc(f.ph)+'" autocomplete="off" spellcheck="false"'+
+         (subnet.checked ? ' disabled' : '')+'></label>';
+  });
+  h += '</div>';
+
+  h += '<div class="ex-actions">';
+  if(!subnet.checked){
+    h += '<button class="ex-btn primary" onclick="checkSubnetTask()">Pr&uuml;fen</button>';
+    h += '<button class="ex-btn" onclick="newSubnetTask()">&uuml;berspringen</button>';
+  } else {
+    h += '<button class="ex-btn primary" onclick="newSubnetTask()">N&auml;chste Aufgabe</button>';
+  }
+  h += '</div>';
+
+  if(subnet.checked){
+    h += '<div class="ex-panel '+(t.korrekt ? 'hint' : '')+'">'+
+         '<strong>'+(t.korrekt ? '✓ Alles richtig.' : '✗ Noch nicht ganz.')+'</strong>'+
+         (t.korrekt ? '' : ' Die richtigen Werte stehen unten markiert.')+'</div>';
+    if(!t.korrekt){
+      h += '<div class="sb-grid">';
+      t.felder.forEach(function(f){
+        h += '<div class="sb-field"><span>'+esc(f.l)+'</span>'+
+             '<div class="sb-sol">'+esc(t.loesung[f.k])+'</div></div>';
+      });
+      h += '</div>';
+    }
+    h += codeBlock(t.weg, 'Rechenweg');
+  }
+
+  h += '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Sofort-Spickzettel:</strong> '+
+       'Oktettwerte von links &mdash; 128 &middot; 192 &middot; 224 &middot; 240 &middot; 248 &middot; 252 &middot; 254 &middot; 255. '+
+       'Blockgr&ouml;&szlig;e = 256 &minus; Maskenwert. Nutzbare Hosts = 2^Hostbits &minus; 2. '+
+       'Subnetze = 2^zus&auml;tzliche Netzbits. Broadcast = n&auml;chste Netzadresse &minus; 1.</div>';
+
+  return h;
+}
+var KI = {
+  /* 'auto' probiert erst das Artifact, dann den eigenen Endpunkt.
+     'artifact' | 'backend' | 'aus' erzwingen einen Weg. */
+  modus: 'auto',
+  /* Eigener HTTPS-Endpunkt, z.B. 'https://api.deine-domain.de/tutor'.
+     Der API-Schluessel gehoert AUSSCHLIESSLICH auf den Server - niemals
+     in diese Datei, sie liegt beim Kunden im Browser. */
+  endpunkt: '',
+  zeitlimit: 90000
+};
+var kiGespeichert = null;
+var kiRoh = null;
+try{
+  kiGespeichert = localStorage.getItem('rootpfad-ki');
+  if(kiGespeichert){
+    kiRoh = JSON.parse(kiGespeichert);
+    if(kiRoh && typeof kiRoh === 'object'){
+      if(typeof kiRoh.modus === 'string') KI.modus = kiRoh.modus;
+      if(typeof kiRoh.endpunkt === 'string') KI.endpunkt = kiRoh.endpunkt;
+    }
+  }
+}catch(e){}
+function kiSpeichern(){
+  try{
+    localStorage.setItem('rootpfad-ki', JSON.stringify({ modus:KI.modus, endpunkt:KI.endpunkt }));
+  }catch(e){}
+}
+function kiBackendAnbieter(endpunkt){
+
+  async function anfrage(nachrichten, opt, modus){
+    opt = opt || {};
+    var ctl = new AbortController();
+    var timer = setTimeout(function(){ ctl.abort(); }, KI.zeitlimit);
+    /* Ein von aussen gereichtes Abbruchsignal mit durchreichen. */
+    if(opt.signal){
+      if(opt.signal.aborted) ctl.abort();
+      else opt.signal.addEventListener('abort', function(){ ctl.abort(); });
+    }
+
+    var antwort;
+    try{
+      antwort = await fetch(endpunkt, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nachrichten: nachrichten,
+          modus: modus,
+          stufe: opt.modelTier || 'default'
+        }),
+        signal: ctl.signal
+      });
+    }catch(e){
+      clearTimeout(timer);
+      if(e && e.name === 'AbortError') throw { code:'aborted', message:'abgebrochen' };
+      throw { code:'network', message:'Der Tutor-Dienst ist nicht erreichbar.' };
+    }
+
+    if(!antwort.ok){
+      clearTimeout(timer);
+      if(antwort.status === 429) throw { code:'rate_limited', message:'zu viele Anfragen' };
+      if(antwort.status === 401 || antwort.status === 403) throw { code:'not_granted', message:'kein Zugang' };
+      if(antwort.status === 413) throw { code:'prompt_too_large', message:'Anfrage zu gross' };
+      throw { code:'server', message:'Der Tutor-Dienst antwortete mit Fehler ' + antwort.status + '.' };
+    }
+
+    var typ = (antwort.headers.get('content-type') || '').toLowerCase();
+
+    /* Weg a: Ereignisstrom, Text waechst mit jedem Stueck. */
+    if(typ.indexOf('text/event-stream') >= 0 && antwort.body && antwort.body.getReader){
+      var leser = antwort.body.getReader();
+      var dek = new TextDecoder();
+      var puffer = '';
+      var text = '';
+      var abgeschnitten = false;
+      try{
+        for(;;){
+          var stueck = await leser.read();
+          if(stueck.done) break;
+          puffer += dek.decode(stueck.value, { stream:true });
+          var zeilen = puffer.split(String.fromCharCode(10));
+          puffer = zeilen.pop();
+          for(var i = 0; i < zeilen.length; i++){
+            var z = zeilen[i].trim();
+            if(z.indexOf('data:') !== 0) continue;
+            var nutz = z.slice(5).trim();
+            if(!nutz || nutz === '[DONE]') continue;
+            try{
+              var d = JSON.parse(nutz);
+              if(typeof d.text === 'string'){
+                text = d.text;
+                if(opt.onText) opt.onText({ text: text });
+              }
+              if(d.truncated) abgeschnitten = true;
+            }catch(e){}
+          }
+        }
+      }finally{
+        clearTimeout(timer);
+      }
+      return { text: text, truncated: abgeschnitten };
+    }
+
+    /* Weg b: eine einzelne JSON-Antwort. */
+    var daten;
+    try{
+      daten = await antwort.json();
+    }catch(e){
+      clearTimeout(timer);
+      throw { code:'invalid_json', message:'Die Antwort war kein gueltiges JSON.' };
+    }
+    clearTimeout(timer);
+
+    if(modus === 'json') return daten;
+    var fertig = typeof daten.text === 'string' ? daten.text : String(daten.text || '');
+    if(opt.onText && fertig) opt.onText({ text: fertig });
+    return { text: fertig, truncated: !!daten.truncated };
+  }
+
+  function senden(nachrichten, opt){ return anfrage(nachrichten, opt, 'text'); }
+  senden.json = function(anweisung, opt){
+    return anfrage([{ role:'user', content:String(anweisung) }], opt, 'json');
+  };
+  senden.herkunft = 'backend';
+  return senden;
+}
+async function kiAnbieterWaehlen(){
+  if(KI.modus === 'aus') return null;
+
+  if(KI.modus === 'auto' || KI.modus === 'artifact'){
+    try{
+      if(window.claude && window.claude.use){
+        var fn = await window.claude.use('sample');
+        if(fn){ fn.herkunft = 'artifact'; return fn; }
+      }
+    }catch(e){}
+    if(KI.modus === 'artifact') return null;
+  }
+
+  if((KI.modus === 'auto' || KI.modus === 'backend') && KI.endpunkt){
+    return kiBackendAnbieter(KI.endpunkt);
+  }
+  return null;
+}
+function kiHerkunftText(){
+  if(!tutor.fn) return 'nicht verfügbar';
+  if(tutor.fn.herkunft === 'backend') return 'eigener Dienst';
+  return 'Claude über dein Konto';
+}
+var tutor = {
+  ready: false,      /* sample aufgeloest */
+  fn: null,          /* die sample-Funktion */
+  off: false,        /* endgueltig nicht verfuegbar */
+  turns: [],         /* {role, content} - ohne die Anweisungsrunde */
+  busy: false,
+  ctl: null,
+  hinweis: '',
+  vorlage: ''        /* vorbelegte Frage aus einer Lektion */
+};
+var TUTOR_INDEX = (function(){
+  var out = [];
+  PARTS.forEach(function(p){
+    var mods = MODULES.filter(function(m){ return m.part === p; });
+    if(!mods.length) return;
+    out.push('TEIL ' + p + ' - ' + mods[0].partTitle);
+    mods.forEach(function(m){
+      out.push('  ' + m.id + ' ' + m.title + ': ' +
+        m.lessons.map(function(l){ return l.title; }).join(' | '));
+    });
+  });
+  return out.join('\n');
+})();
+function tutorAnweisung(){
+  return [
+    'Du bist der Lern-Tutor in einem Online-Kurs zur Vorbereitung auf die IHK-Abschlusspruefung Teil 1',
+    '(AP1) im Beruf Fachinformatiker fuer Anwendungsentwicklung in Deutschland.',
+    '',
+    'SO ANTWORTEST DU:',
+    '- Immer auf Deutsch, mit Du-Anrede, sachlich und freundlich.',
+    '- Kurz und praezise. Zwei bis sechs Saetze reichen meistens.',
+    '- Erst die Antwort, dann die Begruendung. Nie umgekehrt.',
+    '- Bei Rechenaufgaben IMMER den vollstaendigen Rechenweg Schritt fuer Schritt,',
+    '  mit Einheiten, und das Ergebnis am Ende klar benannt.',
+    '- Wenn es zum Thema eine Lektion im Kurs gibt, nenne sie am Ende in einer',
+    '  eigenen Zeile im Format: Dazu im Kurs: <Modultitel> - <Lektionstitel>',
+    '- Wenn eine Frage typische Pruefungsfallen enthaelt, weise darauf hin.',
+    '- Wenn du etwas nicht sicher weisst, sage das offen. Erfinde keine',
+    '  Paragraphen, Normen, Zahlen oder Fristen.',
+    '- Nutze einfache Formatierung: kurze Absaetze, Aufzaehlungen mit "- ",',
+    '  Tabellen nur wenn sie wirklich helfen. Kein Markdown-Fettdruck noetig.',
+    '',
+    'WAS DU TUN KANNST, wenn darum gebeten wird:',
+    '- einen Begriff erklaeren, auch mit Beispiel',
+    '- eine Uebungsaufgabe im AP1-Stil stellen und danach bewerten',
+    '- eine Loesung der lernenden Person pruefen und sagen, wo Punkte fehlen',
+    '- den Unterschied zwischen zwei Begriffen herausarbeiten',
+    '- eine Merkhilfe vorschlagen',
+    '',
+    'ZUSATZTEILE PHP & LARAVEL (Teil 10) und GIT (Teil 11): gehoeren nicht zur AP1. Fragen dazu beantwortest',
+    'du als erfahrene PHP- und Laravel-Entwicklerin bzw. erfahrener Entwickler, mit kurzen,',
+    'lauffaehigen Codebeispielen fuer aktuelles PHP 8 und Laravel. Weise auf Sicherheit',
+    '(XSS, SQL-Injection, Mass Assignment, fehlende Autorisierung) hin, wo es passt.',
+    '',
+    'DAS IST DER AUFBAU DES KURSES (nutze ihn fuer Verweise):',
+    TUTOR_INDEX,
+    '',
+    'Antworte ab jetzt auf die Fragen der lernenden Person.'
+  ].join('\n');
+}
+async function tutorInit(){
+  if(tutor.ready || tutor.off) return;
+  try{
+    tutor.fn = await kiAnbieterWaehlen();
+  }catch(e){ tutor.fn = null; }
+  tutor.ready = true;
+  if(!tutor.fn) tutor.off = true;
+  if(state.currentId === 'tutor') renderContent();
+}
+async function tutorNeuVerbinden(){
+  tutor.ready = false;
+  tutor.off = false;
+  tutor.fn = null;
+  tutor.hinweis = '';
+  await tutorInit();
+  renderContent();
+  if(typeof dockZeichnen === 'function') dockZeichnen();
+}
+function kiModusSetzen(wert){
+  KI.modus = wert || 'auto';
+  kiSpeichern();
+  tutorNeuVerbinden();
+}
+function kiEndpunktSetzen(wert){
+  KI.endpunkt = String(wert || '').trim();
+  kiSpeichern();
+}
+function tutorFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'sampling_disabled':
+    case 'not_declared':
+    case 'capability_disabled':
+      tutor.off = true;
+      return 'Der Tutor ist in dieser Ansicht nicht verfuegbar. Der Rest des Kurses funktioniert unveraendert.';
+    case 'network':
+      return 'Der Tutor-Dienst ist nicht erreichbar. Pruefe deine Verbindung und die Adresse in den Einstellungen.';
+    case 'server':
+      return 'Der Tutor-Dienst hat mit einem Fehler geantwortet. Versuche es in einigen Minuten erneut.';
+    case 'aborted':
+      return '';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und frag dann noch einmal.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und versuche es noch einmal.';
+    case 'prompt_too_large':
+      return 'Die Unterhaltung ist zu lang geworden. Setze sie mit \u201aNeu beginnen\u2018 zurueck.';
+    case 'refused':
+      return 'Diese Frage kann ich so nicht beantworten. Formuliere sie bitte anders.';
+    case 'empty_completion':
+      return 'Darauf kam keine Antwort. Stelle die Frage etwas konkreter.';
+    case 'invalid_json':
+      return 'Die Bewertung kam in einer unerwarteten Form zurueck. Versuche es noch einmal \u2014 '+
+             'bei Wiederholung liegt es meist an einer zu langen Eingabe.';
+    case 'cancelled':
+      return '';
+    default:
+      /* Den Rohcode mitgeben: sonst sucht man im Dunkeln. */
+      return 'Das hat nicht geklappt. Versuche es gleich noch einmal.'+
+             (code ? ' (Grund: ' + code + ')' : '');
+  }
+}
+function tutorAbbrechen(){
+  if(tutor.ctl) tutor.ctl.abort();
+}
+function tutorNeu(){
+  tutorAbbrechen();
+  tutor.turns = [];
+  tutor.hinweis = '';
+  chatAktualisieren();
+}
+function chatAktualisieren(){
+  if(state.currentId === 'tutor') renderContent();
+  dockZeichnen();
+  var k = document.getElementById('dockKnopf');
+  if(k && tutor.off){ k.hidden = true; }
+  /* Kam die Antwort, waehrend das Dock zu war, meldet der Knopf das. */
+  var p = document.getElementById('dockPunkt');
+  if(p){
+    var letzte = tutor.turns[tutor.turns.length - 1];
+    p.hidden = !(!dock.offen && !tutor.busy && letzte && letzte.role === 'assistant' && letzte.content);
+  }
+}
+function tutorSchnell(text){
+  var ta = document.getElementById('tutorInput');
+  if(ta){ ta.value = text; ta.focus(); }
+  tutorSenden();
+}
+function tutorSenden(){
+  var ta = document.getElementById('tutorInput');
+  var frage = ta ? ta.value.trim() : '';
+  if(!frage) return;
+  if(ta) ta.value = '';
+  tutorFrage(frage);
+}
+function dockFrage(frage){
+  var f = document.getElementById('dockFeld');
+  if(!frage && f) frage = f.value.trim();
+  if(!frage) return;
+  if(f){ f.value = ''; f.style.height = 'auto'; }
+  tutorFrage(frage);
+}
+async function tutorFrage(frage){
+  if(tutor.busy || tutor.off || !tutor.fn) return;
+  frage = String(frage || '').trim();
+  if(!frage) return;
+
+  tutor.turns.push({ role:'user', content: frage });
+  tutor.turns.push({ role:'assistant', content: '', pending:true });
+  tutor.busy = true;
+  tutor.hinweis = '';
+  chatAktualisieren();
+
+  var ziel = tutor.turns[tutor.turns.length - 1];
+  tutor.ctl = new AbortController();
+
+  /* Aelteste Runden verwerfen, damit der Kontext nicht ueberlaeuft.
+     Anweisung und Seitenkontext bleiben immer erhalten. */
+  var verlauf = tutor.turns.filter(function(t){ return !t.pending; });
+  while(verlauf.length > 12) verlauf.shift();
+  var eingabe = [
+    { role:'user', content: tutorAnweisung() },
+    { role:'user', content: dockKontext() }
+  ].concat(verlauf.map(function(t){ return { role:t.role, content:t.content }; }));
+  /* Die Folge muss auf einer Frage enden. */
+  while(eingabe.length && eingabe[eingabe.length - 1].role !== 'user') eingabe.pop();
+
+  try{
+    var res = await tutor.fn(eingabe, {
+      cache: false,
+      signal: tutor.ctl.signal,
+      modelTier: 'default',
+      onText: function(u){
+        ziel.content = u.text;
+        ziel.pending = false;
+        var el = document.getElementById('tutorLive');
+        if(el) el.textContent = u.text;
+        var box = document.getElementById('tutorVerlauf');
+        if(box) box.scrollTop = box.scrollHeight;
+        var dl = document.getElementById('dockLive');
+        if(dl) dl.textContent = u.text;
+        var dv = document.getElementById('dockVerlauf');
+        if(dv) dv.scrollTop = dv.scrollHeight;
+      }
+    });
+    ziel.content = res.text;
+    ziel.pending = false;
+    if(res.truncated) tutor.hinweis = 'Die Antwort wurde gek\u00fcrzt. Frag nach weniger auf einmal.';
+    state.tutorFragen = (state.tutorFragen || 0) + 1;
+    if(state.tutorFragen >= 1) grantBadge('tutor_fan');
+    if(state.tutorFragen >= 25) grantBadge('tutor_profi');
+    awardXp(5, 'Frage an den Tutor', 'tutor:' + state.tutorFragen);
+    saveProgress();
+  }catch(e){
+    var txt = (e && e.text) ? e.text : '';
+    ziel.content = txt;
+    ziel.pending = false;
+    if(!txt) tutor.turns.pop();
+    tutor.hinweis = tutorFehlertext(e && e.code);
+  }finally{
+    tutor.busy = false;
+    tutor.ctl = null;
+    chatAktualisieren();
+    var d = document.getElementById('dockFeld');
+    if(dock.offen && d){ d.focus(); }
+    else {
+      var i = document.getElementById('tutorInput');
+      if(i) i.focus();
+    }
+  }
+}
+function tutorZuLektion(lessonId){
+  var l = FLAT.find(function(x){ return x.id === lessonId; });
+  var m = moduleOfLesson(lessonId);
+  var frage = 'Erkl\u00e4re mir den Kern dieser Lektion in eigenen Worten und nenne die h\u00e4ufigste Pr\u00fcfungsfalle dazu.';
+  /* Ohne Tutor-Faehigkeit bleibt der alte Weg ueber die eigene Seite. */
+  if(tutor.off || !tutor.fn){
+    if(l && m) tutor.vorlage = 'Ich lerne gerade die Lektion \u201e' + l.title + '\u201c aus dem Modul \u201e' +
+      m.title + '\u201c. ' + frage;
+    selectLesson('tutor');
+    return;
+  }
+  dockOeffnen();
+  var f = document.getElementById('dockFeld');
+  if(f){ f.value = frage; dockWachsen(f); f.focus(); }
+}
+function renderTutor(){
+  if(!tutor.ready) tutorInit();
+
+  var h = '<div class="breadcrumb">Training</div><h1>AP1-Tutor</h1>';
+
+  if(tutor.off){
+    h += '<p class="intro-sub">Der Tutor beantwortet deine Fragen zum Kursstoff. In dieser Ansicht ist er gerade nicht verf\u00fcgbar \u2014 ' +
+         'das kann daran liegen, dass die Seite als lokale Datei ge\u00f6ffnet ist oder die Nutzung nicht freigegeben wurde. ' +
+         'Alle anderen Funktionen des Kurses arbeiten unver\u00e4ndert weiter.</p>';
+    return h;
+  }
+  if(!tutor.fn){
+    h += '<p class="intro-sub">Der Tutor wird geladen \u2026</p>';
+    return h;
+  }
+
+  h += '<p class="intro-sub">Frag alles zum Pr\u00fcfungsstoff: Begriffe erkl\u00e4ren lassen, eine \u00dcbungsaufgabe anfordern, ' +
+       'deine eigene L\u00f6sung pr\u00fcfen lassen oder zwei Begriffe gegen\u00fcberstellen. Der Tutor kennt den Aufbau dieses Kurses ' +
+       'und verweist auf die passende Lektion. Jede Frage bringt ' + xpAnzeige(5) + ' XP.</p>' +
+       '<p class="intro-sub">Derselbe Tutor sitzt unten rechts in jeder Ansicht \u2014 dort beantwortet er Fragen, '+
+       'ohne dass du die Lektion verl\u00e4sst. Der Verlauf ist hier und dort derselbe.</p>';
+
+  h += '<div class="tutor-box">';
+  h += '<div class="tutor-verlauf" id="tutorVerlauf">';
+  if(!tutor.turns.length){
+    h += '<div class="tutor-leer">Noch keine Frage gestellt. Unten anfangen \u2014 oder einen der Vorschl\u00e4ge nehmen.</div>';
+  }
+  tutor.turns.forEach(function(t, i){
+    var letzte = (i === tutor.turns.length - 1);
+    if(t.role === 'user'){
+      h += '<div class="tutor-msg user"><div class="tutor-rolle">Du</div><div class="tutor-text">'+esc(t.content)+'</div></div>';
+    } else {
+      h += '<div class="tutor-msg bot"><div class="tutor-rolle">Tutor</div>'+
+           '<div class="tutor-text"'+(letzte ? ' id="tutorLive"' : '')+'>'+
+           (t.pending ? '<span class="tutor-denkt">denkt nach \u2026</span>' : esc(t.content))+
+           '</div></div>';
+    }
+  });
+  h += '</div>';
+
+  if(tutor.hinweis){
+    h += '<div class="tutor-hinweis">'+esc(tutor.hinweis)+'</div>';
+  }
+
+  var vor = tutor.vorlage ? esc(tutor.vorlage) : '';
+  tutor.vorlage = '';
+  h += '<div class="tutor-eingabe">'+
+       '<textarea id="tutorInput" class="tutor-input" rows="3" spellcheck="false" '+
+       (tutor.busy ? 'disabled ' : '')+
+       'placeholder="Deine Frage \u2026 (Strg+Enter sendet)">'+vor+'</textarea>'+
+       '<div class="ex-actions" style="margin-top:10px;">';
+  if(tutor.busy){
+    h += '<button class="ex-btn" onclick="tutorAbbrechen()">Stopp</button>';
+  } else {
+    h += '<button class="ex-btn primary" onclick="tutorSenden()">Fragen</button>';
+  }
+  h += '<button class="ex-btn" onclick="tutorNeu()">Neu beginnen</button>';
+  h += '</div></div>';
+  h += '</div>';
+
+  if(!tutor.turns.length){
+    h += '<h2 class="sec-h">Womit soll ich anfangen?</h2><div class="tutor-chips">';
+    [ 'Erkl\u00e4re mir Subnetting an einem Beispiel mit /26.',
+      'Was ist der Unterschied zwischen Datenschutz und Datensicherheit?',
+      'Stelle mir eine Netzplan-Aufgabe im AP1-Stil.',
+      'Warum zeigt der Pfeil bei include anders als bei extend?',
+      'Gib mir eine Merkhilfe f\u00fcr die OSI-Schichten.',
+      'Pr\u00fcfe meine L\u00f6sung: Ich soll 192.168.5.130/26 analysieren.',
+      'Was sind die drei Lernarten beim maschinellen Lernen?',
+      'Erkl\u00e4re Kapselung so, als w\u00e4re ich im ersten Lehrjahr.'
+    ].forEach(function(t){
+      h += '<button class="tutor-chip" onclick="tutorSchnell(\''+t.replace(/'/g, "\\'")+'\')">'+esc(t)+'</button>';
+    });
+    h += '</div>';
+  }
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Wie der Tutor arbeitet:</strong> '+
+       'Deine Frage geht an Claude \u2014 mit deinem eigenen Konto, direkt aus dieser Seite heraus. '+
+       'Es wird kein fremder Dienst genutzt und kein Schl\u00fcssel gespeichert. Beim ersten Mal fragt dein Browser, '+
+       'ob die Seite das darf. Der Verlauf bleibt nur in dieser Sitzung und wird nicht gespeichert. '+
+       '<em>Pr\u00fcfe wichtige Angaben \u2014 Paragraphen, Fristen, Zahlen \u2014 immer gegen die Lektion oder das Formelblatt.</em></div>';
+
+  return h;
+}
+function wireTutor(){
+  var ta = document.getElementById('tutorInput');
+  if(!ta) return;
+  ta.onkeydown = function(ev){
+    if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); tutorSenden(); }
+  };
+  if(!tutor.busy && !dock.offen) ta.focus();
+}
+function weichRendern(fn){
+  var reduziert = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(document.startViewTransition && !reduziert){
+    try{ document.startViewTransition(fn); return; }catch(e){}
+  }
+  fn();
+}
+function fokusUmschalten(){
+  var an = document.documentElement.getAttribute('data-fokus') === '1';
+  document.documentElement.setAttribute('data-fokus', an ? '0' : '1');
+  try{ localStorage.setItem('ap1-fokus', an ? '0' : '1'); }catch(e){}
+  var h = document.getElementById('fokusHinweis');
+  if(h){
+    h.textContent = an ? 'Lesemodus aus' : 'Lesemodus an · F beendet ihn';
+    h.classList.add('an');
+    clearTimeout(h._t);
+    h._t = setTimeout(function(){ h.classList.remove('an'); }, 1900);
+  }
+}
+function pruefungsTage(){
+  if(!state.pruefungsdatum) return null;
+  var z = new Date(state.pruefungsdatum + 'T00:00:00');
+  if(isNaN(z)) return null;
+  var heute = new Date(); heute.setHours(0,0,0,0);
+  return Math.round((z - heute) / 86400000);
+}
+function setzePruefung(wert){
+  state.pruefungsdatum = wert || '';
+  saveProgress();
+  renderContent();
+}
+function setzeZiel(wert){
+  var n = parseInt(wert, 10);
+  state.tagesziel = (isNaN(n) || n < 1) ? 3 : Math.min(n, 30);
+  saveProgress();
+  renderContent();
+}
+function heuteGeschafft(){
+  var t = todayKey();
+  return (state.dayCount && state.dayCount.day === t) ? state.dayCount.n : 0;
+}
+function lernplan(){
+  var tage = pruefungsTage();
+  if(tage === null || tage <= 0) return null;
+
+  var offeneModule = [];
+  var offenGesamt = 0;
+  MODULES.forEach(function(m){
+    var offen = m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length;
+    if(offen){ offeneModule.push({ m:m, offen:offen }); offenGesamt += offen; }
+  });
+  if(!offenGesamt) return { fertig:true, puffer:tage, module:[] };
+
+  /* Puffer fuer die Schlussphase: ein Fuenftel, mindestens 3, hoechstens 14 Tage. */
+  var puffer = Math.min(14, Math.max(3, Math.round(tage * 0.2)));
+  /* Bei sehr wenig Restzeit darf der Puffer nicht groesser werden als
+     die verbleibenden Tage - mindestens ein Lerntag bleibt immer. */
+  puffer = Math.min(puffer, Math.max(0, tage - 1));
+  var lerntage = Math.max(1, tage - puffer);
+  var proTag = offenGesamt / lerntage;
+
+  var heute = new Date(); heute.setHours(0,0,0,0);
+  var summe = 0;
+  var plan = offeneModule.map(function(e){
+    summe += e.offen;
+    var tagNr = Math.min(lerntage, Math.ceil(summe / proTag));
+    var d = new Date(heute.getTime() + tagNr * DAY);
+    return { modul:e.m, offen:e.offen, datum:d };
+  });
+  var pufferStart = new Date(heute.getTime() + lerntage * DAY);
+  return { fertig:false, proTag:Math.ceil(proTag), puffer:puffer,
+           pufferStart:pufferStart, module:plan, machbar:proTag <= (state.tagesziel || 3) };
+}
+function datumKurz(d){
+  return d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit' });
+}
+function renderLernplan(){
+  var p = lernplan();
+  if(!p){
+    if(state.pruefungsdatum) return '';
+    return '<div class="plan-hinweis">Trag im <button class="ex-btn" onclick="selectLesson(\'profile\')">Profil</button> '+
+           'deinen Prüfungstermin ein — dann rechnet dir der Lernplan aus, welches Modul bis wann sitzen muss.</div>';
+  }
+  if(p.fertig){
+    return '<div class="plan-hinweis gut">Alle Lektionen sind durch. Die verbleibenden '+p.puffer+' Tage '+
+           'gehören der Wiederholung: Karteikarten, Fehlerheft und Prüfungssimulationen.</div>';
+  }
+  var h = '<h2 class="sec-h">Lernplan bis zur Prüfung</h2>';
+  h += '<p class="intro-sub">'+p.proTag+' Lektionen pro Tag bis zum '+datumKurz(p.pufferStart)+'. '+
+       'Danach bleiben '+p.puffer+' Tage nur zum Wiederholen. '+
+       (p.machbar ? 'Dein Tagesziel reicht dafür.' : '<b>Das liegt über deinem Tagesziel</b> — zieh es im Profil nach oben oder plane längere Einheiten.')+
+       '</p>';
+  h += '<ol class="plan-liste">';
+  p.module.slice(0, 8).forEach(function(e){
+    h += '<li class="plan-zeile">'+
+      '<button class="plan-titel" onclick="selectLesson(\''+e.modul.lessons[0].id+'\')">'+esc(e.modul.title)+'</button>'+
+      '<span class="plan-offen">'+e.offen+' offen</span>'+
+      '<span class="plan-datum">bis '+datumKurz(e.datum)+'</span></li>';
+  });
+  h += '</ol>';
+  if(p.module.length > 8){
+    h += '<p class="plan-rest">… und '+(p.module.length - 8)+' weitere Module danach.</p>';
+  }
+  return h;
+}
+function renderKalibrierung(){
+  var stufen = KONF_STUFEN.filter(function(st){ return kalibQuote(st.k) !== null; });
+  if(!stufen.length) return '';
+  var h = '<h2 class="sec-h">Selbsteinschätzung</h2>';
+  h += '<p class="intro-sub">Wie gut deckt sich dein Gefühl mit dem Ergebnis? '+
+       'Die erste Zeile ist die wichtige: Wer sich sicher ist und daneben liegt, merkt den Fehler sonst erst in der Prüfung.</p>';
+  stufen.forEach(function(st){
+    var e = state.kalib[st.k];
+    var q = Math.round((e.r / e.n) * 100);
+    var col = st.k === 'sicher'
+      ? (q >= 90 ? 'var(--success)' : q >= 75 ? 'var(--accent2)' : 'var(--danger)')
+      : 'var(--accent)';
+    h += '<div class="topic-bar-row"><span class="tname">'+st.t+'</span>'+
+         '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+         '<span class="tval">'+q+'% · '+e.n+'</span></div>';
+  });
+  var qs = kalibQuote('sicher');
+  if(qs !== null && qs < 0.9){
+    h += '<div class="ex-panel" style="margin-top:12px;"><strong>Dein blinder Fleck:</strong> '+
+         'Bei „Sicher" liegst du in '+Math.round((1-qs)*100)+' % der Fälle falsch. '+
+         'Solange dieser Wert über 10 % liegt, ist dein Gefühl für den eigenen Wissensstand noch nicht geeicht — '+
+         'geh die betroffenen Karten im Fehlerheft noch einmal durch.</div>';
+  }
+  return h;
+}
+var LF_TITEL = {
+  1:'Das Unternehmen und die eigene Rolle',
+  2:'Arbeitsplätze ausstatten',
+  3:'Clients in Netzwerke einbinden',
+  4:'Schutzbedarfsanalyse durchführen',
+  5:'Software zur Datenverwaltung anpassen',
+  6:'Serviceanfragen bearbeiten'
+};
+var LERNFELDER = {
+  m17:1, m18:1, m20:1,
+  m19:2, m21:2, m22:2, m23:2, m24:2,
+  m31:3, m11:3, m12:3, m13:3, m14:3,
+  m15:4, m16:4, m32:4, m33:4,
+  m1:5, m2:5, m3:5, m4:5, m5:5, m6:5, m7:5,
+  m34:5, m35:5, m8:5, m9:5, m10:5,
+  m25:6, m26:6, m27:6,
+  m28:0, m29:0, m30:0
+};
+var lfFilter = 0;
+function lfVon(mid){ return LERNFELDER[mid] || 0; }
+function lfBadge(mid){
+  var n = lfVon(mid);
+  return '<span class="lf-tag'+(n ? '' : ' quer')+'" title="'+(n ? esc(LF_TITEL[n]) : 'Kein Lernfeld der Ordnung von 2020')+'">'+
+         (n ? 'LF ' + n : 'übergreifend')+'</span>';
+}
+function setzeLf(n){
+  lfFilter = (lfFilter === n) ? 0 : n;
+  renderContent();
+}
+function lfFilterZeile(){
+  var h = '<div class="lf-leiste"><span class="lf-frage">Nach Lernfeld der Berufsschule:</span><div class="filter-row" style="margin:0;">';
+  h += '<button class="filter-btn'+(lfFilter === 0 ? ' active' : '')+'" onclick="setzeLf(0)">Alle</button>';
+  [1,2,3,4,5,6].forEach(function(n){
+    var anz = MODULES.filter(function(m){ return lfVon(m.id) === n; }).length;
+    h += '<button class="filter-btn'+(lfFilter === n ? ' active' : '')+'" onclick="setzeLf('+n+')" '+
+         'title="'+esc(LF_TITEL[n])+'">LF '+n+' <span class="lf-anz">'+anz+'</span></button>';
+  });
+  h += '</div></div>';
+  if(lfFilter){
+    h += '<div class="lf-info"><strong>Lernfeld '+lfFilter+':</strong> '+esc(LF_TITEL[lfFilter])+'. '+
+         'Lernfeld 1 bis 6 werden laut Rahmenlehrplan vor der AP1 unterrichtet.</div>';
+  }
+  return h;
+}
+var rechtTab = 'impressum';
+function setzeRecht(t){ rechtTab = t; renderContent(); }
+function luecke(was){
+  return '<mark class="luecke">' + esc(was) + '</mark>';
+}
+function renderRecht(){
+  var h = '<div class="breadcrumb">Rechtliches</div><h1>Impressum, Datenschutz &amp; Nutzung</h1>';
+  h += '<div class="recht-warnung"><strong>Ger&uuml;st, kein fertiger Rechtstext.</strong> '+
+       'Alle gelb markierten Stellen musst du ausf&uuml;llen. Vor einer Ver&ouml;ffentlichung '+
+       'oder einem Verkauf geh&ouml;rt das Ergebnis einmal juristisch gepr&uuml;ft &mdash; '+
+       'besonders die Widerrufsbelehrung f&uuml;r digitale Inhalte.</div>';
+
+  h += '<div class="filter-row">';
+  [['impressum','Impressum'],['datenschutz','Datenschutz'],['nutzung','Nutzungsbedingungen'],['ueber','&Uuml;ber']]
+    .forEach(function(t){
+      h += '<button class="filter-btn'+(rechtTab === t[0] ? ' active' : '')+'" type="button" '+
+           'onclick="setzeRecht(\''+t[0]+'\')">'+t[1]+'</button>';
+    });
+  h += '</div>';
+
+  if(rechtTab === 'impressum'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Angaben gem&auml;&szlig; &sect; 5 DDG</h2>';
+    h += '<p>Dennis Bilstein<br>'+
+         luecke('Stra&szlig;e und Hausnummer')+'<br>'+
+         luecke('PLZ und Ort')+'<br>'+luecke('Land')+'</p>';
+    h += '<h2 class="sec-h">Kontakt</h2>';
+    h += '<p>E-Mail: '+luecke('adresse@deine-domain.de')+'<br>'+
+         'Telefon: '+luecke('optional, aber f&uuml;r schnellen Kontakt empfohlen')+'</p>';
+    h += '<h2 class="sec-h">Weitere Pflichtangaben</h2>';
+    h += '<ul><li>Umsatzsteuer-Identifikationsnummer: '+luecke('falls vorhanden')+' &mdash; '+
+         'als Kleinunternehmer nach &sect; 19 UStG stattdessen den entsprechenden Hinweis</li>'+
+         '<li>Registereintrag: '+luecke('nur bei eingetragenen Unternehmen')+'</li>'+
+         '<li>Verantwortlich f&uuml;r den Inhalt: Dennis Bilstein, Anschrift wie oben</li></ul>';
+    h += '<h2 class="sec-h">Streitbeilegung</h2>';
+    h += '<p>Zur Teilnahme an einem Streitbeilegungsverfahren vor einer '+
+         'Verbraucherschlichtungsstelle '+luecke('bereit / nicht bereit')+'.</p>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'datenschutz'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Verantwortlicher</h2>';
+    h += '<p>'+luecke('Name und vollst&auml;ndige Anschrift, E-Mail')+'</p>';
+    h += '<h2 class="sec-h">Was diese Anwendung speichert</h2>';
+    h += '<p>Das ist der ehrliche Teil &mdash; er stimmt bereits und beschreibt, '+
+         'was der Kurs tats&auml;chlich tut:</p>';
+    h += '<table class="lesson-table"><tr><th>Daten</th><th>Wo</th><th>Zweck</th><th>Dauer</th></tr>'+
+      '<tr><td>Lernfortschritt, Notizen, Pr&uuml;fungsergebnisse</td><td>ausschlie&szlig;lich im '+
+      '<strong>localStorage deines Browsers</strong></td><td>Fortschritt &uuml;ber Sitzungen hinweg halten'+
+      '</td><td>bis du ihn l&ouml;schst</td></tr>'+
+      '<tr><td>dieselben Daten</td><td>optional im Konto-Speicher der Plattform, wenn der '+
+      'Ger&auml;teabgleich aktiv ist</td><td>Abgleich zwischen deinen Ger&auml;ten</td><td>bis zur '+
+      'L&ouml;schung</td></tr>'+
+      '<tr><td>Fragen an den Tutor</td><td>werden an den konfigurierten KI-Dienst &uuml;bertragen'+
+      '</td><td>Beantwortung deiner Frage</td><td>nach den Regeln des Anbieters</td></tr>'+
+      '<tr><td>Schriftarten</td><td>werden vom eigenen Server ausgeliefert (selbst gehostet, keine Anfrage an Dritte)</td><td>Darstellung</td>'+
+      '<td>&mdash;</td></tr>'+
+      '<tr><td>Fehlerprotokoll</td><td>auf dem Server der Plattform</td><td>Fehler erkennen und beheben: Fehlertext und Skriptstelle, nach H&auml;ufigkeit zusammengefasst; keine Konto-, IP- oder Browserdaten</td>'+
+      '<td>30 Tage</td></tr>'+
+      '<tr><td>Eingebettete Videos</td><td>erst nach deinem Klick auf &bdquo;Video laden&ldquo; von '+
+      '<strong>youtube-nocookie.com</strong> (YouTube/Google) geladen; dabei wird u.&nbsp;a. deine IP-Adresse '+
+      '&uuml;bertragen</td><td>Video in der Lektion abspielen</td><td>nach den Regeln des Anbieters</td></tr></table>';
+    h += '<p><strong>Kein Tracking, keine Werbung, keine Analysewerkzeuge.</strong> '+
+         'Es werden keine Cookies zu Werbezwecken gesetzt.</p>';
+    h += '<h2 class="sec-h">Noch auszuf&uuml;llen</h2>';
+    h += '<ul>'+
+      '<li>Rechtsgrundlage je Verarbeitung nach Art. 6 DSGVO: '+luecke('in der Regel Vertragserf&uuml;llung bzw. berechtigtes Interesse')+'</li>'+
+      '<li>Eingesetzter KI-Dienstleister mit Sitz und Auftragsverarbeitungsvertrag: '+luecke('Anbieter benennen')+'</li>'+
+      '<li>Hoster und dessen Serverstandort: '+luecke('Anbieter benennen')+'</li>'+
+      '<li>&Uuml;bermittlung in Drittl&auml;nder und deren Grundlage: '+luecke('falls zutreffend')+'</li>'+
+      '<li>Eingebettete YouTube-Videos: Einwilligung durch den Klick (Art. 6 Abs. 1 lit. a DSGVO, &sect; 25 TDDDG), Anbieter und Drittlandbezug (Google) benennen. '+luecke('rechtlich pr&uuml;fen lassen')+'</li>'+
+      '<li>Kontakt der Datenschutzaufsicht deines Bundeslandes: '+luecke('Beh&ouml;rde nennen')+'</li>'+
+      '</ul>';
+    h += '<h2 class="sec-h">Deine Rechte</h2>';
+    h += '<p>Auskunft (Art. 15), Berichtigung (16), L&ouml;schung (17), Einschr&auml;nkung (18), '+
+         'Daten&uuml;bertragbarkeit (20), Widerspruch (21) sowie Beschwerde bei einer Aufsichtsbeh&ouml;rde.</p>';
+    h += '<p>Deinen lokal gespeicherten Stand kannst du jederzeit selbst ausgeben lassen oder '+
+         'l&ouml;schen &mdash; beides findest du im Profil.</p>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'nutzung'){
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">Gegenstand</h2>';
+    h += '<p>&Uuml;berlassen wird ein digitaler Lernkurs zur Vorbereitung auf die '+
+         'Abschlusspr&uuml;fung Teil 1 der IT-Berufe. '+luecke('Lizenzumfang festlegen: eine Person, ein Haushalt, Firmenlizenz?')+'</p>';
+    h += '<h2 class="sec-h">Was ausdr&uuml;cklich nicht zugesichert wird</h2>';
+    h += '<ul><li>Der Kurs bereitet auf die Pr&uuml;fung vor, <strong>garantiert aber kein Bestehen</strong>.</li>'+
+         '<li>Es besteht keine Verbindung zur IHK oder einer anderen Pr&uuml;fungsorganisation und '+
+         'keine Zusammenarbeit mit ihr.</li>'+
+         '<li>Inhalte bilden den Stand von '+luecke('Datum')+' ab; Pr&uuml;fungsordnungen k&ouml;nnen sich &auml;ndern.</li></ul>';
+    h += '<h2 class="sec-h">Widerrufsrecht bei digitalen Inhalten</h2>';
+    h += '<p>Der wichtigste und am h&auml;ufigsten falsch gemachte Punkt beim Verkauf digitaler Inhalte '+
+         'an Verbraucher: Das Widerrufsrecht erlischt nur, wenn der K&auml;ufer <em>vor</em> Beginn der '+
+         'Ausf&uuml;hrung ausdr&uuml;cklich zugestimmt <em>und</em> seine Kenntnis vom Erl&ouml;schen '+
+         'best&auml;tigt hat und du ihm das best&auml;tigst (&sect; 356 Abs. 5 BGB). Ohne diese doppelte '+
+         'Zustimmung bleibt das vierzehnt&auml;gige Widerrufsrecht bestehen.</p>';
+    h += '<p>'+luecke('Vollst&auml;ndige Widerrufsbelehrung und Muster-Widerrufsformular einf&uuml;gen')+'</p>';
+    h += '<h2 class="sec-h">Preis, Zahlung, Nutzungsrechte</h2>';
+    h += '<ul><li>Preis und Umsatzsteuerausweis: '+luecke('Betrag, brutto, ggf. Hinweis nach &sect; 19 UStG')+'</li>'+
+         '<li>Zahlungsdienstleister: '+luecke('Anbieter benennen')+'</li>'+
+         '<li>Weitergabe, Vervielf&auml;ltigung und &ouml;ffentliche Zug&auml;nglichmachung sind '+
+         'nicht gestattet.</li>'+
+         '<li>Gerichtsstand und anwendbares Recht: '+luecke('festlegen')+'</li></ul>';
+    h += '</div>';
+  }
+
+  if(rechtTab === 'ueber'){
+    var lekt = TOTAL, mod = MODULES.length;
+    h += '<div class="recht-text">';
+    h += '<h2 class="sec-h">&Uuml;ber diese Ausgabe</h2>';
+    h += '<table class="lesson-table">'+
+      '<tr><td>Version</td><td><strong>'+VERSION+'</strong> vom '+VERSION_DATUM+'</td></tr>'+
+      '<tr><td>Umfang</td><td>'+mod+' Module, '+lekt+' Lektionen, '+EXERCISES.length+' &Uuml;bungsaufgaben</td></tr>'+
+      '<tr><td>Abfragen</td><td>'+CARDS.length+' Karteikarten, '+TRACES.length+' Trockendurchl&auml;ufe</td></tr>'+
+      '<tr><td>Referenz</td><td>'+DIAGRAMME+' Diagramme, Formelblatt mit vielen Abschnitten</td></tr>'+
+      '<tr><td>Tutor</td><td>'+esc(kiHerkunftText())+'</td></tr>'+
+      '</table>';
+    h += '<h2 class="sec-h">Wo deine Daten liegen</h2>';
+    h += '<p>Der gesamte Lernstand liegt im Browser dieses Ger&auml;ts. Es gibt keinen Zwang zu einem '+
+         'Konto. Im Profil kannst du deinen Stand als Text ausgeben, auf ein anderes Ger&auml;t '+
+         '&uuml;bertragen oder vollst&auml;ndig l&ouml;schen.</p>';
+    h += '<h2 class="sec-h">Betrieb auf eigenem Server</h2>';
+    h += '<p>Die Seite ist eine einzelne HTML-Datei ohne Installationsbedarf. Sie l&auml;uft von jedem '+
+         'Webserver und auch direkt von der Festplatte. Lediglich der Tutor braucht einen Dienst &mdash; '+
+         'dessen Adresse tr&auml;gst du im Profil unter <em>Tutor-Verbindung</em> ein.</p>';
+    h += '</div>';
+  }
+  return h;
+}
+function startHinweisWeg(){
+  try{ localStorage.setItem('rootpfad-start', '1'); }catch(e){}
+  renderContent();
+}
+function zeigeStartHinweis(){
+  if(state.completed.size > 0) return false;
+  try{ return localStorage.getItem('rootpfad-start') !== '1'; }catch(e){ return true; }
+}
+function renderStartHinweis(){
+  if(!zeigeStartHinweis()) return '';
+  var h = '<div class="start-box">';
+  h += '<div class="start-kopf"><strong>Erste Schritte</strong>'+
+       '<button class="ex-btn" type="button" onclick="startHinweisWeg()">Verstanden</button></div>';
+  h += '<p class="start-text">Vier Dinge, und du bist eingerichtet:</p>';
+  h += '<ol class="start-liste">'+
+    '<li><strong>Pr&uuml;fungstermin eintragen.</strong> Dann rechnet dir der Lernplan aus, '+
+    'welches Modul bis wann sitzen muss. Steht im Profil.</li>'+
+    '<li><strong>Mit dem ersten Modul beginnen.</strong> Die Reihenfolge ist als Weg gedacht &mdash; '+
+    'jede Lektion dauert acht bis elf Minuten.</li>'+
+    '<li><strong>T&auml;glich wiederholen.</strong> Jede beantwortete Quizfrage wird zur Karteikarte '+
+    'und kommt im richtigen Abstand zur&uuml;ck. Das ist der Teil, der wirklich wirkt.</li>'+
+    '<li><strong>Vor der Pr&uuml;fung simulieren.</strong> Vierzig Fragen in neunzig Minuten, '+
+    'danach die Mitschreib-Pr&uuml;fung mit offenen Aufgaben.</li>'+
+    '</ol>';
+  h += '<p class="start-fuss"><kbd>Strg</kbd>+<kbd>K</kbd> &ouml;ffnet die Befehlssuche, '+
+       '<kbd>?</kbd> zeigt alle K&uuml;rzel.</p>';
+  h += '</div>';
+  return h;
+}
+function renderHeute(){
+  var ziel     = state.tagesziel || 3;
+  var geschafft= heuteGeschafft();
+  var quote    = Math.min(1, geschafft / ziel);
+  var U        = 2 * Math.PI * 44;
+  var voll     = geschafft >= ziel;
+
+  var faellig  = dueCards().length;
+  var offen    = MODULES.filter(function(m){ return m.part < 10; }).reduce(function(a, m){ return a + m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length; }, 0);   /* nur AP1-Teile */
+  var naechste = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+  var nMod     = moduleOfLesson(naechste.id);
+  var tage     = typeof rpAP1Context === 'function' && !rpAP1Context() ? null : pruefungsTage();
+  var schwach  = weakModules();
+
+  var std = new Date().getHours();
+  var gruss = std < 5 ? 'Noch wach?' : std < 11 ? 'Guten Morgen.' : std < 14 ? 'Mahlzeit.' :
+              std < 18 ? 'Guten Nachmittag.' : std < 22 ? 'Guten Abend.' : 'Späte Runde.';
+  var wt = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][new Date().getDay()];
+  var dstr = wt + ', ' + new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+
+  var h = '<div class="heute-kopf">'+
+    '<div><h1 class="heute-gruss">'+gruss+'</h1>'+
+    '<div class="heute-datum">'+esc(dstr)+'</div></div>'+
+    '<div class="ring-wrap">'+
+      '<div class="ziel-ring"><svg viewBox="0 0 100 100" aria-hidden="true">'+
+        '<circle class="bahn" cx="50" cy="50" r="44"/>'+
+        '<circle class="fort'+(voll?' voll':'')+'" cx="50" cy="50" r="44" '+
+          'stroke-dasharray="'+U.toFixed(1)+'" stroke-dashoffset="'+(U*(1-quote)).toFixed(1)+'"/>'+
+        '</svg>'+
+        '<div class="ring-mitte"><span class="ring-zahl">'+geschafft+'/'+ziel+'</span>'+
+        '<span class="ring-unter">heute</span></div></div>'+
+      '<div class="ring-text"><strong>'+(voll ? 'Tagesziel geschafft.' : 'Tagesziel')+'</strong>'+
+      '<span>'+(voll
+        ? 'Alles Weitere ist Zugabe. Die Wiederholung lohnt trotzdem.'
+        : 'Noch ' + (ziel - geschafft) + ' ' + (ziel - geschafft === 1 ? 'Lektion' : 'Lektionen') +
+          '. Kleine Portionen täglich schlagen lange Sitzungen.')+'</span></div>'+
+    '</div></div>';
+
+  if(tage !== null){
+    var proTag = tage > 0 ? Math.ceil(offen / tage) : offen;
+    var lage = tage < 0
+      ? 'Der Termin liegt hinter dir. Setz im Profil einen neuen, falls du weiterlernst.'
+      : tage === 0
+        ? '<b>Heute ist es so weit.</b> Geh das Formelblatt durch und sonst nichts mehr.'
+        : offen === 0
+          ? '<b>Du bist durch.</b> Jetzt zählen Wiederholung und Prüfungssimulationen.'
+          : 'Noch <b>'+offen+'</b> offene Lektionen. Das sind <b>'+proTag+'</b> pro Tag — '+
+            (proTag <= (state.tagesziel||3) ? 'dein Tagesziel reicht dafür aus.'
+                                            : 'etwas mehr als dein aktuelles Tagesziel.');
+    h += '<div class="pruef-leiste"><span class="tage">'+(tage < 0 ? '—' : tage)+'</span>'+
+         '<span class="txt">'+(tage < 0 ? '' : '<b>Tage bis zur AP1.</b> ')+lage+'</span></div>';
+  }
+
+  h += '<div class="heute-raster">';
+
+  h += '<button class="hk" onclick="selectLesson(\''+esc(naechste.id)+'\')">'+
+    '<span class="hk-oben">Weiterlernen</span>'+
+    '<span class="hk-titel">'+esc(naechste.title)+'</span>'+
+    '<span class="hk-text">'+esc(nMod ? nMod.title : '')+' · ca. '+naechste.minutes+' Min.</span>'+
+    '</button>';
+
+  h += '<button class="hk" onclick="selectLesson(\'review\')">'+
+    '<span class="hk-oben">Wiederholung</span>'+
+    '<span class="hk-zahl'+(faellig > 0 ? ' warn' : ' gut')+'">'+faellig+'</span>'+
+    '<span class="hk-text">'+(faellig > 0
+      ? 'Karten sind heute fällig. Genau jetzt sitzt die Wiederholung am besten.'
+      : 'Nichts fällig. Dein Gedächtnis hat gerade frei.')+'</span></button>';
+
+  var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+  var proz = Math.round(completed / TOTAL * 100);
+  h += '<div class="hk still"><span class="hk-oben">Kursfortschritt</span>'+
+    '<span class="hk-zahl">'+proz+'%</span>'+
+    '<div class="hk-balken"><i style="width:'+proz+'%"></i></div>'+
+    '<span class="hk-text">'+completed+' von '+TOTAL+' Lektionen abgeschlossen.</span></div>';
+
+  if(schwach && schwach.length){
+    var w = schwach[0];
+    h += '<button class="hk" onclick="selectLesson(\'profile\')">'+
+      '<span class="hk-oben">Schwachstelle</span>'+
+      '<span class="hk-titel">'+esc(w.title)+'</span>'+
+      '<span class="hk-text">'+Math.round(w.rate * 100)+' % Trefferquote. Dort lohnt sich die nächste halbe Stunde am meisten.</span>'+
+      '</button>';
+  } else {
+    h += '<button class="hk" onclick="selectLesson(\'subnet\')">'+
+      '<span class="hk-oben">Trainieren</span>'+
+      '<span class="hk-titel">Subnetting-Trainer</span>'+
+      '<span class="hk-text">Unbegrenzt viele Aufgaben. Kein Thema der AP1 belohnt Wiederholung so zuverlässig.</span>'+
+      '</button>';
+  }
+
+  h += '</div>';
+
+  h += renderStartHinweis();
+  h += renderLernplan();
+
+  h += '<h2 class="sec-h">Schnellzugriff</h2>';
+  h += '<div class="heute-raster">'+
+    '<button class="hk" onclick="selectLesson(\'exam\')"><span class="hk-oben">Prüfung</span>'+
+      '<span class="hk-titel">Simulator starten</span>'+
+      '<span class="hk-text">40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'klausur\')"><span class="hk-oben">Klausur</span>'+
+      '<span class="hk-titel">Frei schreiben statt ankreuzen</span>'+
+      '<span class="hk-text">Offene Aufgaben mit Zeit, danach eine Bewertung mit Punkten.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'tutor\')"><span class="hk-oben">Tutor</span>'+
+      '<span class="hk-titel">Etwas nicht verstanden?</span>'+
+      '<span class="hk-text">Frag nach. Der Tutor kennt jede Lektion dieses Kurses.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'cheatsheet\')"><span class="hk-oben">Formelblatt</span>'+
+      '<span class="hk-titel">Alle Formeln auf einen Blick</span>'+
+      '<span class="hk-text">Netzplan, Subnetting, Kalkulation, Einheiten, Prüfungstaktik.</span></button>'+
+    '<button class="hk" onclick="selectLesson(\'intro\')"><span class="hk-oben">Übersicht</span>'+
+      '<span class="hk-titel">'+MODULES.length+' Module</span>'+
+      '<span class="hk-text">Der ganze Kurs nach Teilen sortiert, mit Prüfungsrelevanz.</span></button>'+
+    '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:22px;"><strong>Tastatur:</strong> '+
+       '<kbd>Strg</kbd>+<kbd>K</kbd> öffnet die Befehlssuche, <kbd>F</kbd> den Lesemodus, '+
+       '<kbd>?</kbd> zeigt alle Kürzel. Die Befehlssuche findet Lektionen, Aufgaben <em>und</em> Aktionen.</div>';
+
+  return h;
+}
+var kp = { offen:false, treffer:[], aktiv:0 };
+var KP_AKTIONEN = [
+  { t:'Heute', s:'Startseite', a:function(){ selectLesson('heute'); }, k:'heute start dashboard uebersicht' },
+  { t:'Wiederholung starten', s:'Karteikarten', a:function(){ selectLesson('review'); }, k:'wiederholung karten srs lernen' },
+  { t:'Prüfung simulieren', s:'40 Fragen, 90 Min.', a:function(){ selectLesson('exam'); }, k:'pruefung simulator test klausur' },
+  { t:'Subnetting-Trainer', s:'Zufallsaufgaben', a:function(){ selectLesson('subnet'); }, k:'subnetting subnetz ip maske trainer rechnen' },
+  { t:'AP1-Tutor fragen', s:'Chat', a:function(){ selectLesson('tutor'); }, k:'tutor chat frage hilfe erklaeren' },
+  { t:'Algorithmus-Trainer', s:'Trockendurchläufe', a:function(){ selectLesson('tracer'); }, k:'trockenlauf algorithmus tracer wertetabelle' },
+  { t:'Übungsaufgaben', s:EXERCISES.length+' Aufgaben', a:function(){ selectLesson('exercises'); }, k:'uebung aufgaben praxis loesung' },
+  { t:'Formelblatt', s:'Alle Formeln', a:function(){ selectLesson('cheatsheet'); }, k:'formelblatt spickzettel formeln referenz' },
+  { t:'Syntax-Glossar', s:'Befehle nachschlagen', a:function(){ selectLesson('glossar'); }, k:'syntax glossar befehle nachschlagen referenz let const array join git sql java php abap' },
+  { t:'Modulübersicht', s:'Alle Teile', a:function(){ selectLesson('intro'); }, k:'module uebersicht inhalt kapitel' },
+  { t:'Profil und Abzeichen', s:'Fortschritt', a:function(){ selectLesson('profile'); }, k:'profil abzeichen xp fortschritt statistik einstellungen' },
+  { t:'Mitschreib-Prüfung', s:'Offene Aufgaben', a:function(){ selectLesson('klausur'); }, k:'klausur mitschreiben schreiben offen freitext korrektur bewerten' },
+  { t:'Fehlerheft', s:'Verhauene Fragen', a:function(){ selectLesson('fehler'); }, k:'fehler fehlerheft falsch verhauen schwach' },
+  { t:'Merkzettel', s:'Markiert und notiert', a:function(){ selectLesson('merk'); }, k:'merkzettel notizen markiert lesezeichen stern' },
+  { t:'Lesemodus umschalten', s:'Taste F', a:function(){ fokusUmschalten(); }, k:'lesemodus fokus konzentration ablenkung' },
+  { t:'Tastaturkürzel anzeigen', s:'Taste ?', a:function(){ selectLesson('tasten'); }, k:'tastatur kuerzel shortcuts hilfe' },
+  { t:'Impressum & Datenschutz', s:'Rechtliches', a:function(){ selectLesson('recht'); }, k:'impressum datenschutz recht agb widerruf lizenz version ueber' }
+];
+function kpOeffnen(){
+  if(kp.offen) return;
+  if(!indexFertig) buildIndex();   /* Volltextindex erst bauen, wenn er gebraucht wird */
+  kp.offen = true; kp.aktiv = 0;
+  kp.vorher = document.activeElement;   /* Fokus spaeter zurueckgeben */
+  var g = document.createElement('div');
+  g.className = 'kp-grund';
+  g.id = 'kpGrund';
+  g.innerHTML =
+    '<div class="kp" role="dialog" aria-modal="true" aria-label="Befehlssuche">'+
+      '<div class="kp-kopf">'+
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'+
+        '<input class="kp-feld" id="kpFeld" placeholder="Lektion, Aufgabe oder Befehl …" autocomplete="off" spellcheck="false">'+
+        '<span class="kp-esc">Esc</span>'+
+      '</div>'+
+      '<div class="kp-liste" id="kpListe"></div>'+
+      '<div class="kp-fuss"><span><kbd>↑</kbd><kbd>↓</kbd> wählen</span>'+
+      '<span><kbd>Enter</kbd> öffnen</span><span><kbd>Esc</kbd> schließen</span></div>'+
+    '</div>';
+  g.onclick = function(ev){ if(ev.target === g) kpSchliessen(); };
+  /* Tab bleibt im Dialog; Escape schliesst auch, wenn der Fokus die Liste erreicht hat. */
+  g.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){ ev.preventDefault(); kpSchliessen(); return; }
+    fokusFalle(g, ev);
+  });
+  document.body.appendChild(g);
+  var f = document.getElementById('kpFeld');
+  f.oninput = function(){ kpSuchen(f.value); };
+  f.onkeydown = kpTaste;
+  kpSuchen('');
+  f.focus();
+}
+function kpSchliessen(){
+  var g = document.getElementById('kpGrund');
+  if(g) g.remove();
+  kp.offen = false;
+  try{ if(kp.vorher && kp.vorher.focus) kp.vorher.focus(); }catch(e){}
+  kp.vorher = null;
+}
+function kpSuchen(q){
+  var n = (q || '').trim().toLowerCase();
+  var res = [];
+
+  KP_AKTIONEN.forEach(function(a){
+    if(!n || a.t.toLowerCase().indexOf(n) >= 0 || a.k.indexOf(n) >= 0)
+      res.push({ art:'Aktion', t:a.t, s:a.s, run:a.a });
+  });
+
+  if(n.length >= 2){
+    SEARCH_INDEX.forEach(function(e){
+      if(res.length > 40) return;
+      if((e.hay || (e.title + ' ' + (e.sub || '')).toLowerCase()).indexOf(n) >= 0){
+        res.push({ art: e.kind === 'lesson' ? 'Lektion' : e.kind === 'exercise' ? 'Aufgabe' : 'Inhalt',
+                   t:e.title, s:e.sub || '', run:(function(id){ return function(){ selectLesson(id); }; })(e.id) });
+      }
+    });
+  }
+
+  kp.treffer = res.slice(0, 40);
+  kp.aktiv = 0;
+  kpZeichnen();
+}
+function kpZeichnen(){
+  var l = document.getElementById('kpListe');
+  if(!l) return;
+  if(!kp.treffer.length){
+    l.innerHTML = '<div class="kp-leer">Nichts gefunden. Versuch einen anderen Begriff.</div>';
+    return;
+  }
+  var h = '', letzte = '';
+  kp.treffer.forEach(function(r, i){
+    if(r.art !== letzte){ h += '<div class="kp-gruppe">'+esc(r.art)+'</div>'; letzte = r.art; }
+    h += '<button class="kp-eintrag'+(i === kp.aktiv ? ' aktiv' : '')+'" data-i="'+i+'">'+
+         '<span class="kp-marke">'+(r.art === 'Aktion' ? '›' : '·')+'</span>'+
+         '<span>'+esc(r.t)+'</span>'+
+         (r.s ? '<span class="kp-sub">'+esc(r.s)+'</span>' : '')+
+         '</button>';
+  });
+  l.innerHTML = h;
+  Array.prototype.forEach.call(l.querySelectorAll('.kp-eintrag'), function(b){
+    b.onclick = function(){ kpAusfuehren(parseInt(b.getAttribute('data-i'), 10)); };
+  });
+  var a = l.querySelector('.kp-eintrag.aktiv');
+  if(a) a.scrollIntoView({ block:'nearest' });
+}
+function kpAusfuehren(i){
+  var r = kp.treffer[i];
+  if(!r) return;
+  kpSchliessen();
+  r.run();
+}
+function kpTaste(ev){
+  if(ev.key === 'Escape'){ ev.preventDefault(); kpSchliessen(); return; }
+  if(ev.key === 'ArrowDown'){ ev.preventDefault(); kp.aktiv = Math.min(kp.aktiv + 1, kp.treffer.length - 1); kpZeichnen(); return; }
+  if(ev.key === 'ArrowUp'){ ev.preventDefault(); kp.aktiv = Math.max(kp.aktiv - 1, 0); kpZeichnen(); return; }
+  if(ev.key === 'Enter'){ ev.preventDefault(); kpAusfuehren(kp.aktiv); return; }
+}
+function renderTasten(){
+  var paare = [
+    ['Strg + K', 'Befehlssuche öffnen'],
+    ['F', 'Lesemodus ein und aus'],
+    ['?', 'Diese Übersicht'],
+    ['G dann H', 'Zur Heute-Ansicht'],
+    ['G dann W', 'Zur Wiederholung'],
+    ['G dann P', 'Zur Prüfungssimulation'],
+    ['G dann T', 'Zum Tutor'],
+    ['G dann S', 'Zum Subnetting-Trainer'],
+    ['→ / ←', 'Nächste / vorige Lektion'],
+    ['1 – 4', 'Karte bewerten: nochmal, schwer, gut, leicht'],
+    ['Leertaste', 'Karte als gewusst bewerten'],
+    ['Esc', 'Dialog schließen']
+  ];
+  var h = '<div class="breadcrumb">Bedienung</div><h1>Tastatur</h1>'+
+    '<p class="intro-sub">Der Kurs lässt sich vollständig über die Tastatur bedienen. '+
+    'Wer viel lernt, spart damit spürbar Zeit — vor allem die Befehlssuche ersetzt fast jede Mausbewegung.</p>'+
+    '<div class="kb-grid">';
+  paare.forEach(function(p){
+    h += '<div class="kb-zeile"><kbd>'+esc(p[0])+'</kbd><span>'+esc(p[1])+'</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="ex-panel" style="margin-top:22px;"><strong>Zwei Griffe, die sich lohnen:</strong> '+
+       '<kbd>Strg</kbd>+<kbd>K</kbd> und dann die ersten Buchstaben — du landest in jeder Lektion, '+
+       'jeder Aufgabe und jedem Trainer, ohne durch die Seitenleiste zu scrollen. Und <kbd>F</kbd>, '+
+       'wenn ein Kapitel länger wird: Die Navigation verschwindet, die Zeilen werden breiter und ruhiger.</div>';
+  return h;
+}
+var gTaste = 0;
+document.addEventListener('keydown', function(ev){
+  var imFeld = /^(INPUT|TEXTAREA|SELECT)$/.test((ev.target && ev.target.tagName) || '');
+  if((ev.ctrlKey || ev.metaKey) && (ev.key === 'k' || ev.key === 'K')){
+    ev.preventDefault(); kp.offen ? kpSchliessen() : kpOeffnen(); return;
+  }
+  if(imFeld || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if(kp.offen) return;
+
+  if(ev.key === '?'){ ev.preventDefault(); selectLesson('tasten'); return; }
+  if(ev.key === 'f' || ev.key === 'F'){ ev.preventDefault(); fokusUmschalten(); return; }
+
+  if(ev.key === 'g' || ev.key === 'G'){ gTaste = Date.now(); return; }
+  if(Date.now() - gTaste < 1200){
+    var zu = { h:'heute', w:'review', p:'exam', t:'tutor', s:'subnet', u:'intro', a:'exercises' }[ev.key.toLowerCase()];
+    if(zu){ ev.preventDefault(); gTaste = 0; selectLesson(zu); return; }
+  }
+}, true);
+function renderMobilbar(){
+  var el = document.getElementById('mobilbar');
+  if(!el) return;
+  var faellig = dueCards().length;
+  var eintraege = [
+    ['heute',  'Heute',   'M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z'],
+    ['review', 'Karten',  'M4 6h16v10H4zM8 20h8'],
+    ['subnet', 'Subnetz', 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z'],
+    ['tutor',  'Tutor',   'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'],
+    ['intro',  'Kurs',    'M4 5h16M4 12h16M4 19h10']
+  ];
+  el.innerHTML = eintraege.map(function(e){
+    var aktiv = state.currentId === e[0];
+    return '<button class="mb'+(aktiv ? ' aktiv' : '')+'" onclick="selectLesson(\''+e[0]+'\')" aria-label="'+e[1]+'">'+
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+e[2]+'"/></svg>'+
+      (e[0] === 'review' && faellig ? '<span class="punkt"></span>' : '')+
+      '<span>'+e[1]+'</span></button>';
+  }).join('');
+}
+var azFilter = 'alle';
+function setzeAzFilter(w){ azFilter = w; renderContent(); }
+function renderRangkarte(){
+  var xp  = state.xp || 0;
+  var lp  = levelProgress();
+  var von = lp.cur.xp;
+  var bis = lp.nxt ? lp.nxt.xp : lp.cur.xp;
+  var anteil = lp.nxt ? Math.max(0, Math.min(100, (xp - von) / (bis - von) * 100)) : 100;
+
+  var h = '<div class="rangkarte">'+
+    '<div class="rk-emblem" data-lvl="LV '+lp.cur.lvl+'" aria-hidden="true">'+lp.cur.icon+'</div>'+
+    '<div class="rk-haupt">'+
+      '<div class="rk-eyebrow">Aktueller Rang</div>'+
+      '<h1 class="rk-name">'+esc(lp.cur.name)+'</h1>'+
+      '<div class="rk-spanne">'+
+        '<div class="rk-bahn" role="img" aria-label="'+Math.round(anteil)+' Prozent bis zum nächsten Rang">'+
+        '<i style="width:'+anteil.toFixed(1)+'%"></i></div>'+
+      '</div>'+
+      '<div class="rk-marken"><span>'+von.toLocaleString('de-DE')+' XP</span>'+
+        '<span>'+(lp.nxt ? bis.toLocaleString('de-DE') + ' XP' : '—')+'</span></div>'+
+      '<div class="rk-rest">'+
+        (lp.nxt
+          ? '<b>'+xp.toLocaleString('de-DE')+' XP</b> gesammelt · noch <b>'+
+            lp.need.toLocaleString('de-DE')+' XP</b> bis „'+esc(lp.nxt.name)+'“'
+          : '<b>'+xp.toLocaleString('de-DE')+' XP</b> · höchster Rang erreicht. Mehr geht nicht.')+
+      '</div>'+
+    '</div></div>';
+  return h;
+}
+function renderLeiter(){
+  var xp = state.xp || 0;
+  var lp = levelProgress();
+  var erreichte = RANKS.filter(function(r){ return xp >= r.xp; }).length;
+  var anteil = RANKS.length > 1 ? (erreichte - 1) / (RANKS.length - 1) * 100 : 0;
+
+  var h = '<div class="leiter" data-fortschritt style="--erreicht:'+Math.max(0, anteil).toFixed(1)+'%">';
+  RANKS.forEach(function(r){
+    var erreicht = xp >= r.xp;
+    var aktuell  = r.lvl === lp.cur.lvl;
+    var fehlt    = r.xp - xp;
+    h += '<div class="lr'+(erreicht ? ' erreicht' : '')+(aktuell ? ' aktuell' : '')+'">'+
+      '<span class="lr-knoten" aria-hidden="true">'+r.icon+'</span>'+
+      '<span class="lr-text">'+
+        '<span class="lr-name">'+esc(r.name)+'</span>'+
+        '<span class="lr-meta">Level '+r.lvl+' · ab '+r.xp.toLocaleString('de-DE')+' XP</span>'+
+      '</span>'+
+      '<span class="lr-rechts">'+
+        (aktuell ? '<span class="lr-jetzt">hier</span>'
+                 : erreicht ? '✓ erreicht'
+                            : 'in '+fehlt.toLocaleString('de-DE')+' XP')+
+      '</span></div>';
+  });
+  h += '</div>';
+  return h;
+}
+function renderAbzeichen(){
+  var hat = BADGES.filter(function(b){ return state.badges[b.id]; });
+  var quote = BADGES.length ? hat.length / BADGES.length * 100 : 0;
+
+  var liste = BADGES.slice().sort(function(a, b){
+    var ga = !!state.badges[a.id], gb = !!state.badges[b.id];
+    if(ga !== gb) return ga ? -1 : 1;
+    return ga ? state.badges[b.id] - state.badges[a.id] : 0;
+  });
+  if(azFilter === 'hat')  liste = liste.filter(function(b){ return state.badges[b.id]; });
+  if(azFilter === 'offen')liste = liste.filter(function(b){ return !state.badges[b.id]; });
+
+  var h = '<div class="az-kopf">'+
+    '<div class="az-bahn" role="img" aria-label="'+hat.length+' von '+BADGES.length+' Abzeichen">'+
+      '<i style="width:'+quote.toFixed(1)+'%"></i></div>'+
+    '<div class="az-filter">'+
+      ['alle','hat','offen'].map(function(w){
+        var t = w === 'alle' ? 'Alle ' + BADGES.length
+              : w === 'hat'  ? 'Erreicht ' + hat.length
+                             : 'Offen ' + (BADGES.length - hat.length);
+        return '<button class="'+(azFilter === w ? 'an' : '')+'" onclick="setzeAzFilter(\''+w+'\')">'+t+'</button>';
+      }).join('')+
+    '</div></div>';
+
+  if(!liste.length){
+    h += '<p class="intro-sub">Hier ist gerade nichts. Wechsle den Filter.</p>';
+    return h;
+  }
+
+  h += '<div class="az-raster">';
+  liste.forEach(function(b){
+    var got = !!state.badges[b.id];
+    h += '<div class="az '+(got ? 'hat' : 'offen')+'">'+
+      '<span class="az-icon" aria-hidden="true">'+b.icon+'</span>'+
+      '<span class="az-name">'+esc(b.name)+'</span>'+
+      '<span class="az-desc">'+esc(b.desc)+'</span>'+
+      '<span class="az-datum">'+(got
+        ? new Date(state.badges[b.id]).toLocaleDateString('de-DE', { day:'2-digit', month:'short', year:'numeric' })
+        : 'noch offen')+'</span>'+
+      '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+function renderKennzahlen(){
+  var mastered = Object.keys(state.srs).filter(function(k){ return (state.srs[k].iv || 0) >= 21; }).length;
+  var bestExam = state.exams.reduce(function(a, e){ return Math.max(a, e.score / e.total); }, 0);
+  var hat = BADGES.filter(function(b){ return state.badges[b.id]; }).length;
+  var richtig = 0;
+  Object.keys(state.stats || {}).forEach(function(k){ richtig += (state.stats[k].right || 0); });
+
+  var z = [
+    [(state.streak.count || 0), 'Tage in Folge', (state.streak.count || 0) >= 3],
+    [state.completed.size + '/' + TOTAL, 'Lektionen', false],
+    [hat + '/' + BADGES.length, 'Abzeichen', false],
+    [richtig, 'Fragen richtig', false],
+    [mastered, 'Karten gefestigt', false],
+    [Object.keys(state.solved).length, 'Übungen gelöst', false],
+    [state.tracesDone.length + '/' + TRACES.length, 'Durchläufe', false],
+    [(state.subnetSolved || 0), 'Subnetze gerechnet', false],
+    [(bestExam ? Math.round(bestExam * 100) + '%' : '—'), 'Beste Prüfung', bestExam >= 0.7]
+  ];
+  return '<div class="kz-reihe">' + z.map(function(t){
+    return '<div class="kz'+(t[2] ? ' betont' : '')+'"><span class="w">'+t[0]+'</span><span class="b">'+t[1]+'</span></div>';
+  }).join('') + '</div>';
+}
+function fehlerKarten(){
+  return CARDS.filter(function(c){
+    var st = state.stats[c.id];
+    return st && st.wrong > 0;
+  }).map(function(c){
+    var st = state.stats[c.id];
+    var ges = st.right + st.wrong;
+    return { c:c, wrong:st.wrong, right:st.right, quote: ges ? st.right / ges : 0 };
+  }).sort(function(a, b){
+    if(a.quote !== b.quote) return a.quote - b.quote;
+    return b.wrong - a.wrong;
+  });
+}
+var fhOffen = {};
+function fhZeigen(id){ fhOffen[id] = !fhOffen[id]; renderContent(); }
+function renderFehlerheft(){
+  var liste = fehlerKarten();
+  var h = '<div class="breadcrumb">Training</div><h1>Fehlerheft</h1>';
+
+  if(!liste.length){
+    h += '<p class="intro-sub">Noch keine falsch beantwortete Frage. Sobald du im Quiz, in der Wiederholung '+
+         'oder in einer Prüfung danebenliegst, sammelt sich die Frage hier — mit Antwort, Erklärung '+
+         'und dem Weg zur passenden Lektion.</p>'+
+         '<div class="ex-panel"><strong>Warum ein Fehlerheft?</strong> Wer nur wiederholt, was er kann, '+
+         'lernt wenig dazu. Die Fragen, die du verhauen hast, sind die einzigen, bei denen sich '+
+         'eine zweite Runde wirklich lohnt.</div>';
+    return h;
+  }
+
+  var ungeloest = liste.filter(function(e){ return e.quote < 0.5; }).length;
+  h += '<p class="intro-sub">'+liste.length+' Fragen sind dir schon einmal danebengegangen. '+
+       'Sortiert nach Trefferquote — die schlimmsten stehen oben. '+
+       (ungeloest ? '<strong>'+ungeloest+'</strong> davon sitzen noch gar nicht.' : 'Keine davon ist mehr kritisch.')+'</p>';
+
+  h += '<div class="ex-actions" style="margin-bottom:18px;">'+
+       '<button class="ex-btn primary" onclick="startExam(\'fehler\')">Nur diese Fragen prüfen</button>'+
+       '<button class="ex-btn" onclick="selectLesson(\'review\')">Zur normalen Wiederholung</button></div>';
+
+  h += '<div class="fh-liste">';
+  liste.slice(0, 60).forEach(function(e){
+    var c = e.c, auf = !!fhOffen[c.id];
+    var proz = Math.round(e.quote * 100);
+    h += '<div class="fh">'+
+      '<button class="fh-kopf" onclick="fhZeigen(\''+c.id+'\')" aria-expanded="'+auf+'">'+
+        '<span class="fh-quote'+(proz < 50 ? ' schlecht' : proz < 80 ? ' mittel' : '')+'">'+proz+'%</span>'+
+        '<span class="fh-frage">'+esc(c.q)+'</span>'+
+        '<span class="fh-zaehler">'+e.right+'✓ '+e.wrong+'✗</span>'+
+        '<span class="fh-pfeil">'+(auf ? '−' : '+')+'</span>'+
+      '</button>';
+    if(auf){
+      h += '<div class="fh-koerper">'+
+        '<div class="fh-antwort"><span class="fh-label">Richtig</span>'+esc(c.options[c.correct])+'</div>'+
+        '<p class="fh-erklaerung">'+esc(c.explain)+'</p>'+
+        '<button class="ex-btn" onclick="selectLesson(\''+c.lessonId+'\')">'+
+        'Zur Lektion: '+esc(c.lessonTitle)+'</button>'+
+        '</div>';
+    }
+    h += '</div>';
+  });
+  h += '</div>';
+  if(liste.length > 60){
+    h += '<p class="intro-sub" style="margin-top:14px;">Es werden die 60 schwächsten angezeigt.</p>';
+  }
+  return h;
+}
+function notizUmschalten(id){
+  var el = document.getElementById('notizBox');
+  if(!el) return;
+  el.hidden = !el.hidden;
+  if(!el.hidden){ var t = document.getElementById('notizFeld'); if(t) t.focus(); }
+}
+function notizSpeichern(id, wert){
+  state.notizen = state.notizen || {};
+  var w = (wert || '').trim();
+  if(w) state.notizen[id] = w; else delete state.notizen[id];
+  saveProgress();
+  var m = document.getElementById('notizMarke');
+  if(m) m.hidden = !w;
+}
+function merkenUmschalten(id){
+  state.merkzettel = state.merkzettel || {};
+  if(state.merkzettel[id]) delete state.merkzettel[id];
+  else state.merkzettel[id] = Date.now();
+  saveProgress();
+  renderContent();
+  renderSidebar();
+}
+function jsonAusText(roh){
+  var t = String(roh || '').trim();
+  if(!t) return null;
+
+  /* Codezaun entfernen, mit und ohne Sprachangabe. */
+  t = t.replace(/^`{3}[a-z]*\s*/i, '').replace(/`{3}\s*$/, '').trim();
+
+  try{ return JSON.parse(t); }catch(e){}
+
+  /* Sonst das erste vollstaendige Objekt oder Array herausschneiden. */
+  var paare = [['{', '}'], ['[', ']']];
+  for(var i = 0; i < paare.length; i++){
+    var a = t.indexOf(paare[i][0]);
+    var b = t.lastIndexOf(paare[i][1]);
+    if(a >= 0 && b > a){
+      try{ return JSON.parse(t.slice(a, b + 1)); }catch(e){}
+    }
+  }
+  return null;
+}
+var KI_STUFEN = { 'default':1, 'complex':1 };
+async function kiJson(anweisung, stufe){
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn) throw { code:'not_granted', message:'kein Tutor verfuegbar' };
+
+  var opt = { cache:false, modelTier: KI_STUFEN[stufe] ? stufe : 'default' };
+
+  /* Weg 1: die eingebaute Abkuerzung. */
+  try{
+    var direkt = await tutor.fn.json(anweisung, opt);
+    if(direkt !== null && typeof direkt === 'object') return direkt;
+  }catch(e){
+    /* Bei diesen Codes hilft kein zweiter Versuch. */
+    if(e && (e.code === 'aborted' || e.code === 'cancelled' ||
+             e.code === 'not_granted' || e.code === 'sampling_disabled' ||
+             e.code === 'not_declared' || e.code === 'capability_disabled' ||
+             e.code === 'rate_limited' || e.code === 'session_expired')) throw e;
+  }
+
+  /* Weg 2: als Text holen und selbst herausschneiden. */
+  var res = await tutor.fn([{ role:'user', content: String(anweisung) }], opt);
+  var geparst = jsonAusText(res && res.text);
+  if(geparst === null) throw { code:'invalid_json', message:'Antwort war kein JSON' };
+  return geparst;
+}
+function erkUmschalten(id){
+  var el = document.getElementById('erkBox');
+  if(!el) return;
+  el.hidden = !el.hidden;
+  if(!el.hidden){ var t = document.getElementById('erkFeld'); if(t) t.focus(); }
+}
+function erkErgebnisHtml(e){
+  if(!e) return '';
+  if(e.fehler) return '<div class="erk-erg warn">'+esc(e.fehler)+'</div>';
+  var stufe = e.punkte >= 3 ? 'ok' : (e.punkte >= 2 ? '' : 'warn');
+  var wort = e.punkte >= 3 ? 'Sitzt' : (e.punkte >= 2 ? 'Im Kern richtig' : 'Noch lückenhaft');
+  return '<div class="erk-erg '+stufe+'">'+
+    '<div class="erk-note">'+wort+' · '+e.punkte+' von 3</div>'+
+    (e.treffer ? '<p><strong>Richtig:</strong> '+esc(e.treffer)+'</p>' : '')+
+    (e.fehlt ? '<p><strong>Fehlt:</strong> '+esc(e.fehlt)+'</p>' : '')+
+    (e.tipp ? '<p><strong>Merke:</strong> '+esc(e.tipp)+'</p>' : '')+
+    '</div>';
+}
+async function erkPruefen(lessonId){
+  var feld = document.getElementById('erkFeld');
+  var ziel = document.getElementById('erkErg');
+  if(!feld || !ziel) return;
+  var text = (feld.value || '').trim();
+  if(text.length < 10){
+    ziel.innerHTML = '<div class="erk-erg warn">Schreib erst ein oder zwei ganze Sätze — dann lohnt sich die Rückmeldung.</div>';
+    return;
+  }
+  var lektion = lessonById(lessonId);
+  if(!lektion) return;
+  ziel.innerHTML = '<div class="erk-erg">Der Tutor liest mit …</div>';
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    ziel.innerHTML = erkErgebnisHtml({ fehler:'Die Bewertung ist in dieser Ansicht nicht verfügbar. '+
+      'Vergleiche deinen Satz selbst mit dem Lektionstext — schon das Aufschreiben hat gewirkt.' });
+    return;
+  }
+
+  var anweisung = [
+    'Du bist Pruefer in der IHK-Abschlusspruefung Teil 1, Fachinformatiker Anwendungsentwicklung.',
+    'Ein Auszubildender soll den Kern einer Lektion in eigenen Worten wiedergeben.',
+    '',
+    'LEKTION: ' + lektion.title,
+    'LEKTIONSINHALT:',
+    klText(lektion.body || '').slice(0, 2600),
+    '',
+    'ANTWORT DES AUSZUBILDENDEN:',
+    text.slice(0, 900),
+    '',
+    'Bewerte mit 0 bis 3 Punkten: 3 = Kern richtig und vollstaendig, 2 = im Kern richtig,',
+    'aber etwas Wesentliches fehlt, 1 = nur Bruchstuecke, 0 = falsch oder am Thema vorbei.',
+    'Fachlich richtige eigene Formulierungen sind voll zu werten; es geht NICHT um Wortgleichheit.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in dieser Form:',
+    '{"punkte": 2, "treffer": "ein Satz, was richtig war",',
+    ' "fehlt": "ein Satz, was fehlt (leer lassen wenn nichts fehlt)",',
+    ' "tipp": "ein kurzer Merksatz fuer die Pruefung"}',
+    'Schreibe auf Deutsch mit Du-Anrede. Kein Text vor oder nach dem JSON.'
+  ].join(String.fromCharCode(10));
+
+  try{
+    var r = await kiJson(anweisung, 'default');
+    var e = {
+      text: text,
+      punkte: Math.max(0, Math.min(3, Number(r && r.punkte) || 0)),
+      treffer: String((r && r.treffer) || ''),
+      fehlt: String((r && r.fehlt) || ''),
+      tipp: String((r && r.tipp) || ''),
+      ts: Date.now()
+    };
+    state.erklaerungen = state.erklaerungen || {};
+    state.erklaerungen[lessonId] = e;
+    if(e.punkte >= 2) awardXp(8, 'In eigenen Worten erklärt', 'erk_' + lessonId);
+    saveProgress();
+    ziel.innerHTML = erkErgebnisHtml(e);
+  }catch(err){
+    var txt = tutorFehlertext(err && err.code);
+    if(!txt) return;   /* bewusst abgebrochen */
+    ziel.innerHTML = erkErgebnisHtml({ fehler: txt }) +
+      '<div class="ex-actions"><button class="ex-btn" type="button" '+
+      'onclick="erkPruefen(' + String.fromCharCode(39) + lessonId + String.fromCharCode(39) + ')">'+
+      'Noch einmal versuchen</button></div>';
+  }
+}
+function renderLektionWerkzeuge(lessonId){
+  var notiz = (state.notizen || {})[lessonId] || '';
+  var gemerkt = !!(state.merkzettel || {})[lessonId];
+  var erkFrueher = (state.erklaerungen || {})[lessonId] || null;
+  var erkAlt = erkFrueher ? (erkFrueher.text || '') : '';
+  return '<div class="lw">'+
+    '<button class="ex-btn'+(gemerkt ? ' primary' : '')+'" onclick="merkenUmschalten(\''+lessonId+'\')">'+
+      (gemerkt ? '★ Gemerkt' : '☆ Merken')+'</button>'+
+    '<button class="ex-btn" onclick="notizUmschalten(\''+lessonId+'\')">'+
+      '✎ Notiz'+(notiz ? '' : '')+'<span id="notizMarke" class="lw-punkt"'+(notiz ? '' : ' hidden')+'></span></button>'+
+    '<button class="ex-btn" onclick="tutorZuLektion(\''+lessonId+'\')">&#128172; Tutor fragen</button>'+
+    '<button class="ex-btn" onclick="erkUmschalten(\''+lessonId+'\')">&#9997; In einem Satz erklären</button>'+
+    '<div class="erk-box" id="erkBox" hidden>'+
+      '<label class="notiz-label" for="erkFeld">Ohne nachzusehen: Was ist der Kern dieser Lektion? Ein bis zwei Sätze.</label>'+
+      '<textarea class="notiz-feld" id="erkFeld" rows="3" spellcheck="false" '+
+      'placeholder="Zum Beispiel: Die Subnetzmaske trennt Netz- von Hostanteil, indem …">'+esc(erkAlt)+'</textarea>'+
+      '<div class="erk-fuss"><button class="ex-btn primary" type="button" onclick="erkPruefen(\''+lessonId+'\')">Prüfen lassen</button>'+
+      '<span class="erk-hinweis">Der Tutor vergleicht deinen Satz mit der Lektion.</span></div>'+
+      '<div id="erkErg">'+erkErgebnisHtml(erkFrueher)+'</div>'+
+    '</div>'+
+    '<div class="notiz-box" id="notizBox"'+(notiz ? '' : ' hidden')+'>'+
+      '<label class="notiz-label" for="notizFeld">Deine Notiz zu dieser Lektion — sie wandert mit deinem Fortschritt mit.</label>'+
+      '<textarea class="notiz-feld" id="notizFeld" rows="3" spellcheck="false" '+
+      'placeholder="Was verwechselst du hier immer? Was ist die Eselsbrücke?" '+
+      'oninput="notizSpeichern(\''+lessonId+'\', this.value)">'+esc(notiz)+'</textarea>'+
+    '</div></div>';
+}
+function renderMerkzettel(){
+  var ids = Object.keys(state.merkzettel || {});
+  var notizIds = Object.keys(state.notizen || {});
+  var h = '<div class="breadcrumb">Deine Ablage</div><h1>Merkzettel</h1>';
+  if(!ids.length && !notizIds.length){
+    h += '<p class="intro-sub">Hier sammeln sich die Lektionen, die du mit ☆ markierst, und alle Notizen, '+
+         'die du dir unterwegs machst. Beides findest du unter jeder Lektion.</p>';
+    return h;
+  }
+  h += '<p class="intro-sub">'+ids.length+' markierte Lektionen und '+notizIds.length+' Notizen. '+
+       'Kurz vor der Prüfung ist das die Liste, die du noch einmal durchgehst.</p>';
+
+  if(ids.length){
+    h += '<h2 class="sec-h">Markiert</h2><div class="heute-raster">';
+    ids.sort(function(a,b){ return state.merkzettel[b] - state.merkzettel[a]; }).forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      var m = moduleOfLesson(id);
+      h += '<button class="hk" onclick="selectLesson(\''+id+'\')">'+
+        '<span class="hk-oben">'+esc(m ? m.title : '')+'</span>'+
+        '<span class="hk-titel">'+esc(l.title)+'</span>'+
+        '<span class="hk-text">markiert am '+new Date(state.merkzettel[id]).toLocaleDateString('de-DE')+'</span>'+
+        '</button>';
+    });
+    h += '</div>';
+  }
+  if(notizIds.length){
+    h += '<h2 class="sec-h">Notizen</h2>';
+    notizIds.forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      h += '<div class="nz"><button class="nz-titel" onclick="selectLesson(\''+id+'\')">'+esc(l.title)+'</button>'+
+           '<p class="nz-text">'+esc(state.notizen[id])+'</p></div>';
+    });
+  }
+  return h;
+}
+function renderPruefungsverlauf(){
+  var ex = (state.exams || []).slice(-12);
+  if(ex.length < 2) return '';
+  var w = 520, hgt = 96, pad = 8;
+  var werte = ex.map(function(e){ return e.score / e.total; });
+  var dx = (w - pad * 2) / Math.max(1, werte.length - 1);
+  var punkte = werte.map(function(v, i){
+    return [pad + i * dx, pad + (1 - v) * (hgt - pad * 2)];
+  });
+  var linie = punkte.map(function(p, i){ return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  var flaeche = linie + ' L' + punkte[punkte.length-1][0].toFixed(1) + ' ' + (hgt-pad) + ' L' + pad + ' ' + (hgt-pad) + ' Z';
+  var letzte = werte[werte.length-1], erste = werte[0];
+  var trend = letzte - erste;
+
+  var h = '<h2 class="sec-h">Prüfungsverlauf</h2>'+
+    '<div class="verlauf"><svg viewBox="0 0 '+w+' '+hgt+'" role="img" '+
+    'aria-label="Ergebnisse der letzten '+werte.length+' Prüfungen">'+
+    '<line class="v-grid" x1="'+pad+'" y1="'+(pad + 0.3*(hgt-pad*2)).toFixed(1)+'" x2="'+(w-pad)+'" y2="'+(pad + 0.3*(hgt-pad*2)).toFixed(1)+'"/>'+
+    '<path class="v-flaeche" d="'+flaeche+'"/>'+
+    '<path class="v-linie" d="'+linie+'"/>';
+  punkte.forEach(function(p, i){
+    var letzt = i === punkte.length - 1;
+    h += '<circle class="v-punkt'+(letzt ? ' letzt' : '')+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(letzt ? 5 : 3)+'"/>';
+  });
+  h += '</svg>'+
+    '<div class="v-text">'+
+      '<span class="v-wert">'+Math.round(letzte * 100)+'%</span>'+
+      '<span class="v-lbl">letzte Prüfung</span>'+
+      '<span class="v-trend'+(trend >= 0 ? ' hoch' : ' runter')+'">'+
+        (trend >= 0 ? '↑ +' : '↓ ')+Math.round(Math.abs(trend) * 100)+' Punkte seit der ersten</span>'+
+      '<span class="v-lbl">Die gestrichelte Linie markiert 70 Prozent — die Bestehensgrenze.</span>'+
+    '</div></div>';
+  return h;
+}
+var klausur = {
+  phase:'start',      /* start | laufend | bewertung | ergebnis */
+  aufgaben:[],
+  antworten:[],
+  endetUm:0,
+  uhr:null,
+  ergebnis:null,
+  fehler:''
+};
+var KL_PUNKTE = { 1:5, 2:8, 3:12 };
+var KL_VARIANTEN = {
+  kurz:   { label:'Kurzklausur',  n:3, min:45, stufen:[1,2],   text:'Drei Aufgaben in 45 Minuten. Einstieg und Fortgeschritten.' },
+  voll:   { label:'Vollklausur',  n:5, min:90, stufen:[1,2,3], text:'Fünf Aufgaben in 90 Minuten — Umfang und Zeitdruck der echten AP1.' },
+  experte:{ label:'Expertenrunde',n:3, min:60, stufen:[3],     text:'Drei Expertenaufgaben in 60 Minuten. Mehrteilig, mit Begründung.' }
+};
+function klStarten(variante){
+  var v = KL_VARIANTEN[variante];
+  var pool = EXERCISES.filter(function(e){ return v.stufen.indexOf(e.level) !== -1; });
+  if(pool.length < v.n){
+    showToast('<span class="t-xp">Zu wenig</span><span class="t-reason">Nicht genug Aufgaben für diese Variante</span>');
+    return;
+  }
+  var gezogen = shuffled(pool).slice(0, v.n);
+  klausur = {
+    phase:'laufend', variante:variante,
+    aufgaben:gezogen,
+    antworten:gezogen.map(function(){ return ''; }),
+    endetUm: Date.now() + v.min * 60000,
+    uhr:null, ergebnis:null, fehler:''
+  };
+  klUhrStoppen();
+  klausur.uhr = setInterval(klTicken, 1000);
+  state.currentId = 'klausur';
+  render();
+}
+function klUhrStoppen(){ if(klausur.uhr){ clearInterval(klausur.uhr); klausur.uhr = null; } }
+function klTicken(){
+  var el = document.getElementById('klUhr');
+  var rest = klausur.endetUm - Date.now();
+  if(rest <= 0){ klUhrStoppen(); klAbgeben(true); return; }
+  if(!el) return;
+  var sek = Math.floor(rest / 1000);
+  var m = Math.floor(sek / 60), sc = sek % 60;
+  el.textContent = m + ':' + (sc < 10 ? '0' : '') + sc;
+  el.className = 'kl-uhr' + (rest < 300000 ? ' knapp' : '');
+}
+function klSchreiben(i, wert){ klausur.antworten[i] = wert; }
+function klAbbrechen(){
+  if(!window.confirm('Die Klausur wird verworfen. Fortfahren?')) return;
+  klUhrStoppen();
+  klausur.phase = 'start';
+  renderContent();
+}
+function klText(html){
+  return String(html).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|li|div|tr)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n').trim();
+}
+async function klAbgeben(automatisch){
+  if(klausur.phase !== 'laufend') return;
+  if(!automatisch){
+    var leer = klausur.antworten.filter(function(a){ return !a.trim(); }).length;
+    var frage = leer
+      ? leer + ' von ' + klausur.aufgaben.length + ' Aufgaben sind noch leer. Trotzdem abgeben?'
+      : 'Klausur abgeben und bewerten lassen?';
+    if(!window.confirm(frage)) return;
+  }
+  klUhrStoppen();
+  klausur.phase = 'bewertung';
+  klausur.fehler = '';
+  renderContent();
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    klausur.phase = 'ergebnis';
+    klausur.ergebnis = null;
+    klausur.fehler = 'Die Bewertung durch den Tutor ist in dieser Ansicht nicht verfügbar. '+
+      'Deine Antworten stehen unten neben den Musterlösungen — vergleiche selbst.';
+    renderContent();
+    return;
+  }
+
+  var teile = klausur.aufgaben.map(function(a, i){
+    return [
+      'AUFGABE ' + (i+1) + ' (' + (KL_PUNKTE[a.level] || 8) + ' Punkte, Thema: ' + a.topic + ')',
+      a.title,
+      klText(a.task).slice(0, 1400),
+      '',
+      'MUSTERLOESUNG ' + (i+1) + ':',
+      String(a.solution).slice(0, 2200),
+      '',
+      'ANTWORT DES PRUEFLINGS ' + (i+1) + ':',
+      (klausur.antworten[i].trim() || '(nichts geschrieben)').slice(0, 2200),
+      '', '---', ''
+    ].join('\n');
+  }).join('\n');
+
+  var anweisung = [
+    'Du bist Korrektor der IHK-Abschlusspruefung Teil 1 im Beruf Fachinformatiker fuer',
+    'Anwendungsentwicklung. Bewerte die folgenden handschriftlich beantworteten Aufgaben.',
+    '',
+    'BEWERTUNGSREGELN:',
+    '- Bewerte streng, aber fair, so wie ein echter Korrektor.',
+    '- Der RECHENWEG zaehlt: Teilpunkte gibt es fuer richtige Ansaetze, auch wenn das',
+    '  Endergebnis falsch ist. Ein richtiges Ergebnis ohne Weg bekommt nicht die volle Punktzahl.',
+    '- Bei Begruendungsaufgaben zaehlt das ausgeschriebene Warum.',
+    '- Einheiten und Rundungen gehoeren dazu.',
+    '- Eine leere Antwort bekommt 0 Punkte.',
+    '- Die Musterloesung ist nicht der einzige Weg: Ein anderer, fachlich richtiger',
+    '  Loesungsweg ist voll zu werten.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Array, ein Objekt je Aufgabe, in dieser Form:',
+    '[{"punkte": 6, "max": 8, "staerken": "ein bis zwei Saetze, was richtig war",',
+    '  "luecken": "ein bis drei Saetze, was fehlt oder falsch ist",',
+    '  "tipp": "ein Satz, worauf der Prueflング beim naechsten Mal achten soll"}]',
+    'Schreibe auf Deutsch, mit Du-Anrede in tipp und luecken. Kein Text vor oder nach dem JSON.',
+    '',
+    teile
+  ].join('\n');
+
+  try{
+    var res = await kiJson(anweisung, 'complex');
+    if(!Array.isArray(res)) throw { code:'invalid_json', message:'kein Array' };
+    klausur.ergebnis = res.map(function(r, i){
+      var max = KL_PUNKTE[klausur.aufgaben[i] ? klausur.aufgaben[i].level : 2] || 8;
+      return {
+        punkte: Math.max(0, Math.min(max, Number(r.punkte) || 0)),
+        max: max,
+        staerken: String(r.staerken || ''),
+        luecken: String(r.luecken || ''),
+        tipp: String(r.tipp || '')
+      };
+    });
+    var erreicht = klausur.ergebnis.reduce(function(a, r){ return a + r.punkte; }, 0);
+    var moeglich = klausur.ergebnis.reduce(function(a, r){ return a + r.max; }, 0);
+    state.klausuren = (state.klausuren || []).concat([{
+      ts: Date.now(), erreicht: erreicht, moeglich: moeglich, variante: klausur.variante
+    }]).slice(-20);
+    awardXp(Math.round(erreicht * 2), 'Klausur: ' + erreicht + '/' + moeglich + ' Punkte');
+    if(moeglich && erreicht / moeglich >= 0.5) grantBadge('klausur_bestanden');
+    if(moeglich && erreicht / moeglich >= 0.9) grantBadge('klausur_glanz');
+    saveProgress();
+  }catch(e){
+    klausur.ergebnis = null;
+    klausur.fehler = (e && e.code === 'not_granted')
+      ? 'Die Bewertung wurde nicht freigegeben. Vergleiche deine Antworten unten selbst mit den Musterlösungen.'
+      : (e && e.code === 'rate_limited')
+        ? 'Gerade zu viele Anfragen. Versuche die Bewertung in einigen Minuten erneut — deine Antworten bleiben erhalten.'
+        : 'Die Bewertung hat nicht geklappt. Deine Antworten stehen unten neben den Musterlösungen.';
+  }
+  klausur.phase = 'ergebnis';
+  renderContent();
+}
+function klNochmal(){ klausur.phase = 'start'; klausur.ergebnis = null; renderContent(); }
+function renderKlausur(){
+  var h = '<div class="breadcrumb">Training</div><h1>Mitschreib-Prüfung</h1>';
+
+  /* ---------- Startbildschirm ---------- */
+  if(klausur.phase === 'start'){
+    h += '<p class="intro-sub">Der Prüfungssimulator fragt Multiple Choice ab. Die echte AP1 verlangt '+
+         'daneben <strong>offene Aufgaben</strong>: rechnen, begründen, entwerfen. Hier schreibst du frei — '+
+         'und der Tutor bewertet anschließend wie ein Korrektor: mit Punkten, mit dem, was gut war, '+
+         'und mit dem, was gefehlt hätte.</p>';
+
+    var frueher = state.klausuren || [];
+    if(frueher.length){
+      var l = frueher[frueher.length - 1];
+      h += '<div class="pruef-leiste"><span class="tage">'+Math.round(l.erreicht / l.moeglich * 100)+'%</span>'+
+        '<span class="txt"><b>Letzte Klausur:</b> '+l.erreicht+' von '+l.moeglich+' Punkten am '+
+        new Date(l.ts).toLocaleDateString('de-DE')+'. '+
+        (frueher.length > 1 ? 'Insgesamt '+frueher.length+' Klausuren geschrieben.' : '')+'</span></div>';
+    }
+
+    h += '<div class="heute-raster">';
+    Object.keys(KL_VARIANTEN).forEach(function(k){
+      var v = KL_VARIANTEN[k];
+      var punkte = v.n * (v.stufen.length === 1 ? KL_PUNKTE[v.stufen[0]] : 8);
+      h += '<button class="hk" onclick="klStarten(\''+k+'\')">'+
+        '<span class="hk-oben">'+v.n+' Aufgaben · '+v.min+' Min.</span>'+
+        '<span class="hk-titel">'+esc(v.label)+'</span>'+
+        '<span class="hk-text">'+esc(v.text)+' Etwa '+punkte+' Punkte.</span></button>';
+    });
+    h += '</div>';
+
+    h += '<div class="ex-panel" style="margin-top:20px;"><strong>So läuft es ab:</strong> '+
+         'Du bekommst die Aufgaben untereinander mit je einem Schreibfeld und einer laufenden Uhr. '+
+         'Schreib so, wie du es auf Papier tätest — Rechenweg mit Einheiten, Begründungen ausformuliert. '+
+         'Beim Abgeben gehen alle Antworten zusammen an den Tutor; die Bewertung dauert etwa eine halbe Minute. '+
+         'Sie läuft über dein Claude-Konto und ist eine Einschätzung, kein amtliches Ergebnis.</div>';
+    return h;
+  }
+
+  /* ---------- Laufende Klausur ---------- */
+  if(klausur.phase === 'laufend'){
+    h = '<div class="kl-kopf"><div><div class="breadcrumb">Mitschreib-Prüfung</div>'+
+        '<h1 style="margin:0;">'+esc(KL_VARIANTEN[klausur.variante].label)+'</h1></div>'+
+        '<div class="kl-uhr-box"><span class="kl-uhr" id="klUhr">––:––</span>'+
+        '<span class="kl-uhr-lbl">verbleibend</span></div></div>';
+
+    klausur.aufgaben.forEach(function(a, i){
+      var max = KL_PUNKTE[a.level] || 8;
+      h += '<div class="kl-aufgabe">'+
+        '<div class="kl-nr">Aufgabe '+(i+1)+' <span class="kl-max">'+max+' Punkte</span>'+
+        '<span class="badge topic">'+esc(a.topic)+'</span></div>'+
+        '<h2 class="kl-titel">'+esc(a.title)+'</h2>'+
+        '<div class="kl-text">'+a.task+'</div>'+
+        '<textarea class="kl-feld" id="klFeld'+i+'" rows="9" spellcheck="false" '+
+        'placeholder="Deine Lösung — Rechenweg mit Einheiten, Begründungen ausformuliert." '+
+        'oninput="klSchreiben('+i+', this.value)">'+esc(klausur.antworten[i])+'</textarea>'+
+        '</div>';
+    });
+
+    h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
+      '<button class="ex-btn primary" onclick="klAbgeben(false)">Abgeben und bewerten lassen</button>'+
+      '<button class="ex-btn" onclick="klAbbrechen()">Verwerfen</button></div>';
+    return h;
+  }
+
+  /* ---------- Bewertung läuft ---------- */
+  if(klausur.phase === 'bewertung'){
+    h += '<div class="kl-warten"><span class="kl-spinner" aria-hidden="true"></span>'+
+         '<div><strong>Der Tutor korrigiert.</strong>'+
+         '<p>Das dauert meist eine halbe bis eine Minute — er liest jede Antwort gegen die '+
+         'Musterlösung und vergibt Teilpunkte auf den Rechenweg.</p></div></div>';
+    return h;
+  }
+
+  /* ---------- Ergebnis ---------- */
+  var erg = klausur.ergebnis;
+  if(erg){
+    var erreicht = erg.reduce(function(a, r){ return a + r.punkte; }, 0);
+    var moeglich = erg.reduce(function(a, r){ return a + r.max; }, 0);
+    var proz = moeglich ? Math.round(erreicht / moeglich * 100) : 0;
+    var note = proz >= 92 ? ['1', 'sehr gut'] : proz >= 81 ? ['2', 'gut'] : proz >= 67 ? ['3', 'befriedigend']
+             : proz >= 50 ? ['4', 'ausreichend'] : proz >= 30 ? ['5', 'mangelhaft'] : ['6', 'ungenügend'];
+
+    h += '<div class="kl-ergebnis">'+
+      '<div class="kl-note'+(proz >= 50 ? ' gut' : ' schwach')+'">'+note[0]+'</div>'+
+      '<div><div class="kl-note-txt">'+note[1]+'</div>'+
+      '<div class="kl-punkte">'+erreicht+' von '+moeglich+' Punkten · '+proz+' %</div>'+
+      '<div class="kl-hinweis">Richtwert nach dem IHK-Schlüssel. Eine Einschätzung des Tutors, '+
+      'kein amtliches Ergebnis — aber nah genug, um zu wissen, wo du stehst.</div></div></div>';
+  }
+  if(klausur.fehler){
+    h += '<div class="tutor-hinweis" style="border-radius:var(--r-md); margin-bottom:18px;">'+esc(klausur.fehler)+'</div>';
+  }
+
+  klausur.aufgaben.forEach(function(a, i){
+    var r = erg ? erg[i] : null;
+    var max = KL_PUNKTE[a.level] || 8;
+    h += '<div class="kl-aufgabe">'+
+      '<div class="kl-nr">Aufgabe '+(i+1)+
+        (r ? '<span class="kl-erg'+(r.punkte >= r.max * 0.5 ? ' gut' : ' schwach')+'">'+
+             r.punkte+' / '+r.max+' Punkte</span>'
+           : '<span class="kl-max">'+max+' Punkte</span>')+
+        '<span class="badge topic">'+esc(a.topic)+'</span></div>'+
+      '<h2 class="kl-titel">'+esc(a.title)+'</h2>';
+
+    if(r){
+      if(r.staerken) h += '<div class="kl-rueck gut"><span class="kl-rueck-lbl">Das war richtig</span>'+esc(r.staerken)+'</div>';
+      if(r.luecken)  h += '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Das hat gefehlt</span>'+esc(r.luecken)+'</div>';
+      if(r.tipp)     h += '<div class="kl-rueck tipp"><span class="kl-rueck-lbl">Fürs nächste Mal</span>'+esc(r.tipp)+'</div>';
+    }
+
+    h += '<details class="kl-details"><summary>Deine Antwort und die Musterlösung</summary>'+
+      '<div class="kl-vergleich">'+
+        '<div><div class="kl-sp-titel">Deine Antwort</div>'+
+        '<pre class="kl-pre">'+esc(klausur.antworten[i].trim() || '(nichts geschrieben)')+'</pre></div>'+
+        '<div><div class="kl-sp-titel">Musterlösung</div>'+
+        '<pre class="kl-pre muster">'+esc(a.solution)+'</pre></div>'+
+      '</div>'+
+      '<div class="ex-panel" style="margin-top:12px;"><strong>Hinweis zur Lösung:</strong> '+a.solutionNote+'</div>'+
+      '</details></div>';
+  });
+
+  h += '<div class="ex-actions" style="margin:24px 0 40px;">'+
+    '<button class="ex-btn primary" onclick="klNochmal()">Neue Klausur</button>'+
+    '<button class="ex-btn" onclick="selectLesson(\'exercises\')">Zu den Übungsaufgaben</button>'+
+    '<button class="ex-btn" onclick="selectLesson(\'fehler\')">Zum Fehlerheft</button></div>';
+  return h;
+}
+function appFehlerZu(){
+  var h = document.getElementById('fehlerHost');
+  if(h) h.remove();
+}
+function zeigeBanner(titel, text, detail){
+  try{
+    var host = document.getElementById('fehlerHost');
+    if(!host){
+      host = document.createElement('div');
+      host.id = 'fehlerHost';
+      host.className = 'app-fehler';
+      host.setAttribute('role', 'alert');
+      document.body.appendChild(host);
+    }
+    host.innerHTML =
+      '<div class="af-kopf">'+esc(titel)+'</div>'+
+      '<p class="af-text">'+esc(text)+'</p>'+
+      '<div class="af-knoepfe">'+
+        '<button class="ex-btn primary" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" onclick="location.reload()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+      '</div>'+
+      (detail ? '<code class="af-detail">'+esc(String(detail)).slice(0, 240)+'</code>' : '');
+  }catch(e){}
+}
+function appFehler(quelle, f){
+  try{
+    var host = document.getElementById('fehlerHost');
+    if(!host){
+      host = document.createElement('div');
+      host.id = 'fehlerHost';
+      host.className = 'app-fehler';
+      host.setAttribute('role', 'alert');
+      document.body.appendChild(host);
+    }
+    var txt = (f && (f.message || f.reason || f.type)) || String(f || 'unbekannt');
+    host.innerHTML =
+      '<div class="af-kopf">Da ist etwas schiefgelaufen.</div>'+
+      '<p class="af-text">Dein Fortschritt ist gespeichert. Du kannst weiterarbeiten oder die '+
+      'Seite neu laden. Sichere vorher zur Sicherheit deinen Stand.</p>'+
+      '<div class="af-knoepfe">'+
+        '<button class="ex-btn primary" type="button" onclick="location.reload()">Neu laden</button>'+
+        '<button class="ex-btn" type="button" onclick="selectLesson(\'profile\')">Stand sichern</button>'+
+        '<button class="ex-btn" type="button" onclick="appFehlerZu()">Schliessen</button>'+
+      '</div>'+
+      '<code class="af-detail">'+esc(String(quelle) + ': ' + String(txt)).slice(0, 240)+'</code>';
+  }catch(e){}
+}
+var railBegriffe = [];
+var railDeko = null;
+function railText(roh){
+  if(!railDeko) railDeko = document.createElement('div');
+  railDeko.innerHTML = (roh === null || roh === undefined) ? '' : String(roh);
+  return (railDeko.textContent || '').replace(/\s+/g, ' ').trim();
+}
+function railNorm(t){
+  return String(t || '').replace(/\s+/g, ' ').trim()
+    .replace(/[:.,;!?]+$/, '').toLowerCase();
+}
+function railBegriffeSammeln(body){
+  var roh = String(body || '').match(/<strong[^>]*>[\s\S]*?<\/strong>/gi) || [];
+  var gesehen = {}, raus = [];
+  roh.forEach(function(stueck){
+    var wort = railText(stueck).replace(/[:.,;]+$/, '');
+    if(wort.length < 3 || wort.length > 34) return;
+    if(wort.split(' ').length > 4) return;
+    var k = wort.toLowerCase();
+    if(gesehen[k]) return;
+    gesehen[k] = 1;
+    raus.push(wort);
+  });
+  return raus.slice(0, 14);
+}
+function railSanft(){
+  try{ return !window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  catch(e){ return true; }
+}
+function railZeigen(el){
+  if(!el) return;
+  try{ el.scrollIntoView({ block:'center', behavior: railSanft() ? 'smooth' : 'auto' }); }
+  catch(e){ el.scrollIntoView(); }
+}
+function railSpringe(i){
+  var wort = railBegriffe[i];
+  if(!wort) return;
+  var ziel = null, alle = document.querySelectorAll('#content strong');
+  for(var n = 0; n < alle.length; n++){
+    if(railNorm(alle[n].textContent) === railNorm(wort)){ ziel = alle[n]; break; }
+  }
+  if(!ziel) return;
+  var block = (ziel.closest && ziel.closest('p, li, td, th, figcaption')) || ziel;
+  railZeigen(block);
+  var vorher = document.querySelector('.rail-treffer');
+  if(vorher) vorher.classList.remove('rail-treffer');
+  ziel.classList.add('rail-treffer');
+  setTimeout(function(){ ziel.classList.remove('rail-treffer'); }, 2200);
+}
+function railMerksatz(){
+  var box = document.getElementById('railTipp');
+  var knopf = document.getElementById('railDeck');
+  if(box) box.hidden = false;
+  if(knopf) knopf.hidden = true;
+}
+function railZumCheck(id){
+  railZeigen(document.getElementById('q_' + id + '_0'));
+}
+function railKarten(lessonId){
+  var grenze = today0() + DAY - 1, gesamt = 0, faellig = 0, neu = 0;
+  CARDS.forEach(function(c){
+    if(c.lessonId !== lessonId) return;
+    gesamt++;
+    var srs = state.srs[c.id];
+    if(!srs) neu++;
+    else if(srs.due <= grenze) faellig++;
+  });
+  return { gesamt: gesamt, neu: neu, faellig: faellig, sitzt: gesamt - neu };
+}
+function railLektion(lesson){
+  var mod = moduleOfLesson(lesson.id);
+  var fertig = mod.lessons.filter(function(l){ return state.completed.has(l.id); }).length;
+  var pct = Math.round(fertig / mod.lessons.length * 100);
+  var idx = FLAT.findIndex(function(l){ return l.id === lesson.id; });
+  var next = FLAT[idx + 1];
+  var k = railKarten(lesson.id);
+  railBegriffe = railBegriffeSammeln(lesson.body);
+
+  var h = '';
+
+  /* 1 - Wo stehe ich in diesem Modul */
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Modul ' + (MODULES.indexOf(mod) + 1) +
+       ' · Teil ' + mod.part + '</span>' +
+       '<div class="ring" style="--pct:' + pct + '"><span>' + pct + '%</span></div></div>' +
+       '<h2 class="rail-titel">' + esc(mod.title) + '</h2>' +
+       '<ol class="rail-schritte">';
+  mod.lessons.forEach(function(l, i){
+    var zustand = state.completed.has(l.id) ? 'fertig'
+                : (l.id === lesson.id ? 'aktiv' : 'offen');
+    h += '<li class="rail-schritt ' + zustand + '">' +
+         '<button type="button" onclick="selectLesson(\'' + l.id + '\')"' +
+         (zustand === 'aktiv' ? ' aria-current="true"' : '') + '>' +
+         '<span class="rs-punkt" aria-hidden="true">' +
+         (zustand === 'fertig' ? '✓' : (i + 1)) + '</span>' +
+         '<span class="rs-titel">' + esc(l.title) + '</span>' +
+         '<span class="rs-min">' + l.minutes + ' min</span></button></li>';
+  });
+  h += '</ol><p class="rail-zahl zeile">' + fertig + ' von ' + mod.lessons.length +
+       ' Lektionen abgeschlossen</p></section>';
+
+  /* 2 - Die Begriffe, die diese Lektion traegt */
+  if(railBegriffe.length >= 3){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Schlüsselbegriffe</span>' +
+         '<span class="rail-zahl">' + railBegriffe.length + '</span></div>' +
+         '<div class="rail-begriffe">';
+    railBegriffe.forEach(function(w, i){
+      h += '<button type="button" class="rail-begriff" onclick="railSpringe(' + i + ')">' +
+           esc(w) + '</button>';
+    });
+    h += '</div><p class="rail-fuss" style="margin-top:9px;">' +
+         'Erklär jeden Begriff laut in einem Satz. Ein Klick springt zur Stelle ' +
+         'im Text.</p></section>';
+  }
+
+  /* 3 - Merksatz, aber erst nach dem eigenen Versuch */
+  if(lesson.tip){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Merksatz</span></div>' +
+         '<button type="button" class="rail-deck" id="railDeck" onclick="railMerksatz()">' +
+         'Erst selbst sagen — dann aufdecken</button>' +
+         '<p class="rail-tipp" id="railTipp" hidden>' + lesson.tip + '</p></section>';
+  }
+
+  /* 4 - Stand der Karten aus genau dieser Lektion */
+  if(k.gesamt){
+    var quote = Math.round(k.sitzt / k.gesamt * 100);
+    h += '<section class="rail-karte' + (k.faellig ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">Selbstcheck</span>' +
+         '<span class="rail-zahl">' + k.gesamt + ' Karten</span></div>' +
+         '<div class="rail-balken"><i style="width:' + quote + '%"></i></div>' +
+         '<p class="rail-text">' + k.sitzt + ' schon beantwortet' +
+         (k.faellig ? ' · ' + k.faellig + ' heute fällig' : '') +
+         (k.neu ? ' · ' + k.neu + ' noch offen' : '') + '</p>' +
+         '<button type="button" class="rail-knopf' + (k.neu ? ' primaer' : '') +
+         '" onclick="railZumCheck(\'' + lesson.id + '\')">Zum Kurz-Check</button>';
+    if(k.faellig){
+      h += '<button type="button" class="rail-knopf" onclick="selectLesson(\'review\')">' +
+           k.faellig + ' Karten wiederholen</button>';
+    }
+    h += '</section>';
+  }
+
+  /* 5 - Was danach kommt */
+  if(next){
+    var nm = moduleOfLesson(next.id);
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Danach</span></div>' +
+         '<h2 class="rail-titel">' + esc(next.title) + '</h2>' +
+         '<p class="rail-text">' + esc(nm.title) + ' · ca. ' + next.minutes +
+         ' Min.</p><button type="button" class="rail-knopf" ' +
+         'onclick="selectLesson(\'' + next.id + '\')">Weiter →</button></section>';
+  }
+
+  return h;
+}
+function railStand(){
+  var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+  var pct = Math.round(completed / TOTAL * 100);
+  var faellig = dueCards().length;
+  var naechste = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+  var nm = moduleOfLesson(naechste.id);
+  var ziel = state.tagesziel || 3;
+  var heute = (state.dayCount && state.dayCount.day === todayKey()) ? state.dayCount.n : 0;
+  var zielPct = Math.min(100, Math.round(heute / ziel * 100));
+  var tage = pruefungsTage();
+  var serie = (state.streak && state.streak.count) || 0;
+  var offen = ziel - heute;
+
+  var h = '<section class="rail-karte"><div class="rail-kopf">' +
+    '<span class="rail-augenbraue">Heute</span>' +
+    '<div class="ring" style="--pct:' + zielPct + '"><span>' + heute + '/' + ziel +
+    '</span></div></div><p class="rail-text">' +
+    (offen <= 0 ? 'Tagesziel erreicht. Alles Weitere ist Vorsprung.'
+                : 'Noch ' + offen + ' Lektion' + (offen === 1 ? '' : 'en') +
+                  ' bis zum Tagesziel.') + '</p>';
+  if(serie > 0){
+    h += '<p class="rail-zahl zeile">' + serie + ' Tag' +
+         (serie === 1 ? '' : 'e') + ' in Folge · Bestwert ' +
+         ((state.streak && state.streak.best) || serie) + '</p>';
+  }
+  h += '</section>';
+
+  if(tage !== null){
+    var proTag = Math.ceil((MODULES.filter(function(m){ return m.part < 10; }).reduce(function(a, m){ return a + m.lessons.filter(function(l){ return !state.completed.has(l.id); }).length; }, 0)) / Math.max(1, tage));   /* nur AP1-Teile */
+    h += '<section class="rail-karte' + (tage >= 0 && tage <= 21 ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">AP1</span>' +
+         '<span class="rail-zahl">' + (tage < 0 ? 'vorbei' : tage + ' Tage') +
+         '</span></div><p class="rail-text">' +
+         (tage < 0 ? 'Der Termin liegt hinter dir.'
+          : tage === 0 ? 'Heute ist es so weit. Ruhig bleiben, Zeit einteilen.'
+          : (completed >= TOTAL
+             ? 'Der Kurs ist durch. Jetzt zählen Wiederholung und Prüfungssimulator.'
+             : 'Bei ' + proTag + ' Lektion' + (proTag === 1 ? '' : 'en') +
+               ' pro Tag bist du rechtzeitig durch.')) +
+         '</p></section>';
+  }
+
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Kurs</span>' +
+       '<span class="rail-zahl">' + pct + '%</span></div>' +
+       '<div class="rail-balken"><i style="width:' + pct + '%"></i></div>' +
+       '<p class="rail-text">' + completed + ' von ' + TOTAL +
+       ' Lektionen</p><button type="button" class="rail-knopf primaer" ' +
+       'onclick="selectLesson(\'' + naechste.id + '\')">Weiterlernen</button>' +
+       '<p class="rail-fuss" style="margin-top:9px;">' + esc(naechste.title) +
+       '<br>' + esc(nm.title) + '</p></section>';
+
+  if(faellig){
+    h += '<section class="rail-karte ruf"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Wiederholen</span>' +
+         '<span class="rail-zahl">' + faellig + '</span></div>' +
+         '<p class="rail-text">Karten sind heute fällig. Wer sie liegen lässt, ' +
+         'lernt sie später noch einmal von vorn.</p>' +
+         '<button type="button" class="rail-knopf primaer" ' +
+         'onclick="selectLesson(\'review\')">Jetzt wiederholen</button></section>';
+  }
+
+  return h;
+}
+function railAblage(){
+  var h = '';
+  var tage = pruefungsTage();
+  if(tage !== null && tage >= 0){
+    h += '<section class="rail-karte' + (tage <= 21 ? ' ruf' : '') + '">' +
+         '<div class="rail-kopf"><span class="rail-augenbraue">Bis zur AP1</span>' +
+         '<span class="rail-zahl">' + tage + ' Tage</span></div>' +
+         '<p class="rail-text">' +
+         (tage === 0 ? 'Heute ist es so weit. Ruhig bleiben, Zeit einteilen.'
+          : 'Das sind ' + Math.floor(tage / 7) + ' volle Wochen und ' +
+            (tage % 7) + ' Tage.') + '</p></section>';
+  }
+
+  var schwach = weakModules().slice(0, 3);
+  if(schwach.length){
+    h += '<section class="rail-karte ruf"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Wackelt noch</span></div>';
+    schwach.forEach(function(w){
+      var q = Math.round(w.rate * 100);
+      h += '<div style="margin-bottom:10px;">' +
+           '<p class="rail-text" style="font-weight:650;color:var(--text);">' +
+           esc(w.title) + '</p>' +
+           '<div class="rail-balken"><i style="width:' + q + '%"></i></div>' +
+           '<p class="rail-fuss">' + q + ' % richtig aus ' + w.total +
+           ' Antworten</p></div>';
+    });
+    h += '<button type="button" class="rail-knopf primaer" onclick="selectLesson(\'' +
+         schwach[0].lessonId + '\')">Schwächste Stelle öffnen</button></section>';
+  }
+
+  var ids = Object.keys(state.merkzettel || {});
+  h += '<section class="rail-karte"><div class="rail-kopf">' +
+       '<span class="rail-augenbraue">Gemerkt</span>' +
+       '<span class="rail-zahl">' + ids.length + '</span></div>';
+  if(ids.length){
+    ids.sort(function(a, b){ return state.merkzettel[b] - state.merkzettel[a]; })
+       .slice(0, 5).forEach(function(id){
+      var l = FLAT.find(function(x){ return x.id === id; });
+      if(!l) return;
+      h += '<button type="button" class="rail-knopf" style="text-align:left;' +
+           'margin-top:6px;font-weight:500;" onclick="selectLesson(\'' + id + '\')">' +
+           esc(l.title) + '</button>';
+    });
+    if(ids.length > 5){
+      h += '<p class="rail-fuss" style="margin-top:9px;">und ' + (ids.length - 5) +
+           ' weitere — alle im Merkzettel.</p>';
+    }
+  } else {
+    h += '<p class="rail-text">Mit dem ☆ unter jeder Lektion sammelst du hier, ' +
+         'was du kurz vor der Prüfung noch einmal sehen willst.</p>';
+  }
+  h += '</section>';
+
+  var notizen = Object.keys(state.notizen || {}).length;
+  if(notizen){
+    h += '<section class="rail-karte"><div class="rail-kopf">' +
+         '<span class="rail-augenbraue">Notizen</span>' +
+         '<span class="rail-zahl">' + notizen + '</span></div>' +
+         '<p class="rail-text">Deine eigenen Worte schlagen jede Zusammenfassung.</p>' +
+         '<button type="button" class="rail-knopf" onclick="selectLesson(\'merk\')">' +
+         'Zum Merkzettel</button></section>';
+  }
+
+  return h;
+}
+function renderRail(){
+  var host = document.getElementById('rail');
+  if(!host) return;
+  var id = state.currentId;
+  /* Pruefung und Klausur laufen auf Zeit - da stoert jede Nebenspalte. */
+  if(id === 'exam' || id === 'klausur'){
+    host.className = 'rail leer';
+    host.innerHTML = '';
+    return;
+  }
+  var lesson = lessonById(id);
+  var uebersicht = (id === 'intro' || id === 'heute' || id === 'profile');
+  host.className = 'rail';
+  host.innerHTML = '<div class="rail-innen">' +
+    (lesson ? railLektion(lesson) : (uebersicht ? railAblage() : railStand())) +
+    '</div>';
+}
+function renderContent(){
+  try{
+    renderContentIntern();
+  }catch(e){
+    appFehler('Ansicht ' + state.currentId, e);
+  }
+  /* Die Randspalte darf eine Lektion nie blockieren. */
+  try{
+    renderRail();
+  }catch(e){
+    if(window.console && console.warn) console.warn('Lernbegleiter:', e);
+  }
+}
+function renderContentIntern(){
+  var el = document.getElementById('content');
+
+  if(state.currentId === 'heute'){ el.innerHTML = renderHeute(); return; }
+  if(state.currentId === 'tasten'){ el.innerHTML = renderTasten(); return; }
+  if(state.currentId === 'recht'){ el.innerHTML = renderRecht(); return; }
+  if(state.currentId === 'klausur'){ el.innerHTML = renderKlausur(); if(klausur.phase === 'laufend') klTicken(); return; }
+  if(state.currentId === 'fehler'){ el.innerHTML = renderFehlerheft(); return; }
+  if(state.currentId === 'merk'){ el.innerHTML = renderMerkzettel(); return; }
+  if(state.currentId === 'glossar' && typeof rpGlossaryRender === 'function'){ el.innerHTML = rpGlossaryRender(); rpGlossaryWire(el); return; }
+  if(state.currentId === 'profile'){ el.innerHTML = renderProfile(); updateSyncHint(); return; }
+  if(state.currentId === 'tracer'){ el.innerHTML = renderTracer(); return; }
+  if(state.currentId === 'subnet'){ el.innerHTML = renderSubnet(); return; }
+  if(state.currentId === 'tutor'){ el.innerHTML = renderTutor(); wireTutor(); return; }
+  if(state.currentId === 'exam'){ el.innerHTML = renderExam(); if(exam.active && !exam.finished) tickExam(); return; }
+  if(state.currentId === 'review'){ el.innerHTML = renderReview(); return; }
+
+  if(state.currentId === 'exercises'){
+    el.innerHTML = renderExercises();
+    return;
+  }
+
+  if(state.currentId === 'intro'){
+    var partsHtml = lfFilterZeile() + PARTS.map(function(p){
+      var mods = MODULES.filter(function(m){
+        return m.part === p && (!lfFilter || lfVon(m.id) === lfFilter);
+      });
+      if(!mods.length) return '';
+      var cards = mods.map(function(m){
+        var gi = MODULES.indexOf(m)+1;
+        return '<div class="module-card" onclick="selectLesson(\''+m.lessons[0].id+'\')">'+
+          '<div class="mnum">MODUL '+gi+'</div><h3>'+esc(m.title)+'</h3>'+
+          '<p>'+m.lessons.length+' Lektionen · '+m.lessons.reduce(function(a,l){return a+l.minutes;},0)+' Min.</p>'+
+          relBadge(m.relevanz)+lfBadge(m.id)+'</div>';
+      }).join('');
+      return '<div class="part-heading">Teil '+p+' · '+esc(mods[0].partTitle)+'</div><div class="module-grid">'+cards+'</div>';
+    }).join('');
+
+    var nextLesson = FLAT.find(function(l){ return !state.completed.has(l.id); }) || FLAT[0];
+    var nextMod = moduleOfLesson(nextLesson.id);
+    var due = dueCards().length;
+    var weak = weakModules();
+    var lastExam = state.exams.length ? state.exams[state.exams.length - 1] : null;
+    var completed = typeof rpCompleted === 'function' ? rpCompleted() : state.completed.size;
+    var pct = Math.round((completed / TOTAL) * 100);
+    var lpIntro = levelProgress();
+
+    var today = '<div class="today-panel"><div class="today-head"><h2>Heute</h2>'+
+      '<div style="display:flex;align-items:center;gap:10px;"><div class="ring" style="--pct:'+pct+'"><span>'+pct+'%</span></div>'+
+      '<span style="font-size:.82rem;color:var(--text-dim);">'+completed+' von '+TOTAL+' Lektionen</span></div></div>';
+    today += '<div class="today-grid">';
+    today += '<div class="today-item accent" onclick="selectLesson(\''+nextLesson.id+'\')"><span class="ti-label">Weiterlernen</span>'+
+             '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(nextLesson.title)+'</span>'+
+             '<span class="ti-sub">Teil '+nextMod.part+' · '+esc(nextMod.title)+'</span></div>';
+    today += '<div class="today-item '+(due?'due':'')+'" onclick="selectLesson(\'review\')"><span class="ti-label">Karten fällig</span>'+
+             '<span class="ti-value">'+due+'</span><span class="ti-sub">'+(due ? 'Wiederholung startet sofort' : 'Nichts offen — gut so')+'</span></div>';
+    today += '<div class="today-item" onclick="selectLesson(\'exam\')"><span class="ti-label">Letzte Prüfung</span>'+
+             '<span class="ti-value">'+(lastExam ? Math.round(lastExam.score/lastExam.total*100)+'%' : '—')+'</span>'+
+             '<span class="ti-sub">'+(lastExam ? lastExam.score+'/'+lastExam.total+' · erneut antreten' : 'Noch kein Durchlauf')+'</span></div>';
+    if(weak.length){
+      today += '<div class="today-item weak" onclick="selectLesson(\''+weak[0].lessonId+'\')"><span class="ti-label">Schwachstelle</span>'+
+               '<span class="ti-value" style="font-size:.98rem;line-height:1.3;">'+esc(weak[0].title)+'</span>'+
+               '<span class="ti-sub">'+Math.round(weak[0].rate*100)+'% Trefferquote · nacharbeiten</span></div>';
+    } else {
+      today += '<div class="today-item" onclick="selectLesson(\'tracer\')"><span class="ti-label">Trockendurchlauf</span>'+
+               '<span class="ti-value">'+TRACES.length+'</span><span class="ti-sub">AP1-Kernkompetenz üben</span></div>';
+    }
+    today += '</div></div>';
+
+    el.innerHTML =
+      '<div class="intro-hero">'+
+      '<h1>Root Road</h1>'+
+      '<p class="intro-claim">Von der Wurzel bis zur Pr\u00fcfung \u2014 der Weg durch die AP1 '+
+      'im Beruf Fachinformatiker f\u00fcr Anwendungsentwicklung.</p>'+
+      '<p class="rb-trainiert"><span>Trainiert gezielt</span>'+
+      '<span class="rb-rotate" aria-hidden="true"></span>'+
+      '<span class="rb-sr">Pseudocode, SQL, UML, Subnetting, IPv6, Netzplantechnik, IT-Sicherheit, Datenschutz, KI sowie PHP, Laravel und Git</span></p>'+
+      '<p class="intro-sub">'+MODULES.length+' Module mit '+TOTAL+' Lektionen in '+PARTS.length+' Teilen: Algorithmen und Pseudocode, Datenbanken und ER-Modellierung, UML und Softwareentwicklung, Netzwerktechnik mit Subnetting und IPv6, IT-Sicherheit und Datenschutz, Projektmanagement mit Netzplantechnik, Hardware und Arbeitsplatz, Service und Kommunikation sowie Künstliche Intelligenz, dazu als Zusatzteile PHP &amp; Laravel vom Einsteiger bis zum Experten sowie Git und Zusammenarbeit im Team. Dazu '+EXERCISES.length+' Prüfungsaufgaben in drei Schwierigkeitsstufen, '+TRACES.length+' Trockendurchläufe, '+BADGES.length+' Auszeichnungen, ein Subnetting-Trainer mit unbegrenzt vielen Aufgaben, '+DIAGRAMME+' Diagramme in den Lektionen, ein Formelblatt und sechs Trainingsmodi, die auf aktivem Abrufen statt Wiederlesen beruhen. Jedes Modul trägt einen Marker, wie häufig sein Thema in der AP1 vorkommt.</p>'+
+      '</div>'+
+      today+
+      '<div class="stat-row">'+
+        '<div class="stat-tile" style="cursor:pointer;border-color:var(--accent);" onclick="selectLesson(\'profile\')">'+
+          '<div class="num">'+lpIntro.cur.icon+' '+(state.xp||0)+'</div><div class="lbl">XP · '+esc(lpIntro.cur.name)+'</div></div>'+
+        '<div class="stat-tile"><div class="num">'+TOTAL+'</div><div class="lbl">Lektionen</div></div>'+
+        '<div class="stat-tile"><div class="num">'+CARDS.length+'</div><div class="lbl">Abfragekarten</div></div>'+
+        '<div class="stat-tile"><div class="num">'+EXERCISES.length+'</div><div class="lbl">Übungsaufgaben</div></div>'+
+        '<div class="stat-tile"><div class="num">'+TRACES.length+'</div><div class="lbl">Trockendurchläufe</div></div>'+
+        '<div class="stat-tile"><div class="num">~'+TOTAL_MIN+'</div><div class="lbl">Minuten Lesestoff</div></div>'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;">'+
+        '<button class="start-btn rb-star" onclick="selectLesson(\''+nextLesson.id+'\')">'+(state.completed.size ? 'Weiterlernen' : 'Los geht’s')+'</button>'+
+        '<button class="start-btn ghost" onclick="selectLesson(\'exam\')">Prüfung simulieren</button>'+
+        '<button class="start-btn ghost" onclick="selectLesson(\'tracer\')">Algorithmus durchspielen</button>'+
+      '</div>'+
+      '<div class="part-grid">'+partsHtml+'</div>';
+    return;
+  }
+
+  if(state.currentId === 'cheatsheet'){
+    el.innerHTML = '<div class="breadcrumb">Referenz</div><h1>Spickzettel</h1>'+
+      '<p class="intro-sub">Kompakte Referenz über alle '+MODULES.length+' Module — Netzplanformeln, Subnetztabelle, OSI-Schichten, UML-Pfeile, SQL-Muster, Bezugskalkulation, Einheitenumrechnung, KI-Grundbegriffe mit den AI-Act-Risikoklassen und Prüfungstaktik auf einen Blick.</p>'+
+      '<p class="druck-hinweis">Mit <kbd>Strg</kbd>+<kbd>P</kbd> lässt sich dieses Formelblatt sauber ausdrucken — ohne Navigation, auf weißem Grund, Abschnitte ohne Seitenumbruch.</p>'+
+      CHEATSHEET_HTML;
+    return;
+  }
+
+  var lesson = lessonById(state.currentId);
+  if(!lesson){ state.currentId = 'intro'; return renderContent(); }
+  if(lesson.lazy && typeof rpLoadBodies === 'function'){
+    /* Texte stehen noch nicht bereit: Rahmen anzeigen, Texte des Moduls laden, dann neu zeichnen. */
+    var wanted = lesson.id, loadModule = moduleOfLesson(lesson.id);
+    el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="status" class="lesson-loading">Lektion wird geladen …</p>';
+    rpLoadBodies([loadModule.id]).then(function(){
+      if(state.currentId === wanted) renderContent();
+    }, function(){
+      if(state.currentId !== wanted) return;
+      el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="alert">Die Lektion konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" onclick="renderContent()">Erneut versuchen</button>';
+    });
+    return;
+  }
+  var mod = moduleOfLesson(lesson.id);
+  var idx = FLAT.findIndex(function(l){ return l.id===lesson.id; });
+  var prev = FLAT[idx-1];
+  var next = FLAT[idx+1];
+  var done = state.completed.has(lesson.id);
+
+  var html = '';
+  html += '<div class="breadcrumb">Teil '+mod.part+' · '+esc(mod.title)+' · Lektion '+(mod.lessons.findIndex(function(l){return l.id===lesson.id;})+1)+'/'+mod.lessons.length+'</div>';
+  html += '<div class="lesson-head"><div><h1>'+esc(lesson.title)+'</h1><div class="meta-row"><span>⏱ ca. '+lesson.minutes+' Min.</span> '+relBadge(mod.relevanz)+'</div></div>';
+  html += '<label class="complete-toggle'+(done?' on':'')+'"><input type="checkbox" '+(done?'checked':'')+' onchange="toggleComplete(\''+lesson.id+'\', this.checked)"> '+(done?'Abgeschlossen':'Als abgeschlossen markieren')+'</label></div>';
+  html += renderLessonBlocks(lesson);
+  html += typeof rpPuzzleSection === 'function' ? rpPuzzleSection(lesson.id) : '';
+  html += typeof rpVideoSection === 'function' ? rpVideoSection(lesson.id) : '';
+  html += renderLektionWerkzeuge(lesson.id);
+  if(lesson.tip){ html += '<div class="callout callout-tip"><div class="callout-label">★ Experten-Tipp</div><p>'+lesson.tip+'</p></div>'; }
+  html += renderQuiz(lesson);
+
+  html += '<div class="nav-buttons">';
+  if(prev){
+    html += '<button class="nav-btn" onclick="selectLesson(\''+prev.id+'\')"><span class="lbl">← Zurück</span><span>'+esc(prev.title)+'</span></button>';
+  } else { html += '<span></span>'; }
+  if(next){
+    html += '<button class="nav-btn next" onclick="selectLesson(\''+next.id+'\')"><span class="lbl">Weiter →</span><span>'+esc(next.title)+'</span></button>';
+  } else {
+    html += '<button class="nav-btn next" onclick="selectLesson(\'cheatsheet\')"><span class="lbl">Weiter →</span><span>Zum Spickzettel</span></button>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+function openDrawer(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
+function closeDrawer(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+document.getElementById('hamburger').onclick = openDrawer;
+document.getElementById('rechtBtn').onclick = function(){ selectLesson('recht'); };
+document.getElementById('scrim').onclick = closeDrawer;
+document.getElementById('navIntro').onclick = function(){ selectLesson('intro'); };
+document.getElementById('navProfile').onclick = function(){ selectLesson('profile'); };
+document.getElementById('lvlChip').onclick = function(){ selectLesson('profile'); };
+document.getElementById('navReview').onclick = function(){ selectLesson('review'); };
+document.getElementById('navHeute').onclick = function(){ selectLesson('heute'); };
+document.getElementById('navExam').onclick = function(){ selectLesson('exam'); };
+document.getElementById('navTracer').onclick = function(){ tracer.id = null; selectLesson('tracer'); };
+document.getElementById('navKlausur').onclick = function(){ selectLesson('klausur'); };
+document.getElementById('navSubnet').onclick = function(){ selectLesson('subnet'); };
+document.getElementById('navTutor').onclick = function(){ selectLesson('tutor'); };
+document.getElementById('navExercises').onclick = function(){ selectLesson('exercises'); };
+document.getElementById('navFehler').onclick = function(){ selectLesson('fehler'); };
+document.getElementById('navMerk').onclick = function(){ selectLesson('merk'); };
+document.getElementById('navSheet').onclick = function(){ selectLesson('cheatsheet'); };
+document.getElementById('navGlossar').onclick = function(){ selectLesson('glossar'); };
+document.getElementById('searchTrigger').onclick = kpOeffnen;
+document.getElementById('resetBtn').onclick = function(){
+  if(window.confirm('Setzt Lektionsfortschritt, Karteikarten, Statistik, Prüfungshistorie, XP, Level und Abzeichen zurück. Das lässt sich nicht rückgängig machen. Wirklich?')){
+    state.completed = new Set();
+    state.srs = {}; state.stats = {}; state.exams = [];
+    state.xp = 0; state.xpLog = {}; state.badges = {}; state.solved = {};
+    state.tracesDone = []; state.streak = { last:null, count:0, best:0 };
+    state.cardsToday = { day:null, n:0 };
+    saveProgress();
+    render();
+  }
+};
+document.addEventListener('keydown', function(e){
+  /* Strg+K uebernimmt die neue Befehlssuche (Capture-Handler weiter oben). */
+  var tag = (e.target && e.target.tagName) || '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+  /* Karteikarten: 1-4 bewerten, Ziffern für Antwortauswahl */
+  if(state.currentId === 'review' && review.queue.length && review.idx < review.queue.length){
+    var card = review.queue[review.idx];
+    if(review.picked === -1){
+      var n = parseInt(e.key, 10);
+      if(n >= 1 && n <= card.options.length){ e.preventDefault(); pickReview(n - 1); }
+    } else {
+      if(e.key === '1'){ e.preventDefault(); rateAndNext(0); }
+      else if(e.key === '2'){ e.preventDefault(); rateAndNext(1); }
+      else if(e.key === '3' || e.key === ' '){ e.preventDefault(); rateAndNext(2); }
+      else if(e.key === '4'){ e.preventDefault(); rateAndNext(3); }
+    }
+    return;
+  }
+  /* Lektionen: Pfeiltasten blättern */
+  var cur = lessonById(state.currentId);
+  if(cur){
+    var i = FLAT.findIndex(function(l){ return l.id === cur.id; });
+    if(e.key === 'ArrowRight' && FLAT[i+1]){ selectLesson(FLAT[i+1].id); }
+    else if(e.key === 'ArrowLeft' && FLAT[i-1]){ selectLesson(FLAT[i-1].id); }
+  }
 });
+window.addEventListener('beforeunload', function(e){
+  if(exam.active && !exam.finished){ e.preventDefault(); e.returnValue = ''; }
+});
+var dock = { offen:false };
+function dockAnsichtName(){
+  var l = lessonById(state.currentId);
+  if(l){
+    var m = moduleOfLesson(l.id);
+    return m ? (m.title + ' \u00b7 ' + l.title) : l.title;
+  }
+  var namen = {
+    heute:'Tagesplan', intro:'Kurs\u00fcbersicht', review:'Wiederholen',
+    exam:'Pr\u00fcfungssimulator', klausur:'Mitschreib-Pr\u00fcfung',
+    tracer:'Algorithmus-Trainer', subnet:'Subnetting-Trainer',
+    exercises:'\u00dcbungsaufgaben', fehler:'Fehlerheft', merk:'Merkzettel',
+    cheatsheet:'Spickzettel', profile:'Profil', tutor:'Tutor-Seite',
+    tasten:'Tastaturhilfe'
+  };
+  return namen[state.currentId] || 'Root Road';
+}
+function dockKontext(){
+  var l = lessonById(state.currentId);
+  if(l){
+    var m = moduleOfLesson(l.id);
+    var auszug = '';
+    try{ auszug = klText(renderLessonBlocks(l)).slice(0, 1600); }catch(e){}
+    return 'KONTEXT (nur fuer dich, nicht von dir aus erwaehnen): Die lernende Person liest gerade ' +
+      'die Lektion "' + l.title + '"' +
+      (m ? ' aus dem Modul "' + m.title + '", Teil ' + m.part : '') + '.' +
+      (auszug ? '\nAuszug aus dieser Lektion:\n' + auszug : '') +
+      '\nBeziehe dich darauf, wenn die Frage dazu passt.';
+  }
+  return 'KONTEXT (nur fuer dich, nicht von dir aus erwaehnen): Die lernende Person ist gerade ' +
+    'in der Ansicht "' + dockAnsichtName() + '" dieses Kurses.';
+}
+function dockVorschlaege(){
+  if(lessonById(state.currentId)){
+    return ['Erkl\u00e4r mir den Kern dieser Lektion in drei S\u00e4tzen.',
+            'Welche Pr\u00fcfungsfalle steckt in diesem Thema?',
+            'Stell mir eine AP1-Aufgabe dazu.'];
+  }
+  return ['Erkl\u00e4re mir Subnetting an einem Beispiel mit /26.',
+          'Unterschied zwischen Datenschutz und Datensicherheit?',
+          'Stell mir eine Netzplan-Aufgabe im AP1-Stil.'];
+}
+function dockOeffnen(){
+  var f = document.getElementById('dockFenster');
+  var k = document.getElementById('dockKnopf');
+  if(!f || !k) return;
+  dock.offen = true;
+  f.hidden = false;
+  k.hidden = true;
+  var p = document.getElementById('dockPunkt');
+  if(p) p.hidden = true;
+  k.setAttribute('aria-expanded', 'true');
+  dockZeichnen();
+  var feld = document.getElementById('dockFeld');
+  if(feld && !tutor.busy) feld.focus();
+}
+function dockSchliessen(){
+  var f = document.getElementById('dockFenster');
+  var k = document.getElementById('dockKnopf');
+  dock.offen = false;
+  if(f) f.hidden = true;
+  if(k && !tutor.off){ k.hidden = false; k.setAttribute('aria-expanded', 'false'); }
+}
+function dockUmschalten(){ if(dock.offen){ dockSchliessen(); } else { dockOeffnen(); } }
+function dockWachsen(feld){
+  if(!feld) return;
+  feld.style.height = 'auto';
+  feld.style.height = Math.min(feld.scrollHeight, 132) + 'px';
+}
+function dockZeichnen(){
+  if(!dock.offen) return;
+
+  var k = document.getElementById('dockKontext');
+  if(k) k.textContent = dockAnsichtName();
+
+  var v = document.getElementById('dockVerlauf');
+  if(v){
+    if(!tutor.turns.length){
+      v.innerHTML = '<div class="dock-leer">Frag alles zum Pr\u00fcfungsstoff. Der Tutor wei\u00df, ' +
+        'wo du gerade bist, und verweist auf die passende Lektion. Jede Frage bringt ' + xpAnzeige(5) + ' XP.</div>';
+    } else {
+      var h = '';
+      tutor.turns.forEach(function(t, i){
+        var letzte = (i === tutor.turns.length - 1);
+        if(t.role === 'user'){
+          h += '<div class="dock-msg du"><span class="dock-rolle">Du</span>' +
+               '<div class="dock-text">' + esc(t.content) + '</div></div>';
+        } else {
+          h += '<div class="dock-msg"><span class="dock-rolle">Tutor</span>' +
+               '<div class="dock-text"' + (letzte ? ' id="dockLive"' : '') + '>' +
+               (t.pending ? '<span class="dock-denkt">denkt nach \u2026</span>' : esc(t.content)) +
+               '</div></div>';
+        }
+      });
+      v.innerHTML = h;
+      v.scrollTop = v.scrollHeight;
+    }
+  }
+
+  var hw = document.getElementById('dockHinweis');
+  if(hw){ hw.textContent = tutor.hinweis || ''; hw.hidden = !tutor.hinweis; }
+
+  var chips = document.getElementById('dockChips');
+  if(chips){
+    if(tutor.turns.length || tutor.busy){
+      chips.innerHTML = '';
+      chips.hidden = true;
+    } else {
+      chips.hidden = false;
+      chips.innerHTML = dockVorschlaege().map(function(t){
+        return '<button type="button" class="dock-chip">' + esc(t) + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(chips.children, function(b){
+        b.onclick = function(){ dockFrage(b.textContent); };
+      });
+    }
+  }
+
+  var feld = document.getElementById('dockFeld');
+  if(feld) feld.disabled = tutor.busy;
+  var senden = document.getElementById('dockSende');
+  if(senden) senden.disabled = tutor.busy;
+  var stopp = document.getElementById('dockStopp');
+  if(stopp) stopp.hidden = !tutor.busy;
+}
+function dockStart(){
+  var knopf = document.getElementById('dockKnopf');
+  var form = document.getElementById('dockForm');
+  var feld = document.getElementById('dockFeld');
+  if(!knopf || !form || !feld) return;
+
+  knopf.onclick = dockUmschalten;
+  document.getElementById('dockZu').onclick = dockSchliessen;
+  document.getElementById('dockNeu').onclick = tutorNeu;
+  document.getElementById('dockGross').onclick = function(){
+    dockSchliessen();
+    selectLesson('tutor');
+  };
+  document.getElementById('dockStopp').onclick = tutorAbbrechen;
+
+  form.onsubmit = function(ev){ ev.preventDefault(); dockFrage(); };
+  feld.oninput = function(){ dockWachsen(feld); };
+  feld.onkeydown = function(ev){
+    if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); dockFrage(); }
+  };
+
+  document.addEventListener('keydown', function(ev){
+    if(ev.key !== 'Escape' || !dock.offen) return;
+    var host = document.getElementById('paletteHost');
+    if(host && host.firstChild) return;   /* die Suche schliesst sich selbst */
+    dockSchliessen();
+  });
+
+  tutorInit().then(function(){
+    if(tutor.fn && !tutor.off) knopf.hidden = false;
+  });
+}
+function updateReadBar(){
+  var bar = document.getElementById('readBar');
+  if(!bar) return;
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = h > 40 ? Math.min(100, (window.scrollY / h) * 100) : 0;
+  bar.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateReadBar, { passive:true });
+window.addEventListener('resize', updateReadBar);
+document.documentElement.lang = 'de';
+window.addEventListener('error', function(ev){
+  appFehler('Skript', ev && (ev.message || ev.error));
+});
+window.addEventListener('unhandledrejection', function(ev){
+  var r = ev && ev.reason;
+  /* Abgebrochene Tutor-Anfragen sind kein Fehler. */
+  if(r && (r.code === 'aborted' || r.name === 'AbortError')) return;
+  appFehler('Hintergrund', r);
+});
+try{ if(localStorage.getItem('ap1-fokus') === '1') document.documentElement.setAttribute('data-fokus','1'); }catch(e){}
+loadProgress();
+render();
+dockStart();
