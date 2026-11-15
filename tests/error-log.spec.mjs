@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import Database from 'better-sqlite3';
@@ -15,12 +16,19 @@ test('Bereinigung entfernt URL-Parameter, E-Mail-Adressen und token-artige Zeich
   expect(sanitize(undefined)).toBe('');
 });
 
+// Freier Port pro Lauf: Ein von einem abgebrochenen Lauf zurückgebliebener Server auf einem festen Port würde sonst den nächsten Lauf stören.
+const freePort = () => new Promise((resolve, reject) => {
+  const probe = net.createServer();
+  probe.once('error', reject);
+  probe.listen(0, '127.0.0.1', () => { const { port } = probe.address(); probe.close(() => resolve(port)); });
+});
+
 // Erfundenes Testpasswort, zur Laufzeit zusammengesetzt, damit der Secret-Scan es nicht als Zuweisung meldet.
 const testPassword = ['test', 'passwort', 'lang'].join('-');
 
 test('Fehlerprotokoll: anonyme Meldungen, Zusammenfassung, Adminansicht, Löschen', async ({ browser, playwright }) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rootpfad-errorlog-test-'));
-  const port = 5191;
+  const port = await freePort();
   const baseURL = `http://127.0.0.1:${port}`;
   const server = spawn(process.execPath, ['server.mjs'], { env: { ...process.env, PORT: String(port), ROOTPFAD_DATA_DIR: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
   try {
