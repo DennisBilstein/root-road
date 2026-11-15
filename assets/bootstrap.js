@@ -12,6 +12,8 @@ window.RP_BOOTING=true;
     });
     return geladen[src];
   };
+  /* Abruf-/Bewertungskriterien (ca. 2,4 MB) gibt es erst, wenn ein Quiz oder die Wiederholung sie braucht (quiz-learning-contracts.js). */
+  window.rpLoadQuizContracts=function(){return window.RP_QUIZ_CONTRACTS_READY?Promise.resolve():window.rpLoadScriptOnce('assets/quiz-contracts-data.js');};
 })();
 /* Lektionstexte (body, body2, code, tip …) liegen je Modul in assets/lesson-bodies/<Modul>.json und werden beim Öffnen einer Lektion
    (rpLoadBodies) oder für die Volltextsuche (rpHydrateAll) in die vorhandenen Lektionsobjekte übernommen. Lektionen ohne geladene Texte tragen lazy:true. */
@@ -81,6 +83,4 @@ window.RP_BOOTING=true;
   }catch(error){window.RP_APP_ERROR=error.message;var banner=document.createElement('section');banner.setAttribute('role','alert');banner.style.cssText='padding:24px;background:#fff;color:#172438;border:2px solid #b3261e';var title=document.createElement('h1');title.textContent='Root Road konnte nicht vollständig starten';var text=document.createElement('p');text.textContent=error.message+' Bitte die Seite neu laden und prüfen, ob der lokale Server läuft.';var button=document.createElement('button');button.textContent='Neu laden';button.onclick=function(){location.reload();};banner.append(title,text,button);document.body.prepend(banner);window.RP_BOOTING=false;document.documentElement.classList.add('rp-bereit');return;}
   window.RP_APP_READY = true;
   document.documentElement.classList.add('rp-bereit');
-  /* Abruf-/Bewertungskriterien (ca. 2,4 MB) werden erst nach dem Start im Leerlauf nachgeladen; ohne sie bleibt die Quizansicht nutzbar. */
-  (window.requestIdleCallback||function(fn){setTimeout(fn,1500);})(function(){window.rpLoadScriptOnce('assets/quiz-contracts-data.js').catch(function(){});});
 })();

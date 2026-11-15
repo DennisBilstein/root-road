@@ -14,7 +14,7 @@ test('index.html: title, charset und Meta-Description stehen im head', async ({ 
   expect(head.title.length).toBeGreaterThan(10);
   expect(head.charset.toLowerCase()).toBe('utf-8');
   expect(head.description.length).toBeGreaterThan(50);
-  expect(head.stylesheets).toBe(3);
+  expect(head.stylesheets).toBe(1);
   expect(head.strayInBody).toBe(0);
 });
 

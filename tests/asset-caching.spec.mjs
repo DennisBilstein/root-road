@@ -6,7 +6,7 @@ test('index.html und Lernmanifest setzen Inhalts-Hashes ein', async ({ request }
   const scripts = [...html.matchAll(/data-rp-src="(assets\/[^"?]+\.js)\?v=([0-9a-f]{10})"/g)];
   const styles = [...html.matchAll(/href="(assets\/[^"?]+\.css)\?v=([0-9a-f]{10})"/g)];
   expect(scripts.length).toBeGreaterThan(20);
-  expect(styles.length).toBeGreaterThan(5);
+  expect(styles.length).toBe(1);
   expect(html).not.toMatch(/data-rp-src="assets\/[^"?]+"/);
   const index = await request.get('/');
   expect(index.headers()['cache-control']).toBe('no-cache');

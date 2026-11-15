@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {lessons,updates} from '../content/abap-senior-curriculum.mjs';
 test('ABAP-Vertiefung rendert alle neuen und überarbeiteten Lektionen mit Praxisfällen',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY&&window.RP_QUIZ_CONTRACTS_READY);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpLoadQuizContracts());
  expect(lessons).toHaveLength(8);expect(updates).toHaveLength(10);
  for(const item of [...lessons,...updates]){
   await page.evaluate(id=>{state.currentId=id;renderContent();},item.id);

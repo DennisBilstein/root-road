@@ -7,23 +7,47 @@ function rpRenderRubric(contract,key){
 }
 (function(){
   var quizBase=renderQuiz;
-  renderQuiz=function(lesson){
-    var html=quizBase(lesson),host=document.createElement('div');host.innerHTML=html;
+  /* Die Kriterien (ca. 2,4 MB) werden erst beim ersten Quiz oder Review geladen; bereits sichtbare Felder werden danach ergänzt. */
+  function whenContractsReady(action){
+    if(window.RP_QUIZ_CONTRACTS_READY)return action();
+    window.rpLoadQuizContracts().then(action,function(){});
+  }
+  function applyRecall(lesson){
     (lesson.quiz||[]).forEach(function(q,i){
-      var c=rpContract(lesson,i),field=host.querySelector('textarea');
-      var card=host.querySelector('#q_'+CSS.escape(lesson.id)+'_'+i);
-      field=card?.querySelector('textarea');if(field&&c)field.placeholder=c.recall;
-    });return host.innerHTML;
+      var c=rpContract(lesson,i),card=document.getElementById('q_'+lesson.id+'_'+i),field=card?.querySelector('textarea');
+      if(field&&c)field.placeholder=c.recall;
+    });
+  }
+  function applyRubrics(id){
+    var lesson=lessonById(id);
+    lesson.quiz.forEach(function(q,i){var feedback=document.getElementById('fb_'+id+'_'+i);if(!feedback?.classList.contains('show')||!document.querySelector('input[name="rq_'+id+'_'+i+'"]:checked'))return;feedback.querySelector('[data-rubric]')?.remove();var section=document.createElement('div');section.dataset.rubric='true';section.innerHTML=rpRenderRubric(rpContract(lesson,i),rpQuestionId(lesson,i));feedback.appendChild(section);});
+  }
+  var quizBase=renderQuiz;
+  renderQuiz=function(lesson){
+    var html=quizBase(lesson);
+    if(window.RP_QUIZ_CONTRACTS_READY){
+      var host=document.createElement('div');host.innerHTML=html;
+      (lesson.quiz||[]).forEach(function(q,i){
+        var c=rpContract(lesson,i),card=host.querySelector('#q_'+CSS.escape(lesson.id)+'_'+i),field=card?.querySelector('textarea');
+        if(field&&c)field.placeholder=c.recall;
+      });return host.innerHTML;
+    }
+    /* Das Laden startet erst nach dem Einfügen des Quiz in die Seite; das Feld wird dann direkt ergänzt. */
+    setTimeout(function(){whenContractsReady(function(){applyRecall(lesson);});},0);
+    return html;
   };
   var checkBase=checkQuiz;
   checkQuiz=function(id){
-    checkBase(id);var lesson=lessonById(id);
-    lesson.quiz.forEach(function(q,i){var feedback=document.getElementById('fb_'+id+'_'+i);if(!feedback?.classList.contains('show')||!document.querySelector('input[name="rq_'+id+'_'+i+'"]:checked'))return;feedback.querySelector('[data-rubric]')?.remove();var section=document.createElement('div');section.dataset.rubric='true';section.innerHTML=rpRenderRubric(rpContract(lesson,i),rpQuestionId(lesson,i));feedback.appendChild(section);});
+    checkBase(id);
+    whenContractsReady(function(){applyRubrics(id);});
   };
   var reviewBase=renderReview;
   renderReview=function(){
     var html=reviewBase();var card=review.queue[review.idx];
-    if(card&&review.picked!==-1)html+=rpRenderRubric(RP_QUIZ_CONTRACT_BY_ID[card.id],card.id);
+    if(card&&review.picked!==-1){
+      if(window.RP_QUIZ_CONTRACTS_READY)html+=rpRenderRubric(RP_QUIZ_CONTRACT_BY_ID[card.id],card.id);
+      else window.rpLoadQuizContracts().then(function(){if(review.queue[review.idx]===card&&review.picked!==-1)render();},function(){});
+    }
     return html;
   };
 })();
