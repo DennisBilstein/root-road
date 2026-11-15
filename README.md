@@ -1,6 +1,6 @@
 # Root Road
 
-> Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab` und der Repository-Name `rootpfad`.
+> Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab` und der GitHub-Repository-Name `rootpfad` (Lektionen verlinken auf `github.com/DennisBilstein/rootpfad/…`). Seit 15.11.2026 heißt nur das npm-Paket in `package.json` `root-road`; das GitHub-Repository wurde bewusst nicht umbenannt.
 
 ## Qualität: Start, Header, Caching · 13.11.2026
 

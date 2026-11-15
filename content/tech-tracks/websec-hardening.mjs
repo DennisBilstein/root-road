@@ -237,7 +237,7 @@ Einordnung der Header-Liste: Sie ist ein Mindeststand. Weitere Header (Cross-Ori
  ok      (gekürzt: je eine Zeile für x-content-type-options, referrer-policy (same-origin), frame-ancestors, permissions-policy, cross-origin-opener-policy)
  (Exit-Code 1: mindestens ein Punkt nicht ok)
 Tests Header-Prüfung (3 Tests) grün auf Node 22.23 und 24.22.
-Nicht geprüft: Verhalten der Header im Browser, TLS-Konfiguration und Zertifikate, die Produktionsumgebung von ROOTPFAD.`,
+Nicht geprüft: Verhalten der Header im Browser, TLS-Konfiguration und Zertifikate, die Produktionsumgebung von Root Road.`,
     mistakes: [
       { wrong: 'Eine CSP zu setzen, die nur object-src oder frame-src enthält, und sie für „Schutz vor XSS“ zu halten.', why: 'Ohne script-src oder default-src sind Skripte nicht eingeschränkt.', fix: 'script-src mit Nonce oder Hash festlegen, zuerst im Report-Only-Modus erproben.' },
       { wrong: 'HSTS mit langer Laufzeit und includeSubDomains in Betrieb zu nehmen, ohne alle Subdomains zu kennen.', why: 'Subdomains ohne HTTPS werden unerreichbar; die Preload-Liste ist kaum rückgängig zu machen.', fix: 'Mit kurzer Laufzeit beginnen, schrittweise erhöhen und Preload nur bewusst wählen.' },
