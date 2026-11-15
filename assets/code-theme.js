@@ -20,4 +20,4 @@ function rpColorCode(root){
     pre.innerHTML=rbTokyo(text,rbSprache(label));pre.dataset.tokyoText=text;pre.classList.add('rp-tokyo');
   });
 }
-(function(){var base=renderContent;renderContent=function(){base.apply(this,arguments);rpColorCode(document.getElementById('content'));};renderContent();})();
+(function(){var base=renderContent;renderContent=function(){base.apply(this,arguments);rpColorCode(document.getElementById('content'));};if(!window.RP_BOOTING)renderContent();})();

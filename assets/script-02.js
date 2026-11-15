@@ -154,7 +154,8 @@ function rbAuroraBild(a, jetzt){
 function rbAuroraSchleife(jetzt){
   var a = RB.aurora;
   if(!a || !a.cv.isConnected){ if(a) a.raf = 0; return; }
-  if(!document.hidden) rbAuroraBild(a, jetzt);
+  /* Die Bewegung ist langsam (halbe Geschwindigkeit): 30 Bilder pro Sekunde genügen und halbieren Zeichen- und Hauptthread-Last. */
+  if(!document.hidden && (!a.zuletzt || jetzt - a.zuletzt >= 32)){ a.zuletzt = jetzt; rbAuroraBild(a, jetzt); }
   a.raf = RB.bewegung ? requestAnimationFrame(rbAuroraSchleife) : 0;
 }
 
@@ -234,7 +235,8 @@ function rbAnreichern(){
   if(host){
     /* Erstes Anlegen (Shader kompilieren) ausserhalb der View Transition,
        damit deren Zeitlimit nie greift. Danach wird das Canvas nur verschoben. */
-    if(RB.aurora === null) setTimeout(function(){ if(host.isConnected) rbAuroraAnhaengen(host); }, 0);
+    /* Das erste Anlegen (WebGL-Kontext, Shader) ist reine Zier und kostet beim Start Hauptthread-Zeit: im Leerlauf nachholen. */
+    if(RB.aurora === null) (window.requestIdleCallback || function(f){ setTimeout(f, 300); })(function(){ if(host.isConnected) rbAuroraAnhaengen(host); }, { timeout: 3000 });
     else rbAuroraAnhaengen(host);
   }
   /* Einblenden und Hochzaehlen nur beim Wechsel der Ansicht, nicht bei jedem Neuzeichnen. */

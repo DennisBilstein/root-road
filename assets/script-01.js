@@ -15511,6 +15511,8 @@ function selectLesson(id){
 }
 
 function render(){
+  /* Beim Start rendert bootstrap.js genau einmal, wenn alle Skripte geladen sind; frühere Aufrufe aus Skript-Endstücken wären verworfene Arbeit. */
+  if(window.RP_BOOTING) return;
   renderSidebar();
   renderMobilbar();
   renderProgressPill();
@@ -15525,9 +15527,35 @@ function renderProgressPill(){
   document.getElementById('progressFill').style.width = pct + '%';
 }
 
+function fuelleModulKnoepfe(det, m){
+  if(det.dataset.gefuellt) return;
+  det.dataset.gefuellt = '1';
+  m.lessons.forEach(function(l){
+    var btn = document.createElement('button');
+    var aktiv = state.currentId === l.id;
+    btn.className = 'lesson-btn' + (aktiv ? ' active' : '');
+    /* Die aktive Lektion nicht nur einfaerben, sondern auch ansagen. */
+    if(aktiv) btn.setAttribute('aria-current', 'true'); else btn.removeAttribute('aria-current');
+    var done = state.completed.has(l.id);
+    btn.innerHTML = '<span class="check'+(done?' done':'')+'">'+(done?'✓':'')+'</span><span>'+esc(l.title)+'</span>';
+    btn.onclick = function(){ selectLesson(l.id); };
+    det.appendChild(btn);
+  });
+}
+function oeffneModulKnoepfe(det){
+  if(!det || !det.matches || !det.matches('details.module') || det.dataset.gefuellt) return;
+  var m = (typeof rpCatalog !== 'undefined' ? rpCatalog.modules : MODULES).find(function(x){ return x.id === det.dataset.modul; });
+  if(m) fuelleModulKnoepfe(det, m);
+}
 function renderSidebar(){
   var nav = document.getElementById('moduleNav');
   nav.innerHTML = '';
+  if(!nav.dataset.lazyKnoepfe){
+    nav.dataset.lazyKnoepfe = '1';
+    /* Klick auf die Zusammenfassung füllt vor dem Aufklappen (kein leerer Frame); toggle fängt programmatisches Öffnen ab (Aufnahmephase, da toggle nicht sprudelt). */
+    nav.addEventListener('click', function(e){ var sum = e.target.closest && e.target.closest('summary'); if(sum) oeffneModulKnoepfe(sum.parentElement); });
+    nav.addEventListener('toggle', function(e){ if(e.target.open) oeffneModulKnoepfe(e.target); }, true);
+  }
   var currentModule = moduleOfLesson(state.currentId);
   var lastPart = null;
   MODULES.forEach(function(m){
@@ -15545,17 +15573,9 @@ function renderSidebar(){
     var sum = document.createElement('summary');
     sum.innerHTML = '<span class="chev">▸</span><span>'+esc(m.title)+'</span><span class="mod-count">'+doneInModule+'/'+m.lessons.length+'</span>';
     det.appendChild(sum);
-    m.lessons.forEach(function(l){
-      var btn = document.createElement('button');
-      var aktiv = state.currentId === l.id;
-      btn.className = 'lesson-btn' + (aktiv ? ' active' : '');
-      /* Die aktive Lektion nicht nur einfaerben, sondern auch ansagen. */
-      if(aktiv) btn.setAttribute('aria-current', 'true'); else btn.removeAttribute('aria-current');
-      var done = state.completed.has(l.id);
-      btn.innerHTML = '<span class="check'+(done?' done':'')+'">'+(done?'✓':'')+'</span><span>'+esc(l.title)+'</span>';
-      btn.onclick = function(){ selectLesson(l.id); };
-      det.appendChild(btn);
-    });
+    det.dataset.modul = m.id;
+    /* Die Lektionsknöpfe entstehen erst, wenn das Modul geöffnet wird (aktuelles Modul sofort): spart beim Rendern rund 2.500 Elemente. */
+    if(det.open) fuelleModulKnoepfe(det, m);
     nav.appendChild(det);
   });
 
