@@ -9,9 +9,7 @@
     "assets/learning/part-04.js"
   ],
   "data": [
-    "assets/learning-data/literal-1.json",
-    "assets/learning-data/literal-2.json",
-    "assets/learning-data/literal-3.json"
+    "assets/learning-data/literal-1.json"
   ],
   "bodies": {
     "m1": "assets/lesson-bodies/m1.json",
@@ -151,6 +149,7 @@
     "ci-m1": "assets/lesson-bodies/ci-m1.json",
     "py-m1": "assets/lesson-bodies/py-m1.json"
   },
+  "quiz": "assets/quiz-data.json",
   "stats": {
     "figures": 50
   }

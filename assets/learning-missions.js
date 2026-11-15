@@ -42,6 +42,8 @@ function rpModuleMastery(module){
 }
 function rpMissionKey(){ return todayKey()+':'+rpPath; }
 function rpStartMission(){
+  /* Die Mission zeigt Fragetexte; sie kommen erst mit assets/quiz-data.json (rpLoadQuizzes in bootstrap.js). */
+  if(!window.RP_QUIZ_READY){ rpLoadQuizzes().then(rpStartMission, function(){ if(typeof showToast === 'function') showToast('Die Fragen konnten nicht geladen werden. Bitte erneut versuchen.'); }); return; }
   var cards = rpData().cards;
   var due = cards.filter(function(c){ return state.srs[c.id] && state.srs[c.id].due <= today0()+DAY-1; });
   var weak = cards.filter(function(c){ return (state.stats[c.id]?.wrong || 0) > 0; }).sort(function(a,b){ return (state.stats[b.id]?.wrong || 0)-(state.stats[a.id]?.wrong || 0); });

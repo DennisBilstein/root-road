@@ -35,6 +35,30 @@ window.RP_BOOTING=true;
   window.rpHydrateAll=async function(){
     var ids=Object.keys(window.RP_BODY_FILES||{});
     for(var i=0;i<ids.length;i+=8)await window.rpLoadBodies(ids.slice(i,i+8));
+    await window.rpLoadQuizzes();
+  };
+})();
+/* Quizfragen (Frage, Optionen, Lösung, Erklärung) liegen in assets/quiz-data.json. Der Start kennt je Lektion nur Platzhalter ({revision} je Frage,
+   lazyQuiz:true) und Karten ohne Fragetext; rpLoadQuizzes setzt beides ein (dieselben Objekte, damit Verweise gültig bleiben) und setzt RP_QUIZ_READY. */
+(function(){
+  var laufend=null;
+  window.rpLoadQuizzes=function(){
+    if(window.RP_QUIZ_READY)return Promise.resolve();
+    if(!window.RP_QUIZ_FILE)return Promise.reject(new Error('Quizdaten nicht verfügbar.'));
+    if(!laufend)laufend=fetch(window.RP_QUIZ_FILE).then(function(response){
+      if(!response.ok)throw new Error('Quizdaten nicht verfügbar.');return response.json();
+    }).then(function(daten){
+      var karten={};rpCatalog.cards.forEach(function(karte){karten[karte.id]=karte;});
+      function fuelle(karte,frage){if(karte){karte.q=frage.q;karte.options=frage.options;karte.correct=frage.correct;karte.explain=frage.explain;}}
+      rpCatalog.modules.forEach(function(modul){modul.lessons.forEach(function(lektion){
+        if(!lektion.lazyQuiz)return;
+        lektion.quiz=daten.lessons[lektion.id]||[];delete lektion.lazyQuiz;
+        lektion.quiz.forEach(function(frage,i){fuelle(karten[rpQuestionId(lektion,i)],frage);});
+      });});
+      daten.extras.forEach(function(extra){fuelle(karten[extra.id],extra);});
+      window.RP_QUIZ_READY=true;
+    }).catch(function(error){laufend=null;throw error;});
+    return laufend;
   };
 })();
 /* Konto (/api/me) und Lerndaten werden gleichzeitig geladen; erst wenn beides vorliegt, laufen die Skripte in Listenreihenfolge. */
@@ -63,6 +87,7 @@ window.RP_BOOTING=true;
     paths.forEach(preload);
     window.RP_LITERALS={};
     window.RP_BODY_STATS=manifest.stats||{};
+    if(manifest.quiz){if(manifest.quiz!=='assets/quiz-data.json')throw Error('Ungültiger Quizpfad.');window.RP_QUIZ_FILE=mitVersion(manifest.quiz);}
     window.RP_BODY_FILES=Object.fromEntries(Object.entries(manifest.bodies||{}).map(function(entry){if(!/^assets\/lesson-bodies\/[a-z0-9-]+\.json$/.test(entry[1]))throw Error('Ungültiger Textpfad.');return [entry[0],mitVersion(entry[1])];}));
     await Promise.all((manifest.data||[]).map(function(file){var m=/^assets\/learning-data\/literal-(\d+)\.json$/.exec(file);if(!m)throw Error('Ungültiger Datenpfad.');
       return fetch(mitVersion(file)).then(function(r){if(!r.ok)throw Error('Lerndaten nicht verfügbar. Bitte npm run build ausführen.');return r.json();}).then(function(data){window.RP_LITERALS[m[1]]=data;});}));

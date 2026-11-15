@@ -240,21 +240,7 @@ var TRACES = [
 }
 ];
 TRACES.push.apply(TRACES, [{"id":"abap-tr1","level":1,"title":"ABAP · Summe der geraden Zahlen","input":"zahlen = [3, 4, 7, 8]","intro":"Der Klassiker: Akkumulator plus Filterbedingung. Verfolge, wann <code>summe</code> sich ändert — und wann nicht.","code":["FUNCTION summeGerade(zahlen)","  summe <- 0","  FOR EACH zahl IN zahlen DO","    IF zahl MOD 2 = 0 THEN","      summe <- summe + zahl","    ENDIF","  ENDFOR","  RETURN summe","ENDFUNCTION"],"vars":["zahl","summe"],"steps":[{"line":1,"values":{"zahl":"—","summe":"0"},"note":"Akkumulator initialisieren."},{"line":2,"values":{"zahl":"3","summe":"0"},"note":"1. Durchlauf: zahl = 3."},{"line":3,"values":{"zahl":"3","summe":"0"},"note":"3 MOD 2 = 1 → Bedingung falsch, Rumpf wird übersprungen."},{"line":2,"values":{"zahl":"4","summe":"0"},"note":"2. Durchlauf: zahl = 4."},{"line":3,"values":{"zahl":"4","summe":"0"},"note":"4 MOD 2 = 0 → Bedingung wahr."},{"line":4,"values":{"zahl":"4","summe":"4"},"ask":"summe","note":"summe = 0 + 4."},{"line":2,"values":{"zahl":"7","summe":"4"},"note":"3. Durchlauf: zahl = 7."},{"line":3,"values":{"zahl":"7","summe":"4"},"note":"7 ist ungerade → übersprungen."},{"line":2,"values":{"zahl":"8","summe":"4"},"note":"4. Durchlauf: zahl = 8."},{"line":3,"values":{"zahl":"8","summe":"4"},"note":"8 ist gerade → Rumpf wird ausgeführt."},{"line":4,"values":{"zahl":"8","summe":"12"},"ask":"summe","note":"summe = 4 + 8."},{"line":7,"values":{"zahl":"8","summe":"12"},"note":"Liste zu Ende → Rückgabe."}],"result":"12","lesson":"Zähle bei solchen Aufgaben nicht die Elemente, sondern die tatsächlichen Zuweisungen: von vier Schleifendurchläufen ändern nur zwei den Akkumulator.","course":"abap"},{"id":"abap-tr2","level":1,"title":"ABAP · Maximum-Suche mit Gleichstand","input":"zahlen = [12, 45, 7, 45, 23]","intro":"Achte genau auf den Vergleichsoperator: <code>&gt;</code> oder <code>&gt;=</code> macht bei doppelten Werten den Unterschied.","code":["FUNCTION findeMaximum(zahlen)","  maximum <- zahlen[1]","  FOR i <- 2 TO LAENGE(zahlen) DO","    IF zahlen[i] > maximum THEN","      maximum <- zahlen[i]","    ENDIF","  ENDFOR","  RETURN maximum","ENDFUNCTION"],"vars":["i","zahlen[i]","maximum"],"steps":[{"line":1,"values":{"i":"—","zahlen[i]":"—","maximum":"12"},"note":"Startwert ist das erste Element."},{"line":2,"values":{"i":"2","zahlen[i]":"45","maximum":"12"},"note":"Schleife beginnt bei Index 2."},{"line":3,"values":{"i":"2","zahlen[i]":"45","maximum":"12"},"note":"45 > 12 → wahr."},{"line":4,"values":{"i":"2","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"Neues Maximum gefunden."},{"line":2,"values":{"i":"3","zahlen[i]":"7","maximum":"45"},"note":"Nächster Index."},{"line":3,"values":{"i":"3","zahlen[i]":"7","maximum":"45"},"note":"7 > 45 → falsch."},{"line":2,"values":{"i":"4","zahlen[i]":"45","maximum":"45"},"note":"Achtung: gleicher Wert wie das Maximum."},{"line":3,"values":{"i":"4","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"45 > 45 ist FALSCH — strikt größer. maximum bleibt unverändert."},{"line":2,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"Letzter Index."},{"line":3,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"23 > 45 → falsch."},{"line":7,"values":{"i":"5","zahlen[i]":"23","maximum":"45"},"note":"Rückgabe des Maximums."}],"result":"45","lesson":"Mit >= statt > wäre das Ergebnis identisch — aber die Zuweisung würde einmal zusätzlich ausgeführt. Prüfungsfragen zielen genau auf solche Unterschiede: „Wie oft wird Zeile 5 ausgeführt?\" → mit > genau 1×, mit >= genau 2×.","course":"abap"},{"id":"abap-tr3","level":2,"title":"ABAP · Bubble-Sort komplett","input":"zahlen = [5, 2, 9, 1]","intro":"Verschachtelte Schleifen mit Tausch. Verfolge den Array-Zustand nach jedem Vergleich.","code":["n <- LAENGE(zahlen)","FOR i <- 1 TO n - 1 DO","  FOR j <- 1 TO n - i DO","    IF zahlen[j] > zahlen[j+1] THEN","      temp <- zahlen[j]","      zahlen[j] <- zahlen[j+1]","      zahlen[j+1] <- temp","    ENDIF","  ENDFOR","ENDFOR"],"vars":["i","j","Vergleich","zahlen"],"steps":[{"line":0,"values":{"i":"—","j":"—","Vergleich":"—","zahlen":"[5, 2, 9, 1]"},"note":"n = 4."},{"line":3,"values":{"i":"1","j":"1","Vergleich":"5 > 2 ✓","zahlen":"[5, 2, 9, 1]"},"note":"Erster Vergleich, Tausch nötig."},{"line":6,"values":{"i":"1","j":"1","Vergleich":"5 > 2 ✓","zahlen":"[2, 5, 9, 1]"},"ask":"zahlen","note":"Nach dem Tausch."},{"line":3,"values":{"i":"1","j":"2","Vergleich":"5 > 9 ✗","zahlen":"[2, 5, 9, 1]"},"note":"Kein Tausch."},{"line":3,"values":{"i":"1","j":"3","Vergleich":"9 > 1 ✓","zahlen":"[2, 5, 9, 1]"},"note":"Tausch nötig."},{"line":6,"values":{"i":"1","j":"3","Vergleich":"9 > 1 ✓","zahlen":"[2, 5, 1, 9]"},"ask":"zahlen","note":"Die 9 ist jetzt „durchgeblubbert\" — ihr Endplatz steht fest."},{"line":3,"values":{"i":"2","j":"1","Vergleich":"2 > 5 ✗","zahlen":"[2, 5, 1, 9]"},"note":"2. Durchlauf, innere Schleife nur noch bis n-i = 2."},{"line":3,"values":{"i":"2","j":"2","Vergleich":"5 > 1 ✓","zahlen":"[2, 5, 1, 9]"},"note":"Tausch nötig."},{"line":6,"values":{"i":"2","j":"2","Vergleich":"5 > 1 ✓","zahlen":"[2, 1, 5, 9]"},"note":"Nach dem Tausch."},{"line":3,"values":{"i":"3","j":"1","Vergleich":"2 > 1 ✓","zahlen":"[2, 1, 5, 9]"},"note":"3. Durchlauf, nur noch ein Vergleich."},{"line":6,"values":{"i":"3","j":"1","Vergleich":"2 > 1 ✓","zahlen":"[1, 2, 5, 9]"},"ask":"zahlen","note":"Letzter Tausch — fertig sortiert."}],"result":"[1, 2, 5, 9]","lesson":"Gesamtzahl der Vergleiche: 3 + 2 + 1 = 6, also n·(n-1)/2. Genau daraus folgt die Komplexität O(n²) — eine typische Anschlussfrage in der Prüfung.","course":"abap"},{"id":"abap-tr4","level":2,"title":"ABAP · Quersumme mit Ganzzahldivision","input":"zahl = 4712","intro":"WHILE-Schleife mit MOD und DIV — das Standardmuster zum Zerlegen von Zahlen.","code":["FUNCTION quersumme(zahl)","  summe <- 0","  WHILE zahl > 0 DO","    summe <- summe + (zahl MOD 10)","    zahl <- zahl DIV 10","  ENDWHILE","  RETURN summe","ENDFUNCTION"],"vars":["zahl","zahl MOD 10","summe"],"steps":[{"line":1,"values":{"zahl":"4712","zahl MOD 10":"—","summe":"0"},"note":"Start."},{"line":3,"values":{"zahl":"4712","zahl MOD 10":"2","summe":"2"},"ask":"summe","note":"Letzte Ziffer per MOD 10 abgreifen."},{"line":4,"values":{"zahl":"471","zahl MOD 10":"2","summe":"2"},"ask":"zahl","note":"DIV 10 schneidet die letzte Ziffer ab (Ganzzahldivision, kein Runden)."},{"line":3,"values":{"zahl":"471","zahl MOD 10":"1","summe":"3"},"note":"summe = 2 + 1."},{"line":4,"values":{"zahl":"47","zahl MOD 10":"1","summe":"3"},"note":"Nächste Stelle."},{"line":3,"values":{"zahl":"47","zahl MOD 10":"7","summe":"10"},"ask":"summe","note":"summe = 3 + 7."},{"line":4,"values":{"zahl":"4","zahl MOD 10":"7","summe":"10"},"note":"Nur noch eine Ziffer übrig."},{"line":3,"values":{"zahl":"4","zahl MOD 10":"4","summe":"14"},"note":"summe = 10 + 4."},{"line":4,"values":{"zahl":"0","zahl MOD 10":"4","summe":"14"},"note":"4 DIV 10 = 0 → Schleifenbedingung wird falsch."},{"line":6,"values":{"zahl":"0","zahl MOD 10":"—","summe":"14"},"note":"Rückgabe."}],"result":"14","lesson":"Das Paar MOD 10 / DIV 10 ist das universelle Muster zum Zerlegen von Zahlen — mit MOD 2 / DIV 2 wird daraus die Umwandlung in Binärdarstellung, eine beliebte Prüfungsvariante.","course":"abap"},{"id":"java-tr1","level":1,"title":"Java · Summe der geraden Zahlen","input":"zahlen = [3, 4, 7, 8]","intro":"Der Klassiker: Akkumulator plus Filterbedingung. Verfolge, wann sich <code>summe</code> ändert — und wann nicht.","code":["int summeGerade(int[] zahlen) {","    int summe = 0;","    for (int zahl : zahlen) {","        if (zahl % 2 == 0) {","            summe += zahl;","        }","    }","    return summe;","}"],"vars":["zahl","summe"],"steps":[{"line":1,"values":{"zahl":"—","summe":"0"},"note":"Akkumulator initialisieren."},{"line":2,"values":{"zahl":"3","summe":"0"},"note":"1. Durchlauf: zahl = 3."},{"line":3,"values":{"zahl":"3","summe":"0"},"note":"3 % 2 ergibt 1 → Bedingung falsch, Rumpf übersprungen."},{"line":2,"values":{"zahl":"4","summe":"0"},"note":"2. Durchlauf: zahl = 4."},{"line":3,"values":{"zahl":"4","summe":"0"},"note":"4 % 2 ergibt 0 → Bedingung wahr."},{"line":4,"values":{"zahl":"4","summe":"4"},"ask":"summe","note":"summe = 0 + 4."},{"line":2,"values":{"zahl":"7","summe":"4"},"note":"3. Durchlauf: zahl = 7."},{"line":3,"values":{"zahl":"7","summe":"4"},"note":"7 ist ungerade → übersprungen."},{"line":2,"values":{"zahl":"8","summe":"4"},"note":"4. Durchlauf: zahl = 8."},{"line":3,"values":{"zahl":"8","summe":"4"},"note":"8 ist gerade → Rumpf wird ausgeführt."},{"line":4,"values":{"zahl":"8","summe":"12"},"ask":"summe","note":"summe = 4 + 8."},{"line":7,"values":{"zahl":"8","summe":"12"},"note":"Array zu Ende → Rückgabe."}],"result":"12","lesson":"Zähle bei solchen Aufgaben nicht die Elemente, sondern die tatsächlichen Zuweisungen: Von vier Durchläufen ändern nur zwei den Akkumulator. Genau danach fragen Prüfungsaufgaben gern („Wie oft wird Zeile 5 ausgeführt?\").","course":"java"},{"id":"java-tr2","level":1,"title":"Java · Maximum-Suche mit Gleichstand","input":"zahlen = [12, 45, 7, 45, 23]","intro":"Achte auf den Vergleichsoperator: <code>&gt;</code> oder <code>&gt;=</code> macht bei doppelten Werten den Unterschied.","code":["int findeMaximum(int[] zahlen) {","    int maximum = zahlen[0];","    for (int i = 1; i < zahlen.length; i++) {","        if (zahlen[i] > maximum) {","            maximum = zahlen[i];","        }","    }","    return maximum;","}"],"vars":["i","zahlen[i]","maximum"],"steps":[{"line":1,"values":{"i":"—","zahlen[i]":"—","maximum":"12"},"note":"Startwert ist das erste Element (Index 0)."},{"line":2,"values":{"i":"1","zahlen[i]":"45","maximum":"12"},"note":"Schleife beginnt bei Index 1."},{"line":3,"values":{"i":"1","zahlen[i]":"45","maximum":"12"},"note":"45 > 12 → wahr."},{"line":4,"values":{"i":"1","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"Neues Maximum."},{"line":2,"values":{"i":"2","zahlen[i]":"7","maximum":"45"},"note":"Nächster Index."},{"line":3,"values":{"i":"2","zahlen[i]":"7","maximum":"45"},"note":"7 > 45 → falsch."},{"line":2,"values":{"i":"3","zahlen[i]":"45","maximum":"45"},"note":"Achtung: gleicher Wert wie das aktuelle Maximum."},{"line":3,"values":{"i":"3","zahlen[i]":"45","maximum":"45"},"ask":"maximum","note":"45 > 45 ist FALSCH — strikt größer. maximum bleibt unverändert."},{"line":2,"values":{"i":"4","zahlen[i]":"23","maximum":"45"},"note":"Letzter Index."},{"line":3,"values":{"i":"4","zahlen[i]":"23","maximum":"45"},"note":"23 > 45 → falsch."},{"line":7,"values":{"i":"5","zahlen[i]":"—","maximum":"45"},"note":"i = 5 bricht die Schleife ab (length = 5). Rückgabe."}],"result":"45","lesson":"Mit >= statt > wäre das Ergebnis identisch — aber Zeile 5 würde zweimal statt einmal ausgeführt. Prüfungsfragen zielen genau auf diesen Unterschied. Und beachte die Abbruchbedingung: i < zahlen.length, nicht <=, sonst gibt es eine ArrayIndexOutOfBoundsException.","course":"java"},{"id":"java-tr3","level":2,"title":"Java · Bubble-Sort komplett","input":"zahlen = [5, 2, 9, 1]","intro":"Verschachtelte Schleifen mit Tausch über eine Hilfsvariable. Verfolge den Array-Zustand nach jedem Vergleich.","code":["void bubbleSort(int[] a) {","    int n = a.length;","    for (int i = 1; i < n; i++) {","        for (int j = 0; j < n - i; j++) {","            if (a[j] > a[j + 1]) {","                int temp = a[j];","                a[j] = a[j + 1];","                a[j + 1] = temp;","            }","        }","    }","}"],"vars":["i","j","Vergleich","a"],"steps":[{"line":1,"values":{"i":"—","j":"—","Vergleich":"—","a":"[5, 2, 9, 1]"},"note":"n = 4."},{"line":4,"values":{"i":"1","j":"0","Vergleich":"5 > 2 ✓","a":"[5, 2, 9, 1]"},"note":"Erster Vergleich, Tausch nötig."},{"line":7,"values":{"i":"1","j":"0","Vergleich":"5 > 2 ✓","a":"[2, 5, 9, 1]"},"ask":"a","note":"Nach dem Tausch über temp."},{"line":4,"values":{"i":"1","j":"1","Vergleich":"5 > 9 ✗","a":"[2, 5, 9, 1]"},"note":"Kein Tausch."},{"line":4,"values":{"i":"1","j":"2","Vergleich":"9 > 1 ✓","a":"[2, 5, 9, 1]"},"note":"Tausch nötig."},{"line":7,"values":{"i":"1","j":"2","Vergleich":"9 > 1 ✓","a":"[2, 5, 1, 9]"},"ask":"a","note":"Die 9 ist durchgeblubbert — ihr Endplatz steht fest."},{"line":4,"values":{"i":"2","j":"0","Vergleich":"2 > 5 ✗","a":"[2, 5, 1, 9]"},"note":"2. Durchlauf, innere Schleife nur noch bis n-i = 2."},{"line":4,"values":{"i":"2","j":"1","Vergleich":"5 > 1 ✓","a":"[2, 5, 1, 9]"},"note":"Tausch nötig."},{"line":7,"values":{"i":"2","j":"1","Vergleich":"5 > 1 ✓","a":"[2, 1, 5, 9]"},"note":"Nach dem Tausch."},{"line":4,"values":{"i":"3","j":"0","Vergleich":"2 > 1 ✓","a":"[2, 1, 5, 9]"},"note":"3. Durchlauf, nur noch ein Vergleich."},{"line":7,"values":{"i":"3","j":"0","Vergleich":"2 > 1 ✓","a":"[1, 2, 5, 9]"},"ask":"a","note":"Letzter Tausch — fertig sortiert."}],"result":"[1, 2, 5, 9]","lesson":"Gesamtzahl der Vergleiche: 3 + 2 + 1 = 6, allgemein n·(n-1)/2. Daraus folgt die Komplexität O(n²) — eine typische Anschlussfrage. In echtem Java-Code nimmt man natürlich Arrays.sort() mit O(n log n).","course":"java"},{"id":"java-tr4","level":2,"title":"Java · Quersumme mit Ganzzahldivision","input":"zahl = 4712","intro":"While-Schleife mit Modulo und Ganzzahldivision — das Standardmuster zum Zerlegen von Zahlen.","code":["int quersumme(int zahl) {","    int summe = 0;","    while (zahl > 0) {","        summe += zahl % 10;","        zahl = zahl / 10;","    }","    return summe;","}"],"vars":["zahl","zahl % 10","summe"],"steps":[{"line":1,"values":{"zahl":"4712","zahl % 10":"—","summe":"0"},"note":"Start."},{"line":3,"values":{"zahl":"4712","zahl % 10":"2","summe":"2"},"ask":"summe","note":"Letzte Ziffer mit % 10 abgreifen."},{"line":4,"values":{"zahl":"471","zahl % 10":"2","summe":"2"},"ask":"zahl","note":"Ganzzahldivision durch 10 schneidet die letzte Ziffer ab — kein Runden."},{"line":3,"values":{"zahl":"471","zahl % 10":"1","summe":"3"},"note":"summe = 2 + 1."},{"line":4,"values":{"zahl":"47","zahl % 10":"1","summe":"3"},"note":"Nächste Stelle."},{"line":3,"values":{"zahl":"47","zahl % 10":"7","summe":"10"},"ask":"summe","note":"summe = 3 + 7."},{"line":4,"values":{"zahl":"4","zahl % 10":"7","summe":"10"},"note":"Nur noch eine Ziffer übrig."},{"line":3,"values":{"zahl":"4","zahl % 10":"4","summe":"14"},"note":"summe = 10 + 4."},{"line":4,"values":{"zahl":"0","zahl % 10":"4","summe":"14"},"note":"4 / 10 ergibt 0 → Schleifenbedingung wird falsch."},{"line":6,"values":{"zahl":"0","zahl % 10":"—","summe":"14"},"note":"Rückgabe."}],"result":"14","lesson":"Das Paar % 10 und / 10 ist das universelle Muster zum Zerlegen von Zahlen. Mit % 2 und / 2 wird daraus die Umwandlung in Binärdarstellung — eine beliebte Prüfungsvariante. Merke: In Java ist / bei zwei int-Werten immer Ganzzahldivision.","course":"java"},{"id":"java-tr5","level":2,"title":"Java · Rekursion: Fakultät auf dem Stack","input":"fakultaet(4)","intro":"Rekursion baut Aufrufe auf dem Stack auf und rechnet erst beim Zurückkehren. Verfolge zuerst den Abstieg, dann den Aufstieg.","code":["int fakultaet(int n) {","    if (n <= 1) {","        return 1;","    }","    return n * fakultaet(n - 1);","}"],"vars":["Aufrufebene","n","Rückgabe"],"steps":[{"line":4,"values":{"Aufrufebene":"1","n":"4","Rückgabe":"wartet"},"note":"fakultaet(4) ruft fakultaet(3) auf — noch kein Ergebnis."},{"line":4,"values":{"Aufrufebene":"2","n":"3","Rückgabe":"wartet"},"note":"fakultaet(3) ruft fakultaet(2) auf."},{"line":4,"values":{"Aufrufebene":"3","n":"2","Rückgabe":"wartet"},"note":"fakultaet(2) ruft fakultaet(1) auf."},{"line":2,"values":{"Aufrufebene":"4","n":"1","Rückgabe":"1"},"ask":"Rückgabe","note":"Abbruchbedingung erreicht: n <= 1 liefert 1."},{"line":4,"values":{"Aufrufebene":"3","n":"2","Rückgabe":"2"},"ask":"Rückgabe","note":"Rückweg: 2 * 1 = 2."},{"line":4,"values":{"Aufrufebene":"2","n":"3","Rückgabe":"6"},"note":"3 * 2 = 6."},{"line":4,"values":{"Aufrufebene":"1","n":"4","Rückgabe":"24"},"ask":"Rückgabe","note":"4 * 6 = 24 — das Endergebnis."}],"result":"24","lesson":"Jeder rekursive Aufruf belegt einen eigenen Stack-Frame mit eigener Variable n. Fehlt die Abbruchbedingung oder wird sie nie erreicht, wächst der Stack, bis ein StackOverflowError fliegt. Prüfungsfrage dazu lautet oft: „Wie viele Aufrufe entstehen?\" — hier vier, nämlich n = 4, 3, 2, 1.","course":"java"}]);
-var RP_TRANSFER = [{"lesson":"m52-l3","q":"Drei Positionen kosten jeweils 3 Cent netto, Steuersatz 19 %, jeweils halbaufrunden auf ganze Cent. Welche Aussage unterscheidet Positions- von Gesamtrundung korrekt?","options":["Beide Verfahren liefern zwingend 11 Cent, weil Integer immer jedes Rundungsproblem lösen.","Je Position entstehen 4 Cent, zusammen 12; auf 9 Cent Gesamtnetto berechnet ergeben sich 11 Cent brutto. Die Fachregel muss das Verfahren festlegen.","Floatwerte verwenden und erst nach dem Export hoffen, dass die Zahlen gleich sind."],"correct":1,"explain":"Pro Position: 3 + round(0,57) = 4, dreimal also 12. Gesamtrechnung: 9 + round(1,71) = 11. Integerdarstellung beseitigt nicht den Unterschied fachlicher Rundungsregeln.","rationales":["Ganzzahlen verhindern nicht unterschiedliche Rundungszeitpunkte.","Die Rechenwege unterscheiden sich sachlich; beide benötigen einen definierten Vertrag.","Floatarithmetik löst keine fehlende Rundungsvorschrift."]},{"lesson":"m46-l2","q":"Ein Benutzer sendet gültige name/preis-Felder für ein fremdes Produkt. Form Request und fillable sind korrekt. Welcher fehlende Schutz verhindert dennoch eine unerlaubte Änderung?","options":["Eine Policy/Ownershipprüfung für genau dieses Produkt vor der Änderung.","Noch einmal denselben String-Maximalwert validieren.","Das Produkt im Frontend ausblenden und auf die geheime URL vertrauen."],"correct":0,"explain":"Feldvalidität und Mass-Assignment-Freigabe sagen nichts darüber aus, wer das Objekt ändern darf. Die serverseitige Autorisierung muss jeden Zugriffspfad abdecken.","rationales":["Prüft die fehlende Beziehung zwischen Nutzer,Objekt und Aktion.","Prüft denselben Datenvertrag, nicht die Berechtigung.","Direkte HTTP-Aufrufe umgehen die Darstellung."]},{"lesson":"m48-l2","q":"Die eigene Vue-SPA wird per Sanctum-Session authentifiziert. tokenCan liefert true. Darf die SPA dadurch ein fremdes Objekt bearbeiten?","options":["Ja, tokenCan ist für jede Anfrage die vollständige Autorisierung.","Nein. Für First-Party-SPA ist tokenCan bewusst true; eine Policy muss Eigentum und Aktion weiterhin prüfen.","Nur wenn der Token in localStorage gespeichert wird."],"correct":1,"explain":"Sanctum trennt First-Party-Sessionauth von Personal-Access-Tokens. Abilities allein ersetzen auch im Tokenflow keine Objektberechtigung.","rationales":["Verwechselt Auth-/Ability-Komfort mit fachlichem Zugriffsschutz.","Ordnet die API-Eigenschaft korrekt ein und behält die serverseitige Grenze.","Speicherung eines Tokens erteilt keine Rechte und erhöht XSS-Risiken."]},{"lesson":"m50-l1","q":"Ein Queue-Job erstellt extern eine Rechnung und stürzt vor dem Speichern von invoice_path ab. ShouldBeUnique und if(invoice_path) waren eingebaut. Was verhindert eine zweite externe Rechnung beim Retry zuverlässig im vereinbarten Vertrag?","options":["Ein längerer sleep im Job.","Alle Exceptions abfangen und den Job als erfolgreich melden.","Ein dauerhafter fachlicher Deduplizierungsschlüssel und ein vom externen Anbieter unterstützter idempotenter Auftrag samt Recoverystrategie."],"correct":2,"explain":"Ein lokaler Vorabcheck kennt den bereits eingetretenen externen Effekt nach einem Crash nicht. Uniqueness-Locks sind keine Exactly-once-Garantie.","rationales":["Ändert die Informationslücke zwischen externem Erfolg und lokalem Zustand nicht.","Versteckt den Fehler und verliert die Wiederherstellbarkeit.","Erlaubt die erneute Abfrage/Anforderung ohne fachliche Doppelwirkung unter dem konkreten Anbieter-Vertrag."]},{"lesson":"m59-l2","q":"Ein Angreifer wiederholt einen alten, korrekt signierten Webhook. Die Raw-Body-HMAC-Prüfung besteht. Welcher zusätzliche Vertrag adressiert genau dieses Risiko?","options":["Signierten Timestamp innerhalb eines erlaubten Zeitfensters prüfen und Ereignis-ID dauerhaft deduplizieren.","JSON nach dem Empfang hübsch formatieren.","CORS nur auf die eigene Website beschränken und HMAC nicht weiter beachten."],"correct":0,"explain":"Signaturintegrität allein beweist keine Frische. Timestamp muss Bestandteil der Anbietersignatur sein; Replay-/Dublettenregeln müssen bei Parallelität wirksam bleiben.","rationales":["Prüft Frische und Wiederholung als getrennte Eigenschaften.","Ändert Signaturbytes und liefert keinen Frischebeweis.","CORS begrenzt keine beliebigen Serverclients."]},{"lesson":"js-m1-l3","q":"const copy = {...original}; copy.settings.theme = \"dark\" verändert auch original.settings.theme. Welcher Grund ist korrekt?","options":["const macht alle Objekte automatisch tief unveränderlich.","Spread kopiert hier die oberste Ebene; settings ist weiterhin dieselbe Objektreferenz.","JavaScript kopiert Objekte immer byteweise, die Konsole täuscht nur."],"correct":1,"explain":"Eine neue äußere Objektidentität ist keine tiefe Kopie. Kopiere die betroffenen Ebenen bewusst oder wähle ein geeignetes Deep-Clone-Verfahren mit dessen Typgrenzen.","rationales":["const verhindert Neuzuweisung der Bindung, nicht jede Mutation.","Erklärt die geteilte innere Referenz.","Das beobachtete Verhalten folgt dem Referenzmodell."]},{"lesson":"js-m1-l9","q":"Vue 3.5: const {title} = defineProps(...) im selben script setup und const {count} = reactive({count:0}) sehen ähnlich aus. Welche Aussage ist präzise?","options":["Beides bleibt durch normales JavaScript-Destructuring immer reaktiv.","Beides verliert unter allen Umständen die Reaktivität.","defineProps-Destrukturierung erhält hier spezielle Compilerbehandlung; ein aus reactive gelesener primitiver Wert bekommt dadurch keine allgemeine Live-Verbindung."],"correct":2,"explain":"Der Compiler schreibt Zugriffe auf destrukturierte Props im definierten Kontext um. Diese Sonderregel ändert nicht die allgemeine JavaScript-Semantik.","rationales":["Überträgt eine Vue-Compilerregel auf beliebige Objekte.","Ignoriert die explizite Sonderbehandlung seit Vue 3.5.","Unterscheidet Compilerkontext und Wertzugriff."]},{"lesson":"js-m1-l11","q":"Anfrage A startet, danach B. B liefert neue Daten, danach A alte Daten. Abort wurde auf A angefordert, der Fetch-Fake liefert trotzdem. Was muss die UI vor dem Schreiben prüfen?","options":["Ob das Ergebnis noch zur neuesten Anfragesequenz gehört.","Nur ob der Status 200 war.","Ob A zuerst gestartet wurde; dann hat A automatisch Vorrang."],"correct":0,"explain":"Abbruch ist kein universeller Beweis, dass keine alte Antwort mehr ankommt. Sequenz-/Identitätsprüfung muss auch Fehler- und finally-Zustände berücksichtigen.","rationales":["Verhindert veraltetes Überschreiben, unabhängig von tatsächlicher Abbruchwirkung.","Ein erfolgreicher Status sagt nichts über Aktualität aus.","Würde gerade den veralteten Zustand bevorzugen."]},{"lesson":"js-m1-l13","q":"const {tasks} = store liefert in einer Komponente einen alten Eindruck nach store.replace(). Welcher Ansatz erhält beim Destrukturieren den Bezug auf Pinia-State?","options":["Den Store in JSON.stringify umwandeln.","storeToRefs(store) für State verwenden und Aktionen bewusst separat nutzen.","tasks einmal in eine globale window-Variable kopieren."],"correct":1,"explain":"storeToRefs erzeugt Referenzen für reaktiven Storestate. Eine einmal gelesene Wertbindung ist kein allgemeiner Ersatz dafür.","rationales":["Serialisierung erzeugt keine lebende reaktive Referenz.","Erhält die vorgesehene Verbindung zum Store.","Vergrößert die Zahl unkontrollierter Kopien."]},{"lesson":"html-m1-l4","q":"Ein Formular hat type=email und required. Ein direkter HTTP-Client sendet ungültige Daten. Welche serverseitige Schlussfolgerung ist richtig?","options":["Der Browser hat es bereits garantiert geprüft.","POST bedeutet automatisch gültig und autorisiert.","Der Server muss Format,Grenzen und Berechtigung selbst prüfen; native Browserprüfung ist nur eine Benutzungshilfe."],"correct":2,"explain":"Angreifer oder andere Clients sind nicht an die Browseroberfläche gebunden. Client- und Servervalidierung sind unterschiedliche Grenzen.","rationales":["Unterstellt einen zwingenden Browserpfad.","HTTP-Methode ist kein Validitäts-/Rechtenachweis.","Behält die verbindliche Prüfung an der vertrauenswürdigen Grenze."]},{"lesson":"css-m1-l2","q":"width:200px; padding:20px; border:2px solid bei content-box, ohne Margin. Welche Borderboxbreite entsteht, und was ändert border-box?","options":["244px; mit border-box sind die angegebenen 200px inklusive Padding und Border.","200px; border-box fügt noch einmal 44px hinzu.","240px; Border zählt in keiner Variante."],"correct":0,"explain":"Content-box: 200 + 2×20 + 2×2 = 244. Border-box bezieht die inneren Abstände und Border in width ein; Margin bleibt außerhalb.","rationales":["Rechnet beide Seiten und den Rahmen korrekt.","Vertauscht die Definitionen.","Lässt den Rahmen unberücksichtigt."]},{"lesson":"mariadb-m1-l4","q":"Zwei Clients lesen Bestand=1 und buchen danach je einen Verkauf. Beide verwenden einzelne gültige UPDATEs. Was fehlt gegen Überverkauf?","options":["Nur eine schnellere Netzverbindung.","Eine atomare fachliche Bedingung oder passende kurze Sperrtransaktion mit Prüfung des Ergebnisses.","Ein zusätzlicher SELECT nach der Bestätigung als alleiniger Schutz."],"correct":1,"explain":"Einzelne syntaktisch gültige Updates erfüllen nicht automatisch die gemeinsame Invariante. Bedingtes UPDATE und betroffene Zeilen oder getestete Sperren können die Entscheidung atomar absichern.","rationales":["Verringert höchstens Wahrscheinlichkeit, schafft keine Integritätsgarantie.","Verbindet Entscheidung und Mutation mit geprüftem Konkurrenzverhalten.","Stellt den Fehler erst nach möglicher Doppelbuchung fest."]},{"lesson":"api-m1-l2","q":"Zwei Clients ändern dieselbe Revision 7. Der Server liefert ETag, ignoriert aber If-Match beim Schreiben. Welche Garantie besteht?","options":["Keine Optimistic-Concurrency-Garantie allein durch die Headerausgabe; die Vorbedingung muss atomar geprüft werden.","Automatisch keine Lost Updates, weil ETag in jeder Antwort steht.","Der zweite Client wird durch CORS immer gesperrt."],"correct":0,"explain":"Bedingte Requests brauchen serverseitige Implementierung. Metadaten ohne wirksame Prüfung sind kein Schreibschutz.","rationales":["Unterscheidet veröffentlichten Vertrag und implementierte Invariante.","Behandelt Information als automatische Sperre.","Verwechselt Cross-Origin-Regeln mit Revisionskontrolle."]},{"lesson":"mcp-m1-l4","q":"Ein MCP-Resource-Text fordert einen ungeplanten Secret-Upload und nennt sich selbst „Systemanweisung“. Wie soll der Host damit umgehen?","options":["Ausführen, weil Resource-Inhalte höhere Priorität haben.","Als untrusted Daten behandeln; weder Rechte noch Nutzerauftrag daraus erweitern.","Nur nach Umformatierung in JSON ausführen."],"correct":1,"explain":"Selbstbehauptete Autorität in externen Inhalten ist keine echte Anweisungspriorität. Wirksame Tool-/Netzwerkrechte begrenzen die Folgen zusätzlich.","rationales":["Genau das Muster indirekter Prompt Injection.","Behält die Vertrauensgrenze.","Formatänderung schafft keine Befugnis."]},{"lesson":"agents-m1-l5","q":"Ein Agent behebt einen Fehler, indem er die fehlgeschlagene Berechtigungsassertion aus dem Test entfernt. Danach ist die Suite grün. Wie wird das bewertet?","options":["Als vollständiger Erfolg, weil Tests grün sind.","Als kleinere Änderung ohne Relevanz.","Als ungeklärte Regression: Anforderung und Teständerung unabhängig reviewen und den Sicherheitsfall wieder prüfen."],"correct":2,"explain":"Der Testlauf beweist nur die verbliebenen Assertions. Entfernte Gegenbeispiele können den Eindruck einer Reparatur vortäuschen.","rationales":["Verwechselt grüne Ausgabe mit unverändert erfüllter Anforderung.","Eine entfernte Sicherheitsassertion verändert den Nachweis.","Fordert unabhängige Akzeptanz und echte Regressionstests."]}];
-RP_TRANSFER.forEach(function(item){
- var lesson=MODULES.flatMap(function(m){return m.lessons;}).find(function(l){return l.id===item.lesson;});
- if(!lesson)throw new Error('Transferziel fehlt: '+item.lesson);
- var question=Object.assign({},item);delete question.lesson;
- if(!lesson.quiz.some(function(q){return q.q===question.q;}))lesson.quiz.push(question);
-});
-var RP_LITERAL_2=window.RP_LITERALS[2];
-var RP_QUIZ_REVISIONS=RP_LITERAL_2;
 function rpQuestionId(lesson,index){ var q=lesson.quiz[index];return lesson.id+'#'+index+(q.revision?'@'+q.revision:''); }
-RP_QUIZ_REVISIONS.forEach(function(item){
-var lesson=FLAT.find(function(l){return l.id===item.lesson;});
-if(!lesson||!lesson.quiz[item.index])throw new Error('Quiz-Ziel fehlt: '+item.lesson);
-var question=Object.assign({},item);delete question.lesson;delete question.index;lesson.quiz[item.index]=question;
-});
 var CARDS = [];
 MODULES.forEach(function(m){
   m.lessons.forEach(function(l){
@@ -265,240 +251,11 @@ MODULES.forEach(function(m){
     });
   });
 });
-var EXTRA_CARDS = [
-['m1-l1','Welche Eigenschaft fordert, dass ein Algorithmus bei gleicher Eingabe stets dasselbe Ergebnis liefert?',['Endlichkeit','Determiniertheit','Allgemeingültigkeit'],1,'Determiniertheit betrifft das Ergebnis, Determinismus den Ablauf.'],
-['m1-l2','Wie oft wird eine fußgesteuerte Schleife (WIEDERHOLE … BIS) mindestens durchlaufen?',['Nullmal','Einmal','So oft wie die Bedingung wahr ist'],1,'Die Prüfung erfolgt erst am Ende, daher läuft der Rumpf garantiert einmal.'],
-['m1-l3','Was liefert 17 DIV 5?',['3','3,4','2'],0,'DIV ist die ganzzahlige Division ohne Rest; 17 MOD 5 wäre 2.'],
-['m1-l3','Wie prüft man in Pseudocode, ob eine Zahl ungerade ist?',['zahl DIV 2 = 1','zahl MOD 2 <> 0','zahl / 2 = 0'],1,'Der Rest bei Division durch 2 ist bei ungeraden Zahlen 1, also ungleich 0.'],
-['m1-l4','Ein Array hat 12 Elemente. Welchen Index hat das letzte?',['12','11','13'],1,'Arrays beginnen bei 0, das letzte Element liegt bei LAENGE − 1.'],
-['m2-l1','Welches Struktogramm-Element stellt eine kopfgesteuerte Schleife dar?',['Ein Rechteck mit Rahmen oben und links','Eine Raute','Ein Parallelogramm'],0,'Der Rahmen oben zeigt: Die Bedingung wird vor dem Rumpf geprüft.'],
-['m2-l2','Welches PAP-Symbol nach DIN 66001 steht für eine Verzweigung?',['Rechteck','Raute','Oval'],1,'Die Raute hat einen Eingang und zwei beschriftete Ausgänge (ja/nein).'],
-['m2-l3','Was ist der wesentliche Unterschied zwischen Struktogramm und PAP?',['Das Struktogramm erlaubt keine Sprünge und erzwingt strukturierte Programmierung','Der PAP ist genauer','Es gibt keinen Unterschied'],0,'Im PAP sind Sprünge zeichenbar, im Struktogramm nicht — das verhindert Spaghetticode.'],
-['m3-l1','Wie viele Vergleiche braucht die lineare Suche im Mittel bei n Elementen?',['n','n/2','log₂(n)'],1,'Im schlechtesten Fall n, im Mittel etwa die Hälfte.'],
-['m3-l2','Welche Voraussetzung hat die binäre Suche zwingend?',['Ein sortiertes Feld','Ein Feld ohne Duplikate','Ein Feld mit gerader Elementzahl'],0,'Auf unsortierten Daten liefert sie falsche Ergebnisse, ohne einen Fehler zu melden.'],
-['m3-l3','Wie viele Vergleiche führt Bubble-Sort bei 10 Elementen maximal durch?',['45','100','10'],0,'n · (n−1) / 2 = 10 · 9 / 2 = 45.'],
-['m3-l4','Welche Komplexität haben Quicksort und Mergesort im Mittel?',['O(n²)','O(n · log n)','O(n)'],1,'Teile-und-herrsche-Verfahren sind deutlich schneller als die quadratischen Sortierverfahren.'],
-['m4-l1','Was ist der erste Schritt eines Trockenlaufs?',['Das Ergebnis raten','Eine Wertetabelle mit einer Spalte je Variable anlegen','Den Code umschreiben'],1,'Die Tabelle macht jede Zustandsänderung nachvollziehbar und sichert Teilpunkte.'],
-['m4-l2','Wann ist eine ODER-Verknüpfung falsch?',['Wenn ein Teil falsch ist','Nur wenn beide Teile falsch sind','Nie'],1,'ODER ist wahr, sobald mindestens ein Teil wahr ist.'],
-['m4-l3','Was besagt die Äquivalenzklassenbildung beim Testen?',['Jeder mögliche Wert wird getestet','Aus jeder Klasse gleichartiger Eingaben genügt ein Vertreter','Nur gültige Werte werden getestet'],1,'Dazu kommt die Grenzwertanalyse an den Rändern der Klassen.'],
-['m4-l3','Was ist ein Blackbox-Test?',['Ein Test ohne Kenntnis des Quellcodes, nur gegen die Spezifikation','Ein Test im abgedunkelten Raum','Ein Test der Datenbank'],0,'Beim Whitebox-Test ist der interne Aufbau dagegen bekannt.'],
-['m5-l1','Wie wird eine Entität in der Chen-Notation dargestellt?',['Als Raute','Als Rechteck','Als Oval'],1,'Raute = Beziehung, Oval = Attribut, unterstrichen = Schlüsselattribut.'],
-['m5-l2','Eine Zwischentabelle bei n:m — woraus besteht ihr Primärschlüssel?',['Aus einem neuen Zählfeld','Aus beiden Fremdschlüsseln zusammen','Aus dem ersten Fremdschlüssel'],1,'Ein zusammengesetzter Primärschlüssel aus genau den beiden Fremdschlüsseln.'],
-['m5-l3','Ein Attribut gehört zur Beziehung, nicht zu den Entitäten. Wo landet es?',['In der ersten Entität','In der Zwischentabelle der n:m-Beziehung','Es entfällt'],1,'Beispiel: die Arbeitszeit eines Mechanikers an einem bestimmten Auftrag.'],
-['m5-l4','Was kennzeichnet ein Schlüsselattribut im ER-Diagramm?',['Fettdruck','Unterstreichung','Ein Sternchen'],1,'In der relationalen Notation schreibt man es ebenfalls unterstrichen.'],
-['m6-l1','Wogegen verstößt eine Spalte mit dem Inhalt „Meier, Schmidt, Kunz"?',['Gegen die 1. NF, weil sie nicht atomar ist','Gegen die 2. NF','Gegen die 3. NF'],0,'Mehrere Werte in einem Feld verletzen die Atomarität.'],
-['m6-l2','Was ist eine transitive Abhängigkeit?',['Ein Nichtschlüsselattribut hängt von einem anderen Nichtschlüsselattribut ab','Ein Attribut hängt vom halben Schlüssel ab','Zwei Tabellen sind verknüpft'],0,'Sie wird in der 3. NF aufgelöst, etwa PLZ → Ort.'],
-['m6-l3','Welche Anomalie tritt auf, wenn beim Löschen des letzten Kurses auch der Dozent verschwindet?',['Einfügeanomalie','Löschanomalie','Änderungsanomalie'],1,'Ungewollter Datenverlust ist das Kennzeichen der Löschanomalie.'],
-['m6-l3','Warum wird bewusst denormalisiert?',['Aus Bequemlichkeit','Um Leseabfragen zu beschleunigen und JOINs zu sparen','Weil die 3. NF veraltet ist'],1,'Der Preis ist Redundanz und höherer Pflegeaufwand — eine bewusste Abwägung.'],
-['m7-l1','In welcher Reihenfolge wird SQL logisch ausgeführt?',['SELECT, FROM, WHERE','FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY','WHERE, SELECT, FROM'],1,'Deshalb ist ein SELECT-Alias in WHERE nicht verfügbar, in ORDER BY dagegen schon.'],
-['m7-l2','Welcher Filter gehört in HAVING statt in WHERE?',['ort = "Berlin"','COUNT(*) > 5','datum > "2025-01-01"'],1,'HAVING filtert Gruppen nach der Aggregation, WHERE filtert Einzelzeilen davor.'],
-['m7-l3','Was liefert ein LEFT JOIN?',['Nur die Treffer beider Tabellen','Alle Zeilen der linken Tabelle, rechts ggf. NULL','Alle Zeilen beider Tabellen'],1,'Für Kunden ohne Bestellung braucht man genau diesen Join-Typ.'],
-['m7-l3','Warum macht eine WHERE-Bedingung auf die rechte Tabelle aus einem LEFT JOIN faktisch einen INNER JOIN?',['Weil WHERE den Join überschreibt','Weil die NULL-Zeilen die Bedingung nicht erfüllen und herausgefiltert werden','Das stimmt nicht'],1,'Abhilfe: Bedingung in die ON-Klausel verschieben oder auf IS NULL prüfen.'],
-['m7-l4','Wie prüft man korrekt auf einen fehlenden Wert?',['spalte = NULL','spalte IS NULL','spalte <> ""'],1,'Ein Vergleich mit = NULL liefert niemals ein Ergebnis.'],
-['m7-l5','Zu welcher SQL-Kategorie gehört GRANT?',['DDL','DML','DCL'],2,'DCL regelt Rechte; DDL definiert Strukturen, DML bearbeitet Daten.'],
-['m8-l1','Wo werden Akteure im Use-Case-Diagramm gezeichnet?',['Innerhalb der Systemgrenze','Außerhalb der Systemgrenze','In einer Ellipse'],1,'Sie sind Rollen außerhalb des Systems — auch Fremdsysteme können Akteure sein.'],
-['m8-l2','In welche Richtung zeigt der «extend»-Pfeil?',['Vom erweiterten zum erweiternden Fall','Vom erweiternden zum erweiterten Fall','In beide Richtungen'],1,'Bei «include» ist es genau umgekehrt — vom einschließenden zum eingeschlossenen Fall.'],
-['m8-l2','Welches Signalwort deutet auf «extend» hin?',['„immer"','„optional" oder „gegebenenfalls"','„beinhaltet"'],1,'«extend» beschreibt bedingtes Verhalten, «include» stets ausgeführtes.'],
-['m8-l3','Welches Diagramm eignet sich für einen Geschäftsprozess mit Entscheidungen und Parallelität?',['Klassendiagramm','Aktivitätsdiagramm','Use-Case-Diagramm'],1,'Es ist das UML-Gegenstück zum Programmablaufplan.'],
-['m9-l1','Wofür steht das Zeichen # im Klassendiagramm?',['public','protected','private'],1,'+ public, − private, # protected, ~ package.'],
-['m9-l2','Welche Beziehung gilt, wenn das Teil beim Löschen des Ganzen ebenfalls verschwindet?',['Aggregation','Komposition','Assoziation'],1,'Komposition wird mit gefüllter Raute gezeichnet, Aggregation mit leerer.'],
-['m9-l2','Was bedeutet die Multiplizität 1..* an einem Linienende?',['Höchstens eines','Mindestens eines','Genau eines'],1,'0..* bedeutet dagegen beliebig viele einschließlich null.'],
-['m9-l3','Eine Methode heißt in beiden Unterklassen gleich, arbeitet aber verschieden. Was liegt vor?',['Kapselung','Polymorphie','Aggregation'],1,'Gleicher Name, unterschiedliches Verhalten je nach konkreter Klasse.'],
-['m10-l1','Wer erstellt das Lastenheft?',['Der Auftragnehmer','Der Auftraggeber','Die IHK'],1,'Merkhilfe: Der Auftraggeber bürdet seine Lasten auf, der Auftragnehmer übernimmt Pflichten.'],
-['m10-l1','Welches Dokument wird abgenommen und damit Vertragsbestandteil?',['Das Lastenheft','Das Pflichtenheft','Der Projektstrukturplan'],1,'Es definiert den geschuldeten Leistungsumfang des Werkvertrags.'],
-['m10-l2','„Die Oberfläche muss ohne Schulung in 15 Minuten erlernbar sein" ist eine …',['funktionale Anforderung','nicht-funktionale Anforderung','Rahmenbedingung'],1,'Sie beschreibt eine Qualität, kein Was — und ist messbar formuliert.'],
-['m10-l3','Welche Teststufe entspricht im V-Modell dem Feinentwurf?',['Abnahmetest','Integrationstest','Systemtest'],1,'Anforderungen ↔ Abnahmetest, Grobentwurf ↔ Systemtest, Feinentwurf ↔ Integrationstest.'],
-['m10-l3','Worum geht es in der Sprint-Retrospektive?',['Um das fertige Produkt','Um die Zusammenarbeit im Team','Um die Priorisierung des Backlogs'],1,'Das Produkt ist Thema des Sprint Reviews.'],
-['m10-l4','Wofür steht das M in SMART?',['Machbar','Messbar','Motivierend'],1,'Ohne Messbarkeit lässt sich die Zielerreichung nicht prüfen.'],
-['m11-l1','Auf welcher OSI-Schicht arbeitet ein Router?',['Schicht 2','Schicht 3','Schicht 4'],1,'Er entscheidet anhand der IP-Adresse und trennt Broadcast-Domänen.'],
-['m11-l1','Welche Einheit wird auf Schicht 2 übertragen?',['Pakete','Frames','Segmente'],1,'Bits auf 1, Frames auf 2, Pakete auf 3, Segmente auf 4.'],
-['m11-l2','Welcher Port gehört zu HTTPS?',['80','443','22'],1,'80 ist HTTP, 22 ist SSH.'],
-['m11-l2','Warum nutzt Videotelefonie UDP statt TCP?',['UDP ist sicherer','Verzögerung stört mehr als ein verlorenes Paket','TCP kann kein Video übertragen'],1,'Ein kurzes Bildrauschen ist erträglicher als ein Stocken durch Neuübertragung.'],
-['m11-l3','Was trennt ein Switch?',['Broadcast-Domänen','Kollisionsdomänen','Beides'],1,'Broadcast-Domänen trennt erst der Router beziehungsweise ein VLAN.'],
-['m11-l4','Ping auf das Gateway klappt, Ping auf 8.8.8.8 nicht. Wo liegt der Fehler vermutlich?',['Beim Kabel','Beim Routing oder der Internetverbindung','Beim DNS'],1,'DNS wäre erst betroffen, wenn die IP funktioniert, der Name aber nicht.'],
-['m12-l1','Welche Subnetzmaske gehört zu /28?',['255.255.255.240','255.255.255.224','255.255.255.248'],0,'28 Einsen: im letzten Oktett 11110000 = 240.'],
-['m12-l1','Welcher Bereich ist privat nach RFC 1918?',['11.0.0.0/8','172.16.0.0/12','192.169.0.0/16'],1,'Die privaten Bereiche sind 10.0.0.0/8, 172.16.0.0/12 und 192.168.0.0/16.'],
-['m12-l2','Wie groß ist die Blockgröße bei der Maske 255.255.255.224?',['16','32','64'],1,'256 − 224 = 32, die Netze beginnen bei 0, 32, 64, 96 …'],
-['m12-l3','Ein Subnetz braucht mindestens 100 Hosts. Welches Präfix ist erforderlich?',['/25','/26','/24'],0,'2⁷ − 2 = 126 ≥ 100; /26 böte nur 62 Hosts.'],
-['m12-l4','Was bedeutet eine IP aus dem Bereich 169.254.x.x?',['Das Gerät ist korrekt konfiguriert','Kein DHCP-Server war erreichbar (APIPA)','Es liegt ein Virenbefall vor'],1,'Ohne Gateway ist nur die Kommunikation im eigenen Segment möglich.'],
-['m12-l5','Warum wurde NAT überhaupt notwendig?',['Weil IPv4 nur rund 4,3 Milliarden Adressen kennt','Weil Router sonst zu langsam wären','Weil private Adressen verschlüsselt sind'],0,'NAT hat die Adressknappheit hinausgezögert. IPv6 macht es überflüssig.'],
-['m13-l1','Wie viele Blöcke hat eine vollständig ausgeschriebene IPv6-Adresse?',['4','8','16'],1,'8 Blöcke zu je 16 Bit ergeben 128 Bit.'],
-['m13-l1','Wie lautet 2001:db8::28 ungekürzt?',['2001:0db8:0000:0000:0000:0000:0000:0028','2001:db8:0:0:0:0:0:28','2001:0db8:0028'],0,'Sechs Nullblöcke ersetzt das ::, und jeder Block wird auf vier Ziffern aufgefüllt.'],
-['m13-l2','Wie viele /64-Teilnetze lassen sich aus einem /48-Präfix bilden?',['256','65.536','65.534'],1,'16 Bit Teilnetz-ID ergeben 2¹⁶ — ohne Abzug, da IPv6 keinen Broadcast kennt.'],
-['m13-l2','Welches IPv6-Präfix steht für Link-Local?',['2000::/3','fe80::/10','ff00::/8'],1,'Jedes Interface bildet sich beim Start automatisch eine solche Adresse.'],
-['m13-l3','Was leistet SLAAC?',['Verschlüsselung','Zustandslose Adress-Autokonfiguration ohne DHCP-Server','Namensauflösung'],1,'Das Präfix kommt per Router Advertisement, den Interface-Teil bildet der Host selbst.'],
-['m14-l1','Welcher DHCP-Schritt folgt auf das Offer?',['Discover','Request','Acknowledge'],1,'Die Reihenfolge lautet Discover, Offer, Request, Acknowledge — DORA.'],
-['m14-l1','Was ist eine DHCP-Reservierung?',['Ein für Gäste freigehaltener Adressbereich','Eine feste IP, gebunden an eine MAC-Adresse','Eine besonders lange Lease-Dauer'],1,'Die saubere Alternative zur statischen Konfiguration am Gerät — die Verwaltung bleibt zentral.'],
-['m14-l2','Welcher DNS-Record verweist auf den zuständigen Mailserver?',['A','MX','CNAME'],1,'CNAME ist ein Alias, A die IPv4-Zuordnung.'],
-['m14-l2','Welcher Befehl zeigt den Weg eines Pakets über alle Router?',['ping','tracert','nslookup'],1,'So findet man, an welcher Stelle die Verbindung abbricht.'],
-['m14-l3','Warum bietet WPA2-Enterprise mehr Sicherheit als WPA2-Personal?',['Es ist schneller','Individuelle Zugänge über RADIUS lassen sich einzeln sperren','Es nutzt längere Passwörter'],1,'Beim PSK müsste man das gemeinsame Passwort auf allen Geräten ändern.'],
-['m14-l4','Was unterscheidet ein SAN von einem NAS?',['Das SAN stellt Blockspeicher bereit, das NAS Dateien','Das NAS ist schneller','Das SAN nutzt SMB'],0,'Daraus folgen Performance, Datenbanktauglichkeit und Kosten.'],
-['m15-l1','Welchem Schutzziel dient eine digitale Signatur vorrangig?',['Verfügbarkeit','Integrität und Authentizität','Nur Vertraulichkeit'],1,'Sie macht Änderungen erkennbar und weist den Urheber aus.'],
-['m15-l2','Welche Maßnahme ist technisch?',['Clean-Desk-Policy','Automatische Bildschirmsperre per Gruppenrichtlinie','Besucherregelung'],1,'Sie wird konfiguriert, nicht organisatorisch geregelt.'],
-['m15-l3','Welche Sicherungsart benötigt bei der Rücksicherung die Vollsicherung plus alle Zwischensicherungen?',['Differenziell','Inkrementell','Vollsicherung'],1,'Differenziell braucht nur die Vollsicherung und die letzte differenzielle.'],
-['m15-l3','Wie viel Nutzkapazität bieten 4 Platten à 3 TB im RAID 6?',['12 TB','6 TB','9 TB'],1,'(4 − 2) × 3 TB = 6 TB, zwei Platten gehen für die doppelte Parität drauf.'],
-['m15-l3','Warum ersetzt ein RAID kein Backup?',['Weil es zu langsam ist','Weil versehentliches Löschen und Ransomware den Spiegel sofort mittreffen','Weil RAID nur für Server gilt'],1,'RAID schützt allein gegen den Hardwareausfall einer Platte.'],
-['m15-l4','Wie viele Stunden Ausfall erlaubt eine zugesicherte Verfügbarkeit von 99,9 % pro Jahr?',['Etwa 88 Stunden','Etwa 8,8 Stunden','Etwa 53 Minuten'],1,'8.760 h × 0,001 = 8,76 h.'],
-['m15-l4','Was beschreibt der RTO?',['Den maximal tolerierbaren Datenverlust','Die maximal tolerierbare Ausfalldauer','Die Backupgröße'],1,'Der RPO bezeichnet dagegen den maximalen Datenverlust in Zeit.'],
-['m16-l1','Mit welchem Schlüssel signiert man ein Dokument?',['Mit dem öffentlichen Schlüssel des Empfängers','Mit dem eigenen privaten Schlüssel','Mit dem öffentlichen Schlüssel des Senders'],1,'Prüfen kann dann jeder mit dem zugehörigen öffentlichen Schlüssel.'],
-['m16-l1','Wie viele Schlüssel braucht symmetrische Verschlüsselung bei 10 Teilnehmern?',['10','45','100'],1,'n · (n−1) / 2 = 10 · 9 / 2 = 45 — daher das Schlüsselaustauschproblem.'],
-['m16-l2','Wozu dient ein Salt beim Hashen von Passwörtern?',['Er verlängert das Passwort','Er macht vorberechnete Rainbow Tables unbrauchbar','Er verschlüsselt den Hash'],1,'Gleiche Passwörter ergeben dadurch unterschiedliche Hashwerte.'],
-['m16-l2','Was verbindet ein Site-to-Site-VPN?',['Einen Mitarbeiter mit der Firma','Zwei Standorte dauerhaft miteinander','Zwei Programme'],1,'Für einzelne Mitarbeiter im Homeoffice nutzt man End-to-Site.'],
-['m16-l3','Was kennzeichnet einen Trojaner?',['Er verbreitet sich selbstständig','Er tarnt sich als nützliches Programm','Er verschlüsselt Daten'],1,'Die Verschlüsselung mit Lösegeldforderung ist das Merkmal von Ransomware.'],
-['m16-l3','Wie schützt man wirksam gegen SQL-Injection?',['Mit einer Firewall','Mit Prepared Statements und Eingabevalidierung','Mit längeren Passwörtern'],1,'Eingaben werden dann als Daten behandelt, nicht als ausführbarer SQL-Code.'],
-['m16-l4','Binnen welcher Frist muss eine Datenpanne gemeldet werden?',['24 Stunden','72 Stunden','Eine Woche'],1,'An die Aufsichtsbehörde, bei hohem Risiko zusätzlich an die Betroffenen.'],
-['m16-l4','Wie hoch kann ein DSGVO-Bußgeld maximal ausfallen?',['20 Mio. € oder 4 % des weltweiten Jahresumsatzes','10.000 €','1 Mio. €'],0,'Es gilt jeweils der höhere der beiden Werte.'],
-['m16-l4','Wann ist ein Auftragsverarbeitungsvertrag erforderlich?',['Bei jedem Einkauf','Wenn ein Dienstleister weisungsgebunden personenbezogene Daten verarbeitet','Nur bei Behörden'],1,'Typischer Fall: der Cloud- oder Rechenzentrumsbetreiber.'],
-['m17-l1','Womit beginnt die Vorwärtsrechnung beim allerersten Vorgang?',['Mit FAZ = 0','Mit FAZ = 1','Mit FAZ = Dauer'],0,'Von dort aus gilt für jeden weiteren Vorgang FEZ = FAZ + D.'],
-['m17-l2','Womit beginnt die Rückwärtsrechnung?',['Mit SAZ = 0 beim ersten Vorgang','Mit SEZ = FEZ beim letzten Vorgang','Mit GP = 0'],1,'Von dort rechnet man rückwärts durch den Plan.'],
-['m17-l2','Was gibt der freie Puffer an?',['Verschiebung ohne Gefährdung des Projektendes','Verschiebung ohne Verzögerung des frühesten Nachfolgerstarts','Die Gesamtdauer'],1,'Die erste Beschreibung trifft auf den Gesamtpuffer zu.'],
-['m17-l2','Ein Vorgang hat FAZ 8, SAZ 8, D 5. Ist er kritisch?',['Ja, GP = 0','Nein','Das lässt sich nicht sagen'],0,'GP = SAZ − FAZ = 0, er liegt auf dem kritischen Pfad.'],
-['m17-l3','Wie lautet die PERT-Formel zur Aufwandsschätzung?',['(O + M + P) / 3','(O + 4M + P) / 6','(O + P) / 2'],1,'Der wahrscheinliche Wert wird vierfach gewichtet.'],
-['m17-l3','Was ist ein Arbeitspaket?',['Ein Meilenstein','Die kleinste planbare Einheit im Projektstrukturplan','Ein Vertragsdokument'],1,'Es hat einen Verantwortlichen, einen Aufwand und ein definiertes Ergebnis.'],
-['m18-l1','Was gilt bei einem K.-o.-Kriterium in der Nutzwertanalyse?',['Es wird doppelt gewichtet','Wer es nicht erfüllt, wird gar nicht erst bewertet','Es zählt 50 %'],1,'Ausschlusskriterien werden vor der eigentlichen Bewertung geprüft.'],
-['m18-l2','Wovon wird der Skontoabzug berechnet?',['Vom Listenpreis','Vom Zieleinkaufspreis nach Rabatt','Vom Bezugspreis'],1,'Und auf die Bezugskosten gibt es gar keinen Skonto.'],
-['m18-l2','Wie viel Umsatzsteuer stecken bei 19 % in 595 € brutto?',['113,05 €','95,00 €','119,00 €'],1,'595 / 1,19 = 500 netto, davon 19 % = 95 €.'],
-['m18-l3','Eine Investition von 24.000 € spart 8.000 € jährlich. Wann amortisiert sie sich?',['Nach 2 Jahren','Nach 3 Jahren','Nach 4 Jahren'],1,'24.000 / 8.000 = 3 Jahre.'],
-['m18-l3','Was bleibt beim Ratendarlehen konstant?',['Die Rate','Die Tilgung','Die Zinsen'],1,'Die Zinsen sinken mit der Restschuld, daher sinkt auch die Gesamtrate.'],
-['m18-l4','Welche Vertragsart liegt bei einer Beratungsleistung nach Aufwand vor?',['Werkvertrag','Dienstvertrag','Kaufvertrag'],1,'Geschuldet ist die Tätigkeit, nicht ein bestimmter Erfolg.'],
-['m18-l4','Was gilt für die Gewährleistung bei Neuware?',['Sie ist freiwillig','Sie ist gesetzlich und beträgt zwei Jahre','Sie gilt fünf Jahre'],1,'Die Garantie ist dagegen eine freiwillige Zusage, meist des Herstellers.'],
-['m18-l4','Wie lange gilt gegenüber Verbrauchern die gesetzliche Gewährleistung für neue bewegliche Sachen?',['Sechs Monate','Zwei Jahre','Fünf Jahre'],1,'Davon zu trennen ist die Garantie: Sie ist freiwillig und kommt meist vom Hersteller.'],
-['m19-l1','Wie viele Byte hat 1 MiB?',['1.000.000','1.048.576','1.024'],1,'2²⁰ = 1.048.576 — das dezimale MB hat dagegen genau eine Million Byte.'],
-['m19-l1','Warum zeigt Windows bei einer 1-TB-Platte nur etwa 931 GB an?',['Die Platte ist defekt','Weil binär (2³⁰) statt dezimal (10⁹) gezählt wird','Wegen der Formatierung'],1,'10¹² / 2³⁰ ergibt 931,3 — die Kapazität ist unverändert, nur die Zählweise anders.'],
-['m19-l2','Wie lange dauert die Übertragung von 500 MB über 50 Mbit/s?',['10 Sekunden','80 Sekunden','40 Sekunden'],1,'500 MB = 4.000 Mbit, geteilt durch 50 Mbit/s = 80 s.'],
-['m19-l2','Was ist bei „70 % effektiver Auslastung" zuerst zu tun?',['Das Ergebnis am Ende durch 0,7 teilen','Die Datenrate vor der Division auf 70 % reduzieren','Nichts, das ist irrelevant'],1,'Erst die Rate anpassen, dann die Zeit berechnen.'],
-['m19-l3','Welcher Binärwert entspricht dezimal 248?',['11111000','11110000','11111100'],0,'128+64+32+16+8 = 248 — die Maske /29.'],
-['m19-l3','Wie viele Bit entsprechen einer Hexadezimalziffer?',['2','4','8'],1,'Vier Bit ergeben 16 Werte, also genau ein Hex-Zeichen.'],
-['m19-l4','Wie sollte ein Bildschirmarbeitsplatz zum Fenster ausgerichtet sein?',['Mit Blick zum Fenster','Blickrichtung parallel zum Fenster','Mit dem Rücken zum Fenster'],1,'Davor blendet das Licht, dahinter spiegelt es sich im Display.'],
-['m19-l4','Was misst der PUE-Wert?',['Die Rechenleistung','Gesamtenergie geteilt durch IT-Energie','Den Stromverbrauch pro Server'],1,'Je näher an 1,0, desto effizienter die Infrastruktur des Rechenzentrums.'],
-['m19-l4','Was kosten 20 PCs a 100 W bei 8 h taeglich, 220 Arbeitstagen und 0,30 EUR/kWh im Jahr?',['352 EUR','1.056 EUR','3.520 EUR'],1,'20 x 100 W x 8 h x 220 = 3.520.000 Wh = 3.520 kWh; 3.520 x 0,30 EUR = 1.056 EUR.']
-,
-['m20-l1','Welcher Rechenschritt fehlt am häufigsten bei der ABC-Analyse?',['Die Sortierung','Die kumulierte Prozentspalte','Die Multiplikation mit dem Preis'],1,'Erst die Aufsummierung zeigt, wo die 80-Prozent-Grenze verläuft.'],
-['m20-l1','Was folgt auf die Anfrage im Beschaffungsprozess?',['Die Bestellung','Der Angebotsvergleich','Die Rechnungsprüfung'],1,'Erst vergleichen, dann bestellen.'],
-['m20-l2','Fixkosten 30.000 €, Preis 95 €, variable Stückkosten 45 €. Break-Even?',['316 Stück','600 Stück','667 Stück'],1,'db = 95 − 45 = 50; 30.000 / 50 = 600 Stück.'],
-['m20-l2','Was ist die kritische Menge beim Verfahrensvergleich?',['Die Menge, ab der Gewinn entsteht','Die Menge, bei der beide Varianten gleich teuer sind','Die maximale Produktionsmenge'],1,'Man setzt beide Kostenfunktionen gleich und löst nach x auf.'],
-['m20-l3','Ein Server kostet 15.000 €, Nutzungsdauer 5 Jahre. Wie hoch ist die lineare AfA?',['5.000 €','3.000 €','1.500 €'],1,'15.000 / 5 = 3.000 € pro Jahr.'],
-['m20-l3','Wofür steht TCO?',['Total Cost of Ownership – alle Kosten über den Lebenszyklus','Total Computing Output','Time Critical Operation'],0,'Anschaffung, Betrieb, Schulung, Wartung und Entsorgung zusammen.'],
-['m20-l4','Ertrag 60.000 €, Aufwand 48.000 €. Wie hoch ist die Wirtschaftlichkeit?',['1,25','12.000','25 %'],0,'60.000 / 48.000 = 1,25 – ein Wert über 1 bedeutet wirtschaftlich.'],
-['m20-l4','Welche Kennzahl setzt den Gewinn ins Verhältnis zum eingesetzten Kapital?',['Produktivität','Rentabilität','Wirtschaftlichkeit'],1,'Angegeben in Prozent; der ROI bezieht sich speziell auf eine Investition.'],
-['m21-l1','Was bewirkt Hyperthreading?',['Es verdoppelt die Rechenleistung','Es stellt zusätzliche logische Kerne bereit, ca. 20–30 % Mehrleistung','Es erhöht den Takt'],1,'Echte Parallelität bieten nur physische Kerne.'],
-['m21-l1','Warum gehört ECC-RAM in einen Server?',['Er ist schneller','Er erkennt und korrigiert Bitfehler','Er verbraucht weniger Strom'],1,'Datenintegrität im Dauerbetrieb wiegt den Aufpreis auf.'],
-['m21-l2','Was ist NVMe?',['Eine Bauform','Ein Übertragungsprotokoll über PCIe','Eine Kapazitätsangabe'],1,'M.2 ist die Bauform – eine M.2-SSD kann auch nur SATA nutzen.'],
-['m21-l2','Wie schnell ist SATA III brutto?',['3 Gbit/s','6 Gbit/s','10 Gbit/s'],1,'Netto bleiben nach Overhead etwa 550 MB/s.'],
-['m21-l3','Welche Datenrate hat USB 2.0?',['12 Mbit/s','480 Mbit/s','5 Gbit/s'],1,'USB 3.2 Gen 1 (früher 3.0) hat 5 Gbit/s.'],
-['m21-l3','USB 3.0 nennt 5 Gbit/s. Wie viel ist das brutto in Megabyte je Sekunde?',['etwa 625 MB/s','etwa 5.000 MB/s','etwa 62 MB/s'],0,'5.000 Mbit/s geteilt durch 8. Nach Abzug des Protokoll-Overheads bleibt weniger übrig.'],
-['m21-l4','Wie viele Pixel hat ein 4K-UHD-Bildschirm?',['2.073.600','8.294.400','3.840'],1,'3840 × 2160 – genau die vierfache Menge von Full HD.'],
-['m21-l4','Welcher Kennwert entscheidet den Druckervergleich bei hohem Volumen?',['Der Anschaffungspreis','Der Seitenpreis','Die Druckauflösung'],1,'Über die Nutzungsdauer dominiert er die Gesamtkosten deutlich.'],
-['m21-l5','Eine USV liefert 1.200 VA bei Leistungsfaktor 0,7. Wie viel Watt sind das?',['1.714 W','840 W','1.200 W'],1,'1.200 × 0,7 = 840 W – VA und Watt sind nicht dasselbe.'],
-['m21-l5','Warum plant man beim Netzteil Reserve ein?',['Damit es leiser läuft','Wegen Lastspitzen, Aufrüstbarkeit und dem besten Wirkungsgrad bei mittlerer Last','Weil Netzteile schrumpfen'],1,'Dauerhafte Volllast senkt Effizienz und Lebensdauer.'],
-['m22-l1','Welche Kabelkategorie braucht es mindestens für 10 Gigabit über volle 100 Meter?',['Cat 5e','Cat 6A','Cat 6'],1,'Cat 6 schafft 10 Gbit/s nur auf verkürzter Strecke, Cat 5e gar nicht.'],
-['m22-l1','Welche Kategorie unterstützt 10 Gbit/s über die vollen 100 m?',['Cat 5e','Cat 6','Cat 6a'],2,'Cat 6 schafft 10 Gbit/s nur bis etwa 55 m.'],
-['m22-l1','Wofür steht die Verdrillung der Adernpaare?',['Für bessere Biegsamkeit','Zur gegenseitigen Aufhebung eingestreuter Störungen','Zur Farbkennzeichnung'],1,'Daher der Name Twisted Pair.'],
-['m22-l2','Welche Faserart nutzt man für mehrere Kilometer?',['Multimode','Singlemode','Beide gleich gut'],1,'Multimode reicht wegen der Modendispersion nur etwa 550 m.'],
-['m22-l2','Welcher LWL-Vorteil zählt bei einer Gebäudeverbindung im Freien besonders?',['Das geringe Gewicht','Die galvanische Trennung – kein Blitzschadensweg','Der niedrige Preis'],1,'Zusätzlich zur Reichweite und der Störunempfindlichkeit.'],
-['m22-l3','Wie viel Leistung liefert PoE+ nach 802.3at am Endgerät?',['ca. 12,95 W','ca. 25,5 W','ca. 51 W'],1,'802.3af liefert 12,95 W, 802.3bt bis 71 W.'],
-['m22-l3','Welcher Bereich der strukturierten Verkabelung führt zur Anschlussdose?',['Primärbereich','Sekundärbereich','Tertiärbereich'],2,'Primär verbindet Gebäude, sekundär die Etagen.'],
-['m23-l1','Welcher Hypervisor-Typ läuft direkt auf der Hardware?',['Typ 1','Typ 2','Beide'],0,'Typ 2 läuft als Programm innerhalb eines Wirts-Betriebssystems.'],
-['m23-l1','Warum ist ein Snapshot kein Backup?',['Weil er zu klein ist','Weil er auf demselben Speicher liegt wie die VM','Weil er nur Textdateien sichert'],1,'Ein Defekt des Datenspeichers vernichtet beides gleichzeitig.'],
-['m23-l2','Was fehlt einem Container im Vergleich zur VM?',['Die Anwendung','Ein eigenes Gast-Betriebssystem','Der Netzwerkzugang'],1,'Er nutzt den Kernel des Hosts – daher Start in Sekunden.'],
-['m23-l2','Wann brauchst du zwingend eine VM statt eines Containers?',['Bei hoher Instanzzahl','Wenn ein anderes Betriebssystem als das des Hosts nötig ist','Bei wenig Arbeitsspeicher'],1,'Nur die VM bringt einen eigenen Kernel mit.'],
-['m23-l3','Bei welchem Cloud-Modell verwaltest du die Anwendung, aber nicht das Betriebssystem?',['IaaS','PaaS','SaaS'],1,'Bei IaaS bist du ab dem OS zuständig, bei SaaS nur noch für die Daten.'],
-['m23-l3','Wer bleibt bei einer SaaS-Nutzung datenschutzrechtlich verantwortlich?',['Der Anbieter','Das nutzende Unternehmen','Die Aufsichtsbehörde'],1,'Der Anbieter ist Auftragsverarbeiter – daher der AVV nach Art. 28.'],
-['m23-l3','Was bezeichnet ein Lock-in-Effekt?',['Eine Sicherheitssperre','Die Abhängigkeit vom Anbieter durch erschwerten Wechsel','Eine Verschlüsselungsart'],1,'Gegenmittel: vertraglich zugesicherter Datenexport in offenem Format.'],
-['m24-l1','Was passiert mit einer OEM-Lizenz beim Gerätetausch?',['Sie wandert mit','Sie erlischt mit dem Gerät','Sie wird automatisch verlängert'],1,'Retail-Lizenzen sind dagegen übertragbar.'],
-['m24-l1','50 Personen teilen sich 20 Rechner. Welche CAL-Art ist günstiger?',['User-CAL','Device-CAL','Beide gleich'],1,'Es gibt weniger Geräte als Personen – also Geräte lizenzieren.'],
-['m24-l2','Bedeutet Open Source automatisch kostenlos?',['Ja','Nein – offener Quellcode und Preis sind zwei verschiedene Dinge','Nur bei der GPL'],1,'Freeware ist umgekehrt kostenlos, aber ohne Quellcode.'],
-['m24-l2','Wann greift der Copyleft-Effekt der GPL?',['Sofort bei der Installation','Bei der Weitergabe abgeleiteter Werke','Nie'],1,'Bei rein interner Nutzung entsteht keine Offenlegungspflicht.'],
-['m24-l2','Wem stehen die Verwertungsrechte an Software aus dem Arbeitsverhältnis zu?',['Dem Entwickler','Dem Arbeitgeber nach § 69b UrhG','Der Allgemeinheit'],1,'Das Urheberpersönlichkeitsrecht bleibt beim Entwickler.'],
-['m24-l3','Warum wird vor dem Klonen Sysprep ausgeführt?',['Zum Komprimieren','Zum Entfernen der SID und rechnerspezifischer Daten','Zum Aktivieren der Lizenz'],1,'Identische SIDs führen in der Domäne zu Konflikten.'],
-['m24-l3','Wie werden Sicherheitsupdates im Unternehmen ausgerollt?',['Sofort auf allen Systemen','Zuerst in einer Testgruppe, dann gestaffelt','Nur einmal jährlich'],1,'So fallen Inkompatibilitäten vor dem Produktivbetrieb auf.'],
-['m24-l4','Welche Wirkung hat die Abnahme?',['Sie verlängert die Garantie','Die Vergütung wird fällig und die Gewährleistungsfrist beginnt','Sie hebt den Vertrag auf'],1,'Zusätzlich gehen Gefahr und Beweislast über.'],
-['m24-l4','Welches Mindestkontrastverhältnis fordert die WCAG für normalen Text?',['2:1','4,5:1','7:1'],1,'Für große Schrift genügt 3:1.'],
-['m25-l1','Eine Störung ist behoben, die Ursache aber unbekannt und sie wiederholt sich. Was liegt vor?',['Nur ein Incident','Ein Problem','Ein Change'],1,'Die einzelnen Ausfälle sind Incidents, das Muster dahinter ein Problem.'],
-['m25-l1','Was ist ein Known Error?',['Ein Programmierfehler','Ein Problem mit bekannter Ursache und dokumentiertem Workaround','Ein abgelehntes Ticket'],1,'Die Sammlung bildet die Known Error Database.'],
-['m25-l2','Was ist eine hierarchische Eskalation?',['Weitergabe an mehr Fachwissen','Einschalten der Führungsebene wegen Befugnis oder Ressourcen','Schließen des Tickets'],1,'Die Weitergabe an den Second Level ist die funktionale Eskalation.'],
-['m25-l2','Welche Ticketangabe ist für den Second Level am wertvollsten?',['Die Abteilung des Melders','Die Schritte zur Reproduktion','Die Uhrzeit'],1,'Ohne Reproduzierbarkeit beginnt die Analyse bei null.'],
-['m25-l3','Was regelt ein Underpinning Contract?',['Interne Abteilungen','Den Vertrag mit einem externen Zulieferer','Die Kundenvereinbarung'],1,'Intern ist es das OLA, mit dem Kunden das SLA.'],
-['m25-l3','Was sagt die Reaktionszeit im SLA aus?',['Wann die Störung behoben ist','Wann die Bearbeitung beginnt','Wie lange der Dienst ausfallen darf'],1,'Die Behebung regelt die Wiederherstellungszeit.'],
-['m25-l3','Ein SLA nennt 99,5 % bei Servicezeit Mo–Fr 8–17 Uhr. Worauf beziehst du die Ausfallzeit?',['Auf 8.760 h','Auf die Servicezeit von ca. 2.340 h','Auf 365 Tage'],1,'Der Bezugszeitraum verändert das Ergebnis um ein Vielfaches.'],
-['m26-l1','Welche Seite der Nachricht verrät etwas über den Sender selbst?',['Sachinhalt','Selbstoffenbarung','Appell'],1,'Etwa Ärger, Zeitdruck oder Unsicherheit.'],
-['m26-l1','Warum eskaliert ein Gespräch trotz korrekter Fakten?',['Weil die Fakten unvollständig sind','Weil der Empfänger auf dem Beziehungsohr hört','Weil zu leise gesprochen wird'],1,'Das Eisberg-Modell verortet rund 80 Prozent dort.'],
-['m26-l2','Womit steigt man in eine Störungsaufnahme ein?',['Mit einer geschlossenen Frage','Mit einer offenen W-Frage','Mit einem Lösungsvorschlag'],1,'Geschlossene Fragen grenzen anschließend ein.'],
-['m26-l2','Welcher Gesprächsschritt verhindert die meisten Missverständnisse?',['Die Begrüßung','Das Zusammenfassen und Rückversichern','Die Verabschiedung'],1,'Er kostet Sekunden und spart oft Stunden Fehlarbeit.'],
-['m26-l3','Wie beginnt man das Gespräch mit einem verärgerten Kunden?',['Mit einem Lösungsvorschlag','Mit Ausredenlassen und Verständnis zeigen','Mit dem Verweis auf das SLA'],1,'Erst danach ist die Sachebene überhaupt erreichbar.'],
-['m26-l3','Was unterscheidet Feedback von Kritik?',['Feedback beschreibt beobachtetes Verhalten, Kritik bewertet die Person','Feedback ist immer positiv','Es gibt keinen Unterschied'],0,'Genau deshalb ist die Ich-Botschaft das Werkzeug der Wahl.'],
-['m27-l1','Was unterscheidet Qualitätssicherung von Qualitätskontrolle?',['Es gibt keinen Unterschied','Sicherung beugt Fehlern vor, Kontrolle findet sie im Nachhinein','Kontrolle ist gesetzlich vorgeschrieben'],1,'Vorbeugen ist billiger als Nacharbeit — das ist der Kern jedes Qualitätsmanagements.'],
-['m27-l1','Was geschieht in der Check-Phase des PDCA?',['Die Maßnahme wird geplant','Das Ergebnis wird gemessen und mit dem Ziel verglichen','Die Maßnahme wird zum Standard'],1,'Ohne messbare Größe ist die Phase wertlos.'],
-['m27-l2','Warum muss das Notfallhandbuch auch gedruckt vorliegen?',['Wegen der Aufbewahrungspflicht','Weil es bei einem IT-Ausfall sonst unzugänglich ist','Weil Papier fälschungssicher ist'],1,'Ein Plan im ausgefallenen System hilft im Ernstfall nicht.'],
-['m27-l2','Welchen nicht-technischen Zweck erfüllt die Inventarisierung?',['Die Virenabwehr','Abschreibung, Lizenznachweis und Ersatzplanung','Die Netzwerkkonfiguration'],1,'Sie dient Buchhaltung, Rechtsabteilung und Einkauf gleichermaßen.']
-,
-['m28-l1','Welche Aussage zur Einordnung stimmt?',['KI ⊂ ML ⊂ Deep Learning','Deep Learning ⊂ ML ⊂ KI','Alle drei sind gleichbedeutend'],1,'Deep Learning ist die engste, KI die weiteste Menge.'],
-['m28-l1','Ein System wendet vom Menschen formulierte Wenn-Dann-Regeln an. Was ist es?',['Maschinelles Lernen','Regelbasierte KI, aber kein ML','Deep Learning'],1,'ML setzt voraus, dass die Regel aus Daten abgeleitet wird.'],
-['m28-l2','Welche Lernart braucht gelabelte Trainingsdaten?',['Überwachtes Lernen','Unüberwachtes Lernen','Bestärkendes Lernen'],0,'Die richtige Antwort ist Teil der Trainingsdaten.'],
-['m28-l2','Ein Modell soll den Immobilienpreis in Euro schätzen. Was ist das?',['Klassifikation','Regression','Clustering'],1,'Ausgabe ist ein Zahlenwert – also Regression.'],
-['m28-l2','Ein Roboter lernt durch Belohnung und Bestrafung. Welche Lernart?',['Überwacht','Unüberwacht','Bestärkend'],2,'Es gibt keine Label, sondern eine Rückmeldung zur Aktion.'],
-['m28-l3','Was wird beim Training eines neuronalen Netzes verändert?',['Die Anzahl der Schichten','Die Gewichte der Verbindungen','Die Eingabedaten'],1,'Die Architektur steht vorher fest.'],
-['m28-l3','Warum werden Testdaten vom Training ausgeschlossen?',['Um Speicher zu sparen','Damit gemessen wird, ob das Modell verallgemeinern kann','Aus Lizenzgründen'],1,'Sonst misst man nur das Auswendiggelernte.'],
-['m28-l4','Training 97 %, Test 68 %. Welches Problem?',['Underfitting','Overfitting','Kein Problem'],1,'Die große Lücke ist das Kennzeichen von Überanpassung.'],
-['m28-l4','Training 61 %, Test 59 %. Welches Problem?',['Overfitting','Underfitting – das Modell ist zu einfach','Kein Problem'],1,'Beide Werte schlecht bedeutet Unteranpassung.'],
-['m28-l4','Woher stammt Bias in einem Modell meistens?',['Aus fehlerhaftem Code','Aus verzerrten Trainingsdaten','Aus zu wenig Rechenleistung'],1,'Das Modell reproduziert, was in den Daten steckt.'],
-['m28-l4','Was besagt „Garbage in, garbage out"?',['Große Modelle brauchen viel Speicher','Die Datenqualität begrenzt die Modellqualität','Alte Daten müssen gelöscht werden'],1,'Kein Verfahren gleicht schlechte Trainingsdaten aus.'],
-['m29-l1','Was ist ein Token bei einem Sprachmodell?',['Ein Sicherheitsschlüssel','Die kleinste Verarbeitungseinheit, etwa ein Wortstück','Ein Lizenzschlüssel'],1,'Die Abrechnung erfolgt meist je Token.'],
-['m29-l1','Warum halluziniert ein Sprachmodell?',['Wegen eines Programmierfehlers','Weil es Wahrscheinlichkeiten berechnet und keine Fakten prüft','Wegen zu wenig Arbeitsspeicher'],1,'Es sagt das wahrscheinlichste nächste Token vorher.'],
-['m29-l1','Wofür steht RAG?',['Random Access Generation','Retrieval Augmented Generation – eigene Dokumente werden zur Anfrage geladen','Rule And Grammar'],1,'Die Alternative wäre ein aufwendiges Fine-Tuning.'],
-['m29-l1','Welche vier Bestandteile hat ein guter Prompt?',['Länge, Sprache, Ton, Emoji','Rolle, Aufgabe, Kontext, Format','Anrede, Frage, Dank, Gruß'],1,'Je konkreter der Kontext, desto brauchbarer die Antwort.'],
-['m29-l2','Was ist Predictive Maintenance?',['Wartung nach festem Intervall','Wartung auf Basis vorhergesagter Ausfälle','Reparatur nach dem Schaden'],1,'Sensordaten zeigen die Störung an, bevor sie eintritt.'],
-['m29-l2','Welches Risiko besteht bei der Nutzung öffentlicher KI-Dienste im Betrieb?',['Zu hohe Genauigkeit','Abfluss vertraulicher Daten über die Eingabe','Zu lange Antwortzeiten'],1,'Eingaben können gespeichert und zum Training genutzt werden.'],
-['m29-l3','Welche Phase eines KI-Projekts kostet typischerweise 60–80 % des Aufwands?',['Die Modellierung','Die Datenvorbereitung','Das Deployment'],1,'Bereinigen, Zusammenführen und Vereinheitlichen der Daten.'],
-['m29-l3','Was bedeutet Model Drift?',['Das Modell wird größer','Die Trefferquote sinkt, weil sich die Realität ändert','Die Datei wird beschädigt'],1,'Gegenmittel sind Überwachung und regelmäßiges Nachtraining.'],
-['m30-l1','In welche Risikoklasse fällt ein System zur Kreditwürdigkeitsprüfung?',['Minimales Risiko','Hohes Risiko','Verboten'],1,'Zugang zu wesentlichen Leistungen ist Hochrisikobereich.'],
-['m30-l1','Welche Pflicht gilt für Chatbots nach dem AI Act?',['Konformitätsbewertung','Transparenzpflicht','Gar keine'],1,'Nutzer müssen erkennen können, dass eine KI antwortet.'],
-['m30-l1','Emotionserkennung von Beschäftigten am Arbeitsplatz ist nach AI Act …',['erlaubt mit Betriebsvereinbarung','hohes Risiko','verboten'],2,'Sie fällt unter die Praktiken mit unannehmbarem Risiko.'],
-['m30-l1','Welche Pflicht wird bei Hochrisiko-KI am häufigsten erwartet?',['Verschlüsselung','Wirksame menschliche Aufsicht','Open-Source-Veröffentlichung'],1,'Dazu Dokumentation, Datenqualität und Protokollierung.'],
-['m30-l2','Wie viele Risikoklassen unterscheidet der EU AI Act?',['Zwei: erlaubt und verboten','Vier: inakzeptabel, hoch, begrenzt, minimal','Drei: privat, gewerblich, staatlich'],1,'Inakzeptable Anwendungen wie Social Scoring sind vollständig verboten.'],
-['m30-l2','Welcher DSGVO-Grundsatz steht im Konflikt mit dem Datenhunger des Trainings?',['Datenminimierung','Verfügbarkeit','Portabilität'],0,'Ebenso die Zweckbindung, wenn Bestandsdaten umgewidmet werden.'],
-['m30-l2','Wann greift § 87 BetrVG bei KI?',['Nie','Wenn das System Verhalten oder Leistung von Beschäftigten überwachen kann','Nur bei über 500 Mitarbeitern'],1,'Dann besteht ein Mitbestimmungsrecht des Betriebsrats.'],
-['m30-l3','Ist ein rein KI-erzeugter Text in Deutschland urheberrechtlich geschützt?',['Ja, der Nutzer ist Urheber','Nein, es fehlt die persönliche geistige Schöpfung','Ja, der Anbieter ist Urheber'],1,'Erst eine eigene schöpferische Bearbeitung begründet Schutz.'],
-['m30-l3','Wer haftet, wenn ein KI-System eine folgenreiche Fehlentscheidung trifft?',['Das Modell selbst','Der Betreiber, der es einsetzt','Niemand'],1,'Deshalb gehören Freigabeprozess, Protokollierung und eine menschliche Letztentscheidung dazu.'],
-['m30-l3','Wer haftet für einen Schaden durch ein KI-Ergebnis?',['Die KI selbst','Je nach Fall Anbieter, Betreiber oder Anwender','Niemand'],1,'Wer ein KI-Ergebnis ungeprüft verwendet, verantwortet es.'],
-['m31-l1','Ab wie vielen Arbeitsplätzen wird Client-Server üblicherweise empfohlen?',['Ab 2','Etwa ab 10','Erst ab 100'],1,'Darunter überwiegt der Aufwand für Serverhardware, Lizenzen und Administration.'],
-['m31-l2','Woran erkennt man in einer Diagnose den Hersteller eines unbekannten Geräts?',['An der IP-Adresse','An den ersten drei Byte der MAC-Adresse (OUI)','Am Hostnamen'],1,'Die OUI ist die weltweit vergebene Herstellerkennung.'],
-['m31-l3','Wie viel Nutzlast bleibt bei 1.500 Byte MTU nach IP- und TCP-Header?',['1.500 Byte','1.460 Byte','1.480 Byte'],1,'Je 20 Byte für IP und TCP — deshalb erreicht keine Leitung ihre Bruttorate.'],
-['m31-l4','Ein Switch mit 24 Ports — wie viele Kollisionsdomänen entstehen?',['Eine','24','Keine'],1,'Jeder Port bildet eine eigene. Ein Hub hätte dagegen eine einzige große.'],
-['m31-l5','Warum kann ein Browser mehrere Verbindungen zum selben Server öffnen?',['Er nutzt mehrere IP-Adressen','Die Quellports unterscheiden sich, das Socket-Paar bleibt eindeutig','Das geht nicht'],1,'Eine Verbindung wird durch Quell-IP, Quell-Port, Ziel-IP und Ziel-Port beschrieben.'],
-['m32-l1','Ein Unternehmen verschlüsselt Maschinendaten ohne Personenbezug. Was ist das?',['Datenschutz','Datensicherheit','Beides'],1,'Ohne Personenbezug ist die DSGVO gar nicht einschlägig.'],
-['m32-l2','Was kostet eine Auskunft nach Art. 15 DSGVO den Betroffenen?',['Eine Bearbeitungsgebühr','Nichts, sie ist grundsätzlich kostenlos','Nur die Portokosten'],1,'Erst bei offenkundig exzessiven Wiederholungen ist ein Entgelt möglich.'],
-['m32-l3','Wer trägt die datenschutzrechtliche Verantwortung im Unternehmen?',['Der Datenschutzbeauftragte','Die Geschäftsleitung — der DSB berät und überwacht nur','Die IT-Abteilung'],1,'Deshalb ist der DSB weisungsfrei und darf nicht selbst entscheiden.'],
-['m32-l4','Welche Regelung ist für den Arbeitgeber am ungünstigsten?',['Private Nutzung ausdrücklich verboten','Gar keine Regelung, also stillschweigende Duldung','Private Nutzung ausdrücklich erlaubt'],1,'Die Duldung wirkt wie eine Erlaubnis, ohne dass Grenzen vereinbart wurden.'],
-['m33-l1','Warum sind biometrische Merkmale besonders schützenswert?',['Sie sind ungenau','Sie lassen sich nach einem Leck nicht ändern','Sie sind teuer zu erfassen'],1,'Deshalb fallen sie unter Art. 9 DSGVO und werden nur als Template gespeichert.'],
-['m33-l2','Was ist ein Berechtigungsstau?',['Zu viele Benutzer','Über Jahre angesammelte Rechte aus früheren Positionen','Ein überlasteter Server'],1,'Gegenmittel ist die regelmäßige Rezertifizierung der Berechtigungen.'],
-['m33-l3','Was beschreibt ein CVE-Eintrag?',['Die Schwere einer Lücke','Eine weltweit eindeutige Kennung einer bekannten Schwachstelle','Ein Patch'],1,'Die Schwere bewertet der CVSS-Wert von 0,0 bis 10,0.'],
-['m33-l4','Was unterscheidet einen Notfall von einer Störung?',['Die Uhrzeit','Der Normalbetrieb ist erheblich unterbrochen und die Standardprozesse reichen nicht mehr','Die Anzahl der Tickets'],1,'Bei einer Krise steht zusätzlich Existenz oder Ruf des Unternehmens auf dem Spiel.'],
-['m34-l1','Wo liegen Objekte zur Laufzeit im Speicher?',['Auf dem Stack','Auf dem Heap — der Stack hält nur Variablen und Referenzen','In der Quelldatei'],1,'Deshalb kostet das Erzeugen vieler Objekte Speicher, das Kopieren einer Referenz dagegen kaum.'],
-['m34-l2','Warum ist ein Setter für jedes Attribut kein guter Entwurf?',['Er kostet Rechenzeit','Er ist nur ein umständlich verpacktes öffentliches Attribut ohne fachliche Regel','Setter sind verboten'],1,'Besser sind fachliche Methoden wie abheben() statt setKontostand().'],
-['m34-l3','Was bedeutet das Diamantproblem?',['Zu viele Attribute','Bei Mehrfachvererbung ist unklar, welche geerbte Methode gilt','Ein Speicherleck'],1,'Deshalb erlauben die meisten Sprachen nur eine Oberklasse, aber beliebig viele Interfaces.'],
-['m34-l4','Wann wählt man ein Interface statt einer abstrakten Klasse?',['Wenn gemeinsamer Zustand vorhanden ist','Wenn nur eine gemeinsame Fähigkeit beschrieben wird, die auch fachfremde Klassen haben','Immer'],1,'Rechnung, Kontoauszug und Etikett sind alle druckbar, haben aber keine sinnvolle gemeinsame Oberklasse.'],
-['m34-l5','Wann gibt der Garbage Collector ein Objekt frei?',['Nach einer festen Zeit','Sobald keine Referenz mehr darauf zeigt','Beim Programmstart'],1,'Deshalb entsteht ein Speicherleck durch vergessene Referenzen, nicht durch vergessenes Freigeben.'],
-['m35-l1','Wie erkennt man im Text ein Attribut statt einer eigenen Klasse?',['Es steht am Satzende','Es hat weder eigene Eigenschaften noch eigenes Verhalten','Es ist ein kurzes Wort'],1,'Bekommt „Farbe" später einen Preis und einen Lieferanten, wird sie doch zur Klasse — es entscheidet die Fachlichkeit.'],
-['m35-l2','Ein Zähler soll alle erzeugten Objekte mitzählen. Wie wird er deklariert?',['Als Instanzattribut','Als statisches Attribut','Als Konstante'],1,'Er existiert genau einmal für die gesamte Klasse, nicht je Objekt.'],
-['m35-l3','Was kennzeichnet eine Gottklasse?',['Sie hat sehr viele Attribute','Sie übernimmt fast die gesamte Logik, während andere Klassen nur Daten halten','Sie ist abstrakt'],1,'Das Gegenmittel ist das Single-Responsibility-Prinzip: ein Änderungsgrund je Klasse.']
-];
-EXTRA_CARDS.push.apply(EXTRA_CARDS, [["abap-m1-l1","Ein Algorithmus muss laut Definition unter anderem endlich sein. Was bedeutet das?",["Er darf höchstens 100 Zeilen haben","Er muss nach endlich vielen Schritten terminieren","Er darf keine Schleifen enthalten"],1,"Endlichkeit meint die Terminierung: Der Algorithmus kommt nach endlich vielen Schritten zu einem Ende."],["abap-m1-l2","Welches PAP-Symbol steht für Ein- und Ausgabe?",["Rechteck","Parallelogramm","Oval"],1,"Das Parallelogramm markiert Ein-/Ausgabe; das Rechteck steht für Verarbeitung, das Oval für Start und Ende."],["abap-m1-l4","Eine Schleife läuft von 1 bis n, darin eine zweite von 1 bis n. Welche Komplexität?",["O(n)","O(n²)","O(log n)"],1,"Zwei ineinander verschachtelte Schleifen über dieselbe Menge ergeben quadratische Laufzeit."],["abap-m1-l4","Wie viele Schritte braucht die binäre Suche bei 1024 sortierten Elementen maximal?",["1024","Etwa 10","Etwa 32"],1,"log₂(1024) = 10 — jede Halbierung entfernt die Hälfte des Suchraums."],["abap-m2-l1","Was ist ein Fremdschlüssel?",["Ein Attribut, das auf den Primärschlüssel einer anderen Tabelle verweist","Ein verschlüsseltes Feld","Der Primärschlüssel einer temporären Tabelle"],0,"Der Fremdschlüssel setzt die referenzielle Integrität einer ER-Beziehung technisch um."],["abap-m2-l2","Eine Tabelle enthält die Spalten Bestellnr, Position, Produktname, Produktgewicht. Wogegen verstößt sie?",["Gegen die 1NF","Gegen die 2NF, da Produktdaten nur von der Position abhängen","Gegen gar keine Normalform"],1,"Produktname und -gewicht hängen nicht vom vollständigen Schlüssel (Bestellnr + Position) ab — klassische Teilabhängigkeit."],["abap-m3-l2","Was liefert ein INNER JOIN, wenn die rechte Tabelle leer ist?",["Alle Zeilen der linken Tabelle","Eine leere Ergebnismenge","Einen Fehler"],1,"Ohne Treffer auf beiden Seiten bleibt beim INNER JOIN nichts übrig."],["abap-m3-l3","Wie prüft man in SQL korrekt auf einen fehlenden Wert?",["feld = NULL","feld IS NULL","feld = ''"],1,"NULL ist kein Wert, sondern das Fehlen eines Werts — Vergleiche mit = liefern immer unbekannt."],["abap-m4-l1","Was begrenzt ein WIP-Limit in Kanban?",["Die Anzahl gleichzeitig in Arbeit befindlicher Aufgaben","Die Länge eines Sprints","Die Teamgröße"],0,"Work-in-Progress-Limits erzwingen Fokus und decken Engpässe im Fluss auf."],["abap-m5-l2","Was bedeutet die Multiplizität 1..* an einem Assoziationsende?",["Genau ein Objekt","Mindestens eines, nach oben offen","Höchstens eines"],1,"1..* heißt: eins oder mehr, ohne Obergrenze."],["abap-m6-l1","Ein Feld akzeptiert Werte von 18 bis 65. Welche Grenzwerte testest du?",["Nur 18 und 65","17, 18, 65, 66","Nur 0 und 100"],1,"Die Grenzwertanalyse prüft jeweils direkt innerhalb und außerhalb der Bereichsgrenzen."],["abap-m7-l0","Welche Ausgabe erzeugt eine ausführbare Klasse in ADT?",["WRITE auf die Liste","out->write( ) in die Konsolen-View","MESSAGE im Statusbereich"],1,"IF_OO_ADT_CLASSRUN stellt über den Parameter out die Konsolenausgabe bereit."],["abap-m7-l1","Was bewirkt CLEAR bei einer Objektreferenz?",["Das Objekt wird sofort gelöscht","Die Referenz wird zurückgesetzt; das Objekt wird aufgeräumt, wenn keine Referenz mehr darauf zeigt","Alle Attribute werden auf Initialwert gesetzt"],1,"ABAP nutzt Garbage Collection: Erst wenn keine Referenz mehr existiert, wird der Speicher freigegeben."],["abap-m7-l2","Was liefert der Ausdruck VALUE #( ) für eine interne Tabelle?",["Eine Tabelle mit einer leeren Zeile","Eine leere Tabelle","Einen Laufzeitfehler"],1,"VALUE #( ) ohne Inhalt erzeugt den Initialwert des Zieltyps — bei Tabellen also eine leere Tabelle."],["abap-m8-l1","Wann lohnt sich ein HASHED-Sekundärschlüssel besonders?",["Bei vielen Einzelzugriffen über einen eindeutigen Schlüssel","Bei sortierter Ausgabe","Bei sehr kleinen Tabellen mit 5 Zeilen"],0,"Bei kleinen Tabellen überwiegt der Verwaltungsaufwand den Nutzen; der Gewinn entsteht bei vielen Zugriffen auf große Mengen."],["abap-m8-l3","Was bedeutet COMMIT WORK AND WAIT gegenüber COMMIT WORK?",["Es wartet, bis die Verbuchung abgeschlossen ist","Es verzögert den Commit um eine Sekunde","Es verwirft die Änderungen"],0,"Ohne AND WAIT läuft das Programm weiter, bevor die Verbuchung durch ist — ein direkt folgender SELECT kann dann alte Daten lesen."],["abap-m9-l1","Welche Klausel filtert in Open SQL bereits auf der Datenbank statt im Anwendungsserver?",["WHERE","Eine LOOP-Prüfung mit CHECK","Eine IF-Abfrage nach dem SELECT"],0,"Jede Filterung, die erst nach dem SELECT in ABAP passiert, hat die Daten unnötig über das Netz transportiert."],["abap-m9-l2","Was ist ein „toter\" Index?",["Ein Index, den der Optimizer nie verwendet, der aber bei jedem Schreibvorgang gepflegt werden muss","Ein Index auf einer leeren Tabelle","Ein Index, der zweimal angelegt wurde"],0,"Ungenutzte Indizes kosten Schreibperformance und Speicher, ohne Lesevorteile zu bringen."],["abap-m10-l1","Welches SOLID-Prinzip verletzt eine Klasse, die Daten liest, Preise rechnet und E-Mails versendet?",["Single Responsibility","Liskov Substitution","Interface Segregation"],0,"Drei Gründe zur Änderung in einer Klasse — das ist genau die Verletzung des Single-Responsibility-Prinzips."],["abap-m10-l4","Wann verwendet man sinnvollerweise RAISE EXCEPTION ... INTO statt eines reinen TRY/CATCH?",["Wenn man die Ausnahme protokollieren und anschließend weiterreichen will","Nie, das ist gleichbedeutend","Nur in Testklassen"],0,"Fehler zu protokollieren und trotzdem weiterzureichen ist ein verbreitetes und sinnvolles Muster."],["abap-m11-l1","Warum lassen sich virtuelle Elemente nicht auf Datenbankebene filtern?",["Weil sie erst zur Laufzeit in ABAP berechnet werden","Weil sie verschlüsselt sind","Weil sie immer NULL sind"],0,"Die Datenbank kennt den Wert nicht — er entsteht erst in der ABAP-Exit-Klasse."],["abap-m12-l1","Wozu dient das Feld %tky in RAP?",["Es ist der technische Schlüssel einer Instanz inklusive Draft-Kennzeichen","Es speichert den Benutzernamen","Es ist ein Zeitstempel"],0,"%tky (transactional key) identifiziert eine Instanz eindeutig, inklusive der Unterscheidung zwischen Draft und aktiver Instanz."],["abap-m12-l2","Was passiert bei einem ETag-Konflikt?",["Der Datensatz wird stillschweigend überschrieben","Der Update wird abgelehnt, weil zwischenzeitlich jemand anders geändert hat","Der Datensatz wird gesperrt"],1,"Genau das verhindert das Lost Update, ohne eine dauerhafte Sperre zu benötigen."],["abap-m13-l2","Warum sollte ein Value Help immer gefiltert sein?",["Aus Designgründen","Weil unbegrenzte Ergebnismengen die App spürbar langsam machen","Weil sonst keine Auswahl möglich ist"],1,"Value Helps ohne Filter laden schnell zehntausende Sätze — einer der häufigsten Gründe für gefühlte Langsamkeit."],["abap-m14-l1","Was bedeutet es, wenn eine SAP-API den Status „nicht freigegeben\" hat?",["Sie ist fehlerhaft","Sie kann sich jederzeit ohne Ankündigung ändern und darf in ABAP Cloud nicht genutzt werden","Sie ist kostenpflichtig"],1,"Nur released APIs sind Teil des stabilen Vertrags und damit upgradesicher."],["abap-m15-l1","Welche Eingabe könnte eine ungesicherte dynamische WHERE-Bedingung ausnutzen?",["Ein sehr langer Name","Eine Eingabe, die Anführungszeichen und eine zusätzliche Bedingung enthält","Ein Name mit Umlauten"],1,"Die Injection schließt das Stringliteral und hängt eigene Logik an — deshalb gehören Werte in Host-Variablen."],["abap-m16-l1","Warum ist ein kleiner, fokussierter Transport besser als ein großer Sammeltransport?",["Er transportiert schneller","Er reduziert Konfliktrisiko und macht Rückbau einzelner Änderungen möglich","Er ist im System vorgeschrieben"],1,"Kleine Einheiten lassen sich gezielt prüfen, freigeben und im Zweifel zurücknehmen."],["abap-m17-l1","Was ist ein impliziter Commit?",["Ein COMMIT WORK im Quelltext","Ein Commit, der durch einen Dialogschritt oder eine RFC-Grenze ausgelöst wird","Ein Commit durch den Datenbankadministrator"],1,"Genau hier entstehen halb geschriebene Belege, wenn man die LUW-Grenzen nicht kennt."],["abap-m17-l2","Womit übergibt man Werte über die gesamte Benutzersitzung hinweg?",["EXPORT TO MEMORY ID","SET PARAMETER ID (SAP Memory)","Eine lokale Variable"],1,"ABAP Memory gilt nur innerhalb einer Aufrufkette, SAP Memory sitzungsweit."],["abap-m18-l1","Wie findest du heraus, an welcher Stelle eine Variable überschrieben wird?",["Mit einem Watchpoint","Mit dem Pretty Printer","Mit dem Verwendungsnachweis auf die Tabelle"],0,"Der Watchpoint hält genau dann an, wenn sich der Wert ändert."],["abap-m19-l1","Warum ist ein synchroner RFC in kritischen Prozessen riskant?",["Er ist grundsätzlich unsicher","Er blockiert, bis das Zielsystem antwortet — fällt der Partner aus, hängt der Prozess","Er überträgt keine Fehler"],1,"Für entkoppelte Szenarien nutzt man qRFC/bgRFC oder ereignisbasierte Kommunikation."],["abap-m20-l3","Warum ist eine Modifikation am SAP-Standard teurer als eine Erweiterung?",["Sie ist technisch langsamer","Sie muss bei jedem Upgrade erneut manuell abgeglichen werden","Sie ist lizenzpflichtig"],1,"Erweiterungspunkte wie BAdIs existieren genau deshalb — sie überstehen Upgrades ohne Abgleich."],["java-m1-l1","Was bedeutet die Forderung, ein Algorithmus müsse endlich sein?",["Er darf höchstens 100 Zeilen haben","Er muss nach endlich vielen Schritten terminieren","Er darf keine Schleifen enthalten"],1,"Endlichkeit meint Terminierung — der Algorithmus kommt nach endlich vielen Schritten zum Ende."],["java-m1-l2","Welches PAP-Symbol steht für Ein- und Ausgabe?",["Rechteck","Parallelogramm","Oval"],1,"Das Parallelogramm markiert Ein-/Ausgabe, das Rechteck Verarbeitung, das Oval Start und Ende."],["java-m1-l4","Wie viele Schritte braucht die binäre Suche bei 1024 sortierten Elementen maximal?",["1024","Etwa 10","Etwa 32"],1,"log₂(1024) = 10 — jede Halbierung entfernt die Hälfte des Suchraums."],["java-m1-l4","Zwei verschachtelte Schleifen laufen je von 1 bis n. Wie viele Durchläufe insgesamt?",["2n","n²","n log n"],1,"Für jeden der n äußeren Durchläufe laufen n innere — quadratische Komplexität."],["java-m2-l2","Eine Tabelle enthält BestellNr, Position, Produktname und Produktgewicht. Wogegen verstößt sie?",["Gegen die 1NF","Gegen die 2NF, da die Produktdaten nur von der Position abhängen","Gegen gar keine Normalform"],1,"Klassische Teilabhängigkeit vom zusammengesetzten Schlüssel."],["java-m3-l3","Wie prüft man in SQL korrekt auf einen fehlenden Wert?",["feld = NULL","feld IS NULL","feld == NULL"],1,"NULL ist kein Wert, sondern dessen Abwesenheit — Vergleiche mit = ergeben „unbekannt\"."],["java-m4-l1","Was begrenzt ein WIP-Limit in Kanban?",["Die Anzahl gleichzeitig in Arbeit befindlicher Aufgaben","Die Länge eines Sprints","Die Teamgröße"],0,"WIP-Limits erzwingen Fokus und machen Engpässe im Arbeitsfluss sichtbar."],["java-m5-l2","Was bedeutet die Multiplizität 0..1 an einem Assoziationsende?",["Genau eines","Höchstens eines, auch keines möglich","Mindestens eines"],1,"0..1 erlaubt das Fehlen der Beziehung — in Java oft ein Optional oder ein nullbares Feld."],["java-m6-l1","Ein Feld akzeptiert Werte von 1 bis 100. Welche Grenzwerte testest du?",["Nur 1 und 100","0, 1, 100, 101","Nur 50"],1,"Die Grenzwertanalyse prüft jeweils direkt innerhalb und außerhalb der Bereichsgrenzen."],["java-m7-l1","Was ist der Unterschied zwischen JDK und JRE?",["Kein Unterschied","Das JDK enthält zusätzlich Compiler und Entwicklerwerkzeuge","Das JRE ist neuer"],1,"Zum Entwickeln brauchst du das JDK; das JRE genügt nur zum Ausführen."],["java-m7-l2","Was ergibt in Java 7 / 2 bei zwei int-Werten?",["3.5","3","Einen Kompilierfehler"],1,"Bei zwei Ganzzahlen wird ganzzahlig dividiert und der Rest abgeschnitten."],["java-m7-l2","Welcher Wert steht in a nach int[] x={1,2}; int[] y=x; y[0]=9;",["x[0] ist 1","x[0] ist 9","Es entsteht ein Fehler"],1,"Arrays sind Referenztypen — beide Variablen zeigen auf dasselbe Objekt."],["java-m7-l3","Warum liefert \"abc\" == new String(\"abc\") den Wert false?",["Weil der Inhalt unterschiedlich ist","Weil == bei Objekten die Referenz vergleicht und new ein neues Objekt erzeugt","Weil Strings nicht vergleichbar sind"],1,"Inhaltlich vergleicht man mit equals()."],["java-m7-l4","Was bewirkt das Schlüsselwort final bei einer lokalen Variablen?",["Sie kann nach der ersten Zuweisung nicht neu zugewiesen werden","Das Objekt wird unveränderlich","Sie wird statisch"],0,"final schützt die Referenz, nicht den Inhalt des referenzierten Objekts."],["java-m8-l1","Was passiert, wenn ein Konstruktor eine Exception wirft?",["Das Objekt existiert halbfertig","Es entsteht kein gültiges Objekt, die Referenz wird nicht zugewiesen","Der Konstruktor wird wiederholt"],1,"Deshalb ist der Konstruktor der richtige Ort für Validierung."],["java-m8-l2","Was bedeutet der Modifier protected?",["Zugriff nur in derselben Klasse","Zugriff im selben Paket und in Unterklassen","Zugriff von überall"],1,"private ist enger, public weiter; ohne Angabe gilt package-private."],["java-m8-l3","Kann ein Interface Felder mit veränderlichem Zustand enthalten?",["Ja, beliebig","Nein, nur Konstanten (public static final)","Nur private Felder"],1,"Zustand ist genau der Unterschied zur abstrakten Klasse."],["java-m8-l4","Was ist bei einem record automatisch unveränderlich?",["Nur der Konstruktor","Alle Komponenten, sie erhalten final-Felder","Nichts"],1,"Records sind als unveränderliche Datenträger konzipiert."],["java-m9-l1","Welche Collection eignet sich, wenn Reihenfolge UND Eindeutigkeit gefordert sind?",["HashSet","LinkedHashSet","ArrayList"],1,"LinkedHashSet verhindert Duplikate und bewahrt die Einfügereihenfolge."],["java-m9-l2","Was passiert, wenn equals überschrieben wird, hashCode aber nicht?",["Nichts","Das Objekt wird in HashSet und HashMap nicht wiedergefunden","Der Code kompiliert nicht"],1,"Die Hash-basierten Sammlungen suchen dann im falschen Bucket."],["java-m9-l3","Warum lässt sich verarbeite(List<String>) und verarbeite(List<Integer>) nicht überladen?",["Wegen Type Erasure haben beide zur Laufzeit dieselbe Signatur","Weil Java keine Überladung kennt","Weil List nicht generisch ist"],0,"Nach dem Löschen der Typinformation sind die Methoden nicht mehr unterscheidbar."],["java-m9-l4","Was löst eine ConcurrentModificationException typischerweise aus?",["Zwei Threads","Das Entfernen eines Elements während einer for-each-Schleife","Ein zu großes Array"],1,"Der Iterator erkennt die strukturelle Änderung und bricht bewusst ab (Fail-Fast)."],["java-m10-l1","Welche Exception-Art muss der Compiler behandelt sehen?",["RuntimeException","Checked Exception","Error"],1,"Checked Exceptions erzwingen catch oder throws."],["java-m10-l2","Was passiert bei try-with-resources, wenn close() ebenfalls eine Exception wirft?",["Sie überschreibt die ursprüngliche","Sie wird als suppressed exception angehängt","Sie wird ignoriert"],1,"So bleibt der ursprüngliche Fehler erhalten und sichtbar."],["java-m11-l1","Wofür steht die Methodenreferenz String::isBlank?",["Für ein Lambda s -> s.isBlank()","Für einen Konstruktoraufruf","Für eine statische Variable"],0,"Methodenreferenzen sind die Kurzform für Lambdas, die nur eine Methode aufrufen."],["java-m11-l2","Was passiert bei einer Stream-Pipeline ohne terminale Operation?",["Sie läuft sofort","Es passiert gar nichts, da intermediäre Operationen lazy sind","Es gibt einen Kompilierfehler"],1,"Erst die terminale Operation stößt die Verarbeitung an."],["java-m11-l4","Was ist der Unterschied zwischen orElse und orElseGet?",["Kein Unterschied","orElse wertet sein Argument immer aus, orElseGet nur bei leerem Optional","orElseGet wirft eine Exception"],1,"Bei teuren Fallbacks ist das ein echter Performanceunterschied."],["java-m12-l1","Wodurch entsteht in Java typischerweise ein Memory Leak?",["Durch vergessenes free()","Durch Referenzen, die unnötig gehalten werden, etwa in statischen Sammlungen","Durch zu viele Klassen"],1,"Die Garbage Collection räumt nur auf, was nicht mehr erreichbar ist."],["java-m12-l3","Warum ist Long summe = 0L in einer Millionenschleife problematisch?",["Es kompiliert nicht","Jede Addition erzeugt durch Autoboxing ein neues Objekt","Long kann nicht addieren"],1,"Der Wrapper-Typ erzwingt Boxing und Unboxing bei jedem Schritt."],["java-m13-l2","Was garantiert volatile?",["Atomare Operationen","Nur die Sichtbarkeit von Änderungen zwischen Threads","Gegenseitigen Ausschluss"],1,"Für atomares Hochzählen braucht es AtomicInteger oder synchronized."],["java-m13-l3","Wie viele Threads sind für rein rechenintensive Aufgaben sinnvoll?",["So viele wie möglich","Etwa so viele wie Prozessorkerne","Immer genau einer"],1,"Mehr Threads bringen bei reiner Rechenlast nur Kontextwechsel."],["java-m14-l1","Welcher Typ eignet sich für einen gespeicherten Zeitstempel?",["LocalDateTime","Instant (UTC)","LocalTime"],1,"Instant ist zeitzonenunabhängig und damit eindeutig — lokale Zeiten brechen bei der Zeitumstellung."],["java-m14-l2","Warum sollte beim Dateizugriff das Encoding explizit angegeben werden?",["Um Speicher zu sparen","Weil sonst plattformabhängig kodiert wird und Umlaute brechen","Weil UTF-8 langsamer ist"],1,"Der Klassiker: lokal korrekt, auf dem Server zerschossen."],["java-m15-l1","Was prüft assertThrows?",["Dass kein Fehler auftritt","Dass eine bestimmte Exception geworfen wird","Die Ausführungszeit"],1,"Der geworfene Fehler lässt sich zusätzlich auf seine Meldung prüfen."],["java-m15-l3","Was sagt eine hohe Code Coverage NICHT aus?",["Welche Zeilen ausgeführt wurden","Dass das Verhalten tatsächlich geprüft wurde","Welcher Code erreichbar ist"],1,"Ein Test ohne Assertion erzeugt Abdeckung, aber keine Sicherheit."],["java-m16-l1","Was bedeutet der Scope provided in Maven?",["Die Abhängigkeit wird zur Laufzeit von der Umgebung bereitgestellt","Sie wird nie gebraucht","Sie gilt nur für Tests"],0,"Typisch für Bibliotheken, die der Applikationsserver mitbringt."],["java-m16-l2","Warum Platzhalter {} statt String-Konkatenation im Logaufruf?",["Aus Stilgründen","Weil die Auswertung nur bei aktivem Level erfolgt","Weil + nicht erlaubt ist"],1,"Das spart bei deaktiviertem DEBUG-Level messbar Rechenzeit."],["java-m17-l1","Warum schützt PreparedStatement vor SQL-Injection?",["Es entfernt Sonderzeichen","Es trennt SQL-Struktur von Daten, Parameter ändern die Abfragelogik nicht","Es verschlüsselt die Abfrage"],1,"Die Abfrage wird geparst, bevor die Parameter eingesetzt werden."],["java-m17-l2","Was bedeutet Autocommit in JDBC?",["Nichts wird gespeichert","Jede einzelne Anweisung wird sofort festgeschrieben","Alles wird beim Schließen geschrieben"],1,"Für mehrteilige fachliche Einheiten muss Autocommit abgeschaltet werden."],["java-m18-l1","Welcher Teil eines Stacktrace nennt die eigentliche Ursache?",["Die erste at-Zeile","Das unterste \"Caused by\"","Die letzte Zeile der Datei"],1,"Verschachtelte Ursachen stehen von außen nach innen — ganz unten die Wurzel."],["java-m19-l1","Welches SOLID-Prinzip verletzt eine Klasse, die Daten lädt, rechnet und E-Mails verschickt?",["Single Responsibility","Liskov Substitution","Interface Segregation"],0,"Drei Gründe zur Änderung in einer Klasse."],["java-m19-l3","Was ist die Voraussetzung für sicheres Refactoring?",["Eine gute IDE","Tests, die das bestehende Verhalten absichern","Ein Code-Review"],1,"Ohne Tests kann niemand belegen, dass sich das Verhalten nicht geändert hat."],["java-m20-l1","Warum liefert Integer a=127,b=127; a==b true, bei 128 aber false?",["Wegen eines Compilerfehlers","Java cacht Integer von -128 bis 127, darüber entstehen neue Objekte","Weil 128 zu groß für int ist"],1,"Genau deshalb dürfen Wrapper-Typen nie mit == verglichen werden."],["java-m20-l2","Womit speichert man Passwörter korrekt?",["MD5","SHA-256 ohne Salt","bcrypt, scrypt oder Argon2 mit Salt"],2,"Bewusst langsame Verfahren mit Salt machen massenhaftes Durchprobieren unwirtschaftlich."],["java-m20-l3","Was muss beim Fangen einer InterruptedException geschehen?",["Nichts weiter","Den Interrupt-Status mit Thread.currentThread().interrupt() wiederherstellen","Den Thread sofort beenden"],1,"Sonst geht das Abbruchsignal verloren und übergeordnete Schichten können nicht sauber herunterfahren."],["java-m21-l1","Was macht die Annotation @SpringBootApplication?",["Sie startet einen Webserver","Sie bündelt @Configuration, @EnableAutoConfiguration und @ComponentScan","Sie erzeugt die Datenbank"],1,"Eine Annotation für die drei Bausteine, die jede Spring-Boot-Anwendung braucht."],["java-m21-l2","Welche Stereotyp-Annotation kennzeichnet eine Geschäftslogik-Bean?",["@Entity","@Service","@Configuration"],1,"@Service ist eine Spezialisierung von @Component für die Serviceschicht."],["java-m21-l2","Welchen Scope hat eine Spring-Bean standardmäßig?",["prototype","singleton","request"],1,"Eine Instanz pro Container — deshalb müssen Beans zustandslos sein."],["java-m21-l3","Wie aktiviert man ein Spring-Profil von außen?",["Durch Neukompilieren","Über die Umgebungsvariable SPRING_PROFILES_ACTIVE","Gar nicht"],1,"So wandert dasselbe Artefakt unverändert durch alle Umgebungen."],["java-m22-l1","Welcher Statuscode gehört zu einem erfolgreichen DELETE ohne Rückgabeinhalt?",["200","204","404"],1,"204 No Content signalisiert Erfolg ohne Antwortkörper."],["java-m22-l1","Wie benennt man REST-Ressourcen sinnvoll?",["Als Verben wie /getBestellung","Als Substantive im Plural wie /bestellungen/42","Als Abkürzungen"],1,"Die Aktion steckt bereits in der HTTP-Methode."],["java-m22-l2","Was löst eine fehlgeschlagene Bean Validation im Controller aus?",["Eine MethodArgumentNotValidException","Einen Kompilierfehler","Ein stilles Ignorieren"],0,"Sie wird üblicherweise zentral im @RestControllerAdvice auf 400 abgebildet."],["java-m22-l3","Welche Schicht darf HTTP-Typen wie ResponseEntity kennen?",["Der Service","Nur der Controller","Das Repository"],1,"Ein sauberer Service ist auch aus einem Batchlauf heraus aufrufbar."],["java-m23-l1","Woraus leitet Spring Data die Abfrage einer Repository-Methode ab?",["Aus dem Methodennamen oder einer @Query-Annotation","Aus dem Rückgabetyp","Aus dem Klassennamen"],0,"findByStatusOrderByDatumDesc wird direkt in eine Abfrage übersetzt."],["java-m23-l2","Wo gehört @Transactional üblicherweise hin?",["An das Repository","An die Serviceschicht","An den Controller"],1,"Erst die Geschäftsoperation bildet die fachliche Einheit."],["java-m23-l2","Warum hat @Transactional an einer privaten Methode keine Wirkung?",["Weil private Methoden zu schnell sind","Weil der Proxy-Mechanismus nur öffentliche Methoden abfangen kann","Weil Spring das verbietet"],1,"Beim Standard-Proxy greift der Transaktionsinterzeptor nur bei öffentlichen Aufrufen von außen."],["java-m23-l3","Wodurch unterscheidet sich eine Projektion von einer Entity-Abfrage?",["Sie lädt nur die benötigten Felder statt ganzer Entities","Sie ist immer sortiert","Sie umgeht die Datenbank"],0,"Weniger Daten, keine Lazy-Beziehungen — oft die sauberste Lösung gegen N+1."],["java-m24-l1","Welche Testart eignet sich zum Prüfen eines Repositorys?",["@WebMvcTest","@DataJpaTest","Plain JUnit ohne Spring"],1,"@DataJpaTest lädt nur die Persistenzschicht samt Testdatenbank."],["java-m24-l2","Wann ist das Abschalten von CSRF vertretbar?",["Immer","Bei zustandslosen Token-APIs ohne Cookie-Sitzungen","Nie"],1,"Bei formularbasierten Sitzungen mit Cookies ist CSRF-Schutz dagegen zwingend."],["java-m24-l3","Was unterscheidet Liveness von Readiness?",["Kein Unterschied","Liveness fragt, ob der Prozess läuft; Readiness, ob er gerade Anfragen bedienen kann","Readiness startet den Container neu"],1,"Externe Abhängigkeiten gehören in Readiness, nie in Liveness."]]);
-var RP_LITERAL_3=window.RP_LITERALS[3];
-var RP_EXTRA_REVISIONS=RP_LITERAL_3;
-RP_EXTRA_REVISIONS.forEach(function(item){
- var index=Number(item.extraId.slice(2));
- var old=EXTRA_CARDS[index];
- if(!old||old[0]!==item.lesson)throw new Error('Zusatzkarte falsch zugeordnet: '+item.extraId);
- EXTRA_CARDS[index]=[item.lesson,item.q,item.options,item.correct,item.explain];
-});
-EXTRA_CARDS.forEach(function(row, idx){
-  var lid = row[0];
-  var mod = MODULES.find(function(m){ return m.lessons.some(function(l){ return l.id === lid; }); });
-  if(!mod) return;
-  var les = mod.lessons.find(function(l){ return l.id === lid; });
-  CARDS.push({ id:'x#'+idx+(typeof RP_EXTRA_REVISIONS!=='undefined'&&RP_EXTRA_REVISIONS.some(function(q){return q.extraId==='x#'+idx;})?'@2026-11-07-full-v3':''), q:row[1], options:row[2], correct:row[3], explain:row[4],
-               lessonId:lid, lessonTitle:les.title, moduleTitle:mod.title, part:mod.part });
+var RP_EXTRA_INDEX=[["x#0@2026-11-07-full-v3","m1-l1"],["x#1@2026-11-07-full-v3","m1-l2"],["x#2@2026-11-07-full-v3","m1-l3"],["x#3@2026-11-07-full-v3","m1-l3"],["x#4@2026-11-07-full-v3","m1-l4"],["x#5@2026-11-07-full-v3","m2-l1"],["x#6@2026-11-07-full-v3","m2-l2"],["x#7@2026-11-07-full-v3","m2-l3"],["x#8@2026-11-07-full-v3","m3-l1"],["x#9@2026-11-07-full-v3","m3-l2"],["x#10@2026-11-07-full-v3","m3-l3"],["x#11@2026-11-07-full-v3","m3-l4"],["x#12@2026-11-07-full-v3","m4-l1"],["x#13@2026-11-07-full-v3","m4-l2"],["x#14@2026-11-07-full-v3","m4-l3"],["x#15@2026-11-07-full-v3","m4-l3"],["x#16@2026-11-07-full-v3","m5-l1"],["x#17@2026-11-07-full-v3","m5-l2"],["x#18@2026-11-07-full-v3","m5-l3"],["x#19@2026-11-07-full-v3","m5-l4"],["x#20@2026-11-07-full-v3","m6-l1"],["x#21@2026-11-07-full-v3","m6-l2"],["x#22@2026-11-07-full-v3","m6-l3"],["x#23@2026-11-07-full-v3","m6-l3"],["x#24@2026-11-07-full-v3","m7-l1"],["x#25@2026-11-07-full-v3","m7-l2"],["x#26@2026-11-07-full-v3","m7-l3"],["x#27@2026-11-07-full-v3","m7-l3"],["x#28@2026-11-07-full-v3","m7-l4"],["x#29@2026-11-07-full-v3","m7-l5"],["x#30@2026-11-07-full-v3","m8-l1"],["x#31@2026-11-07-full-v3","m8-l2"],["x#32@2026-11-07-full-v3","m8-l2"],["x#33@2026-11-07-full-v3","m8-l3"],["x#34@2026-11-07-full-v3","m9-l1"],["x#35@2026-11-07-full-v3","m9-l2"],["x#36@2026-11-07-full-v3","m9-l2"],["x#37@2026-11-07-full-v3","m9-l3"],["x#38@2026-11-07-full-v3","m10-l1"],["x#39@2026-11-07-full-v3","m10-l1"],["x#40@2026-11-07-full-v3","m10-l2"],["x#41@2026-11-07-full-v3","m10-l3"],["x#42@2026-11-07-full-v3","m10-l3"],["x#43@2026-11-07-full-v3","m10-l4"],["x#44@2026-11-07-full-v3","m11-l1"],["x#45@2026-11-07-full-v3","m11-l1"],["x#46@2026-11-07-full-v3","m11-l2"],["x#47@2026-11-07-full-v3","m11-l2"],["x#48@2026-11-07-full-v3","m11-l3"],["x#49@2026-11-07-full-v3","m11-l4"],["x#50@2026-11-07-full-v3","m12-l1"],["x#51@2026-11-07-full-v3","m12-l1"],["x#52@2026-11-07-full-v3","m12-l2"],["x#53@2026-11-07-full-v3","m12-l3"],["x#54@2026-11-07-full-v3","m12-l4"],["x#55@2026-11-07-full-v3","m12-l5"],["x#56@2026-11-07-full-v3","m13-l1"],["x#57@2026-11-07-full-v3","m13-l1"],["x#58@2026-11-07-full-v3","m13-l2"],["x#59@2026-11-07-full-v3","m13-l2"],["x#60@2026-11-07-full-v3","m13-l3"],["x#61@2026-11-07-full-v3","m14-l1"],["x#62@2026-11-07-full-v3","m14-l1"],["x#63@2026-11-07-full-v3","m14-l2"],["x#64@2026-11-07-full-v3","m14-l2"],["x#65@2026-11-07-full-v3","m14-l3"],["x#66@2026-11-07-full-v3","m14-l4"],["x#67@2026-11-07-full-v3","m15-l1"],["x#68@2026-11-07-full-v3","m15-l2"],["x#69@2026-11-07-full-v3","m15-l3"],["x#70@2026-11-07-full-v3","m15-l3"],["x#71@2026-11-07-full-v3","m15-l3"],["x#72@2026-11-07-full-v3","m15-l4"],["x#73@2026-11-07-full-v3","m15-l4"],["x#74@2026-11-07-full-v3","m16-l1"],["x#75@2026-11-07-full-v3","m16-l1"],["x#76@2026-11-07-full-v3","m16-l2"],["x#77@2026-11-07-full-v3","m16-l2"],["x#78@2026-11-07-full-v3","m16-l3"],["x#79@2026-11-07-full-v3","m16-l3"],["x#80@2026-11-07-full-v3","m16-l4"],["x#81@2026-11-07-full-v3","m16-l4"],["x#82@2026-11-07-full-v3","m16-l4"],["x#83@2026-11-07-full-v3","m17-l1"],["x#84@2026-11-07-full-v3","m17-l2"],["x#85@2026-11-07-full-v3","m17-l2"],["x#86@2026-11-07-full-v3","m17-l2"],["x#87@2026-11-07-full-v3","m17-l3"],["x#88@2026-11-07-full-v3","m17-l3"],["x#89@2026-11-07-full-v3","m18-l1"],["x#90@2026-11-07-full-v3","m18-l2"],["x#91@2026-11-07-full-v3","m18-l2"],["x#92@2026-11-07-full-v3","m18-l3"],["x#93@2026-11-07-full-v3","m18-l3"],["x#94@2026-11-07-full-v3","m18-l4"],["x#95@2026-11-07-full-v3","m18-l4"],["x#96@2026-11-07-full-v3","m18-l4"],["x#97@2026-11-07-full-v3","m19-l1"],["x#98@2026-11-07-full-v3","m19-l1"],["x#99@2026-11-07-full-v3","m19-l2"],["x#100@2026-11-07-full-v3","m19-l2"],["x#101@2026-11-07-full-v3","m19-l3"],["x#102@2026-11-07-full-v3","m19-l3"],["x#103@2026-11-07-full-v3","m19-l4"],["x#104@2026-11-07-full-v3","m19-l4"],["x#105@2026-11-07-full-v3","m19-l4"],["x#106@2026-11-07-full-v3","m20-l1"],["x#107@2026-11-07-full-v3","m20-l1"],["x#108@2026-11-07-full-v3","m20-l2"],["x#109@2026-11-07-full-v3","m20-l2"],["x#110@2026-11-07-full-v3","m20-l3"],["x#111@2026-11-07-full-v3","m20-l3"],["x#112@2026-11-07-full-v3","m20-l4"],["x#113@2026-11-07-full-v3","m20-l4"],["x#114@2026-11-07-full-v3","m21-l1"],["x#115@2026-11-07-full-v3","m21-l1"],["x#116@2026-11-07-full-v3","m21-l2"],["x#117@2026-11-07-full-v3","m21-l2"],["x#118@2026-11-07-full-v3","m21-l3"],["x#119@2026-11-07-full-v3","m21-l3"],["x#120@2026-11-07-full-v3","m21-l4"],["x#121@2026-11-07-full-v3","m21-l4"],["x#122@2026-11-07-full-v3","m21-l5"],["x#123@2026-11-07-full-v3","m21-l5"],["x#124@2026-11-07-full-v3","m22-l1"],["x#125@2026-11-07-full-v3","m22-l1"],["x#126@2026-11-07-full-v3","m22-l1"],["x#127@2026-11-07-full-v3","m22-l2"],["x#128@2026-11-07-full-v3","m22-l2"],["x#129@2026-11-07-full-v3","m22-l3"],["x#130@2026-11-07-full-v3","m22-l3"],["x#131@2026-11-07-full-v3","m23-l1"],["x#132@2026-11-07-full-v3","m23-l1"],["x#133@2026-11-07-full-v3","m23-l2"],["x#134@2026-11-07-full-v3","m23-l2"],["x#135@2026-11-07-full-v3","m23-l3"],["x#136@2026-11-07-full-v3","m23-l3"],["x#137@2026-11-07-full-v3","m23-l3"],["x#138@2026-11-07-full-v3","m24-l1"],["x#139@2026-11-07-full-v3","m24-l1"],["x#140@2026-11-07-full-v3","m24-l2"],["x#141@2026-11-07-full-v3","m24-l2"],["x#142@2026-11-07-full-v3","m24-l2"],["x#143@2026-11-07-full-v3","m24-l3"],["x#144@2026-11-07-full-v3","m24-l3"],["x#145@2026-11-07-full-v3","m24-l4"],["x#146@2026-11-07-full-v3","m24-l4"],["x#147@2026-11-07-full-v3","m25-l1"],["x#148@2026-11-07-full-v3","m25-l1"],["x#149@2026-11-07-full-v3","m25-l2"],["x#150@2026-11-07-full-v3","m25-l2"],["x#151@2026-11-07-full-v3","m25-l3"],["x#152@2026-11-07-full-v3","m25-l3"],["x#153@2026-11-07-full-v3","m25-l3"],["x#154@2026-11-07-full-v3","m26-l1"],["x#155@2026-11-07-full-v3","m26-l1"],["x#156@2026-11-07-full-v3","m26-l2"],["x#157@2026-11-07-full-v3","m26-l2"],["x#158@2026-11-07-full-v3","m26-l3"],["x#159@2026-11-07-full-v3","m26-l3"],["x#160@2026-11-07-full-v3","m27-l1"],["x#161@2026-11-07-full-v3","m27-l1"],["x#162@2026-11-07-full-v3","m27-l2"],["x#163@2026-11-07-full-v3","m27-l2"],["x#164@2026-11-07-full-v3","m28-l1"],["x#165@2026-11-07-full-v3","m28-l1"],["x#166@2026-11-07-full-v3","m28-l2"],["x#167@2026-11-07-full-v3","m28-l2"],["x#168@2026-11-07-full-v3","m28-l2"],["x#169@2026-11-07-full-v3","m28-l3"],["x#170@2026-11-07-full-v3","m28-l3"],["x#171@2026-11-07-full-v3","m28-l4"],["x#172@2026-11-07-full-v3","m28-l4"],["x#173@2026-11-07-full-v3","m28-l4"],["x#174@2026-11-07-full-v3","m28-l4"],["x#175@2026-11-07-full-v3","m29-l1"],["x#176@2026-11-07-full-v3","m29-l1"],["x#177@2026-11-07-full-v3","m29-l1"],["x#178@2026-11-07-full-v3","m29-l1"],["x#179@2026-11-07-full-v3","m29-l2"],["x#180@2026-11-07-full-v3","m29-l2"],["x#181@2026-11-07-full-v3","m29-l3"],["x#182@2026-11-07-full-v3","m29-l3"],["x#183@2026-11-07-full-v3","m30-l1"],["x#184@2026-11-07-full-v3","m30-l1"],["x#185@2026-11-07-full-v3","m30-l1"],["x#186@2026-11-07-full-v3","m30-l1"],["x#187@2026-11-07-full-v3","m30-l2"],["x#188@2026-11-07-full-v3","m30-l2"],["x#189@2026-11-07-full-v3","m30-l2"],["x#190@2026-11-07-full-v3","m30-l3"],["x#191@2026-11-07-full-v3","m30-l3"],["x#192@2026-11-07-full-v3","m30-l3"],["x#193@2026-11-07-full-v3","m31-l1"],["x#194@2026-11-07-full-v3","m31-l2"],["x#195@2026-11-07-full-v3","m31-l3"],["x#196@2026-11-07-full-v3","m31-l4"],["x#197@2026-11-07-full-v3","m31-l5"],["x#198@2026-11-07-full-v3","m32-l1"],["x#199@2026-11-07-full-v3","m32-l2"],["x#200@2026-11-07-full-v3","m32-l3"],["x#201@2026-11-07-full-v3","m32-l4"],["x#202@2026-11-07-full-v3","m33-l1"],["x#203@2026-11-07-full-v3","m33-l2"],["x#204@2026-11-07-full-v3","m33-l3"],["x#205@2026-11-07-full-v3","m33-l4"],["x#206@2026-11-07-full-v3","m34-l1"],["x#207@2026-11-07-full-v3","m34-l2"],["x#208@2026-11-07-full-v3","m34-l3"],["x#209@2026-11-07-full-v3","m34-l4"],["x#210@2026-11-07-full-v3","m34-l5"],["x#211@2026-11-07-full-v3","m35-l1"],["x#212@2026-11-07-full-v3","m35-l2"],["x#213@2026-11-07-full-v3","m35-l3"],["x#214@2026-11-07-full-v3","abap-m1-l1"],["x#215@2026-11-07-full-v3","abap-m1-l2"],["x#216@2026-11-07-full-v3","abap-m1-l4"],["x#217@2026-11-07-full-v3","abap-m1-l4"],["x#218@2026-11-07-full-v3","abap-m2-l1"],["x#219@2026-11-07-full-v3","abap-m2-l2"],["x#220@2026-11-07-full-v3","abap-m3-l2"],["x#221@2026-11-07-full-v3","abap-m3-l3"],["x#222@2026-11-07-full-v3","abap-m4-l1"],["x#223@2026-11-07-full-v3","abap-m5-l2"],["x#224@2026-11-07-full-v3","abap-m6-l1"],["x#225@2026-11-07-full-v3","abap-m7-l0"],["x#226@2026-11-07-full-v3","abap-m7-l1"],["x#227@2026-11-07-full-v3","abap-m7-l2"],["x#228@2026-11-07-full-v3","abap-m8-l1"],["x#229@2026-11-07-full-v3","abap-m8-l3"],["x#230@2026-11-07-full-v3","abap-m9-l1"],["x#231@2026-11-07-full-v3","abap-m9-l2"],["x#232@2026-11-07-full-v3","abap-m10-l1"],["x#233@2026-11-07-full-v3","abap-m10-l4"],["x#234@2026-11-07-full-v3","abap-m11-l1"],["x#235@2026-11-07-full-v3","abap-m12-l1"],["x#236@2026-11-07-full-v3","abap-m12-l2"],["x#237@2026-11-07-full-v3","abap-m13-l2"],["x#238@2026-11-07-full-v3","abap-m14-l1"],["x#239@2026-11-07-full-v3","abap-m15-l1"],["x#240@2026-11-07-full-v3","abap-m16-l1"],["x#241@2026-11-07-full-v3","abap-m17-l1"],["x#242@2026-11-07-full-v3","abap-m17-l2"],["x#243@2026-11-07-full-v3","abap-m18-l1"],["x#244@2026-11-07-full-v3","abap-m19-l1"],["x#245@2026-11-07-full-v3","abap-m20-l3"],["x#246@2026-11-07-full-v3","java-m1-l1"],["x#247@2026-11-07-full-v3","java-m1-l2"],["x#248@2026-11-07-full-v3","java-m1-l4"],["x#249@2026-11-07-full-v3","java-m1-l4"],["x#250@2026-11-07-full-v3","java-m2-l2"],["x#251@2026-11-07-full-v3","java-m3-l3"],["x#252@2026-11-07-full-v3","java-m4-l1"],["x#253@2026-11-07-full-v3","java-m5-l2"],["x#254@2026-11-07-full-v3","java-m6-l1"],["x#255@2026-11-07-full-v3","java-m7-l1"],["x#256@2026-11-07-full-v3","java-m7-l2"],["x#257@2026-11-07-full-v3","java-m7-l2"],["x#258@2026-11-07-full-v3","java-m7-l3"],["x#259@2026-11-07-full-v3","java-m7-l4"],["x#260@2026-11-07-full-v3","java-m8-l1"],["x#261@2026-11-07-full-v3","java-m8-l2"],["x#262@2026-11-07-full-v3","java-m8-l3"],["x#263@2026-11-07-full-v3","java-m8-l4"],["x#264@2026-11-07-full-v3","java-m9-l1"],["x#265@2026-11-07-full-v3","java-m9-l2"],["x#266@2026-11-07-full-v3","java-m9-l3"],["x#267@2026-11-07-full-v3","java-m9-l4"],["x#268@2026-11-07-full-v3","java-m10-l1"],["x#269@2026-11-07-full-v3","java-m10-l2"],["x#270@2026-11-07-full-v3","java-m11-l1"],["x#271@2026-11-07-full-v3","java-m11-l2"],["x#272@2026-11-07-full-v3","java-m11-l4"],["x#273@2026-11-07-full-v3","java-m12-l1"],["x#274@2026-11-07-full-v3","java-m12-l3"],["x#275@2026-11-07-full-v3","java-m13-l2"],["x#276@2026-11-07-full-v3","java-m13-l3"],["x#277@2026-11-07-full-v3","java-m14-l1"],["x#278@2026-11-07-full-v3","java-m14-l2"],["x#279@2026-11-07-full-v3","java-m15-l1"],["x#280@2026-11-07-full-v3","java-m15-l3"],["x#281@2026-11-07-full-v3","java-m16-l1"],["x#282@2026-11-07-full-v3","java-m16-l2"],["x#283@2026-11-07-full-v3","java-m17-l1"],["x#284@2026-11-07-full-v3","java-m17-l2"],["x#285@2026-11-07-full-v3","java-m18-l1"],["x#286@2026-11-07-full-v3","java-m19-l1"],["x#287@2026-11-07-full-v3","java-m19-l3"],["x#288@2026-11-07-full-v3","java-m20-l1"],["x#289@2026-11-07-full-v3","java-m20-l2"],["x#290@2026-11-07-full-v3","java-m20-l3"],["x#291@2026-11-07-full-v3","java-m21-l1"],["x#292@2026-11-07-full-v3","java-m21-l2"],["x#293@2026-11-07-full-v3","java-m21-l2"],["x#294@2026-11-07-full-v3","java-m21-l3"],["x#295@2026-11-07-full-v3","java-m22-l1"],["x#296@2026-11-07-full-v3","java-m22-l1"],["x#297@2026-11-07-full-v3","java-m22-l2"],["x#298@2026-11-07-full-v3","java-m22-l3"],["x#299@2026-11-07-full-v3","java-m23-l1"],["x#300@2026-11-07-full-v3","java-m23-l2"],["x#301@2026-11-07-full-v3","java-m23-l2"],["x#302@2026-11-07-full-v3","java-m23-l3"],["x#303@2026-11-07-full-v3","java-m24-l1"],["x#304@2026-11-07-full-v3","java-m24-l2"],["x#305@2026-11-07-full-v3","java-m24-l3"]];
+RP_EXTRA_INDEX.forEach(function(row){
+  var mod=MODULES.find(function(m){ return m.lessons.some(function(l){ return l.id === row[1]; }); });
+  var les=mod.lessons.find(function(l){ return l.id === row[1]; });
+  CARDS.push({ id:row[0], lessonId:row[1], lessonTitle:les.title, moduleTitle:mod.title, part:mod.part });
 });
 var PARTS = [];
 MODULES.forEach(function(m){ if(PARTS.indexOf(m.part) === -1) PARTS.push(m.part); });
@@ -1427,3 +1184,1418 @@ function renderExercises(){
   return html;
 }
 var ue = { offen:{}, busy:{}, erg:{}, fehler:{}, speichern:null };
+function ueUmschalten(exId){
+  var box = document.getElementById('ue_' + exId);
+  if(!box) return;
+  box.hidden = !box.hidden;
+  ue.offen[exId] = !box.hidden;
+  if(!box.hidden){
+    if(!tutor.ready) tutorInit();
+    var f = document.getElementById('ueFeld_' + exId);
+    if(f) f.focus();
+  }
+}
+function ueSchreiben(exId, wert){
+  state.ueTexte = state.ueTexte || {};
+  var w = String(wert == null ? '' : wert);
+  if(w.trim()) state.ueTexte[exId] = w; else delete state.ueTexte[exId];
+  clearTimeout(ue.speichern);
+  ue.speichern = setTimeout(saveProgress, 900);
+}
+function reviewBeenden(){ review.queue = []; renderContent(); }
+function pruefungNeuStarten(){ exam.active = false; renderContent(); }
+function traceAuswahl(){ tracer.id = null; renderContent(); }
+function seiteNeuLaden(){ location.reload(); }
+function ueTaste(ev, exId){
+  if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){ ev.preventDefault(); uePruefen(exId); }
+}
+function ueLeeren(exId){
+  var f = document.getElementById('ueFeld_' + exId);
+  if(f){ f.value = ''; f.focus(); }
+  ueSchreiben(exId, '');
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueErgZeichnen(exId);
+  var n = document.getElementById('ueNote_' + exId);
+  if(n){ n.className = 'ue-note'; n.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+}
+function ueKnopfStand(exId){
+  var b = document.getElementById('ueBtn_' + exId);
+  if(!b) return;
+  b.disabled = !!ue.busy[exId];
+  b.textContent = ue.busy[exId] ? 'Claude korrigiert …' : 'Lösung prüfen lassen';
+}
+function ueErgZeichnen(exId){
+  var box = document.getElementById('ueErg_' + exId);
+  if(!box) return;
+  var h = ueErgHtml(exId);
+  box.innerHTML = h;
+  box.hidden = !h;
+}
+function ueErgHtml(exId){
+  if(ue.busy[exId]){
+    return '<div class="ue-warten"><span class="kl-spinner" aria-hidden="true"></span>'+
+           '<span>Claude liest deine Lösung gegen die Musterlösung und vergibt Teilpunkte auf den Rechenweg.</span></div>';
+  }
+  if(ue.fehler[exId]){
+    return '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Kein Ergebnis</span>'+esc(ue.fehler[exId])+'</div>';
+  }
+  var r = ue.erg[exId];
+  if(!r) return '';
+  var q = r.max ? r.punkte / r.max : 0;
+  var klasse = q >= 0.8 ? 'gut' : (q >= 0.5 ? 'teils' : 'schwach');
+  var h = '<div class="ue-kopf"><span class="ue-punkte '+klasse+'">'+r.punkte+' / '+r.max+' Punkte</span>'+
+          (r.urteil ? '<span class="ue-urteil">'+esc(r.urteil)+'</span>' : '')+'</div>';
+  if(r.staerken) h += '<div class="kl-rueck gut"><span class="kl-rueck-lbl">Das war richtig</span>'+esc(r.staerken)+'</div>';
+  if(r.luecken)  h += '<div class="kl-rueck luecke"><span class="kl-rueck-lbl">Das hat gefehlt</span>'+esc(r.luecken)+'</div>';
+  if(r.tipp)     h += '<div class="kl-rueck tipp"><span class="kl-rueck-lbl">Fürs nächste Mal</span>'+esc(r.tipp)+'</div>';
+  h += '<div class="ex-meta">Eine Einschätzung, kein amtliches Ergebnis — im Zweifel zählt die Musterlösung. '+
+       'Mit „Lösung anzeigen“ vergleichst du selbst.</div>';
+  return h;
+}
+function ueFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'not_declared':
+    case 'capability_disabled':
+    case 'sampling_disabled':
+      return 'Die Prüfung durch Claude ist hier nicht freigegeben. Vergleiche über „Lösung anzeigen“ selbst — '+
+             'oder nimm den Prüfauftrag mit in den Chat.';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und prüfe dann erneut — dein Text bleibt stehen.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und prüfe noch einmal.';
+    case 'prompt_too_large':
+      return 'Deine Lösung ist zu lang für eine Bewertung. Kürze sie auf den Rechenweg und das Ergebnis.';
+    case 'refused':
+      return 'Diese Antwort konnte nicht bewertet werden. Formuliere sie bitte anders.';
+    case 'invalid_json':
+    case 'empty_completion':
+      return 'Die Bewertung kam nicht in verwertbarer Form zurück. Versuch es gleich noch einmal.';
+    default:
+      return 'Die Prüfung hat nicht geklappt. Versuch es gleich noch einmal — dein Text bleibt stehen.';
+  }
+}
+function ueGeloestAnzeigen(exId){
+  var b = document.getElementById('sv_' + exId);
+  if(b){ b.className = 'ex-btn'; b.textContent = '✓ Gelöst'; }
+  var h = document.getElementById('exh_' + exId);
+  if(h && h.getAttribute('data-ok') !== '1'){
+    h.setAttribute('data-ok', '1');
+    h.insertAdjacentHTML('afterbegin', '<span style="color:var(--success);">✓ </span>');
+  }
+}
+async function uePruefen(exId){
+  var ex = EXERCISES.find(function(e){ return e.id === exId; });
+  if(!ex || ue.busy[exId]) return;
+
+  var feld = document.getElementById('ueFeld_' + exId);
+  var text = (feld ? feld.value : ((state.ueTexte || {})[exId] || '')).trim();
+  var note = document.getElementById('ueNote_' + exId);
+  if(!text){
+    if(note){ note.className = 'ue-note warn'; note.textContent = 'Schreib zuerst etwas ins Feld — ein angefangener Rechenweg reicht.'; }
+    if(feld) feld.focus();
+    return;
+  }
+  if(note){ note.className = 'ue-note'; note.textContent = 'Strg + Enter prüft · +' + xpAnzeige(10) + ' XP'; }
+
+  if(!tutor.ready) await tutorInit();
+  if(!tutor.fn){
+    delete ue.erg[exId];
+    ue.fehler[exId] = ueFehlertext('not_granted');
+    ueErgZeichnen(exId);
+    var p = document.getElementById('prompt_' + exId);
+    if(p) p.hidden = false;
+    return;
+  }
+
+  ue.busy[exId] = true;
+  delete ue.erg[exId];
+  delete ue.fehler[exId];
+  ueKnopfStand(exId);
+  ueErgZeichnen(exId);
+
+  var max = KL_PUNKTE[ex.level] || 8;
+  var anweisung = [
+    'Du bist Korrektor der IHK-Abschlusspruefung Teil 1 im Beruf Fachinformatiker fuer',
+    'Anwendungsentwicklung. Bewerte die Loesung eines Prueflings zu EINER Aufgabe.',
+    '',
+    'BEWERTUNGSREGELN:',
+    '- Bewerte streng, aber fair, so wie ein echter Korrektor.',
+    '- Der RECHENWEG zaehlt: Teilpunkte fuer richtige Ansaetze, auch wenn das Endergebnis falsch ist.',
+    '- Ein richtiges Ergebnis ohne nachvollziehbaren Weg bekommt nicht die volle Punktzahl.',
+    '- Einheiten, Rundungen und ausformulierte Begruendungen gehoeren dazu.',
+    '- Die Musterloesung ist nicht der einzige Weg: ein anderer, fachlich richtiger Weg ist voll zu werten.',
+    '- Eine leere oder themenfremde Antwort bekommt 0 Punkte.',
+    '- Erfinde keine Paragraphen, Normen, Zahlen oder Fristen.',
+    '',
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau dieser Form:',
+    '{"punkte": 6, "max": ' + max + ', "urteil": "ein Halbsatz, z. B. im Kern richtig, Einheit fehlt",',
+    ' "staerken": "ein bis zwei Saetze, was richtig war",',
+    ' "luecken": "ein bis drei Saetze, was fehlt oder falsch ist",',
+    ' "tipp": "ein Satz, worauf der Pruefling beim naechsten Mal achten soll"}',
+    'Auf Deutsch, mit Du-Anrede. Kein Text vor oder nach dem JSON.',
+    '',
+    'AUFGABE (' + max + ' Punkte, Thema: ' + ex.topic + ', Stufe: ' + (LEVEL_NAMES[ex.level] || '') + ')',
+    ex.title,
+    klText(ex.task).slice(0, 1600),
+    '',
+    'MUSTERLOESUNG:',
+    String(ex.solution || '').slice(0, 2400),
+    '',
+    'HINWEIS ZUR BEWERTUNG:',
+    klText(ex.solutionNote || '').slice(0, 800),
+    '',
+    'ANTWORT DES PRUEFLINGS:',
+    text.slice(0, 2400)
+  ].join('\n');
+
+  try{
+    var r = await kiJson(anweisung, 'complex');
+    if(Array.isArray(r)) r = r[0];
+    if(!r || typeof r !== 'object') throw { code:'invalid_json' };
+    var punkte = Math.max(0, Math.min(max, Math.round(Number(r.punkte) || 0)));
+    ue.erg[exId] = {
+      punkte: punkte,
+      max: max,
+      urteil: String(r.urteil || ''),
+      staerken: String(r.staerken || ''),
+      luecken: String(r.luecken || ''),
+      tipp: String(r.tipp || '')
+    };
+    awardXp(10, 'Lösung prüfen lassen', 'uepruef:' + exId);
+    state.tutorFragen = (state.tutorFragen || 0) + 1;
+    if(state.tutorFragen >= 1) grantBadge('tutor_fan');
+    if(state.tutorFragen >= 25) grantBadge('tutor_profi');
+    if(punkte >= max * 0.8 && !state.solved[exId]){
+      state.solved[exId] = Date.now();
+      awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + exId);
+      checkMilestones();
+      ueGeloestAnzeigen(exId);
+    }
+    saveProgress();
+  }catch(e){
+    ue.fehler[exId] = ueFehlertext(e && e.code);
+  }finally{
+    ue.busy[exId] = false;
+    ueKnopfStand(exId);
+    ueErgZeichnen(exId);
+  }
+}
+function shuffled(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+var review = { queue:[], idx:0, picked:-1, right:0, done:0, mode:'due', konf:null };
+var KONF_STUFEN = [
+  { k:'sicher',   t:'Sicher',   s:'Das sitzt' },
+  { k:'unsicher', t:'Unsicher', s:'Eher Gefühl' },
+  { k:'geraten',  t:'Geraten',  s:'Keine Ahnung' }
+];
+function setzeKonf(k){
+  if(review.picked !== -1) return;   /* nach dem Aufdecken nicht mehr aenderbar */
+  review.konf = (review.konf === k) ? null : k;
+  renderContent();
+}
+function merkeKonf(ok){
+  if(!review.konf) return;
+  state.kalib = state.kalib || {};
+  var e = state.kalib[review.konf] || { n:0, r:0 };
+  e.n++; if(ok) e.r++;
+  state.kalib[review.konf] = e;
+}
+function kalibQuote(k){
+  var e = (state.kalib || {})[k];
+  if(!e || !e.n) return null;
+  return e.r / e.n;
+}
+function startReview(mode){
+  var pool;
+  if(mode === 'new'){ pool = shuffled(newCards()).slice(0, 12); }
+  else if(mode === 'weak'){
+    pool = shuffled(CARDS.filter(function(c){
+      var s = state.stats[c.id];
+      return s && s.wrong > 0;
+    })).slice(0, 15);
+  } else { pool = shuffled(dueCards()); }
+  review = { queue:pool, idx:0, picked:-1, right:0, done:0, mode:mode };
+  state.currentId = 'review';
+  render();
+}
+function pickReview(i){
+  if(review.picked !== -1) return;
+  review.picked = i;
+  var card = review.queue[review.idx];
+  var ok = i === card.correct;
+  review.done++;
+  if(ok) review.right++;
+  var hadWrong = state.stats[card.id] && state.stats[card.id].wrong > 0;
+  recordAnswer(card.id, ok);
+  merkeKonf(ok);
+  if(ok && hadWrong) grantBadge('comeback');
+  /* Dreimal daneben und trotzdem geknackt */
+  if(ok && state.stats[card.id] && state.stats[card.id].wrong >= 3) grantBadge('dickkopf');
+
+  var tk = todayKey();
+  if(!state.cardsToday || state.cardsToday.day !== tk) state.cardsToday = { day:tk, n:0 };
+  state.cardsToday.n++;
+  if(state.cardsToday.n >= 25) grantBadge('cards25');
+  if(state.cardsToday.n >= 50) grantBadge('cards50');
+
+  if(ok){
+    var s = state.srs[card.id];
+    awardXp(5 + ((s && s.iv >= 7) ? 3 : 0), 'Karte gewusst');
+  }
+  renderContent();
+}
+function rateAndNext(rating){
+  var card = review.queue[review.idx];
+  rateCard(card.id, rating);
+  review.idx++;
+  review.picked = -1;
+  review.konf = null;
+  renderContent();
+  renderSidebar();
+}
+function renderReview(){
+  var due = dueCards().length, fresh = newCards().length;
+
+  if(!review.queue.length || review.idx >= review.queue.length){
+    var finished = review.done > 0;
+    var h = '<div class="breadcrumb">Training</div><h1>Wiederholen</h1>';
+    if(finished){
+      var pct = Math.round((review.right / review.done) * 100);
+      h += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+           '<div class="score-sub">'+review.right+' von '+review.done+' richtig · Session abgeschlossen</div></div>';
+    } else {
+      h += '<p class="intro-sub">Aktives Abrufen schlägt Wiederlesen — deutlich. Jede Frage aus allen '+TOTAL+' Lektionen wird hier nach dem Vergessenskurven-Prinzip wieder vorgelegt: richtig beantwortete Karten kommen in immer größeren Abständen, falsche noch am selben Tag.</p>';
+    }
+    h += '<div class="today-grid" style="margin-top:20px;">';
+    h += '<div class="today-item '+(due?'due accent':'')+'" data-onclick="startReview(\'due\')"><span class="ti-label">Heute fällig</span><span class="ti-value">'+due+'</span><span class="ti-sub">'+(due?'Jetzt wiederholen':'Alles erledigt 🎉')+'</span></div>';
+    h += '<div class="today-item" data-onclick="startReview(\'new\')"><span class="ti-label">Neue Karten</span><span class="ti-value">'+fresh+'</span><span class="ti-sub">12 neue lernen</span></div>';
+    var weakCount = CARDS.filter(function(c){ var s = state.stats[c.id]; return s && s.wrong > 0; }).length;
+    h += '<div class="today-item '+(weakCount?'weak':'')+'" data-onclick="startReview(\'weak\')"><span class="ti-label">Fehlerkarten</span><span class="ti-value">'+weakCount+'</span><span class="ti-sub">Gezielt nachholen</span></div>';
+    h += '</div>';
+
+    var learned = CARDS.filter(function(c){ return !!state.srs[c.id]; }).length;
+    h += '<div class="ex-panel" style="margin-top:22px;"><strong>Dein Kartenstand:</strong> '+learned+' von '+CARDS.length+' Karten im System. '+
+         (learned < CARDS.length ? 'Karten landen automatisch hier, sobald du das Quiz einer Lektion beantwortest — oder du startest sie direkt über „Neue Karten".' : 'Alle Karten sind eingeplant.')+'</div>';
+    return h;
+  }
+
+  var card = review.queue[review.idx];
+  var revealed = review.picked !== -1;
+  var s = srsOf(card.id);
+  var html = '<div class="srs-stage">';
+  html += '<div class="srs-progress"><span>'+(review.idx+1)+' / '+review.queue.length+'</span>'+
+          '<div class="srs-bar"><div style="width:'+Math.round((review.idx/review.queue.length)*100)+'%"></div></div>'+
+          '<span>'+review.right+' richtig</span>'+
+          '<button class="ex-btn" style="padding:4px 10px;" data-onclick="reviewBeenden()">Beenden</button></div>';
+
+  html += '<div class="srs-card">';
+  html += '<div class="srs-meta"><span class="badge topic">'+esc(card.moduleTitle)+'</span>'+
+          (s ? '<span class="mastery-pill">Intervall: '+(s.iv||0)+' Tage</span>' : '<span class="mastery-pill mid">neue Karte</span>')+'</div>';
+  html += '<div class="srs-q">'+esc(card.q)+'</div>';
+
+  if(!revealed){
+    html += '<div class="konf"><span class="konf-frage">Wie sicher bist du — <em>bevor</em> du antwortest?</span>'+
+      '<div class="konf-reihe">';
+    KONF_STUFEN.forEach(function(st){
+      html += '<button type="button" class="konf-btn'+(review.konf === st.k ? ' an' : '')+'" '+
+        'aria-pressed="'+(review.konf === st.k ? 'true' : 'false')+'" '+
+        'data-onclick="setzeKonf(\''+st.k+'\')">'+st.t+
+        '<span class="konf-sub">'+st.s+'</span></button>';
+    });
+    html += '</div></div>';
+  } else if(review.konf){
+    var korrekt = review.picked === card.correct;
+    var urteil = (review.konf === 'sicher' && !korrekt)
+      ? { cls:'warn', txt:'Du warst dir sicher und lagst daneben. Genau diese Karten kosten in der Prüfung Punkte — sie kommt bewusst bald wieder.' }
+      : (review.konf === 'geraten' && korrekt)
+        ? { cls:'ok', txt:'Geraten und getroffen. Das zählt noch nicht als Wissen — die Karte bleibt im kurzen Takt.' }
+        : { cls:'', txt:'Einschätzung und Ergebnis passen zusammen.' };
+    html += '<div class="konf-echo '+urteil.cls+'">'+urteil.txt+'</div>';
+  }
+
+  html += '<div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    var cls = '';
+    if(revealed){
+      if(i === card.correct) cls = ' correct';
+      else if(i === review.picked) cls = ' wrong';
+    }
+    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' data-onclick="pickReview('+i+')">'+esc(opt)+'</button>';
+  });
+  html += '</div>';
+
+  if(revealed){
+    html += '<div class="srs-explain">'+(review.picked === card.correct ? '✓ ' : '✗ ')+esc(card.explain)+
+            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" data-onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
+    html += '<div><div class="ti-label" style="margin-bottom:6px;">Wie sicher saß das?</div><div class="rate-row">'+
+      '<button class="rate-btn again" data-onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
+      '<button class="rate-btn" data-onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
+      '<button class="rate-btn" data-onclick="rateAndNext(2)">Gut<span class="rt-sub"><kbd>3</kbd> normal</span></button>'+
+      '<button class="rate-btn easy" data-onclick="rateAndNext(3)">Einfach<span class="rt-sub"><kbd>4</kbd> langes Intervall</span></button>'+
+      '</div></div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+var PART_TITLES = {};
+MODULES.forEach(function(m){ PART_TITLES[m.part] = m.partTitle; });
+var ZUSATZ_TEILE = [10, 11];
+var EXAM_MODES = {
+  kurz:     { label:'Kurztest',        n:15, min:12, parts:null, desc:'15 Fragen quer durch den gesamten Kurs. Ideal als tägliche Standortbestimmung.' },
+  standard: { label:'Vollprüfung',     n:30, min:30, parts:null, desc:'30 Fragen, gewichtet nach deiner Fehlerquote \u2014 Schwaches kommt \u00f6fter. Querschnitt — realistischer Querschnitt über Algorithmen, Datenbanken, UML, Netzwerk, Sicherheit und Wirtschaft.' },
+  ap1:      { label:'Prüfungslänge',   n:40, min:90, parts:null, desc:'40 Fragen in 90 Minuten — Umfang und Zeitdruck der echten AP1. Zwei Minuten pro Frage, so wie am Prüfungstag.' },
+  fehler:   { label:'Fehlerheft',      n:20, min:20, parts:null, nurFehler:true, desc:'Nur Fragen, die dir schon einmal danebengegangen sind.' },
+  php:      { label:'PHP & Laravel',   n:20, min:25, parts:[10], desc:'20 Fragen aus dem Zusatzteil PHP & Laravel \u2014 vom Einsteiger bis zum Experten. Z\u00e4hlt nicht zur AP1.' },
+  git:      { label:'Git',             n:15, min:15, parts:[11], desc:'15 Fragen zu Git und Zusammenarbeit. Z\u00e4hlt nicht zur AP1.' },
+  weak:     { label:'Schwachstellen',  n:20, min:20, parts:null, weak:true, desc:'20 Fragen bevorzugt aus Themen, in denen du bisher Fehler gemacht hast.' }
+};
+var exam = { active:false, mode:null, qs:[], answers:[], idx:0, endsAt:0, timer:null, finished:false, result:null };
+function stopExamTimer(){ if(exam.timer){ clearInterval(exam.timer); exam.timer = null; } }
+function gewichtetZiehen(pool, n){
+  var rest = pool.map(function(c){
+    var t = state.stats[c.id];
+    var g = 1.0;
+    if(t && (t.right + t.wrong) > 0){
+      var q = t.right / (t.right + t.wrong);
+      g = 0.35 + (1 - q) * 2.4;
+    }
+    return { c:c, g:g };
+  });
+  var raus = [];
+  var ziel = Math.min(n, rest.length);
+  while(raus.length < ziel && rest.length){
+    var summe = rest.reduce(function(a, x){ return a + x.g; }, 0);
+    var wurf = Math.random() * summe, i = 0;
+    while(i < rest.length - 1 && wurf > rest[i].g){ wurf -= rest[i].g; i++; }
+    raus.push(rest[i].c);
+    rest.splice(i, 1);
+  }
+  return raus;
+}
+function startExam(modeId){
+  var mode = EXAM_MODES[modeId];
+  var pool = CARDS.slice();
+  if(mode.parts) pool = pool.filter(function(c){ return mode.parts.indexOf(c.part) !== -1; });
+  else if(!mode.allPaths) pool = pool.filter(function(c){ return c.part >= 1 && c.part <= 9; });
+  if(mode.nurFehler){
+    pool = shuffled(pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; }));
+  } else if(mode.weak){
+    var bad = pool.filter(function(c){ var t = state.stats[c.id]; return t && t.wrong > 0; });
+    var rest = pool.filter(function(c){ return bad.indexOf(c) === -1; });
+    pool = shuffled(bad).concat(shuffled(rest));
+  } else {
+    /* Gewichtete Ziehung: Schwaches kommt oefter, Ungestelltes bekommt mittleres Gewicht. */
+    pool = gewichtetZiehen(pool, mode.n);
+  }
+  if(!pool.length){
+    showToast('<span class="t-xp">Nichts dabei</span><span class="t-reason">Es gibt noch keine passenden Fragen für diesen Modus.</span>');
+    return;
+  }
+  var qs = pool.slice(0, Math.min(mode.n, pool.length));
+  exam = { active:true, mode:modeId, qs:qs, answers:qs.map(function(){ return -1; }), idx:0,
+           endsAt: Date.now() + mode.min * 60000, timer:null, finished:false, result:null };
+  stopExamTimer();
+  exam.timer = setInterval(tickExam, 1000);
+  state.currentId = 'exam';
+  render();
+}
+function tickExam(){
+  var el = document.getElementById('examTimer');
+  var left = exam.endsAt - Date.now();
+  if(left <= 0){ finishExam(true); return; }
+  if(!el) return;
+  var s = Math.floor(left / 1000);
+  var mm = String(Math.floor(s / 60)).padStart(2,'0');
+  var ss = String(s % 60).padStart(2,'0');
+  el.textContent = mm + ':' + ss;
+  el.className = 'timer' + (left < 60000 ? ' crit' : (left < 300000 ? ' warn' : ''));
+}
+function answerExam(i){
+  exam.answers[exam.idx] = i;
+  renderContent();
+}
+function gotoExamQ(i){ exam.idx = i; renderContent(); }
+function nextExamQ(d){
+  exam.idx = Math.max(0, Math.min(exam.qs.length - 1, exam.idx + d));
+  renderContent();
+}
+function finishExam(auto){
+  if(exam.finished) return;
+  if(!auto){
+    var open = exam.answers.filter(function(a){ return a === -1; }).length;
+    if(open > 0 && !window.confirm(open + ' Frage(n) noch unbeantwortet. Trotzdem abgeben?')) return;
+  }
+  stopExamTimer();
+  exam.finished = true;
+  var right = 0, byPart = {};
+  exam.qs.forEach(function(c, i){
+    var ok = exam.answers[i] === c.correct;
+    if(ok) right++;
+    recordAnswer(c.id, ok);
+    if(!ok) rateCard(c.id, 0); else if(!state.srs[c.id]) rateCard(c.id, 2);
+    var p = byPart[c.part] || (byPart[c.part] = { right:0, total:0 });
+    p.total++; if(ok) p.right++;
+  });
+  exam.result = { right:right, total:exam.qs.length, byPart:byPart, auto:!!auto };
+  state.exams.push({ ts:Date.now(), score:right, total:exam.qs.length, mode:exam.mode,
+                     byPart:JSON.parse(JSON.stringify(byPart)) });
+  var quote = Math.round((right / exam.qs.length) * 100);
+  awardXp(right * 3, 'Prüfung: ' + right + '/' + exam.qs.length + ' richtig');
+  if(quote >= 70) grantBadge('exam_pass');
+  if(quote >= 90) grantBadge('exam_ace');
+  if(right === exam.qs.length && exam.qs.length > 0) grantBadge('exam_perfect');
+  var gesamt = (EXAM_MODES[exam.mode] || {}).min * 60000;
+  if(quote >= 70 && !auto && gesamt && (exam.endsAt - Date.now()) > gesamt / 2) grantBadge('speedster');
+  /* Nach einer verhauenen Pruefung direkt eine bestanden */
+  var vorher = state.exams[state.exams.length - 2];
+  if(quote >= 70 && vorher && (vorher.score / vorher.total) < 0.5) grantBadge('phoenix');
+  /* Knapp vor Ablauf der Zeit bestanden */
+  if(quote >= 70 && gesamt && (exam.endsAt - Date.now()) < 60000) grantBadge('nervenstark');
+  saveProgress();
+  renderContent();
+  renderSidebar();
+}
+function renderExam(){
+  if(!exam.active){
+    var h = '<div class="breadcrumb">Training</div><h1>Prüfungssimulator</h1>'+
+      '<p class="intro-sub">Unter Zeitdruck abrufen zu können ist eine eigene Fähigkeit — und genau die entscheidet in der AP1, wo rund 95 % der Aufgaben Multiple Choice sind. Nach jedem Durchlauf siehst du, welcher Themenbereich dich ausgebremst hat.</p>';
+    h += '<div class="exam-setup">';
+    Object.keys(EXAM_MODES).forEach(function(k){
+      var m = EXAM_MODES[k];
+      h += '<div class="exam-mode" data-onclick="startExam(\''+k+'\')"><h3>'+m.label+'</h3>'+
+           '<p>'+m.desc+'</p><p style="margin-top:8px;"><span class="badge topic">'+m.n+' Fragen</span> <span class="badge topic">'+m.min+' Min.</span></p></div>';
+    });
+    h += '</div>';
+
+    if(state.exams.length){
+      h += '<h2 class="sec-h">Deine letzten Durchläufe</h2>';
+      h += '<table class="lesson-table"><tr><th>Datum</th><th>Modus</th><th>Ergebnis</th><th>Quote</th></tr>';
+      state.exams.slice(-8).reverse().forEach(function(e){
+        var pct = Math.round((e.score / e.total) * 100);
+        var d = new Date(e.ts);
+        h += '<tr><td>'+d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+'</td>'+
+             '<td>'+((EXAM_MODES[e.mode]||{}).label || e.mode)+'</td>'+
+             '<td>'+e.score+'/'+e.total+'</td>'+
+             '<td style="color:'+(pct>=70?'var(--success)':'var(--danger)')+';font-weight:600;">'+pct+'%</td></tr>';
+      });
+      h += '</table>';
+      var best = state.exams.reduce(function(a,e){ return Math.max(a, e.score/e.total); }, 0);
+      h += '<div class="ex-panel">Bestquote bisher: <strong>'+Math.round(best*100)+'%</strong>. Als Richtwert gilt eine Quote ab 70 % als solide Prüfungsvorbereitung — darunter lohnt gezieltes Nacharbeiten über den Modus „Schwachstellen".</div>';
+    }
+    return h;
+  }
+
+  if(exam.finished){
+    var r = exam.result;
+    var pct = Math.round((r.right / r.total) * 100);
+    var h2 = '<div class="breadcrumb">Ergebnis</div><h1>'+(EXAM_MODES[exam.mode]||{}).label+'</h1>';
+    if(r.auto) h2 += '<div class="ex-panel" style="border-left:3px solid var(--danger);">⏱ Zeit abgelaufen — automatisch abgegeben.</div>';
+    h2 += '<div class="score-hero"><div class="score-num '+(pct>=70?'score-pass':'score-fail')+'">'+pct+'%</div>'+
+          '<div class="score-sub">'+r.right+' von '+r.total+' Fragen richtig</div></div>';
+
+    h2 += '<h2 class="sec-h">Nach Themenbereich</h2>';
+    Object.keys(r.byPart).sort().forEach(function(p){
+      var v = r.byPart[p], q = Math.round((v.right / v.total) * 100);
+      var col = q >= 80 ? 'var(--success)' : (q >= 50 ? 'var(--accent2)' : 'var(--danger)');
+      h2 += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+            '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+            '<span class="tval">'+v.right+'/'+v.total+'</span></div>';
+    });
+
+    var wrong = exam.qs.filter(function(c,i){ return exam.answers[i] !== c.correct; });
+    if(wrong.length){
+      h2 += '<h2 class="sec-h">Das saß noch nicht ('+wrong.length+')</h2>';
+      h2 += '<p style="font-size:.85rem;color:var(--text-dim);">Alle davon liegen jetzt im Wiederholungs-Trainer und kommen heute noch einmal.</p>';
+      exam.qs.forEach(function(c, i){
+        if(exam.answers[i] === c.correct) return;
+        h2 += '<div class="ex-card"><div class="ex-head"><h3>'+esc(c.q)+'</h3><span class="badge topic">'+esc(c.moduleTitle)+'</span></div>'+
+              '<p style="font-size:.87rem;margin:0 0 6px;"><span style="color:var(--danger);">Deine Antwort:</span> '+
+              (exam.answers[i] === -1 ? '<em>nicht beantwortet</em>' : esc(c.options[exam.answers[i]]))+'<br>'+
+              '<span style="color:var(--success);">Richtig:</span> '+esc(c.options[c.correct])+'</p>'+
+              '<p style="font-size:.85rem;color:var(--text-dim);margin:0;">'+esc(c.explain)+'</p>'+
+              '<div class="ex-actions"><button class="ex-btn" data-onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
+      });
+    } else {
+      h2 += '<div class="ex-panel" style="border-left:3px solid var(--success);">Fehlerfrei — stark. Erhöhe beim nächsten Mal Umfang oder Tempo.</div>';
+    }
+    h2 += '<div class="ex-actions" style="margin-top:20px;"><button class="check-btn" data-onclick="pruefungNeuStarten()">Neuen Durchlauf starten</button>'+
+          '<button class="ex-btn" data-onclick="startReview(\'weak\')">Fehlerkarten jetzt wiederholen</button></div>';
+    return h2;
+  }
+
+  var card = exam.qs[exam.idx];
+  var picked = exam.answers[exam.idx];
+  var h3 = '<div class="exam-bar"><span class="timer" id="examTimer">--:--</span>'+
+    '<span style="font-size:.85rem;color:var(--text-dim);">Frage '+(exam.idx+1)+'/'+exam.qs.length+'</span>'+
+    '<button class="check-btn" style="padding:7px 14px;" data-onclick="finishExam(false)">Abgeben</button>'+
+    '<div class="exam-qnav">';
+  exam.qs.forEach(function(q, i){
+    h3 += '<button class="qdot'+(exam.answers[i] !== -1 ? ' answered' : '')+(i === exam.idx ? ' current' : '')+'" data-onclick="gotoExamQ('+i+')">'+(i+1)+'</button>';
+  });
+  h3 += '</div></div>';
+
+  h3 += '<div class="srs-card"><div class="srs-meta"><span class="badge topic">Teil '+card.part+'</span></div>'+
+        '<div class="srs-q">'+esc(card.q)+'</div><div class="srs-opts">';
+  card.options.forEach(function(opt, i){
+    h3 += '<button class="srs-opt" style="'+(picked === i ? 'border-color:var(--accent);background:var(--part-bg);font-weight:600;' : '')+'" data-onclick="answerExam('+i+')">'+esc(opt)+'</button>';
+  });
+  h3 += '</div><div class="ex-actions">'+
+        '<button class="ex-btn" data-onclick="nextExamQ(-1)" '+(exam.idx===0?'disabled':'')+'>← Zurück</button>'+
+        '<button class="ex-btn primary" data-onclick="nextExamQ(1)" '+(exam.idx===exam.qs.length-1?'disabled':'')+'>Weiter →</button>'+
+        '<button class="ex-btn" data-onclick="answerExam(-1)">Antwort verwerfen</button>'+
+        '</div></div>';
+  h3 += '<p class="ex-meta">Während der Prüfung gibt es bewusst kein Feedback — die Auswertung kommt erst nach der Abgabe, wie in der echten Prüfung.</p>';
+  return h3;
+}
+var tracer = { id:null, step:0, fb:null, finalFb:null, finished:false };
+function startTrace(id){
+  tracer = { id:id, step:0, fb:null, finalFb:null, finished:false };
+  state.currentId = 'tracer';
+  render();
+}
+function traceById(id){ return TRACES.find(function(t){ return t.id===id; }); }
+function normVal(s){
+  return String(s).toLowerCase().replace(/\s+/g,'').replace(/[\[\]]/g,'').replace(/;/g,',');
+}
+function traceAdvance(force){
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  if(!pending) return;
+  if(pending.ask && !force){
+    var inp = document.getElementById('predictInput');
+    var val = inp ? inp.value : '';
+    if(!val.trim()){ tracer.fb = { ok:false, msg:'Trag einen Wert ein — raten ist erlaubt, Überspringen lernt nichts.' }; renderContent(); return; }
+    var ok = normVal(val) === normVal(pending.values[pending.ask]);
+    if(!ok){
+      tracer.fb = { ok:false, msg:'Noch nicht. Rechne die Zeile Schritt für Schritt nach — oder lass dir den Wert zeigen.' };
+      renderContent(); return;
+    }
+    tracer.fb = { ok:true, msg:'Richtig.' };
+    awardXp(15, 'Vorhersage getroffen', 'trace:' + tracer.id + ':' + (tracer.step + 1));
+  } else {
+    tracer.fb = force && pending.ask ? { ok:false, msg:'Wert aufgedeckt — schau dir die Zeile genau an, bevor du weitergehst.' } : null;
+  }
+  tracer.step++;
+  if(tracer.step >= t.steps.length - 1) tracer.finished = true;
+  renderContent();
+  var box = document.getElementById('predictInput');
+  if(box) box.focus();
+}
+function checkFinal(){
+  var t = traceById(tracer.id);
+  var inp = document.getElementById('finalInput');
+  var val = inp ? inp.value : '';
+  var ok = normVal(val) === normVal(t.result);
+  tracer.finalFb = ok
+    ? { ok:true, msg:'✓ Richtig — genau das liefert der Algorithmus zurück.' }
+    : { ok:false, msg:'✗ Nicht ganz. Sieh dir die letzte Zeile der Tabelle an: Welcher Wert steht dort in der Ergebnisvariablen?' };
+  if(ok){
+    if(state.tracesDone.indexOf(t.id) === -1) state.tracesDone.push(t.id);
+    awardXp(40, 'Trockendurchlauf gelöst', 'tracedone:' + t.id);
+    checkMilestones();
+  }
+  renderContent();
+}
+function renderTracer(){
+  if(!tracer.id){
+    var h = '<div class="breadcrumb">Training</div><h1>Algorithmus-Trainer</h1>'+
+      '<p class="intro-sub">Die häufigste Aufgabenform der AP1 lautet sinngemäß: „Was liefert dieser Algorithmus für Eingabe X?" Genau das übst du hier — Zeile für Zeile, mit einer Wertetabelle, wie du sie in der Prüfung auf Papier führen würdest. An kritischen Stellen musst du den nächsten Wert selbst vorhersagen, bevor er aufgedeckt wird.</p>';
+    h += '<div class="module-grid" style="margin-top:22px;">';
+    TRACES.forEach(function(t){
+      h += '<div class="module-card" data-onclick="startTrace(\''+t.id+'\')">'+
+           '<div class="mnum">'+(t.level===1?'EINSTEIGER':'FORTGESCHRITTEN')+'</div>'+
+           '<h3>'+esc(t.title)+'</h3><p class="mono" style="font-size:.78rem;">'+esc(t.input)+'</p>'+
+           '<p style="margin-top:6px;">'+t.steps.filter(function(s){return s.ask;}).length+' Vorhersagen · '+t.steps.length+' Schritte</p></div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  var t = traceById(tracer.id);
+  var pending = t.steps[tracer.step + 1];
+  var html = '<div class="breadcrumb">Algorithmus-Trainer</div>';
+  html += '<div class="lesson-head"><div><h1>'+esc(t.title)+'</h1>'+
+          '<div class="meta-row"><span class="mono">'+esc(t.input)+'</span><span>Schritt '+(tracer.step+1)+'/'+t.steps.length+'</span></div></div>'+
+          '<button class="ex-btn" data-onclick="traceAuswahl()">Andere Aufgabe</button></div>';
+  html += '<p style="font-size:.9rem;">'+t.intro+'</p>';
+
+  var cur = t.steps[tracer.step];
+  html += '<div class="trace-wrap"><div class="trace-code">';
+  t.code.forEach(function(line, i){
+    html += '<span class="trace-line'+(i === cur.line ? ' active' : '')+'">'+esc(line)+'</span>';
+  });
+  html += '</div><div style="overflow-x:auto;"><table class="trace-table"><tr><th>#</th>';
+  t.vars.forEach(function(v){ html += '<th>'+esc(v)+'</th>'; });
+  html += '</tr>';
+  for(var i = 0; i <= tracer.step; i++){
+    var st = t.steps[i];
+    html += '<tr'+(i === tracer.step ? ' class="now"' : '')+'><td>'+(i+1)+'</td>';
+    t.vars.forEach(function(v){ html += '<td>'+esc(st.values[v] !== undefined ? st.values[v] : '—')+'</td>'; });
+    html += '</tr>';
+  }
+  html += '</table></div></div>';
+
+  html += '<div class="ex-panel"><strong>Zeile '+(cur.line+1)+':</strong> '+esc(cur.note)+'</div>';
+
+  if(pending){
+    if(pending.ask){
+      html += '<div class="predict-box"><label for="predictInput">Vorhersage: Welchen Wert hat <span class="mono">'+esc(pending.ask)+'</span> nach dem nächsten Schritt?</label>'+
+        '<div class="predict-row"><input class="predict-input" id="predictInput" autocomplete="off" placeholder="z. B. '+(pending.ask==='zahlen'?'[2, 5, 9, 1]':'12')+'" data-onkeydown="if(event.key===\'Enter\')traceAdvance(false)">'+
+        '<button class="check-btn" data-onclick="traceAdvance(false)">Prüfen</button>'+
+        '<button class="ex-btn" data-onclick="traceAdvance(true)">Zeigen</button></div>';
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'">'+esc(tracer.fb.msg)+'</div>';
+      html += '</div>';
+    } else {
+      if(tracer.fb) html += '<div class="predict-fb '+(tracer.fb.ok?'ok':'no')+'" style="margin-bottom:10px;">'+esc(tracer.fb.msg)+'</div>';
+      html += '<button class="check-btn" data-onclick="traceAdvance(false)">Nächster Schritt →</button>';
+    }
+  } else {
+    html += '<div class="predict-box"><label for="finalInput">Letzte Frage: Was liefert der Algorithmus zurück?</label>'+
+      '<div class="predict-row"><input class="predict-input" id="finalInput" autocomplete="off" data-onkeydown="if(event.key===\'Enter\')checkFinal()">'+
+      '<button class="check-btn" data-onclick="checkFinal()">Prüfen</button></div>';
+    if(tracer.finalFb){
+      html += '<div class="predict-fb '+(tracer.finalFb.ok?'ok':'no')+'">'+esc(tracer.finalFb.msg)+'</div>';
+      if(tracer.finalFb.ok){
+        html += '<div class="callout callout-tip" style="margin-bottom:0;"><div class="callout-label">★ Was du daraus mitnimmst</div><p>'+t.lesson+'</p></div>';
+      }
+    }
+    html += '</div>';
+    html += '<div class="ex-actions"><button class="ex-btn" data-onclick="traceAuswahl()">Nächste Aufgabe wählen</button>'+
+            '<button class="ex-btn" data-onclick="startTrace(\''+t.id+'\')">Nochmal von vorn</button></div>';
+  }
+  return html;
+}
+var SEARCH_INDEX = [];
+var indexFertig = false;
+var indexNachladen = false;
+function buildIndex(){
+  var textOffen = false;
+  MODULES.forEach(function(m){
+    m.lessons.forEach(function(l){
+      if(l.lazy) textOffen = true;
+      var text = ['body','body2','body3','tip','code','code2','code3','code4']
+                   .map(function(k){ return l[k] || ''; }).join(' ');
+      SEARCH_INDEX.push({ id:l.id, kind:'lesson', title:l.title, sub:'Teil '+m.part+' · '+m.title,
+                          hay:(l.title + ' ' + m.title + ' ' + text).replace(/<[^>]+>/g,' ').toLowerCase() });
+    });
+  });
+  EXERCISES.forEach(function(x){
+    SEARCH_INDEX.push({ id:'exercises', kind:'exercise', title:x.title, sub:'Übung · '+x.topic+' · '+(['','Einsteiger','Fortgeschritten','Experte'][x.level]),
+                        hay:(x.title + ' ' + x.topic + ' ' + x.task).replace(/<[^>]+>/g,' ').toLowerCase() });
+  });
+  TRACES.forEach(function(t){
+    SEARCH_INDEX.push({ id:'trace:'+t.id, kind:'trace', title:t.title, sub:'Algorithmus-Trainer · '+t.input,
+                        hay:(t.title + ' ' + t.input + ' ' + t.code.join(' ')).toLowerCase() });
+  });
+  [['review','Wiederholen (Spaced Repetition)','Training'],
+   ['exam','Prüfungssimulator','Training'],
+   ['tracer','Algorithmus-Trainer','Training'],
+   ['subnet','Subnetting-Trainer','Training'],
+   ['tutor','AP1-Tutor','Training'],
+   ['exercises','Übungsaufgaben','Praxis'],
+   ['cheatsheet','Spickzettel','Referenz'],
+   ['glossar','Syntax-Glossar','Referenz · Befehle nachschlagen (let, const, JOIN, rebase)'],
+   ['intro','Kursübersicht','Start']].forEach(function(a){
+    SEARCH_INDEX.push({ id:a[0], kind:'nav', title:a[1], sub:a[2], hay:(a[1]+' '+a[2]).toLowerCase() });
+  });
+  indexFertig = true;
+  /* Lektionstexte sind beim Start nicht geladen: Die Suche arbeitet sofort mit Titeln und ergänzt den Volltext, sobald alle Texte da sind. */
+  if(textOffen && !indexNachladen && typeof rpHydrateAll === 'function'){
+    indexNachladen = true;
+    rpHydrateAll().then(function(){
+      SEARCH_INDEX.length = 0; indexFertig = false; buildIndex();
+      var feld = document.getElementById('kpFeld');
+      if(kp.offen && feld) kpSuchen(feld.value);
+    }, function(){ indexNachladen = false; });
+  }
+}
+function renderKiEinstellungen(){
+  var an = !!tutor.fn;
+  var h = '<h2 class="sec-h">Tutor-Verbindung</h2>';
+  h += '<div class="ex-panel">';
+  h += '<p style="margin-bottom:12px;">Status: <span class="sync-hint'+(an ? ' on' : '')+'">'+
+       esc(kiHerkunftText())+'</span></p>';
+  h += '<p style="margin-bottom:14px;">Auf claude.ai laeuft der Tutor ueber dein eigenes Konto. '+
+       'Wird der Kurs auf einem eigenen Server betrieben, traegst du hier die Adresse deines '+
+       'Dienstes ein &mdash; der API-Schluessel bleibt dabei auf dem Server und niemals im Browser.</p>';
+  h += '<div class="sb-grid">';
+  h += '<label class="sb-field"><span>Bezugsquelle</span>'+
+       '<select class="sb-input" data-onchange="kiModusSetzen(this.value)">'+
+       ['auto','artifact','backend','aus'].map(function(m){
+         var t = { auto:'Automatisch', artifact:'Nur Claude (Artifact)',
+                   backend:'Nur eigener Dienst', aus:'Tutor abschalten' }[m];
+         return '<option value="'+m+'"'+(KI.modus === m ? ' selected' : '')+'>'+t+'</option>';
+       }).join('')+'</select></label>';
+  h += '<label class="sb-field"><span>Adresse des eigenen Dienstes</span>'+
+       '<input class="sb-input" type="url" spellcheck="false" placeholder="https://api.deine-domain.de/tutor" '+
+       'value="'+esc(KI.endpunkt)+'" data-oninput="kiEndpunktSetzen(this.value)"></label>';
+  h += '</div>';
+  h += '<div class="ex-actions"><button class="ex-btn primary" type="button" '+
+       'data-onclick="tutorNeuVerbinden()">Verbindung neu aufbauen</button></div>';
+  h += '<details class="kl-details"><summary>Welches Protokoll der Dienst sprechen muss</summary>'+
+       codeBlock(
+         "POST <deine Adresse>\n"+
+         "Content-Type: application/json\n\n"+
+         "{ \"nachrichten\": [ {\"role\":\"user\",\"content\":\"...\"} ],\n"+
+         "  \"modus\": \"text\" | \"json\",\n"+
+         "  \"stufe\": \"fast\" | \"default\" | \"complex\" }\n\n"+
+         "Antwort, Weg a - laufender Text:\n"+
+         "  Content-Type: text/event-stream\n"+
+         "  data: {\"text\":\"bisheriger Text\"}\n"+
+         "  data: [DONE]\n\n"+
+         "Antwort, Weg b - eine JSON-Antwort:\n"+
+         "  {\"text\":\"...\",\"truncated\":false}\n"+
+         "  bei modus \"json\" direkt das gewuenschte Objekt\n\n"+
+         "Der Server haelt den API-Schluessel, setzt Zeitlimits\n"+
+         "und begrenzt die Anfragen je Nutzer.",
+         'Schnittstelle')+'</details>';
+  h += '</div>';
+  return h;
+}
+function renderProfile(){
+  var lp = levelProgress();
+  var xp = state.xp || 0;
+  var mastered = Object.keys(state.srs).filter(function(k){ return (state.srs[k].iv || 0) >= 21; }).length;
+  var bestExam = state.exams.reduce(function(a,e){ return Math.max(a, e.score / e.total); }, 0);
+  var earned = BADGES.filter(function(b){ return state.badges[b.id]; }).length;
+
+  var h = '<div class="breadcrumb">Profil</div>';
+  h += renderRangkarte();
+  h += renderKennzahlen();
+  h += '<h2 class="sec-h">Rangleiter</h2>';
+  h += '<p class="intro-sub">Fünfundzwanzig Stufen vom Kabelträger bis zum Architekten der Matrix. XP gibt es für jede abgeschlossene Lektion, jede richtige Erstantwort und jede gelöste Aufgabe.</p>';
+  h += renderLeiter();
+  h += renderPruefungsverlauf();
+  h += '<h2 class="sec-h">Abzeichen</h2>';
+  h += renderAbzeichen();
+
+  h += renderKalibrierung();
+
+  h += '<h2 class="sec-h">Fortschritt nach Kursteil</h2>';
+  PARTS.forEach(function(p){
+    var ls = [];
+    MODULES.filter(function(m){ return m.part === p; }).forEach(function(m){ ls = ls.concat(m.lessons); });
+    var done = ls.filter(function(l){ return state.completed.has(l.id); }).length;
+    var q = ls.length ? Math.round((done / ls.length) * 100) : 0;
+    var col = q >= 80 ? 'var(--success)' : (q >= 40 ? 'var(--accent)' : 'var(--accent2)');
+    h += '<div class="topic-bar-row"><span class="tname">Teil '+p+' · '+esc((PART_TITLES[p]||'').split(':')[0])+'</span>'+
+         '<div class="topic-bar"><div style="width:'+q+'%;background:'+col+';"></div></div>'+
+         '<span class="tval">'+done+'/'+ls.length+'</span></div>';
+  });
+
+  h += '<h2 class="sec-h">Zahlen</h2>';
+  h += '<div class="stat-row">'+
+    '<div class="stat-tile"><div class="num">'+state.completed.size+'</div><div class="lbl">Lektionen fertig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.srs).length+'</div><div class="lbl">Karten aktiv</div></div>'+
+    '<div class="stat-tile"><div class="num">'+mastered+'</div><div class="lbl">Karten gefestigt</div></div>'+
+    '<div class="stat-tile"><div class="num">'+Object.keys(state.solved).length+'</div><div class="lbl">Übungen gelöst</div></div>'+
+    '<div class="stat-tile"><div class="num">'+state.tracesDone.length+'/'+TRACES.length+'</div><div class="lbl">Durchläufe</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(bestExam ? Math.round(bestExam*100)+'%' : '—')+'</div><div class="lbl">Beste Prüfung</div></div>'+
+    '</div>';
+
+  h += renderKiEinstellungen();
+
+  h += '<h2 class="sec-h">Dein Lernplan</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:14px;">Mit einem Prüfungstermin rechnet dir die Heute-Ansicht aus, '+
+    'wie viele Lektionen pro Tag noch nötig sind. Das Tagesziel steuert den Ring — lieber klein ansetzen '+
+    'und täglich erreichen als groß und selten.</p>'+
+    '<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Prüfungstermin</span>'+
+        '<input type="date" id="pruefDatum" class="dat-feld" value="'+esc(state.pruefungsdatum || '')+'" '+
+        'data-onchange="setzePruefung(this.value)">'+
+      '</label>'+
+      '<label style="display:flex; flex-direction:column; gap:6px;">'+
+        '<span style="font-size:.78rem; color:var(--text-dim); font-weight:600;">Lektionen pro Tag</span>'+
+        '<input type="number" id="tagesZiel" class="dat-feld" min="1" max="30" '+
+        'style="width:90px;" value="'+(state.tagesziel || 3)+'" data-onchange="setzeZiel(this.value)">'+
+      '</label>'+
+      '<button class="ex-btn" data-onclick="fokusUmschalten()">Lesemodus umschalten</button>'+
+      '<button class="ex-btn" data-onclick="selectLesson(\'tasten\')">Tastaturkürzel</button>'+
+    '</div></div>';
+
+  h += '<h2 class="sec-h">Geräte und Sicherung</h2>';
+  h += '<div class="ex-panel">'+
+    '<p style="margin-bottom:10px;"><strong>Status:</strong> <span id="syncHint" class="sync-hint">wird geprüft …</span></p>'+
+    '<p style="margin-bottom:10px;">Auf claude.ai gleicht sich dein Fortschritt zwischen allen Geräten ab, an denen du mit demselben Konto angemeldet bist. '+
+    'Für eine lokal gespeicherte Kopie oder als Sicherung nutzt du den Export: Er legt deinen kompletten Stand als Text in die Zwischenablage. '+
+    'Beim Import wird <em>zusammengeführt</em>, nicht überschrieben — abgeschlossene Lektionen, XP und Abzeichen gehen also nie verloren.</p>'+
+    '<div class="ex-actions">'+
+      '<button class="ex-btn primary" data-onclick="exportProgress()">Fortschritt exportieren</button>'+
+      '<button class="ex-btn" data-onclick="showImport()">Fortschritt importieren</button>'+
+      '<button class="ex-btn" id="ioApply" hidden data-onclick="applyImport()">Übernehmen</button>'+
+    '</div>'+
+    '<textarea class="io-area" id="ioArea" hidden spellcheck="false"></textarea>'+
+    '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Wie XP entstehen:</strong> Lektion abschließen +'+xpAnzeige(50)+' · Quizfrage erstmals richtig +'+xpAnzeige(10)+' · Karteikarte gewusst +'+xpAnzeige(5)+' (gefestigte Karten +'+xpAnzeige(8)+') · Vorhersage im Algorithmus-Trainer +'+xpAnzeige(15)+' · Trockendurchlauf gelöst +'+xpAnzeige(40)+' · Übungsaufgabe gelöst +'+xpAnzeige(30)+' · Prüfung '+xpAnzeige(3)+' XP je richtiger Antwort · Abzeichen +'+xpAnzeige(25)+'. Punkte gibt es pro Aufgabe nur einmal — Wiederholen zählt fürs Gedächtnis, nicht fürs Punktekonto.</div>';
+  return h;
+}
+var subnet = { task:null, checked:false, right:0, total:0, streak:0, kind:0 };
+function sbRand(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function sbPick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function sbToInt(a, b, c, d){ return ((a * 16777216) + (b * 65536) + (c * 256) + d); }
+function sbToIp(n){
+  n = n >>> 0;
+  return [Math.floor(n / 16777216) % 256, Math.floor(n / 65536) % 256,
+          Math.floor(n / 256) % 256, n % 256].join('.');
+}
+function sbMaskInt(p){ return p === 0 ? 0 : (4294967296 - Math.pow(2, 32 - p)); }
+function sbMaskStr(p){ return sbToIp(sbMaskInt(p)); }
+function sbNorm(s){ return String(s == null ? '' : s).replace(/\s+/g, '').replace(/,/g, '.').toLowerCase(); }
+function sbBase(prefix){
+  var r = sbRand(1, 3), a, b;
+  if(r === 1){ a = 10;  b = sbRand(0, 255); }
+  else if(r === 2){ a = 172; b = sbRand(16, 31); }
+  else { a = 192; b = 168; }
+  if(r === 3 && prefix < 16) prefix = 16;
+  var ip = sbToInt(a, b, sbRand(0, 255), sbRand(1, 254));
+  return (ip - (ip % Math.pow(2, 32 - prefix))) + sbRand(1, Math.min(200, Math.pow(2, 32 - prefix) - 2));
+}
+function makeSubnetTask(){
+  var kind = sbRand(1, 4);
+  var p, ipInt, netInt, size, t;
+
+  if(kind === 1){
+    /* Adresse analysieren */
+    p = sbRand(24, 30);
+    ipInt = sbBase(p);
+    size = Math.pow(2, 32 - p);
+    netInt = ipInt - (ipInt % size);
+    t = {
+      kind: 1,
+      titel: 'Adresse analysieren',
+      frage: 'Gegeben ist die Adresse <strong>' + sbToIp(ipInt) + ' / ' + p + '</strong> ' +
+             '(Subnetzmaske ' + sbMaskStr(p) + ').<br>Bestimme Netzadresse, Broadcast-Adresse, den ersten und letzten nutzbaren Host sowie die Anzahl nutzbarer Hosts.',
+      felder: [
+        { k:'netz',  l:'Netzadresse',        ph:'z. B. 192.168.1.0' },
+        { k:'bc',    l:'Broadcast-Adresse',  ph:'z. B. 192.168.1.255' },
+        { k:'first', l:'Erster Host',        ph:'z. B. 192.168.1.1' },
+        { k:'last',  l:'Letzter Host',       ph:'z. B. 192.168.1.254' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: {
+        netz:  sbToIp(netInt),
+        bc:    sbToIp(netInt + size - 1),
+        first: sbToIp(netInt + 1),
+        last:  sbToIp(netInt + size - 2),
+        hosts: String(size - 2)
+      },
+      weg:
+        'Maske /' + p + ' = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse im letzten Oktett: 256 - ' + (sbMaskInt(p) % 256) + ' = ' + Math.min(size, 256) + '\n' +
+        'Netzadresse   = alle Hostbits auf 0   -> ' + sbToIp(netInt) + '\n' +
+        'Broadcast     = alle Hostbits auf 1   -> ' + sbToIp(netInt + size - 1) + '\n' +
+        'Erster Host   = Netzadresse + 1       -> ' + sbToIp(netInt + 1) + '\n' +
+        'Letzter Host  = Broadcast - 1         -> ' + sbToIp(netInt + size - 2) + '\n' +
+        'Hostbits      = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts= 2^' + (32 - p) + ' - 2 = ' + size + ' - 2 = ' + (size - 2)
+    };
+  } else if(kind === 2){
+    /* Maske und Praefix umrechnen */
+    p = sbRand(17, 30);
+    var hin = sbRand(0, 1) === 1;
+    t = {
+      kind: 2,
+      titel: 'Maske und Praefix umrechnen',
+      frage: hin
+        ? 'Wandle das Praefix <strong>/' + p + '</strong> in die Subnetzmaske in Dezimalschreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.'
+        : 'Wandle die Subnetzmaske <strong>' + sbMaskStr(p) + '</strong> in die CIDR-Schreibweise um und gib an, wie viele Hostbits es gibt und wie viele Hosts nutzbar sind.',
+      felder: hin
+        ? [ { k:'maske', l:'Subnetzmaske', ph:'z. B. 255.255.255.0' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ]
+        : [ { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 24' },
+            { k:'hb',    l:'Hostbits',     ph:'nur die Zahl' },
+            { k:'hosts', l:'Nutzbare Hosts', ph:'nur die Zahl' } ],
+      loesung: hin
+        ? { maske: sbMaskStr(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) }
+        : { cidr: String(p), hb: String(32 - p), hosts: String(Math.pow(2, 32 - p) - 2) },
+      weg:
+        '/' + p + ' bedeutet ' + p + ' gesetzte Bits von links.\n' +
+        'Maske: ' + sbMaskStr(p) + '\n' +
+        'Merkreihe der Oktettwerte: 128 192 224 240 248 252 254 255\n' +
+        'Hostbits = 32 - ' + p + ' = ' + (32 - p) + '\n' +
+        'Nutzbare Hosts = 2^' + (32 - p) + ' - 2 = ' + (Math.pow(2, 32 - p) - 2)
+    };
+  } else if(kind === 3){
+    /* Vom Hostbedarf zum Praefix */
+    var ziel = sbPick([6, 12, 25, 30, 50, 60, 100, 120, 200, 250, 400, 500]);
+    var hb = 1;
+    while(Math.pow(2, hb) - 2 < ziel) hb++;
+    p = 32 - hb;
+    t = {
+      kind: 3,
+      titel: 'Vom Hostbedarf zum Praefix',
+      frage: 'Ein Subnetz soll mindestens <strong>' + ziel + ' Hosts</strong> aufnehmen koennen. ' +
+             'Bestimme das groesstmoegliche Praefix (also das kleinste ausreichende Netz), die zugehoerige Subnetzmaske und die tatsaechlich nutzbare Hostanzahl.',
+      felder: [
+        { k:'cidr',  l:'Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'maske', l:'Subnetzmaske',       ph:'z. B. 255.255.255.192' },
+        { k:'hosts', l:'Nutzbare Hosts',     ph:'nur die Zahl' }
+      ],
+      loesung: { cidr: String(p), maske: sbMaskStr(p), hosts: String(Math.pow(2, hb) - 2) },
+      weg:
+        'Gesucht: kleinstes h mit 2^h - 2 >= ' + ziel + '\n' +
+        '  2^' + (hb - 1) + ' - 2 = ' + (Math.pow(2, hb - 1) - 2) + '  -> zu wenig\n' +
+        '  2^' + hb + ' - 2 = ' + (Math.pow(2, hb) - 2) + '  -> ausreichend\n' +
+        'Hostbits = ' + hb + '\n' +
+        'Praefix  = 32 - ' + hb + ' = /' + p + '\n' +
+        'Maske    = ' + sbMaskStr(p)
+    };
+  } else {
+    /* Netz aufteilen */
+    var start = sbRand(24, 27);
+    var anzahl = sbPick([2, 4, 8, 16]);
+    var zusatz = Math.round(Math.log(anzahl) / Math.log(2));
+    p = start + zusatz;
+    if(p > 30){ p = 30; zusatz = p - start; anzahl = Math.pow(2, zusatz); }
+    var basis = sbBase(start);
+    var basisNet = basis - (basis % Math.pow(2, 32 - start));
+    var block = Math.pow(2, 32 - p);
+    t = {
+      kind: 4,
+      titel: 'Netz aufteilen',
+      frage: 'Das Netz <strong>' + sbToIp(basisNet) + ' / ' + start + '</strong> soll in ' +
+             '<strong>' + anzahl + ' gleich grosse Subnetze</strong> geteilt werden. ' +
+             'Bestimme das neue Praefix, die Blockgroesse, die Anzahl nutzbarer Hosts je Subnetz und die Netzadresse des <strong>zweiten</strong> Subnetzes.',
+      felder: [
+        { k:'cidr',  l:'Neues Praefix (nur Zahl)', ph:'z. B. 26' },
+        { k:'block', l:'Blockgroesse (Adressen)',  ph:'nur die Zahl' },
+        { k:'hosts', l:'Nutzbare Hosts je Subnetz', ph:'nur die Zahl' },
+        { k:'netz2', l:'Netzadresse Subnetz 2',    ph:'z. B. 192.168.1.64' }
+      ],
+      loesung: {
+        cidr:  String(p),
+        block: String(block),
+        hosts: String(block - 2),
+        netz2: sbToIp(basisNet + block)
+      },
+      weg:
+        'Benoetigte zusaetzliche Netzbits: 2^x >= ' + anzahl + '  ->  x = ' + zusatz + '\n' +
+        'Neues Praefix = /' + start + ' + ' + zusatz + ' = /' + p + '\n' +
+        'Maske         = ' + sbMaskStr(p) + '\n' +
+        'Blockgroesse  = 2^(32-' + p + ') = ' + block + ' Adressen\n' +
+        'Hosts je Netz = ' + block + ' - 2 = ' + (block - 2) + '\n' +
+        'Subnetz 1     = ' + sbToIp(basisNet) + '\n' +
+        'Subnetz 2     = ' + sbToIp(basisNet) + ' + ' + block + ' = ' + sbToIp(basisNet + block)
+    };
+  }
+  return t;
+}
+function newSubnetTask(){
+  subnet.task = makeSubnetTask();
+  subnet.checked = false;
+  render();
+}
+function checkSubnetTask(){
+  var t = subnet.task;
+  if(!t || subnet.checked) return;
+  var alleRichtig = true;
+  t.eingabe = {};
+  t.felder.forEach(function(f){
+    var el = document.getElementById('sb_' + f.k);
+    var v = el ? el.value : '';
+    t.eingabe[f.k] = v;
+    if(sbNorm(v) !== sbNorm(t.loesung[f.k])) alleRichtig = false;
+  });
+  subnet.checked = true;
+  subnet.total++;
+  if(alleRichtig){
+    subnet.right++;
+    subnet.streak++;
+    state.subnetSolved = (state.subnetSolved || 0) + 1;
+    awardXp(10, 'Subnetting-Aufgabe geloest');
+    if(state.subnetSolved >= 10) grantBadge('subnet10');
+    if(state.subnetSolved >= 50) grantBadge('subnet50');
+    if(subnet.streak >= 10) grantBadge('subnet_serie');
+  } else {
+    subnet.streak = 0;
+  }
+  t.korrekt = alleRichtig;
+  render();
+}
+function renderSubnet(){
+  if(!subnet.task) subnet.task = makeSubnetTask();
+  var t = subnet.task;
+
+  var h = '<div class="breadcrumb">Training</div><h1>Subnetting-Trainer</h1>';
+  h += '<p class="intro-sub">Subnetting lernt man nicht durch Lesen, sondern durch Wiederholung. Dieser Trainer erzeugt bei jedem Klick eine neue Aufgabe aus vier Typen &mdash; Adresse analysieren, Maske umrechnen, Praefix aus dem Hostbedarf bestimmen und ein Netz aufteilen. Jede geloeste Aufgabe bringt '+xpAnzeige(10)+' XP.</p>';
+
+  h += '<div class="stat-row" style="margin-bottom:18px;">'+
+    '<div class="stat-tile"><div class="num">'+subnet.right+'</div><div class="lbl">richtig</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.total+'</div><div class="lbl">bearbeitet</div></div>'+
+    '<div class="stat-tile"><div class="num">'+(subnet.total ? Math.round(subnet.right/subnet.total*100)+'%' : '&mdash;')+'</div><div class="lbl">Quote</div></div>'+
+    '<div class="stat-tile"><div class="num">'+subnet.streak+'</div><div class="lbl">Serie</div></div>'+
+    '</div>';
+
+  h += '<div class="ex-card">';
+  h += '<div class="ex-head"><h3>'+esc(t.titel)+'</h3><span class="badge topic">Aufgabentyp '+t.kind+'</span></div>';
+  h += '<div class="ex-task"><p>'+t.frage+'</p></div>';
+
+  h += '<div class="sb-grid">';
+  t.felder.forEach(function(f){
+    var val = (t.eingabe && t.eingabe[f.k] != null) ? esc(t.eingabe[f.k]) : '';
+    var cls = '';
+    if(subnet.checked){
+      cls = (sbNorm(val) === sbNorm(t.loesung[f.k])) ? ' sb-ok' : ' sb-bad';
+    }
+    h += '<label class="sb-field"><span>'+esc(f.l)+'</span>'+
+         '<input type="text" id="sb_'+f.k+'" class="sb-input'+cls+'" value="'+val+'" '+
+         'placeholder="'+esc(f.ph)+'" autocomplete="off" spellcheck="false"'+
+         (subnet.checked ? ' disabled' : '')+'></label>';
+  });
+  h += '</div>';
+
+  h += '<div class="ex-actions">';
+  if(!subnet.checked){
+    h += '<button class="ex-btn primary" data-onclick="checkSubnetTask()">Pr&uuml;fen</button>';
+    h += '<button class="ex-btn" data-onclick="newSubnetTask()">&uuml;berspringen</button>';
+  } else {
+    h += '<button class="ex-btn primary" data-onclick="newSubnetTask()">N&auml;chste Aufgabe</button>';
+  }
+  h += '</div>';
+
+  if(subnet.checked){
+    h += '<div class="ex-panel '+(t.korrekt ? 'hint' : '')+'">'+
+         '<strong>'+(t.korrekt ? '✓ Alles richtig.' : '✗ Noch nicht ganz.')+'</strong>'+
+         (t.korrekt ? '' : ' Die richtigen Werte stehen unten markiert.')+'</div>';
+    if(!t.korrekt){
+      h += '<div class="sb-grid">';
+      t.felder.forEach(function(f){
+        h += '<div class="sb-field"><span>'+esc(f.l)+'</span>'+
+             '<div class="sb-sol">'+esc(t.loesung[f.k])+'</div></div>';
+      });
+      h += '</div>';
+    }
+    h += codeBlock(t.weg, 'Rechenweg');
+  }
+
+  h += '</div>';
+
+  h += '<div class="ex-panel" style="margin-top:20px;"><strong>Sofort-Spickzettel:</strong> '+
+       'Oktettwerte von links &mdash; 128 &middot; 192 &middot; 224 &middot; 240 &middot; 248 &middot; 252 &middot; 254 &middot; 255. '+
+       'Blockgr&ouml;&szlig;e = 256 &minus; Maskenwert. Nutzbare Hosts = 2^Hostbits &minus; 2. '+
+       'Subnetze = 2^zus&auml;tzliche Netzbits. Broadcast = n&auml;chste Netzadresse &minus; 1.</div>';
+
+  return h;
+}
+var KI = {
+  /* 'auto' probiert erst das Artifact, dann den eigenen Endpunkt.
+     'artifact' | 'backend' | 'aus' erzwingen einen Weg. */
+  modus: 'auto',
+  /* Eigener HTTPS-Endpunkt, z.B. 'https://api.deine-domain.de/tutor'.
+     Der API-Schluessel gehoert AUSSCHLIESSLICH auf den Server - niemals
+     in diese Datei, sie liegt beim Kunden im Browser. */
+  endpunkt: '',
+  zeitlimit: 90000
+};
+var kiGespeichert = null;
+var kiRoh = null;
+try{
+  kiGespeichert = localStorage.getItem('rootpfad-ki');
+  if(kiGespeichert){
+    kiRoh = JSON.parse(kiGespeichert);
+    if(kiRoh && typeof kiRoh === 'object'){
+      if(typeof kiRoh.modus === 'string') KI.modus = kiRoh.modus;
+      if(typeof kiRoh.endpunkt === 'string') KI.endpunkt = kiRoh.endpunkt;
+    }
+  }
+}catch(e){}
+function kiSpeichern(){
+  try{
+    localStorage.setItem('rootpfad-ki', JSON.stringify({ modus:KI.modus, endpunkt:KI.endpunkt }));
+  }catch(e){}
+}
+function kiBackendAnbieter(endpunkt){
+
+  async function anfrage(nachrichten, opt, modus){
+    opt = opt || {};
+    var ctl = new AbortController();
+    var timer = setTimeout(function(){ ctl.abort(); }, KI.zeitlimit);
+    /* Ein von aussen gereichtes Abbruchsignal mit durchreichen. */
+    if(opt.signal){
+      if(opt.signal.aborted) ctl.abort();
+      else opt.signal.addEventListener('abort', function(){ ctl.abort(); });
+    }
+
+    var antwort;
+    try{
+      antwort = await fetch(endpunkt, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nachrichten: nachrichten,
+          modus: modus,
+          stufe: opt.modelTier || 'default'
+        }),
+        signal: ctl.signal
+      });
+    }catch(e){
+      clearTimeout(timer);
+      if(e && e.name === 'AbortError') throw { code:'aborted', message:'abgebrochen' };
+      throw { code:'network', message:'Der Tutor-Dienst ist nicht erreichbar.' };
+    }
+
+    if(!antwort.ok){
+      clearTimeout(timer);
+      if(antwort.status === 429) throw { code:'rate_limited', message:'zu viele Anfragen' };
+      if(antwort.status === 401 || antwort.status === 403) throw { code:'not_granted', message:'kein Zugang' };
+      if(antwort.status === 413) throw { code:'prompt_too_large', message:'Anfrage zu gross' };
+      throw { code:'server', message:'Der Tutor-Dienst antwortete mit Fehler ' + antwort.status + '.' };
+    }
+
+    var typ = (antwort.headers.get('content-type') || '').toLowerCase();
+
+    /* Weg a: Ereignisstrom, Text waechst mit jedem Stueck. */
+    if(typ.indexOf('text/event-stream') >= 0 && antwort.body && antwort.body.getReader){
+      var leser = antwort.body.getReader();
+      var dek = new TextDecoder();
+      var puffer = '';
+      var text = '';
+      var abgeschnitten = false;
+      try{
+        for(;;){
+          var stueck = await leser.read();
+          if(stueck.done) break;
+          puffer += dek.decode(stueck.value, { stream:true });
+          var zeilen = puffer.split(String.fromCharCode(10));
+          puffer = zeilen.pop();
+          for(var i = 0; i < zeilen.length; i++){
+            var z = zeilen[i].trim();
+            if(z.indexOf('data:') !== 0) continue;
+            var nutz = z.slice(5).trim();
+            if(!nutz || nutz === '[DONE]') continue;
+            try{
+              var d = JSON.parse(nutz);
+              if(typeof d.text === 'string'){
+                text = d.text;
+                if(opt.onText) opt.onText({ text: text });
+              }
+              if(d.truncated) abgeschnitten = true;
+            }catch(e){}
+          }
+        }
+      }finally{
+        clearTimeout(timer);
+      }
+      return { text: text, truncated: abgeschnitten };
+    }
+
+    /* Weg b: eine einzelne JSON-Antwort. */
+    var daten;
+    try{
+      daten = await antwort.json();
+    }catch(e){
+      clearTimeout(timer);
+      throw { code:'invalid_json', message:'Die Antwort war kein gueltiges JSON.' };
+    }
+    clearTimeout(timer);
+
+    if(modus === 'json') return daten;
+    var fertig = typeof daten.text === 'string' ? daten.text : String(daten.text || '');
+    if(opt.onText && fertig) opt.onText({ text: fertig });
+    return { text: fertig, truncated: !!daten.truncated };
+  }
+
+  function senden(nachrichten, opt){ return anfrage(nachrichten, opt, 'text'); }
+  senden.json = function(anweisung, opt){
+    return anfrage([{ role:'user', content:String(anweisung) }], opt, 'json');
+  };
+  senden.herkunft = 'backend';
+  return senden;
+}
+async function kiAnbieterWaehlen(){
+  if(KI.modus === 'aus') return null;
+
+  if(KI.modus === 'auto' || KI.modus === 'artifact'){
+    try{
+      if(window.claude && window.claude.use){
+        var fn = await window.claude.use('sample');
+        if(fn){ fn.herkunft = 'artifact'; return fn; }
+      }
+    }catch(e){}
+    if(KI.modus === 'artifact') return null;
+  }
+
+  if((KI.modus === 'auto' || KI.modus === 'backend') && KI.endpunkt){
+    return kiBackendAnbieter(KI.endpunkt);
+  }
+  return null;
+}
+function kiHerkunftText(){
+  if(!tutor.fn) return 'nicht verfügbar';
+  if(tutor.fn.herkunft === 'backend') return 'eigener Dienst';
+  return 'Claude über dein Konto';
+}
+var tutor = {
+  ready: false,      /* sample aufgeloest */
+  fn: null,          /* die sample-Funktion */
+  off: false,        /* endgueltig nicht verfuegbar */
+  turns: [],         /* {role, content} - ohne die Anweisungsrunde */
+  busy: false,
+  ctl: null,
+  hinweis: '',
+  vorlage: ''        /* vorbelegte Frage aus einer Lektion */
+};
+var TUTOR_INDEX = (function(){
+  var out = [];
+  PARTS.forEach(function(p){
+    var mods = MODULES.filter(function(m){ return m.part === p; });
+    if(!mods.length) return;
+    out.push('TEIL ' + p + ' - ' + mods[0].partTitle);
+    mods.forEach(function(m){
+      out.push('  ' + m.id + ' ' + m.title + ': ' +
+        m.lessons.map(function(l){ return l.title; }).join(' | '));
+    });
+  });
+  return out.join('\n');
+})();
+function tutorAnweisung(){
+  return [
+    'Du bist der Lern-Tutor in einem Online-Kurs zur Vorbereitung auf die IHK-Abschlusspruefung Teil 1',
+    '(AP1) im Beruf Fachinformatiker fuer Anwendungsentwicklung in Deutschland.',
+    '',
+    'SO ANTWORTEST DU:',
+    '- Immer auf Deutsch, mit Du-Anrede, sachlich und freundlich.',
+    '- Kurz und praezise. Zwei bis sechs Saetze reichen meistens.',
+    '- Erst die Antwort, dann die Begruendung. Nie umgekehrt.',
+    '- Bei Rechenaufgaben IMMER den vollstaendigen Rechenweg Schritt fuer Schritt,',
+    '  mit Einheiten, und das Ergebnis am Ende klar benannt.',
+    '- Wenn es zum Thema eine Lektion im Kurs gibt, nenne sie am Ende in einer',
+    '  eigenen Zeile im Format: Dazu im Kurs: <Modultitel> - <Lektionstitel>',
+    '- Wenn eine Frage typische Pruefungsfallen enthaelt, weise darauf hin.',
+    '- Wenn du etwas nicht sicher weisst, sage das offen. Erfinde keine',
+    '  Paragraphen, Normen, Zahlen oder Fristen.',
+    '- Nutze einfache Formatierung: kurze Absaetze, Aufzaehlungen mit "- ",',
+    '  Tabellen nur wenn sie wirklich helfen. Kein Markdown-Fettdruck noetig.',
+    '',
+    'WAS DU TUN KANNST, wenn darum gebeten wird:',
+    '- einen Begriff erklaeren, auch mit Beispiel',
+    '- eine Uebungsaufgabe im AP1-Stil stellen und danach bewerten',
+    '- eine Loesung der lernenden Person pruefen und sagen, wo Punkte fehlen',
+    '- den Unterschied zwischen zwei Begriffen herausarbeiten',
+    '- eine Merkhilfe vorschlagen',
+    '',
+    'ZUSATZTEILE PHP & LARAVEL (Teil 10) und GIT (Teil 11): gehoeren nicht zur AP1. Fragen dazu beantwortest',
+    'du als erfahrene PHP- und Laravel-Entwicklerin bzw. erfahrener Entwickler, mit kurzen,',
+    'lauffaehigen Codebeispielen fuer aktuelles PHP 8 und Laravel. Weise auf Sicherheit',
+    '(XSS, SQL-Injection, Mass Assignment, fehlende Autorisierung) hin, wo es passt.',
+    '',
+    'DAS IST DER AUFBAU DES KURSES (nutze ihn fuer Verweise):',
+    TUTOR_INDEX,
+    '',
+    'Antworte ab jetzt auf die Fragen der lernenden Person.'
+  ].join('\n');
+}
+async function tutorInit(){
+  if(tutor.ready || tutor.off) return;
+  try{
+    tutor.fn = await kiAnbieterWaehlen();
+  }catch(e){ tutor.fn = null; }
+  tutor.ready = true;
+  if(!tutor.fn) tutor.off = true;
+  if(state.currentId === 'tutor') renderContent();
+}
+async function tutorNeuVerbinden(){
+  tutor.ready = false;
+  tutor.off = false;
+  tutor.fn = null;
+  tutor.hinweis = '';
+  await tutorInit();
+  renderContent();
+  if(typeof dockZeichnen === 'function') dockZeichnen();
+}
+function kiModusSetzen(wert){
+  KI.modus = wert || 'auto';
+  kiSpeichern();
+  tutorNeuVerbinden();
+}
+function kiEndpunktSetzen(wert){
+  KI.endpunkt = String(wert || '').trim();
+  kiSpeichern();
+}
+function tutorFehlertext(code){
+  switch(code){
+    case 'not_granted':
+    case 'sampling_disabled':
+    case 'not_declared':
+    case 'capability_disabled':
+      tutor.off = true;
+      return 'Der Tutor ist in dieser Ansicht nicht verfuegbar. Der Rest des Kurses funktioniert unveraendert.';
+    case 'network':
+      return 'Der Tutor-Dienst ist nicht erreichbar. Pruefe deine Verbindung und die Adresse in den Einstellungen.';
+    case 'server':
+      return 'Der Tutor-Dienst hat mit einem Fehler geantwortet. Versuche es in einigen Minuten erneut.';
+    case 'aborted':
+      return '';
+    case 'rate_limited':
+      return 'Gerade zu viele Anfragen. Warte einen Moment und frag dann noch einmal.';
+    case 'session_expired':
+      return 'Deine Sitzung ist abgelaufen. Melde dich neu an und versuche es noch einmal.';
+    case 'prompt_too_large':
+      return 'Die Unterhaltung ist zu lang geworden. Setze sie mit \u201aNeu beginnen\u2018 zurueck.';
+    case 'refused':
+      return 'Diese Frage kann ich so nicht beantworten. Formuliere sie bitte anders.';
+    case 'empty_completion':
+      return 'Darauf kam keine Antwort. Stelle die Frage etwas konkreter.';
+    case 'invalid_json':
+      return 'Die Bewertung kam in einer unerwarteten Form zurueck. Versuche es noch einmal \u2014 '+
+             'bei Wiederholung liegt es meist an einer zu langen Eingabe.';
+    case 'cancelled':
+      return '';
+    default:
+      /* Den Rohcode mitgeben: sonst sucht man im Dunkeln. */
+      return 'Das hat nicht geklappt. Versuche es gleich noch einmal.'+
+             (code ? ' (Grund: ' + code + ')' : '');
+  }
+}
+function tutorAbbrechen(){
+  if(tutor.ctl) tutor.ctl.abort();
+}
+function tutorNeu(){
+  tutorAbbrechen();
+  tutor.turns = [];
+  tutor.hinweis = '';
+  chatAktualisieren();
+}
+function chatAktualisieren(){
+  if(state.currentId === 'tutor') renderContent();
+  dockZeichnen();
+  var k = document.getElementById('dockKnopf');
+  if(k && tutor.off){ k.hidden = true; }
+  /* Kam die Antwort, waehrend das Dock zu war, meldet der Knopf das. */
+  var p = document.getElementById('dockPunkt');
+  if(p){
+    var letzte = tutor.turns[tutor.turns.length - 1];
+    p.hidden = !(!dock.offen && !tutor.busy && letzte && letzte.role === 'assistant' && letzte.content);
+  }
+}
+function tutorSchnell(text){
+  var ta = document.getElementById('tutorInput');
+  if(ta){ ta.value = text; ta.focus(); }
+  tutorSenden();
+}
+function tutorSenden(){
+  var ta = document.getElementById('tutorInput');
+  var frage = ta ? ta.value.trim() : '';
+  if(!frage) return;
+  if(ta) ta.value = '';
+  tutorFrage(frage);
+}
+function dockFrage(frage){
+  var f = document.getElementById('dockFeld');
+  if(!frage && f) frage = f.value.trim();
+  if(!frage) return;
+  if(f){ f.value = ''; f.style.height = 'auto'; }
+  tutorFrage(frage);
+}

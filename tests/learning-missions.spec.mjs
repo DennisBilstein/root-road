@@ -5,6 +5,7 @@ test('Tagesmission nutzt passende fällige Karten, speichert und vergibt XP nur 
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/');
   await page.waitForFunction(() => window.RP_APP_READY);
+  await page.evaluate(() => rpLoadQuizzes());
   const result = await page.evaluate(() => {
     rpChoosePath('abap');
     const cards = rpData().cards.slice(0,5);
@@ -24,6 +25,7 @@ test('Tagesmission nutzt passende fällige Karten, speichert und vergibt XP nur 
   expect(result).toEqual({dueFirst:true,pathOK:true,done:true,eventCount:7,xpStable:true,exported:true});
   await page.reload();
   await page.waitForFunction(() => window.RP_APP_READY);
+  await page.evaluate(() => rpLoadQuizzes());
   expect(await page.evaluate(() => Object.keys(rpLearning.missions).length)).toBe(1);
   expect(errors).toEqual([]);
 });
@@ -31,6 +33,7 @@ test('Tagesmission nutzt passende fällige Karten, speichert und vergibt XP nur 
 test('Boss-Hinweise verhindern Selbstständigkeitsnachweis und zwei Varianten sind nötig', async ({ page }) => {
   await page.goto('/');
   await page.waitForFunction(() => window.RP_APP_READY);
+  await page.evaluate(() => rpLoadQuizzes());
   const result = await page.evaluate(() => {
     rpChoosePath('abap');
     function solve(hint){
@@ -55,6 +58,7 @@ test('Boss-Hinweise verhindern Selbstständigkeitsnachweis und zwei Varianten si
 test('Gefestigt erfordert zeitlichen Abstand und einen neuen Nachweis nach Fehlern', async ({ page }) => {
   await page.goto('/');
   await page.waitForFunction(() => window.RP_APP_READY);
+  await page.evaluate(() => rpLoadQuizzes());
   const result = await page.evaluate(() => {
     const lesson = {id:'test-lesson',quiz:[{}]}, id = 'test-lesson#0';
     state.stats[id] = {right:2,wrong:0};

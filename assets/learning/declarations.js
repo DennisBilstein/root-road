@@ -3979,6 +3979,19 @@ function renderContent(){
 function renderContentIntern(){
   var el = document.getElementById('content');
 
+  /* Wiederholung, Prüfung und Fehlerheft zeigen Fragetexte; die kommen aus assets/quiz-data.json (Start kennt nur IDs und Zähler). */
+  if((state.currentId === 'review' || state.currentId === 'exam' || state.currentId === 'fehler') && !window.RP_QUIZ_READY && typeof rpLoadQuizzes === 'function'){
+    var gewollt = state.currentId;
+    el.innerHTML = '<h1>Fragen werden geladen …</h1><p role="status" class="lesson-loading">Einen Moment, die Fragen werden geholt.</p>';
+    rpLoadQuizzes().then(function(){
+      if(state.currentId === gewollt) renderContent();
+    }, function(){
+      if(state.currentId !== gewollt) return;
+      el.innerHTML = '<h1>Fragen nicht verfügbar</h1><p role="alert">Die Fragen konnten nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" data-onclick="renderContent()">Erneut versuchen</button>';
+    });
+    return;
+  }
+
   if(state.currentId === 'heute'){ el.innerHTML = renderHeute(); return; }
   if(state.currentId === 'tasten'){ el.innerHTML = renderTasten(); return; }
   if(state.currentId === 'recht'){ el.innerHTML = renderRecht(); return; }
@@ -4084,11 +4097,11 @@ function renderContentIntern(){
 
   var lesson = lessonById(state.currentId);
   if(!lesson){ state.currentId = 'intro'; return renderContent(); }
-  if(lesson.lazy && typeof rpLoadBodies === 'function'){
-    /* Texte stehen noch nicht bereit: Rahmen anzeigen, Texte des Moduls laden, dann neu zeichnen. */
+  if((lesson.lazy || lesson.lazyQuiz) && typeof rpLoadBodies === 'function'){
+    /* Texte und Quizfragen stehen noch nicht bereit: Rahmen anzeigen, beides laden (Texte des Moduls, alle Fragen), dann neu zeichnen. */
     var wanted = lesson.id, loadModule = moduleOfLesson(lesson.id);
     el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="status" class="lesson-loading">Lektion wird geladen …</p>';
-    rpLoadBodies([loadModule.id]).then(function(){
+    Promise.all([lesson.lazy ? rpLoadBodies([loadModule.id]) : null, lesson.lazyQuiz ? rpLoadQuizzes() : null]).then(function(){
       if(state.currentId === wanted) renderContent();
     }, function(){
       if(state.currentId !== wanted) return;

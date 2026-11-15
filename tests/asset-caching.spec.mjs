@@ -15,7 +15,7 @@ test('index.html und Lernmanifest setzen Inhalts-Hashes ein', async ({ request }
   expect(manifestResponse.headers()['cache-control']).toBe('no-cache');
   const manifest = await manifestResponse.json();
   expect(manifest.data.length).toBeGreaterThan(0);
-  expect(Object.keys(manifest.versions).sort()).toEqual([...manifest.files,...manifest.data,...Object.values(manifest.bodies)].sort());
+  expect(Object.keys(manifest.versions).sort()).toEqual([...manifest.files,...manifest.data,...Object.values(manifest.bodies),manifest.quiz].sort());
   for (const hash of Object.values(manifest.versions)) expect(hash).toMatch(/^[0-9a-f]{10}$/);
 });
 

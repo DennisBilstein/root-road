@@ -7,6 +7,8 @@ const dir='assets/learning',dataDir='assets/learning-data';fs.rmSync(dir,{recurs
 /* Lektionstexte werden nicht mit dem Start geladen: Der Bereich von "var MODULES" bis "MODULES.sort(" (Grundbestand, Experten, Verfeinerungen,
    Faktenkorrekturen, Ergänzungen) wird hier einmal in einer VM ausgewertet. Der Start bekommt nur die schlanke Struktur (ohne die Textfelder in HEAVY),
    die Texte liegen je Modul in assets/lesson-bodies/<Modul>.json und werden beim Öffnen der Lektion nachgeladen (bootstrap.js: rpLoadBodies).
+   Ebenso die Quizfragen: Der Start bekommt je Lektion nur Platzhalter ({revision} je Frage, damit Anzahl und IDs stimmen) und Karten ohne Fragetext;
+   Fragen, Optionen und Erklärungen stehen in assets/quiz-data.json und kommen beim ersten Bedarf (bootstrap.js: rpLoadQuizzes).
    Das Quellaggregat assets/script-01.js bleibt vollständig und ist die Grundlage für Build und Prüfungen. */
 const HEAVY=['body','body2','body3','tip','code','code2','code3','code4'];
 const isVar=(statement,name)=>statement.type==='VariableDeclaration'&&statement.declarations.length===1&&statement.declarations[0].id.name===name;
@@ -28,10 +30,23 @@ for(let i=modulesAt;i<=sortAt;i++){
  if(regionAction(text)==='keep'&&!text.startsWith('var RP_APPLICATION_SUPPLEMENTS'))continue;
  vm.runInContext(text,context,{timeout:30000});
 }
+/* Quiz-Kette nach MODULES.sort: Querschnitt, Überarbeitungen, Karten. Sie wird hier einmal ausgewertet; auch hier muss jede neue Anweisung eingeordnet werden. */
+const textOf=statement=>source.slice(statement.start,statement.end);
+const cardsEnd=ast.body.findIndex((statement,i)=>i>sortAt&&textOf(statement).startsWith('CARDS.forEach(function(c){ CARD_BY_ID'));
+if(cardsEnd<0)throw new Error('Ende der Kartenkette nicht gefunden.');
+const quizSkip=/^(var TRACES\b|TRACES\.push)/;
+const quizEval=/^(var (TOTAL_MIN|FLAT|TOTAL|RP_TRANSFER|RP_QUIZ_REVISIONS|CARDS|EXTRA_CARDS|RP_EXTRA_REVISIONS|PARTS|CARD_BY_ID)\b|MODULES\.forEach\(|RP_TRANSFER\.forEach|RP_QUIZ_REVISIONS\.forEach|EXTRA_CARDS\.(push\.apply|forEach)|RP_EXTRA_REVISIONS\.forEach|CARDS\.forEach|function rpQuestionId)/;
+for(let i=sortAt+1;i<=cardsEnd;i++){
+ const text=textOf(ast.body[i]);
+ if(quizSkip.test(text))continue;
+ if(!quizEval.test(text))throw new Error('Unbekannte Anweisung in der Quiz-Kette: '+text.slice(0,80));
+ vm.runInContext(text,context,{timeout:30000});
+}
 const finalModules=JSON.parse(vm.runInContext('JSON.stringify(MODULES)',context));
+const finalCards=JSON.parse(vm.runInContext('JSON.stringify(CARDS)',context));
 const withoutHeavy=lesson=>Object.fromEntries(Object.entries(lesson).filter(([key])=>!HEAVY.includes(key)));
 const bodiesDir='assets/lesson-bodies';fs.rmSync(bodiesDir,{recursive:true,force:true});fs.mkdirSync(bodiesDir,{recursive:true});
-const bodyFiles={};let figures=0;
+const bodyFiles={};let figures=0;const quizData={lessons:{},extras:[]};
 const slimModules=finalModules.map(module=>{
  if(!/^[a-z0-9-]+$/.test(module.id))throw new Error('Ungültige Modul-ID für Dateinamen: '+module.id);
  const texts={};
@@ -40,11 +55,33 @@ const slimModules=finalModules.map(module=>{
   figures+=(String(heavy.body||'').match(/<figure class="fig">/g)||[]).length;
   const slim=withoutHeavy(lesson);
   if(Object.keys(heavy).length){texts[lesson.id]=heavy;slim.lazy=true;}
+  if((lesson.quiz||[]).length){
+   quizData.lessons[lesson.id]=lesson.quiz;
+   slim.quiz=lesson.quiz.map(question=>question.revision?{revision:question.revision}:{});slim.lazyQuiz=true;
+  }
   return slim;
  });
  if(Object.keys(texts).length){fs.writeFileSync(bodiesDir+'/'+module.id+'.json',JSON.stringify(texts));bodyFiles[module.id]=bodiesDir+'/'+module.id+'.json';}
  return {...module,lessons};
 });
+/* Zusatzkarten: Index (ID, Lektion) im Start, Fragetexte in quiz-data.json. Die Rekonstruktion unten spiegelt bootstrap.js (rpLoadQuizzes) und
+   muss exakt die Karten der Quellkette ergeben; sonst bricht der Build ab. */
+const extraCards=finalCards.filter(card=>card.id.startsWith('x#'));
+quizData.extras=extraCards.map(({id,lessonId,q,options,correct,explain})=>({id,lessonId,q,options,correct,explain}));
+const extraIndex=extraCards.map(card=>[card.id,card.lessonId]);
+const rebuilt=[];
+const detail=new Map();
+for(const module of slimModules)for(const lesson of module.lessons)(lesson.quiz||[]).forEach((stub,i)=>{
+ const question=lesson.lazyQuiz?quizData.lessons[lesson.id][i]:stub;
+ rebuilt.push({id:lesson.id+'#'+i+(stub.revision?'@'+stub.revision:''),q:question.q,options:question.options,correct:question.correct,explain:question.explain,lessonId:lesson.id,lessonTitle:lesson.title,moduleTitle:module.title,part:module.part});
+});
+for(const [id,lessonId] of extraIndex){
+ const module=slimModules.find(m=>m.lessons.some(l=>l.id===lessonId)),lesson=module.lessons.find(l=>l.id===lessonId),extra=quizData.extras.find(e=>e.id===id);
+ rebuilt.push({id,q:extra.q,options:extra.options,correct:extra.correct,explain:extra.explain,lessonId,lessonTitle:lesson.title,moduleTitle:module.title,part:module.part});
+}
+if(JSON.stringify(rebuilt)!==JSON.stringify(finalCards))throw new Error('Die aus Platzhaltern und quiz-data.json rekonstruierten Karten weichen von der Quellkette ab.');
+fs.writeFileSync('assets/quiz-data.json',JSON.stringify(quizData));
+const extraCardsCode='var RP_EXTRA_INDEX='+JSON.stringify(extraIndex)+';\nRP_EXTRA_INDEX.forEach(function(row){\n  var mod=MODULES.find(function(m){ return m.lessons.some(function(l){ return l.id === row[1]; }); });\n  var les=mod.lessons.find(function(l){ return l.id === row[1]; });\n  CARDS.push({ id:row[0], lessonId:row[1], lessonTitle:les.title, moduleTitle:mod.title, part:mod.part });\n});\n';
 const files=[],dataFiles=[];let chunk='',index=0;
 function flush(){if(!chunk)return;const name='part-'+String(++index).padStart(2,'0')+'.js';fs.writeFileSync(dir+'/'+name,chunk);files.push('assets/learning/'+name);chunk='';}
 let literalNumber=0;
@@ -58,6 +95,11 @@ for(const [position,statement] of ast.body.entries()){
   if(action==='slim'){add('var MODULES=window.RP_LITERALS['+modulesLiteral+'];\n');continue;}
   if(action==='drop')continue;
   if(action==='slimLessons'){add('var RP_ABAP_SENIOR_LESSONS='+JSON.stringify(vm.runInContext('RP_ABAP_SENIOR_LESSONS',context).map(withoutHeavy))+';\n');continue;}
+ }
+ if(position>sortAt&&position<=cardsEnd){
+  const text=textOf(statement);
+  if(/^(var RP_TRANSFER\b|RP_TRANSFER\.forEach|var RP_QUIZ_REVISIONS\b|RP_QUIZ_REVISIONS\.forEach|var EXTRA_CARDS\b|EXTRA_CARDS\.push\.apply|var RP_EXTRA_REVISIONS\b|RP_EXTRA_REVISIONS\.forEach)/.test(text))continue;
+  if(text.startsWith('EXTRA_CARDS.forEach(')){add(extraCardsCode);continue;}
  }
  const replacements=[];
  function visit(node){
@@ -77,5 +119,5 @@ for(const [position,statement] of ast.body.entries()){
 }flush();
 const hoist=ast.body.filter(node=>node.type==='FunctionDeclaration').map(node=>source.slice(node.start,node.end)).join('\n');
 fs.writeFileSync(dir+'/declarations.js',hoist+'\n');
-fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:2,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files],data:dataFiles,bodies:bodyFiles,stats:{figures}},null,2)+'\n');
+fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:2,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files],data:dataFiles,bodies:bodyFiles,quiz:'assets/quiz-data.json',stats:{figures}},null,2)+'\n');
 console.log(`${files.length+1} geordnete Lernskripte, ${dataFiles.length} JSON-Datensätze und ${Object.keys(bodyFiles).length} Textdateien je Modul statt monolithischem Browserabruf; Quellaggregat bleibt für Build/Prüfungen.`);
