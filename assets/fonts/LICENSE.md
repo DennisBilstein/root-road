@@ -13,3 +13,11 @@ Alle drei stehen unter der **SIL Open Font License 1.1** (https://openfontlicens
 Weitergabe, auch kommerziell, solange die Schriften nicht für sich allein verkauft werden und der Lizenztext erhalten bleibt.
 Urheber laut Google Fonts: Source Serif 4 – Adobe, IBM Plex – IBM Corp. Den vollständigen Lizenztext und die genauen
 Copyright-Zeilen findest du auf den verlinkten Seiten; sie sind hier nicht abgeschrieben.
+
+## Änderungen an Source Serif 4
+
+Gegenüber der Google-Fonts-Datei wurden die Achsen beschnitten (15.11.2026, mit fontTools): `wght` auf 400–700 und `opsz` auf
+14–36, also auf die in der App genutzten Bereiche. Glyphen und Zeichnung sind unverändert, die Namenstabelle (Familienname
+„Source Serif 4“) ist ebenfalls unverändert. Die Schrift trägt laut Hersteller einen reservierten Schriftnamen („Source“); ob
+dieser für die beschnittene Datei weitergeführt werden darf, ist rechtlich nicht geklärt und sollte vor einer Veröffentlichung
+geprüft werden (Vorlage, keine Rechtsberatung).
