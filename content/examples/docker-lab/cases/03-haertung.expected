@@ -1,0 +1,4 @@
+Gehärtet: Benutzer 1000, Rechte (CapEff) 0000000000000000, no-new-privileges 1
+Gehärtet: Schreiben nach /app: EROFS, Schreiben nach /tmp (tmpfs): ok, Netzwerkschnittstellen: lo
+Naives Image mit Standardeinstellungen: Benutzer 0, Rechte ungleich null: ja, Schreiben nach /app: ok
+Speichergrenze 64 MiB: Exit-Code, OOMKilled, Grenze in Bytes: 137 true 67108864

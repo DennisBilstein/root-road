@@ -15,6 +15,7 @@ var RP_PATHS = [
   ,{ id:'node', title:'Node.js', description:'Event Loop, Module, Asynchronität, Dateien, HTTP-Server, SQLite, Tests und Betrieb.' }
   ,{ id:'linux', title:'Linux & Shell', description:'Dateisystem, Rechte, Pipes, Bash-Skripte, Prozesse, Netzwerk, Backup und Skript-Sicherheit.' }
   ,{ id:'websec', title:'Web-Sicherheit', description:'Bedrohungsmodell, OWASP Top 10:2025, Injection, XSS, CSRF, Zugriffskontrolle, Passwörter, Token, Header und Betrieb.' }
+  ,{ id:'docker', title:'Docker & Container', description:'Images und Build-Cache, mehrstufige Builds, Härtung, Volumes, Netzwerke, Betrieb und Compose.' }
 ];
 var rpPath = 'all';
 try { rpPath = localStorage.getItem('rootpfad-learning-path') || 'all'; } catch(e) {}

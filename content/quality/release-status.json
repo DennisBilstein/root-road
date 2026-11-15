@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-11-15T10:58:08.144Z",
-  "modules": 133,
-  "lessons": 558,
-  "lessonQuestions": 1541,
+  "generatedAt": "2026-11-15T11:13:14.467Z",
+  "modules": 134,
+  "lessons": 564,
+  "lessonQuestions": 1559,
   "extraCards": 306,
-  "totalCards": 1847,
+  "totalCards": 1865,
   "allQuestionContentRevised": true,
   "independentHumanFactualReview": false,
-  "questionSources": 717,
+  "questionSources": 729,
   "technicallyReachableSources": 462,
   "unresolvedAutomaticSourceFetches": 6,
   "styleWarnings": 0,
-  "manualModuleAssignments": 133,
+  "manualModuleAssignments": 134,
   "draftModuleRubrics": 0,
   "parallelTaskFamilies": 3,
   "parallelTaskVariants": 6,
@@ -38,6 +38,6 @@
     }
   ],
   "failures": [],
-  "pendingSourceFetches": 249,
-  "individuallyAuthoredModuleAssignments": 133
+  "pendingSourceFetches": 261,
+  "individuallyAuthoredModuleAssignments": 134
 }

@@ -1,0 +1,5 @@
+Ohne Volume: Zähler vor dem Entfernen 2, im neuen Container 0
+Mit Volume (Root-Dateisystem schreibgeschützt): Zähler im zweiten Container nach einem weiteren Besuch: 3
+Gleiches Netzwerk: status 200
+Anderes Netzwerk: nicht erreichbar
+Veröffentlicht an 127.0.0.1: ja, Antwort vom Host: ok

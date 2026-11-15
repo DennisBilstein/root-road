@@ -1,0 +1,6 @@
+# Absichtlich schlechtes Gegenbeispiel für die Lektionen: Quelltext vor dem Installationsschritt, Root-Benutzer, alles aus dem Kontext.
+FROM node:24-slim
+WORKDIR /app
+COPY . .
+RUN node -e "console.log('Abhängigkeiten installieren (hier gibt es keine)')"
+CMD ["node", "src/server.js"]

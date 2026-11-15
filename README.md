@@ -260,6 +260,16 @@ geprüft) und ist Teil von `npm run test:labs`. Die Testausgaben in den Lektione
 mehrere Instanzen, TLS, Anmeldung/Widerruf von Token, ein OpenAPI-Validator (der Vertrag wird nur durch den Vertragstest geprüft; die
 Spezifikation hat am Stichtag Version 3.2.1, das Lab nutzt 3.1.0). `Idempotency-Key` ist ein IETF-Entwurf, kein RFC.
 
+### Docker & Container (neuer Pfad `docker`, 6 Lektionen)
+
+Modul `dk-m1` (Image und Build-Cache, `.dockerignore` und mehrstufige Builds mit Tests, Härtung, Volumes/Netzwerke/Ports, Betrieb mit Geheimnissen,
+Gesundheitscheck und Signalen, Projekt mit Docker Compose). Quelle: `content/tech-tracks/docker-grundlagen.mjs` →
+`node scripts/prepare-platform-tracks.mjs` → `npm run build`; der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen.
+Das Lab `content/examples/docker-lab/` startet echte Container (Docker 29.8.2 mit Docker Desktop auf macOS, Compose 5.6.0, Image `node:24-slim` aus dem
+lokalen Speicher, ohne Download): `node content/examples/docker-lab/run.mjs [NN] [--update]`. Es räumt nur Ressourcen auf, die es selbst angelegt hat
+(Präfix `rootpfad-dk-<pid>`, Label `rootpfad.lab=docker-lab`). Es braucht Docker und läuft nicht in `npm test` oder der CI; die App-Tests laufen in
+`npm run test:labs`. Nicht geprüft: native Linux-Hosts, rootless Docker, Podman, Registry und Veröffentlichung, Last- und Ausfallverhalten.
+
 ## Geführte Codewerkstatt
 
 30 eigene interaktive Aufgaben für JavaScript, TypeScript, Vue, PHP, Laravel,

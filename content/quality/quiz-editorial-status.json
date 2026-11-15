@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-15T10:58:01.105Z",
-  "revised": 1541,
-  "total": 1541,
+  "updatedAt": "2026-11-15T11:13:08.452Z",
+  "revised": 1559,
+  "total": 1559,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -10795,6 +10795,132 @@
       "revision": "2026-11-14-tech-tracks-v1",
       "scenario": true,
       "question": "Was bewirkt Log Forging?"
+    },
+    {
+      "lesson": "dk-m1-l1",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wann übernimmt Docker einen Schritt aus dem Build-Cache?"
+    },
+    {
+      "lesson": "dk-m1-l1",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wo gehört der Installationsschritt im Dockerfile hin?"
+    },
+    {
+      "lesson": "dk-m1-l1",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert mit dem Image, wenn im laufenden Container eine Datei geändert wird?"
+    },
+    {
+      "lesson": "dk-m1-l2",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient .dockerignore?"
+    },
+    {
+      "lesson": "dk-m1-l2",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum entsteht im Lab kein Image, wenn ein Test fehlschlägt?"
+    },
+    {
+      "lesson": "dk-m1-l2",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bringt ein Digest gegenüber einem Tag?"
+    },
+    {
+      "lesson": "dk-m1-l3",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet der Exit-Code 137 bei einem Container?"
+    },
+    {
+      "lesson": "dk-m1-l3",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt --read-only?"
+    },
+    {
+      "lesson": "dk-m1-l3",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist --privileged keine gute Lösung für ein Berechtigungsproblem?"
+    },
+    {
+      "lesson": "dk-m1-l4",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was geschieht mit Daten im Container-Dateisystem, wenn der Container entfernt wird?"
+    },
+    {
+      "lesson": "dk-m1-l4",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wie erreicht ein Container einen anderen im selben selbst angelegten Netzwerk?"
+    },
+    {
+      "lesson": "dk-m1-l4",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet -p 127.0.0.1:8080:3000?"
+    },
+    {
+      "lesson": "dk-m1-l5",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum stehen Build-Argumente nicht für Geheimnisse zur Verfügung?"
+    },
+    {
+      "lesson": "dk-m1-l5",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert, wenn ein Dienst als PID 1 SIGTERM erhält und keinen Handler hat?"
+    },
+    {
+      "lesson": "dk-m1-l5",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wohin schreibt ein Container-Dienst seine Protokolle am besten?"
+    },
+    {
+      "lesson": "dk-m1-l6",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient depends_on mit condition: service_healthy?"
+    },
+    {
+      "lesson": "dk-m1-l6",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt --exit-code-from checker?"
+    },
+    {
+      "lesson": "dk-m1-l6",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum übernimmt compose.yaml die Härtungsoptionen aus Lektion 3?"
     }
   ]
 }

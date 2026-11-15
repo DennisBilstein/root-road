@@ -1,0 +1,41 @@
+# Zwei Dienste: api (gehärtet, mit Volume und Gesundheitscheck) und checker, der erst startet, wenn api gesund ist.
+# Start: LAB_DIR=$PWD docker compose -p rootpfad-dk-demo up --build --abort-on-container-exit --exit-code-from checker
+services:
+  api:
+    build:
+      context: ${LAB_DIR:-.}/app
+      target: runtime
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 128m
+    pids_limit: 64
+    volumes:
+      - data:/data
+    environment:
+      APP_MODE: compose
+    labels:
+      rootpfad.lab: docker-lab
+  checker:
+    image: node:24-slim
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    cap_drop: [ALL]
+    command:
+      - node
+      - -e
+      - |
+        const base = 'http://api:3000';
+        for (let i = 0; i < 3; i += 1) await fetch(base + '/visit', { method: 'POST' });
+        const info = await (await fetch(base + '/info')).json();
+        console.log(JSON.stringify({ visits: info.visits, uid: info.uid, mode: info.mode }));
+        process.exit(info.visits === 3 && info.uid === 1000 ? 0 : 1);
+    labels:
+      rootpfad.lab: docker-lab
+volumes:
+  data:
+    labels:
+      rootpfad.lab: docker-lab

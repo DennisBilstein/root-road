@@ -22579,6 +22579,822 @@
           "code3Lang": "JavaScript"
         }
       ]
+    },
+    {
+      "id": "dk-m1",
+      "course": "docker",
+      "part": 32,
+      "partTitle": "Docker & Container",
+      "title": "Docker & Container · Images, Härtung, Daten, Betrieb und Compose",
+      "lessons": [
+        {
+          "id": "dk-m1-l1",
+          "title": "Image, Container und Build-Cache: Schichten verstehen",
+          "minutes": 35,
+          "objectives": [
+            "Image (Vorlage) und Container (laufende Instanz) unterscheiden",
+            "Erklären, dass jede Dockerfile-Anweisung eine Schicht ergibt, die der Build-Cache wiederverwenden kann",
+            "Ein Dockerfile so ordnen, dass Änderungen am Quelltext keine Installationsschritte erneut auslösen",
+            "Am Build-Protokoll erkennen, welche Schritte übernommen (CACHED) wurden"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Image (Vorlage) und Container (laufende Instanz) unterscheiden</li><li>Erklären, dass jede Dockerfile-Anweisung eine Schicht ergibt, die der Build-Cache wiederverwenden kann</li><li>Ein Dockerfile so ordnen, dass Änderungen am Quelltext keine Installationsschritte erneut auslösen</li><li>Am Build-Protokoll erkennen, welche Schritte übernommen (CACHED) wurden</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und ein kleiner Dienst, zum Beispiel aus dem Modul „Node.js“.</p><h2>In einfachen Worten</h2><p>Ein Image ist eine unveränderliche Vorlage: Dateisystem plus Startanweisung. Ein Container ist eine laufende Instanz eines Images mit einer beschreibbaren Schicht obenauf. Aus einem Image lassen sich beliebig viele Container starten; was im Container geschieht, verändert das Image nicht.</p><p>Ein Image besteht aus Schichten. Fast jede Dockerfile-Anweisung (FROM, COPY, RUN …) erzeugt eine. Beim Bauen prüft Docker für jede Anweisung, ob es genau diese Anweisung mit genau denselben Eingaben schon gebaut hat. Wenn ja, übernimmt es das Ergebnis aus dem Cache und das Protokoll meldet CACHED. Sobald sich eine Schicht ändert, werden alle folgenden neu gebaut.</p><p>Daraus folgt die wichtigste Regel für die Reihenfolge: Erst das, was sich selten ändert (Abhängigkeitslisten, Installation), dann das, was sich oft ändert (dein Quelltext).</p><h2>Schritt für Schritt</h2><ol><li>Wechsle nach content/examples/docker-lab und starte „node run.mjs 01“. Das Lab braucht ein laufendes Docker und das lokal vorhandene Image node:24-slim. Alles, was es anlegt, trägt das Label rootpfad.lab und einen Namen mit Präfix; am Ende räumt es nur das wieder auf. Fremde Container bleiben unberührt.</li><li>Öffne app/Dockerfile. Die Stufe runtime kopiert zuerst nur package.json, führt dann den Installationsschritt aus und kopiert erst danach den Quelltext. Das ist die empfohlene Reihenfolge: Die Abhängigkeitsliste ändert sich selten.</li><li>Der erste Build läuft mit --no-cache. Der Installationsschritt wird ausgeführt, nicht übernommen. Der zweite Build ohne Änderung übernimmt dagegen alle Schritte (CACHED).</li><li>Danach ändert das Skript eine Zeile in src/server.js. Der Installationsschritt wird weiter übernommen, nur der Quelltext-Schritt wird neu gebaut. Bei echten Projekten spart das Minuten, weil die Installation von Abhängigkeiten der teuerste Schritt ist.</li><li>Öffne app/Dockerfile.naive. Hier steht COPY . . vor dem Installationsschritt: Jede Quelltextänderung macht die Kopierschicht ungültig, und die Installation läuft jedes Mal neu. Das Lab zeigt das mit „Installationsschritt übernommen: nein“.</li><li>Merke die Regel für den Cache: Eine Schicht wird übernommen, wenn die Anweisung und alle Dateien, die sie betrifft, unverändert sind. Bei COPY zählt der Inhalt der kopierten Dateien, nicht ihr Änderungsdatum.</li><li>Überlege für ein eigenes Projekt, welche Dateien die Installation bestimmen (zum Beispiel package.json und package-lock.json) und welche nur den Quelltext enthalten.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Wofür ist die Schichtung gut? Schichten werden von Images geteilt: Zehn Images auf demselben Basisimage speichern dieses nur einmal. Beim Herunterladen werden nur fehlende Schichten geladen. Das ist der Grund, warum kleine Basisimages und eine stabile Reihenfolge den Speicher und die Zeit sparen.</p><p>Der Cache kann auch täuschen: Ein Schritt wie „RUN apt-get update“ ändert sich nicht, obwohl sich die Paketlisten im Netz geändert haben, und wird deshalb zu lange aus dem Cache bedient. Daher gehören Aktualisierung und Installation in eine Anweisung, und für Sicherheitsupdates baut man gelegentlich bewusst ohne Cache (--no-cache), wie es das Lab beim ersten Build tut.</p><p>Zum Stand: Das Lab nutzt BuildKit, den Standard-Builder von Docker. Die Ausgabe des Fortschritts (--progress=plain) ist ein Textformat, das sich zwischen Versionen ändern kann; das Lab liest nur die Zeilen „#N [Stufe M/N] …“ und „#N CACHED“. Dass das Basisimage aus dem lokalen Speicher kommt und kein Netzwerk nötig ist, gilt für dieses Lab; ein frischer Rechner lädt es zuerst.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Image</dt><dd>Unveränderliche Vorlage aus Schichten mit Dateisystem und Startanweisung.</dd><dt>Container</dt><dd>Laufende Instanz eines Images mit eigener beschreibbarer Schicht und isolierten Prozessen.</dd><dt>Schicht</dt><dd>Ergebnis einer Dockerfile-Anweisung; wird vom Build-Cache und zwischen Images wiederverwendet.</dd><dt>Build-Cache</dt><dd>Speicher bereits gebauter Schritte; ein Schritt wird übernommen, wenn Anweisung und Eingaben gleich sind.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>app/<wbr>Dockerfile</code> (Ausschnitt ab „FROM node:24-slim AS runtime“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>app/<wbr>Dockerfile.naive</code></li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>01-schichten-cache.mjs</code> (Ausschnitt ab „const first = ctx.build“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 01\nErster Build ohne Cache (Erfolg: ja): Installationsschritt übernommen: nein\nZweiter Build, nichts geändert: Installationsschritt übernommen: ja, Quelltext-Schritt übernommen: ja\nNach Quelltext-Änderung (Dockerfile mit getrennter Reihenfolge): Installationsschritt übernommen: ja, Quelltext-Schritt übernommen: ja\nNach Quelltext-Änderung (naives Dockerfile: erst alles kopieren): Installationsschritt übernommen: ja</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Zuerst den gesamten Quelltext zu kopieren und danach Abhängigkeiten zu installieren.<br><strong>Warum:</strong> Jede Quelltextänderung macht die Installation ungültig; jeder Build dauert so lange wie der erste.<br><strong>Besser:</strong> Erst die Abhängigkeitsliste kopieren, installieren, dann den Quelltext kopieren.</li><li><strong>Falsch:</strong> Dem Cache blind zu vertrauen, auch für Sicherheitsupdates.<br><strong>Warum:</strong> Ein unveränderter Schritt wird aus dem Cache bedient, auch wenn es neue Paketversionen gibt.<br><strong>Besser:</strong> Regelmäßig ohne Cache bauen (--no-cache) und Basisimages aktualisieren.</li><li><strong>Falsch:</strong> Images und Container zu verwechseln und Daten im Container zu „speichern“.<br><strong>Warum:</strong> Der Container-Speicher verschwindet mit dem Container; das Image bleibt unverändert.<br><strong>Besser:</strong> Dauerhafte Daten in Volumes legen (Lektion 4).</li><li><strong>Falsch:</strong> Für jede kleine Aktion eine eigene RUN-Anweisung zu schreiben.<br><strong>Warum:</strong> Es entstehen viele Schichten, und Dateien, die in einer späteren Schicht gelöscht werden, bleiben in der früheren erhalten.<br><strong>Besser:</strong> Zusammengehörige Schritte in einer Anweisung bündeln.</li></ul><h2>Praxis</h2><p>Nimm ein eigenes Projekt, das du in ein Image packen willst. Schreibe das Dockerfile mit Abhängigkeitsliste vor Quelltext, miss die Bauzeit des ersten und des zweiten Builds und die nach einer Quelltextänderung. Notiere, welche Schritte übernommen wurden.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Ändere die Datei package.json im Lab (zum Beispiel die Version) und baue erneut.<br><em>Abnahme:</em> Der Installationsschritt wird nicht mehr übernommen; du erklärst, warum die Abhängigkeitsliste die Installation bestimmt.</li><li><strong>Grenzfall:</strong> Füge am Anfang des Dockerfiles eine Anweisung ARG ZEIT hinzu und baue mit zwei verschiedenen Werten.<br><em>Abnahme:</em> Du beschreibst, ab welcher Anweisung der Cache ungültig wird (ab der Verwendung des Arguments) und warum die Position der Anweisung zählt.</li><li><strong>Fehlerfall:</strong> Setze COPY . . vor den Installationsschritt der Stufe runtime und ändere eine Quelltextzeile.<br><em>Abnahme:</em> Der Installationsschritt läuft neu; du stellst die Reihenfolge wieder her und vergleichst die Zeiten.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/build/cache/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Build-Cache</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/build/building/best-practices/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Best Practices für Dockerfiles</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/reference/dockerfile/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Dockerfile-Referenz</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Cache-Verhalten bei unverändertem Build, bei Quelltextänderung mit geordnetem Dockerfile und bei einem naiven Dockerfile. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: andere Builder-Einstellungen (Remote-Cache, andere Treiber), Linux-Hosts, Mehrplattform-Builds. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Nimm ein eigenes Projekt, das du in ein Image packen willst. Schreibe das Dockerfile mit Abhängigkeitsliste vor Quelltext, miss die Bauzeit des ersten und des zweiten Builds und die nach einer Quelltextänderung. Notiere, welche Schritte übernommen wurden.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Ändere die Datei package.json im Lab (zum Beispiel die Version) und baue erneut.",
+              "acceptance": "Der Installationsschritt wird nicht mehr übernommen; du erklärst, warum die Abhängigkeitsliste die Installation bestimmt."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Füge am Anfang des Dockerfiles eine Anweisung ARG ZEIT hinzu und baue mit zwei verschiedenen Werten.",
+              "acceptance": "Du beschreibst, ab welcher Anweisung der Cache ungültig wird (ab der Verwendung des Arguments) und warum die Position der Anweisung zählt."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Setze COPY . . vor den Installationsschritt der Stufe runtime und ändere eine Quelltextzeile.",
+              "acceptance": "Der Installationsschritt läuft neu; du stellst die Reihenfolge wieder her und vergleichst die Zeiten."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/build/cache/",
+              "title": "Docker-Dokumentation: Build-Cache"
+            },
+            {
+              "url": "https://docs.docker.com/build/building/best-practices/",
+              "title": "Docker-Dokumentation: Best Practices für Dockerfiles"
+            },
+            {
+              "url": "https://docs.docker.com/reference/dockerfile/",
+              "title": "Docker-Dokumentation: Dockerfile-Referenz"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Cache-Verhalten bei unverändertem Build, bei Quelltextänderung mit geordnetem Dockerfile und bei einem naiven Dockerfile. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: andere Builder-Einstellungen (Remote-Cache, andere Treiber), Linux-Hosts, Mehrplattform-Builds. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Wann übernimmt Docker einen Schritt aus dem Build-Cache?",
+              "options": [
+                "Wenn Anweisung und betroffene Dateien unverändert sind.",
+                "Immer, wenn der Schritt schon einmal gebaut wurde.",
+                "Nur nach einem Neustart des Docker-Dienstes.",
+                "Wenn das Image kleiner als 100 MB ist."
+              ],
+              "correct": 0,
+              "explain": "Der Cache vergleicht Anweisung und Eingaben; nach einer Änderung werden auch alle folgenden Schritte neu gebaut.",
+              "rationales": [
+                "Dann ist das Ergebnis gleich, und die Schicht wird wiederverwendet.",
+                "Bei geänderten Eingaben muss neu gebaut werden.",
+                "Der Neustart ändert nichts am Cache.",
+                "Die Größe spielt keine Rolle."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/cache/",
+                "https://docs.docker.com/build/building/best-practices/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wo gehört der Installationsschritt im Dockerfile hin?",
+              "options": [
+                "Ans Ende, nach allen Kopieranweisungen.",
+                "Vor die Anweisung FROM.",
+                "Nach dem Kopieren der Abhängigkeitsliste, aber vor dem Quelltext.",
+                "In eine eigene Datei außerhalb des Dockerfiles."
+              ],
+              "correct": 2,
+              "explain": "Was sich selten ändert, steht vorn; was sich oft ändert, steht hinten.",
+              "rationales": [
+                "Dann läuft er nach jeder Quelltextänderung neu.",
+                "FROM muss zuerst stehen.",
+                "So bleibt er bei Quelltextänderungen im Cache.",
+                "Er gehört ins Dockerfile, damit er Teil des Builds ist."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/cache/",
+                "https://docs.docker.com/build/building/best-practices/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was passiert mit dem Image, wenn im laufenden Container eine Datei geändert wird?",
+              "options": [
+                "Das Image wird dauerhaft verändert.",
+                "Das Image wird gelöscht.",
+                "Alle anderen Container sehen die Änderung sofort.",
+                "Es bleibt unverändert; die Änderung liegt in der Schicht des Containers."
+              ],
+              "correct": 3,
+              "explain": "Trenne Vorlage (Image) und Instanz (Container); für dauerhafte Daten gibt es Volumes.",
+              "rationales": [
+                "Images sind unveränderlich.",
+                "Es wird nichts gelöscht.",
+                "Jeder Container hat seine eigene beschreibbare Schicht.",
+                "Mit dem Container verschwindet auch die Änderung."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/cache/",
+                "https://docs.docker.com/build/building/best-practices/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "FROM node:24-slim AS runtime\nENV NODE_ENV=production\nWORKDIR /app\nCOPY package.json ./\nRUN node -e \"console.log('Abhängigkeiten installieren (hier gibt es keine)')\"\nCOPY --from=test --chown=node:node /app/src ./src",
+          "codeLang": "Dockerfile",
+          "code2": "# Absichtlich schlechtes Gegenbeispiel für die Lektionen: Quelltext vor dem Installationsschritt, Root-Benutzer, alles aus dem Kontext.\nFROM node:24-slim\nWORKDIR /app\nCOPY . .\nRUN node -e \"console.log('Abhängigkeiten installieren (hier gibt es keine)')\"\nCMD [\"node\", \"src/server.js\"]",
+          "code2Lang": "Dockerfile",
+          "code3": "const first = ctx.build(good, dir, { target: 'runtime', noCache: true });\nout.push(`Erster Build ohne Cache (Erfolg: ${yesNo(first.ok)}): Installationsschritt übernommen: ${yesNo(first.step(installStep).cached)}`);\n\nconst second = ctx.build(good, dir, { target: 'runtime' });\nout.push(`Zweiter Build, nichts geändert: Installationsschritt übernommen: ${yesNo(second.step(installStep).cached)}, Quelltext-Schritt übernommen: ${yesNo(second.step(/COPY --from=test/).cached)}`);\n\nconst fs = await import('node:fs');\nfs.appendFileSync(`${dir}/src/server.js`, '\\n// kleine Änderung am Quelltext\\n');\nconst third = ctx.build(good, dir, { target: 'runtime' });\nout.push(`Nach Quelltext-Änderung (Dockerfile mit getrennter Reihenfolge): Installationsschritt übernommen: ${yesNo(third.step(installStep).cached)}, Quelltext-Schritt übernommen: ${yesNo(third.step(/COPY --from=test/).cached)}`);\n\nctx.build(naive, dir, { file: 'Dockerfile.naive', noCache: true });\nfs.appendFileSync(`${dir}/src/server.js`, '// noch eine Änderung\\n');\nconst naiveRebuild = ctx.build(naive, dir, { file: 'Dockerfile.naive' });\nout.push(`Nach Quelltext-Änderung (naives Dockerfile: erst alles kopieren): Installationsschritt übernommen: ${yesNo(naiveRebuild.step(installStep).cached)}`);",
+          "code3Lang": "JavaScript"
+        },
+        {
+          "id": "dk-m1-l2",
+          "title": "Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds",
+          "minutes": 35,
+          "objectives": [
+            "Erklären, was der Build-Kontext ist und warum .dockerignore wichtig ist",
+            "Mit einem mehrstufigen Build Tests im Build ausführen und das Image schlank halten",
+            "Ein Dockerfile so schreiben, dass fehlschlagende Tests kein Image erzeugen",
+            "Die Größe und den Inhalt eines Images prüfen"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Erklären, was der Build-Kontext ist und warum .dockerignore wichtig ist</li><li>Mit einem mehrstufigen Build Tests im Build ausführen und das Image schlank halten</li><li>Ein Dockerfile so schreiben, dass fehlschlagende Tests kein Image erzeugen</li><li>Die Größe und den Inhalt eines Images prüfen</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und ein kleiner Dienst, zum Beispiel aus dem Modul „Node.js“.</p><h2>In einfachen Worten</h2><p>Beim Bauen schickt Docker den Build-Kontext an den Builder: alle Dateien des angegebenen Ordners, auf die COPY zugreifen könnte. Liegen im Ordner große Testdaten, ein Git-Verlauf oder eine .env-Datei, gehen sie mit auf die Reise, und mit COPY . . landen sie im Image. Die Datei .dockerignore wirkt wie .gitignore: Was dort steht, gehört nicht in den Kontext.</p><p>Ein mehrstufiger Build verwendet mehrere FROM-Zeilen. Jede beginnt eine Stufe. In der ersten (hier test) werden die Tests ausgeführt. Die zweite (runtime) holt sich mit COPY --from=test nur das Ergebnis, das sie braucht. Alles andere bleibt zurück und kommt nicht in das fertige Image. Weil die runtime-Stufe vom Ergebnis der test-Stufe abhängt, gibt es kein Image, wenn ein Test fehlschlägt.</p><h2>Schritt für Schritt</h2><ol><li>Starte „node run.mjs 02“. Das Skript kopiert app/ in einen temporären Ordner und legt dort eine 20 MB große Datei big.bin ab.</li><li>Öffne app/.dockerignore: node_modules, .git, Protokolle, .env-Dateien und big.bin bleiben draußen. Die Datei steht im Ordner des Kontexts und wirkt für jeden COPY-Schritt.</li><li>Das getrennte Image enthält in /app nur package.json und src. Das naive Image (ohne .dockerignore, mit COPY . .) enthält zusätzlich big.bin, Dockerfile, Dockerfile.naive und tests und ist mehr als 20 MB größer.</li><li>Öffne app/Dockerfile: Die Stufe test kopiert Quelltext und Tests und führt „node --test“ aus. Die Stufe runtime kopiert mit COPY --from=test --chown=node:node nur src. Tests und Testdaten gelangen nie ins Laufzeit-Image.</li><li>Das Skript fügt eine absichtlich fehlschlagende Testdatei hinzu und baut neu. Der Build bricht ab, und es entsteht kein Image. Der Fehler wird dort sichtbar, wo er hingehört: in der CI und beim lokalen Bauen, nicht erst im Betrieb.</li><li>Beachte --chown: COPY legt Dateien sonst mit Besitzer root an. Das Laufzeit-Image läuft später mit einem unprivilegierten Benutzer (Lektion 3) und soll seine Dateien lesen können.</li><li>Prüfe eigene Images mit docker image inspect (Größe) und mit einem kurzen Container, der den Inhalt auflistet (wie das Lab: ls -A /app).</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Mit .dockerignore wirkst du auf Sicherheit und Geschwindigkeit: Ein Kontext mit Gigabytes dauert, und ein versehentlich kopiertes .env oder ein privater Schlüssel im Image kann jedem ausgeliefert werden, der das Image bekommt. Schreibe die Liste lieber als Positivliste (alles ausschließen, nur Benötigtes erlauben), wenn die Quelltexte klar umrissen sind.</p><p>Warum nicht einfach nur ein schlankes Basisimage? Auch das hilft (zum Beispiel slim-Varianten), aber das Weglassen von Build-Werkzeugen, Tests und Quellen ist unabhängig davon und verkleinert zugleich die Angriffsfläche. Je weniger im Image liegt, desto weniger kann ausgenutzt werden und desto weniger wird bei Sicherheitsmeldungen gefunden.</p><p>Zur Basis: Das Lab nutzt den Tag node:24-slim. Ein Tag kann auf neue Versionen zeigen. Ein Digest (@sha256:…) fixiert genau ein Image und macht Builds wiederholbar, verlangt aber Pflege, damit Sicherheitsupdates ankommen. Beides hat Vor- und Nachteile; entscheide bewusst und dokumentiere es.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Build-Kontext</dt><dd>Die Dateien, die Docker beim Bauen an den Builder sendet und auf die COPY zugreifen kann.</dd><dt>.dockerignore</dt><dd>Liste von Pfaden, die aus dem Build-Kontext ausgeschlossen werden.</dd><dt>mehrstufiger Build</dt><dd>Dockerfile mit mehreren FROM-Stufen; spätere Stufen übernehmen gezielt Ergebnisse früherer.</dd><dt>Digest</dt><dd>Eindeutiger Hash eines Images (sha256:…), der genau diese Version festlegt, im Gegensatz zu einem Tag.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>app/<wbr>.dockerignore</code></li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>app/<wbr>Dockerfile</code> (Ausschnitt ab „FROM node:24-slim AS test“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>02-groesse-tests.mjs</code> (Ausschnitt ab „// Tests im Build“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 02\nInhalt /app (getrennte Stufen mit .dockerignore): package.json, src\nInhalt /app (naives Image ohne .dockerignore): Dockerfile, Dockerfile.naive, big.bin, package.json, src, tests\nNaives Image mindestens 20 MB größer: ja\nBuild mit rotem Test erfolgreich: nein, Image vorhanden: nein</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> COPY . . zu verwenden, ohne .dockerignore zu pflegen.<br><strong>Warum:</strong> Geheimnisse, Verlauf, Testdaten und Abhängigkeiten des Rechners landen im Image und im Cache.<br><strong>Besser:</strong> .dockerignore anlegen und nur kopieren, was gebraucht wird.</li><li><strong>Falsch:</strong> Tests und Build-Werkzeuge im Laufzeit-Image zu lassen.<br><strong>Warum:</strong> Das Image wird größer und bietet mehr Angriffsfläche.<br><strong>Besser:</strong> Mehrstufig bauen und nur das Ergebnis in die letzte Stufe kopieren.</li><li><strong>Falsch:</strong> Tests nur außerhalb des Builds auszuführen und das Image trotzdem zu veröffentlichen.<br><strong>Warum:</strong> Ein Image kann entstehen, obwohl der Test rot ist.<br><strong>Besser:</strong> Tests in einer Stufe ausführen, von der das Laufzeit-Image abhängt, oder die CI die Tests vor dem Build erzwingen lassen.</li><li><strong>Falsch:</strong> Dateien als root zu kopieren und das Image als normaler Benutzer laufen zu lassen.<br><strong>Warum:</strong> Der Dienst kann die eigenen Dateien nicht ändern oder lesen, oder man macht sie aus Bequemlichkeit für alle beschreibbar.<br><strong>Besser:</strong> COPY --chown verwenden und Rechte gezielt vergeben.</li></ul><h2>Praxis</h2><p>Erweitere die Stufen um eine dritte, lint, die vor test läuft und fehlschlägt, wenn ein Format-Check meldet. Beschreibe, wie du das Ergebnis in die runtime-Stufe einbindest, damit der Check nicht übersprungen wird.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Ergänze .dockerignore um tests und baue noch einmal die Stufe test.<br><em>Abnahme:</em> Der Build der Stufe test scheitert, weil tests/ fehlt; du erklärst, warum .dockerignore für alle Stufen gilt, und nimmst die Zeile zurück.</li><li><strong>Grenzfall:</strong> Lege eine .env-Datei mit einem erfundenen Wert in den Kontext und prüfe, ob sie im Image landet.<br><em>Abnahme:</em> Mit .dockerignore ist sie nicht im Image, ohne ist sie es; du belegst es mit einem Listing und erklärst das Risiko.</li><li><strong>Fehlerfall:</strong> Entferne in der runtime-Stufe die Zeile COPY --from=test und kopiere stattdessen src direkt aus dem Kontext.<br><em>Abnahme:</em> Ein roter Test bricht den Build nicht mehr ab; du erklärst, warum die Abhängigkeit zwischen den Stufen wichtig ist, und stellst sie wieder her.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/build/building/multi-stage/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Mehrstufige Builds</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/build/concepts/context/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Build-Kontext und .dockerignore</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/build/building/best-practices/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Best Practices für Dockerfiles</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Inhalt und Größe von Images mit und ohne .dockerignore sowie der Abbruch des Builds bei einem fehlschlagenden Test. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Image-Scanner, Mehrplattform-Images, Veröffentlichung in einer Registry, Digest-Pinning mit automatischer Aktualisierung. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Erweitere die Stufen um eine dritte, lint, die vor test läuft und fehlschlägt, wenn ein Format-Check meldet. Beschreibe, wie du das Ergebnis in die runtime-Stufe einbindest, damit der Check nicht übersprungen wird.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Ergänze .dockerignore um tests und baue noch einmal die Stufe test.",
+              "acceptance": "Der Build der Stufe test scheitert, weil tests/ fehlt; du erklärst, warum .dockerignore für alle Stufen gilt, und nimmst die Zeile zurück."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Lege eine .env-Datei mit einem erfundenen Wert in den Kontext und prüfe, ob sie im Image landet.",
+              "acceptance": "Mit .dockerignore ist sie nicht im Image, ohne ist sie es; du belegst es mit einem Listing und erklärst das Risiko."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Entferne in der runtime-Stufe die Zeile COPY --from=test und kopiere stattdessen src direkt aus dem Kontext.",
+              "acceptance": "Ein roter Test bricht den Build nicht mehr ab; du erklärst, warum die Abhängigkeit zwischen den Stufen wichtig ist, und stellst sie wieder her."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/build/building/multi-stage/",
+              "title": "Docker-Dokumentation: Mehrstufige Builds"
+            },
+            {
+              "url": "https://docs.docker.com/build/concepts/context/",
+              "title": "Docker-Dokumentation: Build-Kontext und .dockerignore"
+            },
+            {
+              "url": "https://docs.docker.com/build/building/best-practices/",
+              "title": "Docker-Dokumentation: Best Practices für Dockerfiles"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Inhalt und Größe von Images mit und ohne .dockerignore sowie der Abbruch des Builds bei einem fehlschlagenden Test. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Image-Scanner, Mehrplattform-Images, Veröffentlichung in einer Registry, Digest-Pinning mit automatischer Aktualisierung. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Wozu dient .dockerignore?",
+              "options": [
+                "Es verhindert, dass Container starten.",
+                "Es schließt Dateien aus dem Build-Kontext aus.",
+                "Es löscht Images nach dem Bauen.",
+                "Es verschlüsselt das Image."
+              ],
+              "correct": 1,
+              "explain": "Es verkleinert den Kontext und hält Geheimnisse und Ballast draußen.",
+              "rationales": [
+                "Es betrifft den Build, nicht den Start.",
+                "Ausgeschlossene Dateien werden nicht an den Builder gesendet und können nicht ins Image kopiert werden.",
+                "Es löscht nichts.",
+                "Es verschlüsselt nichts."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/multi-stage/",
+                "https://docs.docker.com/build/concepts/context/",
+                "https://docs.docker.com/build/building/best-practices/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum entsteht im Lab kein Image, wenn ein Test fehlschlägt?",
+              "options": [
+                "Docker prüft Tests grundsätzlich selbst.",
+                "Das Laufzeit-Image übernimmt Dateien aus der Stufe, die die Tests ausführt.",
+                "Der Build-Cache ist leer.",
+                "Die Tests laufen nach dem Build."
+              ],
+              "correct": 1,
+              "explain": "Die Abhängigkeit zwischen den Stufen macht aus dem Test eine Bauvoraussetzung.",
+              "rationales": [
+                "Docker führt nur aus, was im Dockerfile steht.",
+                "Scheitert die Testanweisung, kann die Stufe nicht abgeschlossen werden, und die abhängige Stufe wird nicht gebaut.",
+                "Der Cache hat damit nichts zu tun.",
+                "Die Tests laufen in der Stufe test vor dem Kopieren."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/multi-stage/",
+                "https://docs.docker.com/build/concepts/context/",
+                "https://docs.docker.com/build/building/best-practices/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was bringt ein Digest gegenüber einem Tag?",
+              "options": [
+                "Er macht das Image kleiner.",
+                "Er legt genau ein Image fest und macht Builds wiederholbar.",
+                "Er ersetzt die Tests.",
+                "Er sorgt automatisch für Sicherheitsupdates."
+              ],
+              "correct": 1,
+              "explain": "Ein Digest sichert Wiederholbarkeit, verlangt aber Pflege der Basis.",
+              "rationales": [
+                "Die Größe ändert sich nicht.",
+                "Ein Tag kann später auf ein anderes Image zeigen, ein Digest nicht.",
+                "Tests bleiben nötig.",
+                "Im Gegenteil: Updates müssen bewusst nachgezogen werden."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/multi-stage/",
+                "https://docs.docker.com/build/concepts/context/",
+                "https://docs.docker.com/build/building/best-practices/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "# Alles, was nicht ins Image gehört: Abhängigkeiten, Git-Verlauf, lokale Konfiguration, große Testdaten.\nnode_modules\n.git\n*.log\n.env\n.env.*\nbig.bin",
+          "codeLang": "Text",
+          "code2": "FROM node:24-slim AS test\nWORKDIR /app\nCOPY package.json ./\nRUN node -e \"console.log('Abhängigkeiten installieren (hier gibt es keine)')\"\nCOPY src ./src\nCOPY tests ./tests\nRUN node --test \"tests/*.test.js\"",
+          "code2Lang": "Dockerfile",
+          "code3": "// Tests im Build: Ein fehlschlagender Test bricht den Build ab, es entsteht kein Image.\nfs.writeFileSync(path.join(dir, 'tests', 'rot.test.js'), \"import { test } from 'node:test';\\nimport assert from 'node:assert/strict';\\ntest('absichtlich rot', () => assert.equal(1, 2));\\n\");\nfs.writeFileSync(path.join(dir, '.dockerignore'), 'node_modules\\n');\nconst broken = ctx.name('broken');\nconst failing = ctx.build(broken, dir, { target: 'runtime', noCache: true });\nconst exists = ctx.docker(['image', 'inspect', broken]).status === 0;\nout.push(`Build mit rotem Test erfolgreich: ${yesNo(failing.ok)}, Image vorhanden: ${yesNo(exists)}`);",
+          "code3Lang": "JavaScript"
+        },
+        {
+          "id": "dk-m1-l3",
+          "title": "Container härten: Benutzer, Rechte, Dateisystem und Grenzen",
+          "minutes": 40,
+          "objectives": [
+            "Einen Container ohne Root-Rechte betreiben und die Rechte (Capabilities) entfernen",
+            "Das Root-Dateisystem schreibgeschützt halten und gezielt beschreibbare Bereiche (tmpfs) erlauben",
+            "Speicher- und Prozessgrenzen setzen und deren Wirkung (OOM-Kill) erkennen",
+            "Ein Netzwerk vollständig abschalten, wenn ein Dienst keines braucht"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Einen Container ohne Root-Rechte betreiben und die Rechte (Capabilities) entfernen</li><li>Das Root-Dateisystem schreibgeschützt halten und gezielt beschreibbare Bereiche (tmpfs) erlauben</li><li>Speicher- und Prozessgrenzen setzen und deren Wirkung (OOM-Kill) erkennen</li><li>Ein Netzwerk vollständig abschalten, wenn ein Dienst keines braucht</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und ein kleiner Dienst, zum Beispiel aus dem Modul „Node.js“.</p><h2>In einfachen Worten</h2><p>Ein Container ist kein virtueller Rechner, sondern ein normaler Prozess mit Einschränkungen des Linux-Kerns. Nach dem Prinzip der geringsten Rechte nimmst du ihm alles, was er nicht braucht. Standardmäßig läuft ein Container-Prozess als root (Benutzer 0) mit einer Reihe von Sonderrechten (Capabilities). Das ist bequem, aber riskanter: Wenn ein Angreifer den Dienst übernimmt, hat er diese Rechte im Container.</p><p>Die Härtung hat fünf Hebel. Ein unprivilegierter Benutzer (USER im Dockerfile). Keine Sonderrechte (--cap-drop ALL). Kein Rechtegewinn durch Programme (--security-opt no-new-privileges). Ein schreibgeschütztes Root-Dateisystem (--read-only), wo der Dienst gezielt in /tmp (tmpfs) oder Volumes schreibt. Und Grenzen für Speicher und Prozesse (--memory, --pids-limit), damit ein Fehler oder Angriff nicht den ganzen Rechner lahmlegt.</p><h2>Schritt für Schritt</h2><ol><li>Starte „node run.mjs 03“. Das Skript startet kurze Container und lässt ein Node-Programm aus dem Container selbst Auskunft geben: Benutzer, Rechte aus /proc/self/status, Schreibversuche und Netzwerkschnittstellen.</li><li>Gehärtet (Benutzer 1000, CapEff 0000000000000000, NoNewPrivs 1): Der Prozess läuft als node, besitzt keine Capabilities und kann keine neuen Rechte erwerben. Schreiben nach /app scheitert mit EROFS (schreibgeschütztes Dateisystem), Schreiben nach /tmp gelingt, weil dort ein tmpfs gemountet ist.</li><li>Mit --network none gibt es nur die Schnittstelle lo: Der Container kann nichts erreichen und ist von nichts erreichbar. Für Dienste ohne Netzwerkbedarf (Batchjobs, Umwandlungen) ist das die sicherste Einstellung.</li><li>Zum Vergleich läuft das naive Image mit Standardeinstellungen: Benutzer 0, Rechte ungleich null, Schreiben nach /app gelingt. Genau diese Rechte nutzt ein Angreifer nach einer Übernahme.</li><li>Speichergrenze: Ein Programm, das unbegrenzt Speicher belegt, läuft mit --memory 64m (und --memory-swap gleich groß) in die Grenze. Der Kernel beendet es: Exit-Code 137, OOMKilled true, die Grenze steht in Bytes im inspect. Ohne Grenze würde der Container den Speicher des Docker-Hosts verbrauchen.</li><li>Lies die Einstellungen in compose.yaml (Dienst api): read_only, tmpfs, cap_drop, security_opt, mem_limit und pids_limit. Dieselben Hebel, nur deklarativ.</li><li>Teste bei eigenen Diensten schrittweise: Mit allen Einschränkungen starten, am Fehler lesen, was der Dienst braucht (zum Beispiel ein Schreibverzeichnis oder eine Capability wie NET_BIND_SERVICE für Ports unter 1024), und nur das gezielt erlauben.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Härtung ist Risikominderung, kein Beweis für Sicherheit. Container teilen sich den Kernel des Hosts; eine Schwachstelle im Kernel oder in der Container-Laufzeit kann die Isolation brechen. Die Maßnahmen verkleinern, was ein Angreifer nach einer Übernahme des Dienstes tun kann. Sie ersetzen weder Updates noch das Prüfen der eigenen Abhängigkeiten.</p><p>Plattformhinweis: Das Lab lief mit Docker Desktop auf macOS, wo Container in einer Linux-VM laufen. Verhalten und Ausgaben zu Capabilities und Speichergrenzen entsprechen dem Linux-Kernel in dieser VM; auf einem nativen Linux-Host oder mit anderen Laufzeiten (Podman, rootless Docker) können Einzelheiten abweichen. Prüfe sie dort selbst.</p><p>Ein weiterer Hebel ist rootless Betrieb: Dabei läuft nicht nur der Container-Prozess, sondern auch der Docker-Daemon ohne Root-Rechte. Das ist ein größerer Eingriff in die Installation und nicht Teil dieses Labs. Ebenfalls außerhalb des Labs: seccomp-Profile, AppArmor oder SELinux. Standardprofile sind meist aktiv und sollten nicht abgeschaltet werden (zum Beispiel mit --privileged).</p><h2>Begriffe auf einen Blick</h2><dl><dt>Capability</dt><dd>Einzelne Sonderberechtigung von root im Linux-Kernel, die sich einzeln erlauben oder entziehen lässt.</dd><dt>no-new-privileges</dt><dd>Einstellung, die verhindert, dass ein Prozess über setuid-Programme mehr Rechte erhält.</dd><dt>tmpfs</dt><dd>Dateisystem im Arbeitsspeicher, das beim Beenden des Containers verschwindet.</dd><dt>OOM-Kill</dt><dd>Beenden eines Prozesses durch den Kernel, weil er die Speichergrenze überschreitet (Exit-Code 137).</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>03-haertung.mjs</code> (Ausschnitt ab „const strict = parse“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>03-haertung.mjs</code> (Ausschnitt ab „// Speichergrenze“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>compose.yaml</code> (Ausschnitt ab „read_only: true“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 03\nGehärtet: Benutzer 1000, Rechte (CapEff) 0000000000000000, no-new-privileges 1\nGehärtet: Schreiben nach /app: EROFS, Schreiben nach /tmp (tmpfs): ok, Netzwerkschnittstellen: lo\nNaives Image mit Standardeinstellungen: Benutzer 0, Rechte ungleich null: ja, Schreiben nach /app: ok\nSpeichergrenze 64 MiB: Exit-Code, OOMKilled, Grenze in Bytes: 137 true 67108864</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Container als root zu betreiben, weil es „sowieso nur ein Container“ ist.<br><strong>Warum:</strong> Nach einer Übernahme hat der Angreifer Root-Rechte im Container und kann Fehler in der Isolation leichter ausnutzen.<br><strong>Besser:</strong> USER im Dockerfile setzen, cap-drop ALL, no-new-privileges und das Dateisystem schreibschützen.</li><li><strong>Falsch:</strong> --privileged zu verwenden, damit „es endlich läuft“.<br><strong>Warum:</strong> Es hebt fast alle Schutzmaßnahmen auf und gibt dem Container nahezu Hostrechte.<br><strong>Besser:</strong> Die fehlende Fähigkeit gezielt identifizieren (Capability, Gerät) und nur diese erlauben.</li><li><strong>Falsch:</strong> Keine Speicher- und Prozessgrenzen zu setzen.<br><strong>Warum:</strong> Ein Fehler oder Angriff kann den Host erschöpfen und alle Container beeinträchtigen.<br><strong>Besser:</strong> Realistische Grenzen setzen und Ausfälle (137, OOMKilled) überwachen.</li><li><strong>Falsch:</strong> Zu glauben, ein gehärteter Container sei „sicher“.<br><strong>Warum:</strong> Container teilen sich den Kernel; Härtung verringert Schaden, verhindert aber keine Schwachstellen im Dienst.<br><strong>Besser:</strong> Härtung als eine Schicht unter mehreren sehen: Updates, Abhängigkeitsprüfung, Netzwerktrennung, Protokolle.</li></ul><h2>Praxis</h2><p>Starte einen eigenen Dienst mit allen fünf Hebeln. Notiere für jeden Hebel, welche Fehlermeldung beim ersten Start kam und welche gezielte Ausnahme du erlaubt hast (zum Beispiel tmpfs für ein temporäres Verzeichnis).</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Starte das gehärtete Image mit --pids-limit 20 und lies den Wert mit docker inspect (HostConfig.PidsLimit) aus.<br><em>Abnahme:</em> Der Wert steht in der Ausgabe; du erklärst, was eine Prozessgrenze gegen Fork-Bomben bringt.</li><li><strong>Grenzfall:</strong> Starte das Image ohne --read-only, aber mit --cap-drop ALL, und versuche nach /app zu schreiben.<br><em>Abnahme:</em> Das Schreiben gelingt (kein Schreibschutz), obwohl keine Capabilities mehr vorhanden sind; du erklärst, dass jeder Hebel eine eigene Wirkung hat.</li><li><strong>Fehlerfall:</strong> Starte das gehärtete Image, aber mit --memory 8m.<br><em>Abnahme:</em> Der Dienst wird beendet (137, OOMKilled); du beschreibst, wie du eine passende Grenze findest, ohne sie zu erraten (Messen unter Last).</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/engine/security/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Docker Engine Security</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/engine/containers/resource_constraints/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Ressourcengrenzen für Container</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html\" target=\"_blank\" rel=\"noopener noreferrer\">OWASP Docker Security Cheat Sheet</a> – Checkliste; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Benutzer, Capabilities, no-new-privileges, Schreibschutz mit tmpfs, abgeschaltetes Netzwerk und eine Speichergrenze mit OOM-Kill gegen ein naives Image. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: rootless Docker, seccomp, AppArmor/SELinux, native Linux-Hosts, Podman und Ausbruchsversuche. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Starte einen eigenen Dienst mit allen fünf Hebeln. Notiere für jeden Hebel, welche Fehlermeldung beim ersten Start kam und welche gezielte Ausnahme du erlaubt hast (zum Beispiel tmpfs für ein temporäres Verzeichnis).",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Starte das gehärtete Image mit --pids-limit 20 und lies den Wert mit docker inspect (HostConfig.PidsLimit) aus.",
+              "acceptance": "Der Wert steht in der Ausgabe; du erklärst, was eine Prozessgrenze gegen Fork-Bomben bringt."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Starte das Image ohne --read-only, aber mit --cap-drop ALL, und versuche nach /app zu schreiben.",
+              "acceptance": "Das Schreiben gelingt (kein Schreibschutz), obwohl keine Capabilities mehr vorhanden sind; du erklärst, dass jeder Hebel eine eigene Wirkung hat."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Starte das gehärtete Image, aber mit --memory 8m.",
+              "acceptance": "Der Dienst wird beendet (137, OOMKilled); du beschreibst, wie du eine passende Grenze findest, ohne sie zu erraten (Messen unter Last)."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/engine/security/",
+              "title": "Docker-Dokumentation: Docker Engine Security"
+            },
+            {
+              "url": "https://docs.docker.com/engine/containers/resource_constraints/",
+              "title": "Docker-Dokumentation: Ressourcengrenzen für Container"
+            },
+            {
+              "url": "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html",
+              "title": "OWASP Docker Security Cheat Sheet"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Benutzer, Capabilities, no-new-privileges, Schreibschutz mit tmpfs, abgeschaltetes Netzwerk und eine Speichergrenze mit OOM-Kill gegen ein naives Image. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: rootless Docker, seccomp, AppArmor/SELinux, native Linux-Hosts, Podman und Ausbruchsversuche. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Was bedeutet der Exit-Code 137 bei einem Container?",
+              "options": [
+                "Der Dienst wurde erfolgreich beendet.",
+                "Der Prozess wurde mit SIGKILL beendet, zum Beispiel wegen der Speichergrenze.",
+                "Der Dienst hat einen Syntaxfehler.",
+                "Der Container hatte kein Netzwerk."
+              ],
+              "correct": 1,
+              "explain": "Der Code 128+9 weist auf ein hartes Beenden hin; bei OOMKilled true war es die Speichergrenze.",
+              "rationales": [
+                "Erfolg wäre 0.",
+                "137 ist 128 plus Signal 9 (SIGKILL).",
+                "Ein Syntaxfehler hat einen anderen Code.",
+                "Das Netzwerk führt nicht zu 137."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/security/",
+                "https://docs.docker.com/engine/containers/resource_constraints/",
+                "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was bewirkt --read-only?",
+              "options": [
+                "Es verbietet jede Netzwerkverbindung.",
+                "Es entfernt alle Rechte des Benutzers.",
+                "Es macht das Root-Dateisystem schreibgeschützt.",
+                "Es löscht den Container nach dem Beenden."
+              ],
+              "correct": 2,
+              "explain": "Ein schreibgeschütztes Dateisystem verhindert, dass ein Angreifer Dateien im Image verändert.",
+              "rationales": [
+                "Dafür gibt es --network none.",
+                "Dafür gibt es --cap-drop und USER.",
+                "Beschreibbar bleiben nur eingehängte Volumes und tmpfs.",
+                "Dafür gibt es --rm."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/security/",
+                "https://docs.docker.com/engine/containers/resource_constraints/",
+                "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum ist --privileged keine gute Lösung für ein Berechtigungsproblem?",
+              "options": [
+                "Es funktioniert nur unter Windows.",
+                "Es verlangsamt den Dienst deutlich.",
+                "Es benötigt eine Lizenz.",
+                "Es hebt fast alle Schutzmaßnahmen auf."
+              ],
+              "correct": 3,
+              "explain": "Statt alles freizugeben, erlaubt man nur die konkret fehlende Fähigkeit.",
+              "rationales": [
+                "Es funktioniert plattformunabhängig.",
+                "Die Geschwindigkeit ist nicht der Grund.",
+                "Eine Lizenz ist nicht nötig.",
+                "Der Container erhält nahezu Hostrechte; gezielte Ausnahmen sind sicherer."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/security/",
+                "https://docs.docker.com/engine/containers/resource_constraints/",
+                "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "const strict = parse(ctx.run(['--rm', '--read-only', '--tmpfs', '/tmp', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--network', 'none', '--entrypoint', 'node', good, '-e', probe]));\nout.push(`Gehärtet: Benutzer ${strict.uid}, Rechte (CapEff) ${strict.capEff}, no-new-privileges ${strict.noNewPrivs}`);\nout.push(`Gehärtet: Schreiben nach /app: ${strict.appWrite}, Schreiben nach /tmp (tmpfs): ${strict.tmpWrite}, Netzwerkschnittstellen: ${strict.interfaces.join(', ')}`);",
+          "codeLang": "JavaScript",
+          "code2": "// Speichergrenze: Das Überschreiten beendet den Prozess (Exit 137) und wird als OOMKilled vermerkt.\nconst name = ctx.name('oom');\nctx.run(['--name', name, '--memory', '64m', '--memory-swap', '64m', '--entrypoint', 'node', good, '-e', \"const big = []; while (true) big.push(Buffer.alloc(8 * 1024 * 1024, 1));\"]);\nconst state = ctx.docker(['inspect', '--format', '{{.State.ExitCode}} {{.State.OOMKilled}} {{.HostConfig.Memory}}', name]).out;\nout.push(`Speichergrenze 64 MiB: Exit-Code, OOMKilled, Grenze in Bytes: ${state}`);",
+          "code2Lang": "JavaScript",
+          "code3": "read_only: true\ntmpfs: [/tmp]\ncap_drop: [ALL]\nsecurity_opt: [\"no-new-privileges:true\"]\nmem_limit: 128m\npids_limit: 64",
+          "code3Lang": "YAML"
+        },
+        {
+          "id": "dk-m1-l4",
+          "title": "Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports",
+          "minutes": 40,
+          "objectives": [
+            "Erklären, warum Daten im Container-Speicher mit dem Container verschwinden",
+            "Mit einem benannten Volume Daten dauerhaft speichern",
+            "Containernamen in einem eigenen Netzwerk auflösen und Netzwerke als Trennung nutzen",
+            "Ports nur an 127.0.0.1 veröffentlichen, wenn kein fremder Zugriff nötig ist"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Erklären, warum Daten im Container-Speicher mit dem Container verschwinden</li><li>Mit einem benannten Volume Daten dauerhaft speichern</li><li>Containernamen in einem eigenen Netzwerk auflösen und Netzwerke als Trennung nutzen</li><li>Ports nur an 127.0.0.1 veröffentlichen, wenn kein fremder Zugriff nötig ist</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und ein kleiner Dienst, zum Beispiel aus dem Modul „Node.js“.</p><h2>In einfachen Worten</h2><p>Alles, was ein Container in sein Dateisystem schreibt, liegt in seiner eigenen Schicht und geht mit ihm verloren, wenn er entfernt wird. Für Daten, die bleiben sollen (Datenbanken, Uploads, Zähler), gibt es Volumes: von Docker verwalteter Speicher, der unabhängig vom Container existiert und in einen Container eingehängt wird.</p><p>Beim Netzwerk gilt: Container auf demselben selbst angelegten Netzwerk erreichen sich über ihren Namen (Docker stellt dafür DNS bereit). Container in verschiedenen Netzwerken sehen sich nicht. Das ist eine einfache, wirksame Trennung: Die Datenbank hängt nur im Netzwerk des Dienstes, nicht im öffentlichen.</p><p>Von außen erreichbar wird ein Container nur, wenn du einen Port veröffentlichst (-p). Dabei entscheidest du, an welche Adresse des Hosts er gebunden wird. 127.0.0.1 bedeutet: nur dieser Rechner. Ohne Angabe gilt 0.0.0.0, also alle Schnittstellen.</p><h2>Schritt für Schritt</h2><ol><li>Starte „node run.mjs 04“. Das Skript startet Container aus dem Image des Labs und schickt über docker exec HTTP-Anfragen an den Dienst im Container.</li><li>Ohne Volume: Zwei Besuche ergeben den Zählerstand 2. Wird der Container entfernt und ein neuer gestartet, steht der Zähler wieder bei 0. Die Datei lag im Container-Speicher.</li><li>Mit benanntem Volume (-v name:/data): Zwei Besuche, Container entfernen, neuen Container mit demselben Volume starten, ein weiterer Besuch ergibt 3. Dabei bleibt das Root-Dateisystem schreibgeschützt; beschreibbar ist nur das Volume.</li><li>Die Rechte: Das Volume erbt beim ersten Mal Inhalt und Besitzer des Verzeichnisses aus dem Image (/data gehört dem Benutzer node). Deshalb kann der unprivilegierte Dienst schreiben. Mit einem Bind-Mount eines Host-Ordners wäre das nicht automatisch so.</li><li>Netzwerk: Im selbst angelegten Netzwerk erreicht ein zweiter Container den Dienst unter dem Namen api (Antwort 200). Ein Container in einem anderen Netzwerk erreicht ihn nicht.</li><li>Veröffentlichter Port: -p 127.0.0.1::3000 lässt Docker einen freien Host-Port wählen und bindet ihn an die Loopback-Adresse. docker port zeigt die Zuordnung; vom Host aus antwortet der Dienst. Von anderen Rechnern im Netz ist er nicht erreichbar.</li><li>Überlege für eine Datenbank: Welches Volume, welches Netzwerk, welche Veröffentlichung? Meist genügt Volume und internes Netzwerk; ein veröffentlichter Port ist nur zur Fehlersuche nötig, dann an 127.0.0.1.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Volume oder Bind-Mount? Ein Volume wird von Docker verwaltet, ist portabel und eignet sich für Daten der Anwendung. Ein Bind-Mount hängt einen Ordner des Hosts ein: praktisch für Entwicklung (Quelltext wird live gesehen), aber abhängig vom Host-Pfad und seinen Rechten. Ein tmpfs liegt im Arbeitsspeicher und eignet sich für Temporäres. Wichtige Datenbank-Volumes gehören in die Sicherung (die MariaDB-Lektion zeigt, wie man sichert und die Wiederherstellung prüft).</p><p>Zur Veröffentlichung: Eine Veröffentlichung ohne Adresse (-p 3000:3000) bindet an alle Schnittstellen des Hosts. Auf Servern ist das ein häufiger Fehler, besonders bei Datenbanken: Docker setzt dafür eigene Firewall-Regeln, die Einstellungen einer Host-Firewall umgehen können. Veröffentliche deshalb gezielt und prüfe, was von außen erreichbar ist.</p><p>Zum Lab: Es lief auf Docker Desktop (macOS). Das Netzwerk-Verhalten zwischen Containern (DNS, Trennung) entspricht dem von Docker Engine; die Anbindung des Hosts läuft über die VM und kann sich von Linux-Hosts unterscheiden. Daten auf Bind-Mounts mit anderen Besitzern und Rechten sind nicht Teil des Labs.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Volume</dt><dd>Von Docker verwalteter, dauerhafter Speicher, der unabhängig von Containern existiert.</dd><dt>Bind-Mount</dt><dd>Eingehängter Ordner des Hosts im Container; abhängig von Pfad und Rechten des Hosts.</dd><dt>Netzwerk (user-defined)</dt><dd>Selbst angelegtes Docker-Netzwerk, in dem Container sich per Namen finden und von anderen Netzwerken getrennt sind.</dd><dt>Port-Veröffentlichung</dt><dd>Verbindung eines Container-Ports mit einer Adresse und einem Port des Hosts (-p).</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>04-daten-netz.mjs</code> (Ausschnitt ab „// Mit Volume“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>04-daten-netz.mjs</code> (Ausschnitt ab „// Netzwerk:“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>04-daten-netz.mjs</code> (Ausschnitt ab „// Veröffentlichter Port“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 04\nOhne Volume: Zähler vor dem Entfernen 2, im neuen Container 0\nMit Volume (Root-Dateisystem schreibgeschützt): Zähler im zweiten Container nach einem weiteren Besuch: 3\nGleiches Netzwerk: status 200\nAnderes Netzwerk: nicht erreichbar\nVeröffentlicht an 127.0.0.1: ja, Antwort vom Host: ok</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Wichtige Daten im Container-Speicher zu belassen.<br><strong>Warum:</strong> Beim Entfernen oder Neuaufbau des Containers gehen sie verloren.<br><strong>Besser:</strong> Benanntes Volume für Daten verwenden und es in die Sicherung aufnehmen.</li><li><strong>Falsch:</strong> Datenbankports ohne Adresse zu veröffentlichen (-p 3306:3306).<br><strong>Warum:</strong> Der Port ist an allen Schnittstellen des Hosts erreichbar, unter Umständen auch aus dem Internet.<br><strong>Besser:</strong> Nur bei Bedarf und an 127.0.0.1 veröffentlichen; sonst ein internes Netzwerk nutzen.</li><li><strong>Falsch:</strong> Alle Container im Standardnetzwerk zu betreiben.<br><strong>Warum:</strong> Dort lösen Namen nicht auf, und alle Container sehen sich gegenseitig.<br><strong>Besser:</strong> Eigene Netzwerke je Anwendungsteil anlegen und Dienste gezielt verbinden.</li><li><strong>Falsch:</strong> Einen Bind-Mount ohne Beachtung von Besitzer und Rechten zu verwenden.<br><strong>Warum:</strong> Der Dienst läuft als anderer Benutzer als der Besitzer der Dateien und kann nicht schreiben oder schreibt Dateien mit falschem Besitzer.<br><strong>Besser:</strong> Rechte abstimmen oder ein Volume nutzen.</li></ul><h2>Praxis</h2><p>Starte eine MariaDB aus dem lokalen Image mit Volume und eigenem Netzwerk, lege Daten an, entferne den Container, starte einen neuen mit demselben Volume und beweise per Abfrage, dass die Daten noch da sind. Notiere, welchen Port du nicht veröffentlicht hast und warum.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Hänge dasselbe Volume gleichzeitig in zwei Container ein und lass beide den Zähler erhöhen.<br><em>Abnahme:</em> Beide sehen den gemeinsamen Stand; du erklärst, warum gleichzeitiges Schreiben ohne Koordination riskant ist.</li><li><strong>Grenzfall:</strong> Veröffentliche den Port ohne Adresse (-p 3000) und lies mit docker port die Bindung ab.<br><em>Abnahme:</em> Die Bindung erfolgt an 0.0.0.0; du vergleichst sie mit 127.0.0.1 und beschreibst das Risiko.</li><li><strong>Fehlerfall:</strong> Hänge das Volume mit Root-Besitz ein (Bind-Mount eines Ordners, der root gehört) und starte den Dienst.<br><em>Abnahme:</em> Der Zähler meldet 500 mit dem Code EACCES oder EROFS; du behebst es durch passende Rechte.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/engine/storage/volumes/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Volumes</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/engine/network/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Netzwerke</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/engine/security/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Docker Engine Security</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Verlust von Daten ohne Volume, Fortbestand mit Volume bei schreibgeschütztem Root-Dateisystem, Namensauflösung und Trennung zwischen Netzwerken sowie die Bindung an 127.0.0.1. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Bind-Mounts mit abweichenden Rechten, Zugriffe von anderen Rechnern, Firewall-Wechselwirkungen auf Linux-Servern, Volume-Treiber und Datenbank-Sicherungen. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Starte eine MariaDB aus dem lokalen Image mit Volume und eigenem Netzwerk, lege Daten an, entferne den Container, starte einen neuen mit demselben Volume und beweise per Abfrage, dass die Daten noch da sind. Notiere, welchen Port du nicht veröffentlicht hast und warum.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Hänge dasselbe Volume gleichzeitig in zwei Container ein und lass beide den Zähler erhöhen.",
+              "acceptance": "Beide sehen den gemeinsamen Stand; du erklärst, warum gleichzeitiges Schreiben ohne Koordination riskant ist."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Veröffentliche den Port ohne Adresse (-p 3000) und lies mit docker port die Bindung ab.",
+              "acceptance": "Die Bindung erfolgt an 0.0.0.0; du vergleichst sie mit 127.0.0.1 und beschreibst das Risiko."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Hänge das Volume mit Root-Besitz ein (Bind-Mount eines Ordners, der root gehört) und starte den Dienst.",
+              "acceptance": "Der Zähler meldet 500 mit dem Code EACCES oder EROFS; du behebst es durch passende Rechte."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/engine/storage/volumes/",
+              "title": "Docker-Dokumentation: Volumes"
+            },
+            {
+              "url": "https://docs.docker.com/engine/network/",
+              "title": "Docker-Dokumentation: Netzwerke"
+            },
+            {
+              "url": "https://docs.docker.com/engine/security/",
+              "title": "Docker-Dokumentation: Docker Engine Security"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Verlust von Daten ohne Volume, Fortbestand mit Volume bei schreibgeschütztem Root-Dateisystem, Namensauflösung und Trennung zwischen Netzwerken sowie die Bindung an 127.0.0.1. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Bind-Mounts mit abweichenden Rechten, Zugriffe von anderen Rechnern, Firewall-Wechselwirkungen auf Linux-Servern, Volume-Treiber und Datenbank-Sicherungen. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Was geschieht mit Daten im Container-Dateisystem, wenn der Container entfernt wird?",
+              "options": [
+                "Sie werden automatisch in ein Volume kopiert.",
+                "Sie bleiben dauerhaft im Image.",
+                "Sie gehen verloren.",
+                "Sie werden verschlüsselt archiviert."
+              ],
+              "correct": 2,
+              "explain": "Dauerhafte Daten gehören in Volumes.",
+              "rationales": [
+                "Das geschieht nur, wenn ein Volume eingehängt war.",
+                "Das Image bleibt unverändert.",
+                "Die beschreibbare Schicht verschwindet mit dem Container.",
+                "Es gibt keine automatische Archivierung."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/storage/volumes/",
+                "https://docs.docker.com/engine/network/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wie erreicht ein Container einen anderen im selben selbst angelegten Netzwerk?",
+              "options": [
+                "Über den Containernamen oder Alias.",
+                "Nur über die Host-IP-Adresse.",
+                "Nur über einen veröffentlichten Port.",
+                "Gar nicht, Container sind immer isoliert."
+              ],
+              "correct": 0,
+              "explain": "Netzwerke sind Namensraum und Trennung zugleich.",
+              "rationales": [
+                "Docker stellt in selbst angelegten Netzwerken einen DNS-Dienst bereit.",
+                "Das ist nicht nötig.",
+                "Veröffentlichte Ports sind für Zugriffe von außen.",
+                "Im gemeinsamen Netzwerk sind sie erreichbar."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/storage/volumes/",
+                "https://docs.docker.com/engine/network/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was bedeutet -p 127.0.0.1:8080:3000?",
+              "options": [
+                "Der Dienst ist für das ganze Netzwerk erreichbar.",
+                "Der Port ist nur vom Docker-Host selbst erreichbar.",
+                "Der Container nutzt Port 127.",
+                "Der Port wird verschlüsselt."
+              ],
+              "correct": 1,
+              "explain": "Die Adresse legt fest, wer den veröffentlichten Port erreichen kann.",
+              "rationales": [
+                "Dafür müsste die Adresse 0.0.0.0 oder weggelassen sein.",
+                "Gebunden wird an die Loopback-Adresse.",
+                "Die Zahl ist eine Adresse, kein Port.",
+                "Verschlüsselung leistet das nicht."
+              ],
+              "sources": [
+                "https://docs.docker.com/engine/storage/volumes/",
+                "https://docs.docker.com/engine/network/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "// Mit Volume: Der Zähler überlebt das Entfernen des Containers.\nconst volume = ctx.name('data');\nctx.docker(['volume', 'create', '--label', 'rootpfad.lab=docker-lab', volume]);\nctx.track.volume(volume);\nconst first = start('vol1', ['-v', `${volume}:/data`, '--read-only']);\nawait ctx.waitHealthy(first);\nctx.exec(first, get('/visit', 'POST'));\nctx.exec(first, get('/visit', 'POST'));\nctx.docker(['rm', '-f', first]);\nconst second = start('vol2', ['-v', `${volume}:/data`, '--read-only']);\nawait ctx.waitHealthy(second);\nconst third = JSON.parse(ctx.exec(second, get('/visit', 'POST')).out).visits;\nout.push(`Mit Volume (Root-Dateisystem schreibgeschützt): Zähler im zweiten Container nach einem weiteren Besuch: ${third}`);",
+          "codeLang": "JavaScript",
+          "code2": "// Netzwerk: In einem selbst angelegten Netzwerk lösen Containernamen auf; ein Container in einem anderen Netzwerk erreicht ihn nicht.\nconst network = ctx.name('net');\nconst other = ctx.name('other');\nfor (const name of [network, other]) { ctx.docker(['network', 'create', '--label', 'rootpfad.lab=docker-lab', name]); ctx.track.network(name); }\nconst api = ctx.name('api');\nctx.run(['-d', '--name', api, '--network', network, '--network-alias', 'api', '-p', '127.0.0.1::3000', good]);\nawait ctx.waitHealthy(api);\nconst reach = (net) => ctx.run(['--rm', '--network', net, '--entrypoint', 'node', good, '-e', \"fetch('http://api:3000/healthz', { signal: AbortSignal.timeout(3000) }).then((r) => console.log('status ' + r.status)).catch((e) => console.log('Fehler ' + (e.cause?.code ?? e.name)))\"]).out;\nout.push(`Gleiches Netzwerk: ${reach(network)}`);\nout.push(`Anderes Netzwerk: ${/^Fehler/.test(reach(other)) ? 'nicht erreichbar' : 'erreichbar'}`);",
+          "code2Lang": "JavaScript",
+          "code3": "// Veröffentlichter Port: an 127.0.0.1 gebunden, damit nur der eigene Rechner zugreifen kann.\nconst mapping = ctx.docker(['port', api, '3000/tcp']).out.split('\\n')[0];\nconst [host, hostPort] = mapping.split(':');\nconst answer = await (await fetch(`http://127.0.0.1:${hostPort}/healthz`)).json();\nout.push(`Veröffentlicht an 127.0.0.1: ${yesNo(host === '127.0.0.1')}, Antwort vom Host: ${answer.status}`);",
+          "code3Lang": "JavaScript"
+        },
+        {
+          "id": "dk-m1-l5",
+          "title": "Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden",
+          "minutes": 40,
+          "objectives": [
+            "Konfiguration über Umgebungsvariablen von Geheimnissen unterscheiden",
+            "Erklären, warum Build-Argumente keine Geheimnisse transportieren dürfen und was ein Secret-Mount leistet",
+            "Einen Gesundheitscheck definieren und das Protokoll über stdout nutzen",
+            "Signale beim Beenden verstehen: SIGTERM, Frist, SIGKILL und die Rolle von PID 1"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Konfiguration über Umgebungsvariablen von Geheimnissen unterscheiden</li><li>Erklären, warum Build-Argumente keine Geheimnisse transportieren dürfen und was ein Secret-Mount leistet</li><li>Einen Gesundheitscheck definieren und das Protokoll über stdout nutzen</li><li>Signale beim Beenden verstehen: SIGTERM, Frist, SIGKILL und die Rolle von PID 1</li></ul><p><strong>Voraussetzungen:</strong> Grundkenntnisse in der Kommandozeile (Modul „Linux &amp; Shell“) und ein kleiner Dienst, zum Beispiel aus dem Modul „Node.js“.</p><h2>In einfachen Worten</h2><p>Ein Dienst im Container braucht Konfiguration. Üblich sind Umgebungsvariablen (-e APP_MODE=lab). Sie sind bequem, aber nicht geheim: Wer docker inspect ausführen darf, sieht sie. Echte Geheimnisse wie Passwörter und Schlüssel gehören nicht ins Image und nicht in Build-Argumente, denn Build-Argumente stehen im Verlauf des Images (docker history). Für den Build gibt es Secret-Mounts, die das Geheimnis nur während eines Schritts bereitstellen und nicht in einer Schicht hinterlassen.</p><p>Zum Betrieb gehören ein Gesundheitscheck (HEALTHCHECK: ein kleiner Befehl, der prüft, ob der Dienst antwortet) und Protokolle. Der Dienst schreibt sie auf die Standardausgabe, und Docker sammelt sie (docker logs).</p><p>Beim Beenden sendet docker stop zuerst SIGTERM und wartet eine Frist. Reagiert der Prozess nicht, folgt SIGKILL (Exit-Code 137). Ein Dienst sollte SIGTERM abfangen, laufende Anfragen beenden und sauber aussteigen.</p><h2>Schritt für Schritt</h2><ol><li>Starte „node run.mjs 05“. Das Skript startet den Dienst mit -e APP_MODE=lab und wartet, bis der Gesundheitscheck „healthy“ meldet. Der Dienst gibt die Variable über /info zurück; docker inspect zeigt sie ebenfalls. Konfiguration ist damit nicht vertraulich.</li><li>Das Protokoll: docker logs liefert JSON-Zeilen („listening“ …), die der Dienst auf stdout schreibt. Er legt keine Protokolldatei an; Aufbewahrung und Rotation übernimmt der Logtreiber von Docker oder ein Sammler.</li><li>Der Gesundheitscheck im Dockerfile ruft /healthz im Container mit Node auf (kein curl nötig, weil das Image keines enthält). Intervall und Wiederholungen sind kurz gewählt, damit das Lab schnell ist; produktiv wählst du längere Werte.</li><li>Geheimnisse: Das Lab baut zwei kleine Images. Mit ARG und --build-arg steht der Wert anschließend in docker history --no-trunc („ja“). Mit RUN --mount=type=secret und --secret steht er nicht darin („nein“). Der Wert ist ein erfundener Platzhalter.</li><li>Beenden: Mit Signalbehandlung (der Dienst fängt SIGTERM, schließt den Server und beendet sich) endet der Container sofort mit Exit-Code 0. Ohne Behandlung ignoriert Node als PID 1 das Signal, docker stop wartet die Frist (hier 3 Sekunden) ab, dann folgt SIGKILL: Exit-Code 137.</li><li>Mit --init startet vor dem Dienst ein kleines Init-Programm als PID 1, das Signale weiterreicht. Der Dienst wird dann vom Standardverhalten beendet (Exit-Code 143 = 128 + SIGTERM), und docker stop wartet nicht.</li><li>Lies im Quelltext (src/server.js, letzter Block), wie das Signal behandelt wird: process.on(signal) und server.close mit Beenden des Prozesses. Prüfe bei eigenen Diensten, ob sie bei SIGTERM wirklich beenden, mit docker stop und der Zeit bis zum Ende.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Warum ist PID 1 besonders? Im Linux-Kernel gelten für den ersten Prozess eines Namensraums eigene Regeln: Signale ohne Handler werden für ihn nicht mit der Standardaktion (Beenden) behandelt. Ein Dienst, der selbst keinen Handler hat, überlebt SIGTERM. Deshalb entweder Signale im Dienst behandeln oder --init (in Compose init: true) verwenden. Skripte als Startbefehl (sh -c „…“) leiten Signale oft nicht weiter; mit exec starten oder die exec-Form von CMD verwenden (wie das Dockerfile des Labs).</p><p>Geheimnisse im Betrieb: Umgebungsvariablen erscheinen in inspect, in Prozesslisten und oft in Absturzberichten. Dateien aus einem Secrets-Mechanismus (Compose-Secrets, Orchestrator, Secret-Manager) sind besser, aber nicht der Gegenstand dieses Labs. Zum Mindeststandard gehört: nie im Image, nie im Repository, regelmäßig rotieren und bei Verdacht ersetzen.</p><p>Zu Gesundheitschecks: „healthy“ heißt nur, dass der Befehl Erfolg meldet. Ein zu oberflächlicher Check (Prozess läuft) meldet gesund, obwohl die Datenbank fehlt; ein zu tiefer Check kann durch Fehler im Nachbardienst einen Neustart-Sturm auslösen. Wähle die Prüfung so, dass sie zeigt, ob dieser Dienst seine Aufgabe erfüllen kann.</p><h2>Begriffe auf einen Blick</h2><dl><dt>HEALTHCHECK</dt><dd>Dockerfile-Anweisung, die einen Befehl festlegt, mit dem Docker den Zustand des Dienstes prüft (healthy/unhealthy).</dd><dt>Secret-Mount</dt><dd>Build-Funktion, die ein Geheimnis nur während eines RUN-Schritts bereitstellt, ohne es in einer Schicht zu speichern.</dd><dt>SIGTERM</dt><dd>Signal mit der Bitte, sich zu beenden; docker stop sendet es zuerst.</dd><dt>PID 1</dt><dd>Erster Prozess im Container; für ihn gelten besondere Regeln bei Signalen.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>05-betrieb.mjs</code> (Ausschnitt ab „// Geheimnisse im Build“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>05-betrieb.mjs</code> (Ausschnitt ab „// Beenden:“)</li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>app/<wbr>src/<wbr>server.js</code> (Ausschnitt ab „if (process.argv[1] ===“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 05\nGesundheitscheck wird healthy: ja\nKonfiguration im Dienst: lab\nVariable in docker inspect sichtbar: ja\nProtokoll auf stdout (docker logs), Ereignisse: listening\nWert steht im Image-Verlauf (Build-Argument): ja\nWert steht im Image-Verlauf (Secret-Mount): nein\nMit Signalbehandlung: Exit-Code 0, vor Ablauf der Frist beendet: ja\nOhne Signalbehandlung als PID 1: Exit-Code 137, vor Ablauf der Frist beendet: nein\nOhne Signalbehandlung mit --init: Exit-Code 143, vor Ablauf der Frist beendet: ja</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Passwörter oder Schlüssel mit ARG/--build-arg oder ENV in das Image zu geben.<br><strong>Warum:</strong> Sie stehen im Image-Verlauf und in docker inspect; wer das Image oder den Zugriff hat, liest sie.<br><strong>Besser:</strong> Secret-Mounts für den Build, Secrets-Mechanismen für den Betrieb und nie ins Image.</li><li><strong>Falsch:</strong> Einen Dienst als Shell-Skript zu starten und Signale nicht weiterzureichen.<br><strong>Warum:</strong> SIGTERM erreicht den Dienst nicht, docker stop wartet die Frist ab und beendet hart (137).<br><strong>Besser:</strong> exec-Form von CMD, im Skript exec verwenden und/oder --init.</li><li><strong>Falsch:</strong> Protokolle in Dateien im Container zu schreiben.<br><strong>Warum:</strong> Sie füllen die beschreibbare Schicht und gehen verloren; docker logs sieht sie nicht.<br><strong>Besser:</strong> Auf stdout/stderr schreiben und Aufbewahrung und Rotation außerhalb regeln.</li><li><strong>Falsch:</strong> Einen Gesundheitscheck zu schreiben, der immer Erfolg meldet.<br><strong>Warum:</strong> Der Status „healthy“ ist wertlos, und Orchestrierung oder Abhängigkeiten verlassen sich auf ihn.<br><strong>Besser:</strong> Eine Prüfung wählen, die die Kernaufgabe des Dienstes abbildet, und sie testen.</li></ul><h2>Praxis</h2><p>Ergänze den Dienst um einen Endpunkt /readyz, der erst nach dem Laden einer Datei aus dem Volume Erfolg meldet. Stelle den Gesundheitscheck darauf um, simuliere eine fehlende Datei und beschreibe, wie sich docker ps und docker logs verhalten.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Starte den Dienst mit einer Umgebungsvariablen API_KEY mit erfundenem Wert und finde den Wert über docker inspect.<br><em>Abnahme:</em> Der Wert ist sichtbar; du beschreibst, warum das für echte Geheimnisse nicht genügt, und nennst eine Alternative.</li><li><strong>Grenzfall:</strong> Setze --stop-timeout 1 und --stop-timeout 30 beim Dienst ohne Signalbehandlung und miss die Zeit bis zum Beenden.<br><em>Abnahme:</em> Die Zeit entspricht in etwa der Frist; du erklärst, wann eine längere Frist nötig ist (laufende Anfragen beenden).</li><li><strong>Fehlerfall:</strong> Ändere CMD in die Shell-Form (CMD node src/server.js) und stoppe den Container.<br><em>Abnahme:</em> Beobachte, ob das Signal ankommt (Exit-Code und Dauer); beschreibe den Unterschied zur exec-Form und stelle sie wieder her.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/build/building/secrets/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Build-Secrets</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/reference/cli/docker/container/stop/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: docker container stop</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/reference/dockerfile/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Dockerfile-Referenz: HEALTHCHECK und ARG</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Konfiguration über Umgebungsvariablen und deren Sichtbarkeit, Gesundheitscheck, JSON-Protokoll über docker logs, Build-Argument gegen Secret-Mount im Image-Verlauf sowie Beenden mit Signalbehandlung, ohne Behandlung und mit --init. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Compose-Secrets, Orchestratoren, Logtreiber und Rotation, rootless Betrieb, andere Laufzeiten. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "code3",
+            "body2"
+          ],
+          "tip": "Ergänze den Dienst um einen Endpunkt /readyz, der erst nach dem Laden einer Datei aus dem Volume Erfolg meldet. Stelle den Gesundheitscheck darauf um, simuliere eine fehlende Datei und beschreibe, wie sich docker ps und docker logs verhalten.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Starte den Dienst mit einer Umgebungsvariablen API_KEY mit erfundenem Wert und finde den Wert über docker inspect.",
+              "acceptance": "Der Wert ist sichtbar; du beschreibst, warum das für echte Geheimnisse nicht genügt, und nennst eine Alternative."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Setze --stop-timeout 1 und --stop-timeout 30 beim Dienst ohne Signalbehandlung und miss die Zeit bis zum Beenden.",
+              "acceptance": "Die Zeit entspricht in etwa der Frist; du erklärst, wann eine längere Frist nötig ist (laufende Anfragen beenden)."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Ändere CMD in die Shell-Form (CMD node src/server.js) und stoppe den Container.",
+              "acceptance": "Beobachte, ob das Signal ankommt (Exit-Code und Dauer); beschreibe den Unterschied zur exec-Form und stelle sie wieder her."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/build/building/secrets/",
+              "title": "Docker-Dokumentation: Build-Secrets"
+            },
+            {
+              "url": "https://docs.docker.com/reference/cli/docker/container/stop/",
+              "title": "Docker-Dokumentation: docker container stop"
+            },
+            {
+              "url": "https://docs.docker.com/reference/dockerfile/",
+              "title": "Docker-Dokumentation: Dockerfile-Referenz: HEALTHCHECK und ARG"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Konfiguration über Umgebungsvariablen und deren Sichtbarkeit, Gesundheitscheck, JSON-Protokoll über docker logs, Build-Argument gegen Secret-Mount im Image-Verlauf sowie Beenden mit Signalbehandlung, ohne Behandlung und mit --init. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Compose-Secrets, Orchestratoren, Logtreiber und Rotation, rootless Betrieb, andere Laufzeiten. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Warum stehen Build-Argumente nicht für Geheimnisse zur Verfügung?",
+              "options": [
+                "Sie sind auf 8 Zeichen begrenzt.",
+                "Sie werden automatisch verschlüsselt.",
+                "Sie gelten nur für Windows-Container.",
+                "Sie erscheinen im Verlauf des Images."
+              ],
+              "correct": 3,
+              "explain": "Wer das Image erhält, kann den Verlauf lesen; Secret-Mounts hinterlassen keine Spur in den Schichten.",
+              "rationales": [
+                "Eine solche Grenze gibt es nicht.",
+                "Sie werden nicht verschlüsselt.",
+                "Sie gelten für alle Plattformen.",
+                "docker history zeigt die Anweisungen mit den Werten."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/secrets/",
+                "https://docs.docker.com/reference/cli/docker/container/stop/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was passiert, wenn ein Dienst als PID 1 SIGTERM erhält und keinen Handler hat?",
+              "options": [
+                "Er beendet sich sofort und ohne Verzögerung.",
+                "Es bleibt ohne Wirkung; nach der Frist folgt SIGKILL.",
+                "Docker startet ihn automatisch sofort neu.",
+                "Das Signal wird in eine Protokolldatei geschrieben."
+              ],
+              "correct": 1,
+              "explain": "Deshalb braucht ein Dienst einen Signal-Handler oder --init.",
+              "rationales": [
+                "Für PID 1 gilt die Standardaktion nicht.",
+                "Das Lab zeigt Exit-Code 137 nach Ablauf der Frist.",
+                "Ein Neustart erfolgt nur mit Neustart-Regel.",
+                "Das geschieht nicht."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/secrets/",
+                "https://docs.docker.com/reference/cli/docker/container/stop/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Wohin schreibt ein Container-Dienst seine Protokolle am besten?",
+              "options": [
+                "In eine Datei im Container.",
+                "Auf stdout/stderr, damit Docker sie sammelt.",
+                "In die Umgebungsvariablen.",
+                "In den Gesundheitscheck."
+              ],
+              "correct": 1,
+              "explain": "Standardausgabe entkoppelt den Dienst von Aufbewahrung und Rotation.",
+              "rationales": [
+                "Dateien gehen mit dem Container verloren und füllen seine Schicht.",
+                "docker logs und Logtreiber arbeiten mit diesen Strömen.",
+                "Dafür sind sie nicht gedacht.",
+                "Der Check prüft nur den Zustand."
+              ],
+              "sources": [
+                "https://docs.docker.com/build/building/secrets/",
+                "https://docs.docker.com/reference/cli/docker/container/stop/",
+                "https://docs.docker.com/reference/dockerfile/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "// Geheimnisse im Build: Ein Build-Argument steht im Verlauf des Images, ein Secret-Mount nicht.\nconst withArg = ctx.name('arg');\nconst withSecret = ctx.name('secret');\nconst argDir = ctx.copyApp();\nconst fs = await import('node:fs');\nconst path = await import('node:path');\nfs.writeFileSync(path.join(argDir, 'Dockerfile.arg'), 'FROM node:24-slim\\nARG API_TOKEN\\nRUN echo \"Build mit Argument\"\\n');\nfs.writeFileSync(path.join(argDir, 'Dockerfile.secret'), 'FROM node:24-slim\\nRUN --mount=type=secret,id=api_token test -s /run/secrets/api_token && echo \"Build mit Secret-Mount\"\\n');\nfs.writeFileSync(path.join(argDir, 'token.txt'), fakeValue);\nctx.build(withArg, argDir, { file: 'Dockerfile.arg', args: ['--build-arg', `API_TOKEN=${fakeValue}`] });\nctx.build(withSecret, argDir, { file: 'Dockerfile.secret', args: ['--secret', `id=api_token,src=${path.join(argDir, 'token.txt')}`] });\nconst history = (tag) => ctx.docker(['history', '--no-trunc', '--format', '{{.CreatedBy}}', tag]).out;\nout.push(`Wert steht im Image-Verlauf (Build-Argument): ${yesNo(history(withArg).includes(fakeValue))}`);\nout.push(`Wert steht im Image-Verlauf (Secret-Mount): ${yesNo(history(withSecret).includes(fakeValue))}`);",
+          "codeLang": "JavaScript",
+          "code2": "// Beenden: docker stop sendet SIGTERM und wartet die Frist ab, bevor SIGKILL folgt.\nconst stopCase = async (suffix, extra) => {\n  const container = ctx.name(suffix);\n  ctx.run(['-d', '--name', container, '--stop-timeout', '3', ...extra]);\n  await ctx.waitHealthy(container);\n  const started = Date.now();\n  ctx.docker(['stop', container]);\n  const seconds = (Date.now() - started) / 1000;\n  const code = ctx.docker(['inspect', '--format', '{{.State.ExitCode}}', container]).out;\n  return { code, quick: seconds < 3 };\n};\nconst handled = await stopCase('stop1', [good]);\nout.push(`Mit Signalbehandlung: Exit-Code ${handled.code}, vor Ablauf der Frist beendet: ${yesNo(handled.quick)}`);\nconst ignored = await stopCase('stop2', ['-e', 'APP_HANDLE_SIGNALS=0', good]);\nout.push(`Ohne Signalbehandlung als PID 1: Exit-Code ${ignored.code}, vor Ablauf der Frist beendet: ${yesNo(ignored.quick)}`);\nconst withInit = await stopCase('stop3', ['--init', '-e', 'APP_HANDLE_SIGNALS=0', good]);\nout.push(`Ohne Signalbehandlung mit --init: Exit-Code ${withInit.code}, vor Ablauf der Frist beendet: ${yesNo(withInit.quick)}`);",
+          "code2Lang": "JavaScript",
+          "code3": "if (process.argv[1] === new URL(import.meta.url).pathname) {\n  const server = createServer();\n  server.listen(port, '0.0.0.0', () => log('listening', { port, mode: process.env.APP_MODE ?? 'unset' }));\n  if (handleSignals) {\n    for (const signal of ['SIGTERM', 'SIGINT']) {\n      process.on(signal, () => { log('stopping', { signal }); server.close(() => process.exit(0)); server.closeAllConnections(); });\n    }\n  }\n}",
+          "code3Lang": "JavaScript"
+        },
+        {
+          "id": "dk-m1-l6",
+          "title": "Projekt: Zwei Dienste mit Docker Compose",
+          "minutes": 40,
+          "objectives": [
+            "Eine Mehrdienst-Anwendung deklarativ in einer Compose-Datei beschreiben",
+            "Abhängigkeiten über Gesundheitschecks statt über Wartezeiten steuern",
+            "Die Härtungsoptionen aus Lektion 3 in Compose übernehmen",
+            "Ein Compose-Projekt reproduzierbar starten, prüfen und restlos aufräumen"
+          ],
+          "body": "<h2>Lernziele</h2><ul><li>Eine Mehrdienst-Anwendung deklarativ in einer Compose-Datei beschreiben</li><li>Abhängigkeiten über Gesundheitschecks statt über Wartezeiten steuern</li><li>Die Härtungsoptionen aus Lektion 3 in Compose übernehmen</li><li>Ein Compose-Projekt reproduzierbar starten, prüfen und restlos aufräumen</li></ul><p><strong>Voraussetzungen:</strong> Die Lektionen 1 bis 5 dieses Moduls.</p><h2>In einfachen Worten</h2><p>Docker Compose beschreibt mehrere Container, Netzwerke und Volumes in einer Datei (compose.yaml) und startet sie gemeinsam. Compose legt ein eigenes Netzwerk für das Projekt an, sodass sich die Dienste unter ihren Namen finden. Mit depends_on und condition: service_healthy startet ein Dienst erst, wenn der andere gesund ist. Das ist verlässlicher als „warte zehn Sekunden“.</p><p>Im Projekt laufen zwei Dienste: api (der Dienst des Labs, gehärtet, mit Volume) und checker, ein kleiner Prüfer, der erst startet, wenn api gesund ist, drei Besuche schickt und den Zustand abfragt. Endet der Prüfer mit Exit-Code 0, ist das Zusammenspiel in Ordnung. Dieser Code wird als Ergebnis des gesamten Compose-Laufs zurückgegeben (--exit-code-from).</p><h2>Schritt für Schritt</h2><ol><li>Öffne compose.yaml. Der Dienst api baut das Image aus app/ (Stufe runtime), ist schreibgeschützt (read_only mit tmpfs für /tmp), hat keine Capabilities, no-new-privileges, Speicher- und Prozessgrenzen und ein Volume data für /data. Alle Optionen kennst du aus den Lektionen 3 und 4.</li><li>Der Dienst checker nutzt das Image node:24-slim, wartet mit depends_on und condition: service_healthy auf api (der HEALTHCHECK des Dockerfiles liefert den Status) und ist ebenfalls schreibgeschützt und ohne Capabilities.</li><li>Starte „node run.mjs 06“. Das Skript prüft die Datei mit docker compose config, startet das Projekt mit up --build --abort-on-container-exit --exit-code-from checker und liest die Ausgabe des Prüfers.</li><li>Ergebnis: checker endet mit Exit-Code 0 und gibt {\"visits\":3,\"uid\":1000,\"mode\":\"compose\"} aus: drei Besuche im Volume, Benutzer 1000 (nicht root) und die Konfiguration aus der Umgebungsvariablen in der Compose-Datei.</li><li>Danach stehen beide Dienste im Zustand exited. Compose beendet bei --abort-on-container-exit alle Dienste, sobald einer endet. Das Lab räumt anschließend mit down -v --rmi local auf (Container, Netzwerk, Volume, selbst gebautes Image); fremde Container bleiben unberührt.</li><li>Prüfe bei eigenen Projekten: Läuft docker compose config --quiet fehlerfrei? Sind alle Pfade relativ (hier über die Variable LAB_DIR, damit der Lab-Lauf von überall startet)? Gibt es Dienste ohne Gesundheitscheck, auf die andere warten?</li><li>Überlege, wie du die Datei um eine Datenbank erweiterst: Image, Volume, internes Netzwerk, Gesundheitscheck, kein veröffentlichter Port und Zugangsdaten aus einer Secret-Quelle statt aus der Datei.</li></ol><h2>Hintergrund: Warum ist das so?</h2><p>Compose ist für Entwicklung, Tests und kleine Einzelrechner-Betriebe gedacht. Für Hochverfügbarkeit über mehrere Rechner braucht es einen Orchestrator (Kubernetes oder Ähnliches), der hier nicht behandelt wird. Die Konzepte (Image, Gesundheit, Volume, Netzwerk, Grenzen, Signale) übertragen sich aber unmittelbar.</p><p>Grenzen des Projekts: Der Lauf beweist das Zusammenspiel der zwei Dienste in einer Umgebung (Docker Desktop, macOS). Er beweist nicht Verhalten unter Last, Ausfälle des Hosts, Neustartverhalten, Aktualisierungen ohne Ausfall und Sicherungen des Volumes. Die Compose-Datei enthält keine echten Geheimnisse; die einzige Konfiguration (APP_MODE) ist unkritisch.</p><p>Die Variable LAB_DIR in compose.yaml ist ein Lab-Kniff, damit das Skript die Datei aus jedem Arbeitsordner starten kann. In einem echten Projekt liegt compose.yaml neben dem Quelltext, und der Kontext heißt einfach „.“.</p><h2>Begriffe auf einen Blick</h2><dl><dt>Compose</dt><dd>Werkzeug, das mehrere Container, Netzwerke und Volumes aus einer Datei beschreibt und gemeinsam startet.</dd><dt>service_healthy</dt><dd>Bedingung in depends_on: Der Dienst startet erst, wenn der andere den Gesundheitscheck besteht.</dd><dt>--exit-code-from</dt><dd>Compose-Option, die den Exit-Code eines bestimmten Dienstes als Ergebnis des Laufs zurückgibt.</dd><dt>Projektname</dt><dd>Namensraum, den Compose für Container, Netzwerke und Volumes eines Projekts verwendet.</dd></dl><h2>Der Code</h2><p>Die Beispiele stammen aus dem getesteten Lab im Projektordner und sind nicht aus fremden Quellen kopiert:</p><ul><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>compose.yaml</code></li><li><code>content/<wbr>examples/<wbr>docker-lab/<wbr>cases/<wbr>06-projekt-compose.mjs</code> (Ausschnitt ab „const up = ctx.docker“)</li></ul>",
+          "body2": "<h2>Ausgabe und Beleg</h2><pre><code>Docker 29.8.2 (Docker Desktop, macOS); Befehl: node content/examples/docker-lab/run.mjs 06\nCompose-Datei gültig: ja\nchecker beendet mit Exit-Code: 0\nAusgabe des checkers: {\"visits\":3,\"uid\":1000,\"mode\":\"compose\"}\nZustand der Dienste danach: api=exited, checker=exited</code></pre><h2>Typische Fehler</h2><ul><li><strong>Falsch:</strong> Mit festen Wartezeiten (sleep 10) auf Abhängigkeiten zu warten.<br><strong>Warum:</strong> Zu kurz bricht den Start, zu lang verschwendet Zeit; echte Bereitschaft wird nicht geprüft.<br><strong>Besser:</strong> Gesundheitscheck definieren und depends_on mit service_healthy verwenden.</li><li><strong>Falsch:</strong> Zugangsdaten für Datenbanken direkt in compose.yaml zu schreiben und einzuchecken.<br><strong>Warum:</strong> Sie landen im Repository und im Verlauf.<br><strong>Besser:</strong> Werte aus einer nicht eingecheckten Datei oder einem Secret-Mechanismus beziehen und nur eine Beispieldatei einchecken.</li><li><strong>Falsch:</strong> Ein Projekt nur mit down zu beenden und Volumes und Images liegenzulassen.<br><strong>Warum:</strong> Speicher füllt sich, und alte Daten beeinflussen den nächsten Lauf.<br><strong>Besser:</strong> Für Testläufe down -v (und --rmi local) verwenden; für produktive Daten bewusst nicht.</li><li><strong>Falsch:</strong> Compose-Dateien ohne Härtung zu schreiben, weil „es nur Entwicklung“ ist.<br><strong>Warum:</strong> Die Datei wird kopiert und landet im Betrieb.<br><strong>Besser:</strong> Gehärtete Einstellungen von Anfang an übernehmen und nur gezielt lockern.</li></ul><h2>Praxis</h2><p>Erweitere das Projekt um einen dritten Dienst (zum Beispiel MariaDB aus dem lokalen Image) mit Volume, Gesundheitscheck und internem Netzwerk. Schreibe den Prüfer so um, dass er einen Eintrag in der Datenbank anlegt, und notiere, was du über Zugangsdaten entschieden hast.</p><h2>Drei Übungen</h2><ol><li><strong>Normalfall:</strong> Füge dem Dienst api die Option init: true hinzu und stoppe das Projekt.<br><em>Abnahme:</em> Du beschreibst den Effekt auf das Beenden (Lektion 5) und belegst ihn mit dem Exit-Code des Dienstes.</li><li><strong>Grenzfall:</strong> Setze im Healthcheck-Pfad einen falschen Endpunkt (/gesund) und starte neu.<br><em>Abnahme:</em> Der Dienst bleibt unhealthy, checker startet nie, und der Lauf scheitert; du liest den Grund mit docker compose ps und logs.</li><li><strong>Fehlerfall:</strong> Entferne read_only und tmpfs aus dem Dienst api und lasse die Prüfung aus Lektion 3 laufen.<br><em>Abnahme:</em> Schreiben nach /app gelingt wieder; du erklärst die Folge für die Sicherheit und stellst die Einstellung wieder her.</li></ol><h2>Quellen und Lizenzen</h2><ul><li><a href=\"https://docs.docker.com/reference/compose-file/services/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Compose-Dateireferenz: Dienste</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/compose/how-tos/startup-order/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Startreihenfolge in Compose</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li><li><a href=\"https://docs.docker.com/engine/security/\" target=\"_blank\" rel=\"noopener noreferrer\">Docker-Dokumentation: Docker Engine Security</a> – Offizielle Dokumentation; Inhalt hier eigenständig zusammengefasst.</li></ul><h2>Was geprüft wurde und was nicht</h2><p>Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Gültigkeit der Compose-Datei, Start mit Wartebedingung auf den Gesundheitscheck, drei Besuche im Volume, Benutzer 1000 und das restlose Aufräumen mit down -v --rmi local. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Verhalten unter Last, Neustart des Hosts, Aktualisierungen ohne Ausfall, Sicherung des Volumes, eine Datenbank im Projekt, Betrieb auf Linux-Servern. Das Lab braucht Docker und läuft nicht in der Playwright-Suite.</p><p class=\"rail-fuss\">Stand: 14.11.2026. Versionen und Verhalten können sich ändern; prüfe die verlinkten Quellen, bevor du in ein Produktivsystem übernimmst.</p>",
+          "order": [
+            "body",
+            "code",
+            "code2",
+            "body2"
+          ],
+          "tip": "Erweitere das Projekt um einen dritten Dienst (zum Beispiel MariaDB aus dem lokalen Image) mit Volume, Gesundheitscheck und internem Netzwerk. Schreibe den Prüfer so um, dass er einen Eintrag in der Datenbank anlegt, und notiere, was du über Zugangsdaten entschieden hast.",
+          "exercises": [
+            {
+              "level": 1,
+              "task": "Füge dem Dienst api die Option init: true hinzu und stoppe das Projekt.",
+              "acceptance": "Du beschreibst den Effekt auf das Beenden (Lektion 5) und belegst ihn mit dem Exit-Code des Dienstes."
+            },
+            {
+              "level": 2,
+              "task": "Grenzfall: Setze im Healthcheck-Pfad einen falschen Endpunkt (/gesund) und starte neu.",
+              "acceptance": "Der Dienst bleibt unhealthy, checker startet nie, und der Lauf scheitert; du liest den Grund mit docker compose ps und logs."
+            },
+            {
+              "level": 3,
+              "task": "Fehlerfall: Entferne read_only und tmpfs aus dem Dienst api und lasse die Prüfung aus Lektion 3 laufen.",
+              "acceptance": "Schreiben nach /app gelingt wieder; du erklärst die Folge für die Sicherheit und stellst die Einstellung wieder her."
+            }
+          ],
+          "sources": [
+            {
+              "url": "https://docs.docker.com/reference/compose-file/services/",
+              "title": "Docker-Dokumentation: Compose-Dateireferenz: Dienste"
+            },
+            {
+              "url": "https://docs.docker.com/compose/how-tos/startup-order/",
+              "title": "Docker-Dokumentation: Startreihenfolge in Compose"
+            },
+            {
+              "url": "https://docs.docker.com/engine/security/",
+              "title": "Docker-Dokumentation: Docker Engine Security"
+            }
+          ],
+          "editorialRevision": "2026-11-14",
+          "knowledgeAsOf": "2026-11-14",
+          "quality": {
+            "execution": "lab-run",
+            "scope": "Geprüft wurde mit dem Docker-Lab (Docker 29.8.2 mit Docker Desktop auf macOS, Basisimage node:24-slim aus dem lokalen Speicher): Gültigkeit der Compose-Datei, Start mit Wartebedingung auf den Gesundheitscheck, drei Besuche im Volume, Benutzer 1000 und das restlose Aufräumen mit down -v --rmi local. Jede Ausgabe stammt aus einem echten Lauf und wird mit der gespeicherten erwarteten Ausgabe verglichen. Nicht geprüft: Verhalten unter Last, Neustart des Hosts, Aktualisierungen ohne Ausfall, Sicherung des Volumes, eine Datenbank im Projekt, Betrieb auf Linux-Servern. Das Lab braucht Docker und läuft nicht in der Playwright-Suite."
+          },
+          "quiz": [
+            {
+              "q": "Wozu dient depends_on mit condition: service_healthy?",
+              "options": [
+                "Es startet einen Dienst erst, wenn ein anderer gesund gemeldet wird.",
+                "Es kopiert Daten zwischen Diensten.",
+                "Es vergrößert das Image.",
+                "Es verschlüsselt das Netzwerk."
+              ],
+              "correct": 0,
+              "explain": "Die Bedingung nutzt den Gesundheitscheck des anderen Dienstes.",
+              "rationales": [
+                "So wird auf echte Bereitschaft gewartet statt auf eine feste Zeit.",
+                "Dafür sind Volumes da.",
+                "Es hat keinen Einfluss auf Images.",
+                "Verschlüsselung ist nicht seine Aufgabe."
+              ],
+              "sources": [
+                "https://docs.docker.com/reference/compose-file/services/",
+                "https://docs.docker.com/compose/how-tos/startup-order/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Was bewirkt --exit-code-from checker?",
+              "options": [
+                "Es startet nur den Dienst checker.",
+                "Es beendet checker nach einer Sekunde.",
+                "Es gibt den Exit-Code von checker als Ergebnis des Compose-Laufs zurück.",
+                "Es löscht den Dienst checker."
+              ],
+              "correct": 2,
+              "explain": "Der Prüfer-Dienst entscheidet über Erfolg oder Misserfolg des Laufs.",
+              "rationales": [
+                "Es startet weiterhin das ganze Projekt.",
+                "Die Dauer wird nicht begrenzt.",
+                "So lässt sich ein Prüfer als Testergebnis verwenden, zum Beispiel in der CI.",
+                "Es löscht nichts."
+              ],
+              "sources": [
+                "https://docs.docker.com/reference/compose-file/services/",
+                "https://docs.docker.com/compose/how-tos/startup-order/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            },
+            {
+              "q": "Warum übernimmt compose.yaml die Härtungsoptionen aus Lektion 3?",
+              "options": [
+                "Weil Compose sie vorschreibt.",
+                "Weil sie die Anwendung schneller machen.",
+                "Weil sonst keine Volumes möglich sind.",
+                "Weil Dateien kopiert werden und gehärtete Standardwerte sicher mitwandern."
+              ],
+              "correct": 3,
+              "explain": "Sichere Voreinstellungen vermeiden, dass Lockerungen unbemerkt in den Betrieb wandern.",
+              "rationales": [
+                "Compose schreibt sie nicht vor.",
+                "Sie dienen der Sicherheit.",
+                "Volumes sind unabhängig davon möglich.",
+                "Was in Entwicklung gilt, landet später oft im Betrieb."
+              ],
+              "sources": [
+                "https://docs.docker.com/reference/compose-file/services/",
+                "https://docs.docker.com/compose/how-tos/startup-order/",
+                "https://docs.docker.com/engine/security/"
+              ],
+              "revision": "2026-11-14-platform-tracks-v1"
+            }
+          ],
+          "code": "# Zwei Dienste: api (gehärtet, mit Volume und Gesundheitscheck) und checker, der erst startet, wenn api gesund ist.\n# Start: LAB_DIR=$PWD docker compose -p rootpfad-dk-demo up --build --abort-on-container-exit --exit-code-from checker\nservices:\n  api:\n    build:\n      context: ${LAB_DIR:-.}/app\n      target: runtime\n    read_only: true\n    tmpfs: [/tmp]\n    cap_drop: [ALL]\n    security_opt: [\"no-new-privileges:true\"]\n    mem_limit: 128m\n    pids_limit: 64\n    volumes:\n      - data:/data\n    environment:\n      APP_MODE: compose\n    labels:\n      rootpfad.lab: docker-lab\n  checker:\n    image: node:24-slim\n    depends_on:\n      api:\n        condition: service_healthy\n    read_only: true\n    cap_drop: [ALL]\n    command:\n      - node\n      - -e\n      - |\n        const base = 'http://api:3000';\n        for (let i = 0; i < 3; i += 1) await fetch(base + '/visit', { method: 'POST' });\n        const info = await (await fetch(base + '/info')).json();\n        console.log(JSON.stringify({ visits: info.visits, uid: info.uid, mode: info.mode }));\n        process.exit(info.visits === 3 && info.uid === 1000 ? 0 : 1);\n    labels:\n      rootpfad.lab: docker-lab\nvolumes:\n  data:\n    labels:\n      rootpfad.lab: docker-lab",
+          "codeLang": "YAML",
+          "code2": "const up = ctx.docker(['compose', '-p', project, '-f', file, 'up', '--build', '--abort-on-container-exit', '--exit-code-from', 'checker'], { env });\nconst line = `${up.out}\\n${up.err}`.split('\\n').find((text) => /\\{\"visits\"/.test(text)) ?? '';\nconst report = line.slice(line.indexOf('{'));\nout.push(`checker beendet mit Exit-Code: ${up.status}`);\nout.push(`Ausgabe des checkers: ${report}`);\nconst state = ctx.docker(['compose', '-p', project, '-f', file, 'ps', '--all', '--format', '{{.Service}}={{.State}}'], { env }).out.split('\\n').sort().join(', ');\nout.push(`Zustand der Dienste danach: ${state}`);",
+          "code2Lang": "JavaScript"
+        }
+      ]
     }
   ]
 }

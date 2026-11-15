@@ -8,5 +8,5 @@ test('Browser lädt geordnete kleine Skripte statt das Quellaggregat',async({pag
  for(const file of manifest.files)expect(fs.statSync(file).size).toBeLessThan(300000);
  expect(manifest.data.length).toBeGreaterThan(0);
  for(const file of manifest.data)expect(JSON.parse(fs.readFileSync(file,'utf8'))).toBeTruthy();
- expect(await page.evaluate(()=>FLAT.length)).toBe(558);
+ expect(await page.evaluate(()=>FLAT.length)).toBe(564);
 });

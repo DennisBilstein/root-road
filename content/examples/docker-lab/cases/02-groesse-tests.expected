@@ -1,0 +1,4 @@
+Inhalt /app (getrennte Stufen mit .dockerignore): package.json, src
+Inhalt /app (naives Image ohne .dockerignore): Dockerfile, Dockerfile.naive, big.bin, package.json, src, tests
+Naives Image mindestens 20 MB größer: ja
+Build mit rotem Test erfolgreich: nein, Image vorhanden: nein

@@ -1,0 +1,4 @@
+Compose-Datei gültig: ja
+checker beendet mit Exit-Code: 0
+Ausgabe des checkers: {"visits":3,"uid":1000,"mode":"compose"}
+Zustand der Dienste danach: api=exited, checker=exited

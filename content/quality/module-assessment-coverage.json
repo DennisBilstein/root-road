@@ -1,7 +1,7 @@
 {
-  "modules": 133,
-  "manualAssignments": 133,
-  "individuallyAuthored": 133,
+  "modules": 134,
+  "manualAssignments": 134,
+  "individuallyAuthored": 134,
   "fullyIndependentRubrics": 0,
   "drafts": 0,
   "execution": "not-executed-manual-review-required",
@@ -5164,6 +5164,46 @@
         "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html",
         "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
         "https://www.rfc-editor.org/rfc/rfc9700"
+      ]
+    },
+    {
+      "id": "dk-m1@assessment-platform-tracks-v1",
+      "moduleId": "dk-m1",
+      "title": "Ein gehärtetes, reproduzierbares Container-Projekt mit Tests im Build, Volume und Compose-Prüfer",
+      "lessonId": "dk-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Verpacke einen kleinen eigenen Dienst (erfundene Daten, ohne echte Zugangsdaten) in ein Image. Das Dockerfile soll mehrstufig sein (Tests laufen im Build, das Laufzeit-Image übernimmt nur das Getestete), eine sinnvolle Schichtreihenfolge und eine .dockerignore haben und als unprivilegierter Benutzer laufen. Härte den Betrieb (schreibgeschütztes Root-Dateisystem mit tmpfs, keine Capabilities, no-new-privileges, Speicher- und Prozessgrenzen), nutze ein benanntes Volume für Daten, einen Gesundheitscheck, Protokolle auf stdout und sauberes Beenden bei SIGTERM. Beschreibe zwei Dienste in einer Compose-Datei, wobei ein Prüfer erst nach dem Gesundheitscheck startet und seinen Exit-Code als Ergebnis liefert. Schreibe ein Skript, das alle Aussagen prüft und alle angelegten Ressourcen wieder entfernt, ohne fremde Container anzufassen. Dokumentiere, was geprüft wurde und was nicht.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "Image bauen, Dienst gehärtet starten, Daten schreiben, Container entfernen, neu starten und das Compose-Projekt mit dem Prüfer ausführen",
+          "expected": "Der Build läuft mit grünen Tests; der Dienst wird healthy; der Zähler überlebt das Entfernen des Containers; der Prüfer endet mit Exit-Code 0; nach dem Lauf sind alle Lab-Ressourcen entfernt."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "Quelltext ändern und neu bauen, den Port veröffentlichen und den Container mit docker stop beenden",
+          "expected": "Nur die Quelltext-Schicht wird neu gebaut (Installationsschritt übernommen); der Port ist nur an 127.0.0.1 gebunden; der Dienst beendet sich bei SIGTERM innerhalb der Frist mit Exit-Code 0."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "Einen Test absichtlich rot machen, in das schreibgeschützte Dateisystem schreiben, die Speichergrenze überschreiten und ein Geheimnis als Build-Argument übergeben",
+          "expected": "Der Build bricht ab und erzeugt kein Image; das Schreiben scheitert mit EROFS; der Prozess endet mit 137 und OOMKilled; du zeigst, dass das Build-Argument im Image-Verlauf steht, und ersetzt es durch einen Secret-Mount."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Das Dockerfile ist mehrstufig, die Tests laufen im Build und das Laufzeit-Image hängt von ihnen ab; Schichtreihenfolge und .dockerignore sind begründet und belegt (Cache-Verhalten, Image-Inhalt).",
+        "Der Betrieb ist gehärtet (Benutzer, Capabilities, Schreibschutz, Grenzen) und jede Maßnahme ist mit einer Messung oder einem Fehlerfall belegt.",
+        "Daten, Netzwerk und Veröffentlichung sind bewusst gewählt (Volume, eigenes Netzwerk, Bindung an 127.0.0.1), Geheimnisse stehen nicht im Image, und Beenden und Gesundheitscheck funktionieren nachweislich.",
+        "Das Skript räumt vollständig und nur Eigenes auf, die Compose-Datei steuert die Reihenfolge über Gesundheitschecks, und das Protokoll trennt geprüft von nicht geprüft (Plattform, Last, Linux-Host, Registry)."
+      ],
+      "revision": "assessment-platform-tracks-v1",
+      "sources": [
+        "https://docs.docker.com/build/building/multi-stage/",
+        "https://docs.docker.com/engine/security/",
+        "https://docs.docker.com/reference/compose-file/services/"
       ]
     }
   ]

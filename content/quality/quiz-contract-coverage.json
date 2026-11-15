@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-15T10:58:01.395Z",
-  "cards": 1847,
-  "learningContracts": 1847,
-  "individuallyRevised": 1847,
+  "updatedAt": "2026-11-15T11:13:08.766Z",
+  "cards": 1865,
+  "learningContracts": 1865,
+  "individuallyRevised": 1865,
   "independentFactualReviewComplete": false,
   "contracts": [
     {
@@ -50779,6 +50779,636 @@
         "Verschlüsselung ist unabhängig.",
         "Die Länge ist nicht das Problem.",
         "Löschen ist ein anderes Risiko."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l1#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l1",
+      "recall": "Beantworte „Wann übernimmt Docker einen Schritt aus dem Build-Cache?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Image, Container und Build-Cache: Schichten verstehen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Wenn Anweisung und betroffene Dateien unverändert sind."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Cache vergleicht Anweisung und Eingaben; nach einer Änderung werden auch alle folgenden Schritte neu gebaut."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Image, Container und Build-Cache: Schichten verstehen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/cache/",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Dann ist das Ergebnis gleich, und die Schicht wird wiederverwendet.",
+        "Bei geänderten Eingaben muss neu gebaut werden.",
+        "Der Neustart ändert nichts am Cache.",
+        "Die Größe spielt keine Rolle."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l1#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l1",
+      "recall": "Beantworte „Wo gehört der Installationsschritt im Dockerfile hin?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Image, Container und Build-Cache: Schichten verstehen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Nach dem Kopieren der Abhängigkeitsliste, aber vor dem Quelltext."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Was sich selten ändert, steht vorn; was sich oft ändert, steht hinten."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Image, Container und Build-Cache: Schichten verstehen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/cache/",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Dann läuft er nach jeder Quelltextänderung neu.",
+        "FROM muss zuerst stehen.",
+        "So bleibt er bei Quelltextänderungen im Cache.",
+        "Er gehört ins Dockerfile, damit er Teil des Builds ist."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l1#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l1",
+      "recall": "Beantworte „Was passiert mit dem Image, wenn im laufenden Container eine Datei geändert wird?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Image, Container und Build-Cache: Schichten verstehen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es bleibt unverändert; die Änderung liegt in der Schicht des Containers."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Trenne Vorlage (Image) und Instanz (Container); für dauerhafte Daten gibt es Volumes."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Image, Container und Build-Cache: Schichten verstehen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/cache/",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Images sind unveränderlich.",
+        "Es wird nichts gelöscht.",
+        "Jeder Container hat seine eigene beschreibbare Schicht.",
+        "Mit dem Container verschwindet auch die Änderung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l2#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l2",
+      "recall": "Beantworte „Wozu dient .dockerignore?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es schließt Dateien aus dem Build-Kontext aus."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Es verkleinert den Kontext und hält Geheimnisse und Ballast draußen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/multi-stage/",
+        "https://docs.docker.com/build/concepts/context/",
+        "https://docs.docker.com/build/building/best-practices/"
+      ],
+      "rationales": [
+        "Es betrifft den Build, nicht den Start.",
+        "Ausgeschlossene Dateien werden nicht an den Builder gesendet und können nicht ins Image kopiert werden.",
+        "Es löscht nichts.",
+        "Es verschlüsselt nichts."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l2#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l2",
+      "recall": "Beantworte „Warum entsteht im Lab kein Image, wenn ein Test fehlschlägt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Laufzeit-Image übernimmt Dateien aus der Stufe, die die Tests ausführt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Abhängigkeit zwischen den Stufen macht aus dem Test eine Bauvoraussetzung."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/multi-stage/",
+        "https://docs.docker.com/build/concepts/context/",
+        "https://docs.docker.com/build/building/best-practices/"
+      ],
+      "rationales": [
+        "Docker führt nur aus, was im Dockerfile steht.",
+        "Scheitert die Testanweisung, kann die Stufe nicht abgeschlossen werden, und die abhängige Stufe wird nicht gebaut.",
+        "Der Cache hat damit nichts zu tun.",
+        "Die Tests laufen in der Stufe test vor dem Kopieren."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l2#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l2",
+      "recall": "Beantworte „Was bringt ein Digest gegenüber einem Tag?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Er legt genau ein Image fest und macht Builds wiederholbar."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein Digest sichert Wiederholbarkeit, verlangt aber Pflege der Basis."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Dockerfile-Praxis: Build-Kontext, .dockerignore und mehrstufige Builds“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/multi-stage/",
+        "https://docs.docker.com/build/concepts/context/",
+        "https://docs.docker.com/build/building/best-practices/"
+      ],
+      "rationales": [
+        "Die Größe ändert sich nicht.",
+        "Ein Tag kann später auf ein anderes Image zeigen, ein Digest nicht.",
+        "Tests bleiben nötig.",
+        "Im Gegenteil: Updates müssen bewusst nachgezogen werden."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l3#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l3",
+      "recall": "Beantworte „Was bedeutet der Exit-Code 137 bei einem Container?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Prozess wurde mit SIGKILL beendet, zum Beispiel wegen der Speichergrenze."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Code 128+9 weist auf ein hartes Beenden hin; bei OOMKilled true war es die Speichergrenze."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/security/",
+        "https://docs.docker.com/engine/containers/resource_constraints/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+      ],
+      "rationales": [
+        "Erfolg wäre 0.",
+        "137 ist 128 plus Signal 9 (SIGKILL).",
+        "Ein Syntaxfehler hat einen anderen Code.",
+        "Das Netzwerk führt nicht zu 137."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l3#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l3",
+      "recall": "Beantworte „Was bewirkt --read-only?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es macht das Root-Dateisystem schreibgeschützt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein schreibgeschütztes Dateisystem verhindert, dass ein Angreifer Dateien im Image verändert."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/security/",
+        "https://docs.docker.com/engine/containers/resource_constraints/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+      ],
+      "rationales": [
+        "Dafür gibt es --network none.",
+        "Dafür gibt es --cap-drop und USER.",
+        "Beschreibbar bleiben nur eingehängte Volumes und tmpfs.",
+        "Dafür gibt es --rm."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l3#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l3",
+      "recall": "Beantworte „Warum ist --privileged keine gute Lösung für ein Berechtigungsproblem?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es hebt fast alle Schutzmaßnahmen auf."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Statt alles freizugeben, erlaubt man nur die konkret fehlende Fähigkeit."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Container härten: Benutzer, Rechte, Dateisystem und Grenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/security/",
+        "https://docs.docker.com/engine/containers/resource_constraints/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html"
+      ],
+      "rationales": [
+        "Es funktioniert plattformunabhängig.",
+        "Die Geschwindigkeit ist nicht der Grund.",
+        "Eine Lizenz ist nicht nötig.",
+        "Der Container erhält nahezu Hostrechte; gezielte Ausnahmen sind sicherer."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l4#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l4",
+      "recall": "Beantworte „Was geschieht mit Daten im Container-Dateisystem, wenn der Container entfernt wird?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie gehen verloren."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Dauerhafte Daten gehören in Volumes."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/storage/volumes/",
+        "https://docs.docker.com/engine/network/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "Das geschieht nur, wenn ein Volume eingehängt war.",
+        "Das Image bleibt unverändert.",
+        "Die beschreibbare Schicht verschwindet mit dem Container.",
+        "Es gibt keine automatische Archivierung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l4#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l4",
+      "recall": "Beantworte „Wie erreicht ein Container einen anderen im selben selbst angelegten Netzwerk?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Über den Containernamen oder Alias."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Netzwerke sind Namensraum und Trennung zugleich."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/storage/volumes/",
+        "https://docs.docker.com/engine/network/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "Docker stellt in selbst angelegten Netzwerken einen DNS-Dienst bereit.",
+        "Das ist nicht nötig.",
+        "Veröffentlichte Ports sind für Zugriffe von außen.",
+        "Im gemeinsamen Netzwerk sind sie erreichbar."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l4#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l4",
+      "recall": "Beantworte „Was bedeutet -p 127.0.0.1:8080:3000?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Port ist nur vom Docker-Host selbst erreichbar."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Adresse legt fest, wer den veröffentlichten Port erreichen kann."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Daten und Netzwerk: Volumes, Namensauflösung und veröffentlichte Ports“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/storage/volumes/",
+        "https://docs.docker.com/engine/network/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "Dafür müsste die Adresse 0.0.0.0 oder weggelassen sein.",
+        "Gebunden wird an die Loopback-Adresse.",
+        "Die Zahl ist eine Adresse, kein Port.",
+        "Verschlüsselung leistet das nicht."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l5#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l5",
+      "recall": "Beantworte „Warum stehen Build-Argumente nicht für Geheimnisse zur Verfügung?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie erscheinen im Verlauf des Images."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Wer das Image erhält, kann den Verlauf lesen; Secret-Mounts hinterlassen keine Spur in den Schichten."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/secrets/",
+        "https://docs.docker.com/reference/cli/docker/container/stop/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Eine solche Grenze gibt es nicht.",
+        "Sie werden nicht verschlüsselt.",
+        "Sie gelten für alle Plattformen.",
+        "docker history zeigt die Anweisungen mit den Werten."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l5#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l5",
+      "recall": "Beantworte „Was passiert, wenn ein Dienst als PID 1 SIGTERM erhält und keinen Handler hat?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es bleibt ohne Wirkung; nach der Frist folgt SIGKILL."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Deshalb braucht ein Dienst einen Signal-Handler oder --init."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/secrets/",
+        "https://docs.docker.com/reference/cli/docker/container/stop/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Für PID 1 gilt die Standardaktion nicht.",
+        "Das Lab zeigt Exit-Code 137 nach Ablauf der Frist.",
+        "Ein Neustart erfolgt nur mit Neustart-Regel.",
+        "Das geschieht nicht."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l5#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l5",
+      "recall": "Beantworte „Wohin schreibt ein Container-Dienst seine Protokolle am besten?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Auf stdout/stderr, damit Docker sie sammelt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Standardausgabe entkoppelt den Dienst von Aufbewahrung und Rotation."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Betrieb: Konfiguration, Geheimnisse, Gesundheit, Protokolle und Beenden“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/build/building/secrets/",
+        "https://docs.docker.com/reference/cli/docker/container/stop/",
+        "https://docs.docker.com/reference/dockerfile/"
+      ],
+      "rationales": [
+        "Dateien gehen mit dem Container verloren und füllen seine Schicht.",
+        "docker logs und Logtreiber arbeiten mit diesen Strömen.",
+        "Dafür sind sie nicht gedacht.",
+        "Der Check prüft nur den Zustand."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l6#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l6",
+      "recall": "Beantworte „Wozu dient depends_on mit condition: service_healthy?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Zwei Dienste mit Docker Compose“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es startet einen Dienst erst, wenn ein anderer gesund gemeldet wird."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Bedingung nutzt den Gesundheitscheck des anderen Dienstes."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Zwei Dienste mit Docker Compose“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/reference/compose-file/services/",
+        "https://docs.docker.com/compose/how-tos/startup-order/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "So wird auf echte Bereitschaft gewartet statt auf eine feste Zeit.",
+        "Dafür sind Volumes da.",
+        "Es hat keinen Einfluss auf Images.",
+        "Verschlüsselung ist nicht seine Aufgabe."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l6#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l6",
+      "recall": "Beantworte „Was bewirkt --exit-code-from checker?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Zwei Dienste mit Docker Compose“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es gibt den Exit-Code von checker als Ergebnis des Compose-Laufs zurück."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Prüfer-Dienst entscheidet über Erfolg oder Misserfolg des Laufs."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Zwei Dienste mit Docker Compose“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/reference/compose-file/services/",
+        "https://docs.docker.com/compose/how-tos/startup-order/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "Es startet weiterhin das ganze Projekt.",
+        "Die Dauer wird nicht begrenzt.",
+        "So lässt sich ein Prüfer als Testergebnis verwenden, zum Beispiel in der CI.",
+        "Es löscht nichts."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "dk-m1-l6#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "dk-m1-l6",
+      "recall": "Beantworte „Warum übernimmt compose.yaml die Härtungsoptionen aus Lektion 3?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Zwei Dienste mit Docker Compose“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Weil Dateien kopiert werden und gehärtete Standardwerte sicher mitwandern."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Sichere Voreinstellungen vermeiden, dass Lockerungen unbemerkt in den Betrieb wandern."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Zwei Dienste mit Docker Compose“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://docs.docker.com/reference/compose-file/services/",
+        "https://docs.docker.com/compose/how-tos/startup-order/",
+        "https://docs.docker.com/engine/security/"
+      ],
+      "rationales": [
+        "Compose schreibt sie nicht vor.",
+        "Sie dienen der Sicherheit.",
+        "Volumes sind unabhängig davon möglich.",
+        "Was in Entwicklung gilt, landet später oft im Betrieb."
       ],
       "editorialStatus": "individually-revised"
     },

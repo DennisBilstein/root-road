@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T10:58:01.906Z",
+  "generatedAt": "2026-11-15T11:13:09.336Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -8213,7 +8213,13 @@
       "questionIds": [
         "node-m2-l4#0@2026-11-14-tech-tracks-v1",
         "node-m2-l4#1@2026-11-14-tech-tracks-v1",
-        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1",
+        "dk-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#2@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -8225,7 +8231,13 @@
       "questionIds": [
         "node-m2-l4#0@2026-11-14-tech-tracks-v1",
         "node-m2-l4#1@2026-11-14-tech-tracks-v1",
-        "node-m2-l4#2@2026-11-14-tech-tracks-v1"
+        "node-m2-l4#2@2026-11-14-tech-tracks-v1",
+        "dk-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#2@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -8955,6 +8967,156 @@
         "ws-m2-l4#0@2026-11-14-tech-tracks-v1",
         "ws-m2-l4#1@2026-11-14-tech-tracks-v1",
         "ws-m2-l4#2@2026-11-14-tech-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/build/cache/",
+      "questionIds": [
+        "dk-m1-l1#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/build/building/multi-stage/",
+      "questionIds": [
+        "dk-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/build/concepts/context/",
+      "questionIds": [
+        "dk-m1-l2#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/engine/security/",
+      "questionIds": [
+        "dk-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#2@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#2@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/engine/containers/resource_constraints/",
+      "questionIds": [
+        "dk-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html",
+      "questionIds": [
+        "dk-m1-l3#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/engine/storage/volumes/",
+      "questionIds": [
+        "dk-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/engine/network/",
+      "questionIds": [
+        "dk-m1-l4#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/build/building/secrets/",
+      "questionIds": [
+        "dk-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/reference/cli/docker/container/stop/",
+      "questionIds": [
+        "dk-m1-l5#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/reference/compose-file/services/",
+      "questionIds": [
+        "dk-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://docs.docker.com/compose/how-tos/startup-order/",
+      "questionIds": [
+        "dk-m1-l6#0@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#1@2026-11-14-platform-tracks-v1",
+        "dk-m1-l6#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",

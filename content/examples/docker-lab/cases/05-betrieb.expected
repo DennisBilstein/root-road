@@ -1,0 +1,9 @@
+Gesundheitscheck wird healthy: ja
+Konfiguration im Dienst: lab
+Variable in docker inspect sichtbar: ja
+Protokoll auf stdout (docker logs), Ereignisse: listening
+Wert steht im Image-Verlauf (Build-Argument): ja
+Wert steht im Image-Verlauf (Secret-Mount): nein
+Mit Signalbehandlung: Exit-Code 0, vor Ablauf der Frist beendet: ja
+Ohne Signalbehandlung als PID 1: Exit-Code 137, vor Ablauf der Frist beendet: nein
+Ohne Signalbehandlung mit --init: Exit-Code 143, vor Ablauf der Frist beendet: ja

@@ -1,0 +1,4 @@
+Erster Build ohne Cache (Erfolg: ja): Installationsschritt übernommen: nein
+Zweiter Build, nichts geändert: Installationsschritt übernommen: ja, Quelltext-Schritt übernommen: ja
+Nach Quelltext-Änderung (Dockerfile mit getrennter Reihenfolge): Installationsschritt übernommen: ja, Quelltext-Schritt übernommen: ja
+Nach Quelltext-Änderung (naives Dockerfile: erst alles kopieren): Installationsschritt übernommen: ja

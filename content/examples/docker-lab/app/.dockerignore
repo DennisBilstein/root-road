@@ -1,0 +1,7 @@
+# Alles, was nicht ins Image gehört: Abhängigkeiten, Git-Verlauf, lokale Konfiguration, große Testdaten.
+node_modules
+.git
+*.log
+.env
+.env.*
+big.bin

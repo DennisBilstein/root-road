@@ -10,7 +10,9 @@ const checks=[
   {name:'node-tests',command:'npm',args:['test'],cwd:'content/examples/node-lab'},
   {name:'websec-tests',command:'npm',args:['test'],cwd:'content/examples/websec-lab'},
   {name:'api-tests',command:'npm',args:['test'],cwd:'content/examples/api-lab'},
+  {name:'docker-app-tests',command:'npm',args:['test'],cwd:'content/examples/docker-lab/app'},
   // content/examples/shell-lab braucht Docker (run-in-container.sh) und läuft deshalb nicht in dieser Liste.
+  // content/examples/docker-lab/run.mjs (Images, Härtung, Compose) braucht Docker und läuft nicht in dieser Liste; nur die App-Tests unter docker-lab/app laufen hier.
   // content/examples/sql-lab braucht Docker und ein lokales mariadb-Image (node run.mjs) und läuft deshalb ebenfalls nicht in dieser Liste.
   // Mit laufendem Docker startet der Testcontainers-Test einen PostgreSQL-Container (Image-Download beim ersten Mal): mehr Zeit.
   {name:'spring-tests',command:'./mvnw',args:['-B','-q','test'],cwd:'content/examples/spring-lab',timeout:600000},

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Die Kurse TypeScript, Node.js, Linux & Shell, Web-Sicherheit, HTML & CSS, MariaDB und APIs (Vertiefung): Umfang, Darstellung und Überlauf bei 375 px.
+// Die Kurse TypeScript, Node.js, Linux & Shell, Web-Sicherheit, HTML & CSS, MariaDB, APIs und Docker: Umfang, Darstellung und Überlauf bei 375 px.
 const tracks = [
   { path: 'typescript', modules: ['ts-m1', 'ts-m2'], lessons: 8 },
   { path: 'node', modules: ['node-m1', 'node-m2'], lessons: 8 },
@@ -11,6 +11,7 @@ const tracks = [
   // MariaDB: mariadb-m1 ist die ältere Kompaktfassung; geprüft wird das Vertiefungsmodul.
   { path: 'mariadb', modules: ['mariadb-m1', 'mariadb-m2'], lessons: 14, only: ['mariadb-m2'] },
   { path: 'apis', modules: ['api-m1', 'api-m2'], lessons: 14, only: ['api-m2'] },
+  { path: 'docker', modules: ['dk-m1'], lessons: 6 },
 ];
 
 for (const track of tracks) {
