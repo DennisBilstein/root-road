@@ -1,7 +1,8 @@
 # Root Road – hier geht es weiter
 
-## Neuester Stand 14.11.2026: MariaDB Vertiefung (8 Lektionen), davor HTML & CSS Vertiefung (9 Lektionen), davor TypeScript, Node.js, Linux & Shell, Web-Sicherheit (33 Lektionen)
+## Neuester Stand 15.11.2026: API-Vertiefung (8 Lektionen), davor MariaDB Vertiefung (8 Lektionen), davor HTML & CSS Vertiefung (9 Lektionen), davor TypeScript, Node.js, Linux & Shell, Web-Sicherheit (33 Lektionen)
 
+API-Vertiefung: `api-m2` (8), Pfad `apis` jetzt 14 Lektionen; Quelle `content/tech-tracks/api-vertiefung.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`; Lab `content/examples/api-lab/` (`npm test`, 25 Tests), Abnahme in `content/assessments-platform-tracks.json`. Bestand danach 133 Module / 558 Lektionen / 1541+306=1847 Karten. Der Audit `audit:learning` lädt jetzt die lazy Quizverträge (vorher meldete er sie fälschlich als fehlend).
 MariaDB Vertiefung: `mariadb-m2` (8), Pfad `mariadb` jetzt 14 Lektionen. Quelle `content/tech-tracks/mariadb-vertiefung.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`; Lab `content/examples/sql-lab/` (Docker, `node run.mjs [NN] [--update]`, läuft nicht in der CI), Abnahme `content/assessments-platform-tracks.json`. Bestand danach 132 Module / 550 Lektionen / 1517+306=1823 Karten.
 HTML & CSS Vertiefung: `html-m2` (4) und `css-m2` (5), Pfad `htmlcss` jetzt 21 Lektionen. Quellen `content/tech-tracks/{html,css}-vertiefung.mjs` → `node scripts/prepare-html-css-vertiefung.mjs` → `npm run build`; Lab `content/examples/html-css-lab/vertiefung/`, Tests `tests/html-css-vertiefung.spec.mjs`, Abnahmen `content/assessments-html-css.json`.
 Bestand jetzt 131 Module / 542 Lektionen / 1493+306=1799 Karten; zuvor (nur Tech-Tracks) 129 / 533 / 1772; 87 Playwright-Tests grün (neu: `tests/tech-tracks.spec.mjs`), `npm run scan:secrets` sauber.

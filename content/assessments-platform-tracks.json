@@ -28,5 +28,36 @@
     ],
     "execution": "manual-review-required",
     "revision": "assessment-platform-tracks-v1"
+  },
+  {
+    "moduleId": "api-m2",
+    "title": "Eine kleine Ressourcen-API mit Fehlerformat, Cursor, Idempotenz, ETag, Token und geprüftem OpenAPI-Vertrag",
+    "brief": "Baue (in Node.js ohne Framework oder mit einem Framework deiner Wahl) eine kleine API für eine Ressource deiner Wahl mit erfundenen Daten. Sie braucht: Anlegen, Lesen, Ändern und Löschen mit passenden Statuscodes; Fehler als application/problem+json mit Feldfehlern bei 422; eine Liste mit Cursor-Paginierung und Obergrenze für limit; Idempotency-Key für das Anlegen; ETag mit If-Match beim Ändern; Bearer-Token mit zwei Scopes und Besitzerprüfung; eine Ratenbegrenzung mit 429 und Retry-After. Beschreibe sie in einem OpenAPI-Dokument und schreibe einen Vertragstest, der jede Antwort gegen das Dokument prüft und meldet, wenn ein dokumentierter Status von keinem Szenario ausgelöst wird. Dokumentiere in einem Protokoll, was geprüft wurde und was nicht.",
+    "normal": {
+      "input": "Ressource anlegen, lesen, mit gültigem If-Match ändern und die Liste mit limit=2 seitenweise bis zum Ende lesen",
+      "expected": "Statuscodes 201 (mit Location und ETag), 200, 200 und 204 beziehungsweise 404 beim zweiten Löschen; die Seiten liefern alle Einträge lückenlos, am Ende ist nextCursor null; alle Antworten bestehen den Vertragstest."
+    },
+    "boundary": {
+      "input": "Zweimal dasselbe POST mit gleichem Idempotency-Key, zwei Schreiber mit demselben ETag und ein Eimer mit Kapazität 1",
+      "expected": "Es entsteht genau eine Ressource, die zweite Antwort ist als Wiederholung erkennbar; der zweite Schreiber erhält 412 und überschreibt nichts; die zweite Anfrage im Eimer erhält 429 mit Retry-After, nach der Wartezeit gelingt sie wieder."
+    },
+    "failure": {
+      "input": "Ein fremdes Objekt über seine ID abrufen, ein Token mit fehlendem Scope und ein Rumpf mit ungültigem JSON, ein umbenannter Pflicht-Header",
+      "expected": "Das fremde Objekt verhält sich wie ein nicht vorhandenes (404); der fehlende Scope liefert 403 mit passendem Header, das ungültige JSON 400; der Vertragstest schlägt beim umbenannten Header fehl und nennt ihn; du erklärst jede Meldung."
+    },
+    "rubric": [
+      "Statuscodes, Header und Fehlerformat folgen den HTTP-Standards und sind für alle Fehlerfälle einheitlich (Problem Details mit Feldliste bei 422, keine internen Details bei 500).",
+      "Wiederholungen und gleichzeitige Änderungen sind abgesichert (Idempotency-Key mit Fingerabdruck, ETag mit If-Match, 412 und 428), und ein Test belegt jeden Fall.",
+      "Zugriff ist dreistufig geprüft (Anmeldung, Scope, Besitz); fremde Objekte verraten ihre Existenz nicht, Token liegen nur als Hash vor, Limits (Rumpfgröße, limit, Rate) sind gesetzt und getestet.",
+      "Das OpenAPI-Dokument deckt alle Statuscodes ab, der Vertragstest prüft Antworten und Vollständigkeit, und das Protokoll trennt geprüft von nicht geprüft (zum Beispiel mehrere Instanzen, TLS, Widerruf von Token)."
+    ],
+    "sources": [
+      "https://www.rfc-editor.org/rfc/rfc9457.html",
+      "https://www.rfc-editor.org/rfc/rfc9110.html",
+      "https://spec.openapis.org/oas/v3.1.1.html",
+      "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/"
+    ],
+    "execution": "manual-review-required",
+    "revision": "assessment-platform-tracks-v1"
   }
 ]

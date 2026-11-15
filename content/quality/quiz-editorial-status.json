@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-14T21:58:06.658Z",
-  "revised": 1517,
-  "total": 1517,
+  "updatedAt": "2026-11-15T10:58:01.105Z",
+  "revised": 1541,
+  "total": 1541,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -9689,6 +9689,174 @@
       "revision": "2026-11-07-full-v3",
       "scenario": true,
       "question": "Der Vertrag verlangt minuten als positive Ganzzahl, das Backend akzeptiert aber -3. Welche Testkombination deckt Struktur und Durchsetzung ab?"
+    },
+    {
+      "lesson": "api-m2-l1",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welcher Status passt zu einem erfolgreichen POST, das eine neue Notiz anlegt?"
+    },
+    {
+      "lesson": "api-m2-l1",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet „idempotent“ bei DELETE?"
+    },
+    {
+      "lesson": "api-m2-l1",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum zählt der Server beim Lesen eines Rumpfes selbst mit, statt nur Content-Length zu vertrauen?"
+    },
+    {
+      "lesson": "api-m2-l2",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welcher Medientyp kennzeichnet Fehlerantworten nach RFC 9457?"
+    },
+    {
+      "lesson": "api-m2-l2",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Der Rumpf einer Anfrage ist gültiges JSON, aber der Titel ist leer. Welcher Status passt im Lab?"
+    },
+    {
+      "lesson": "api-m2-l2",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum enthält die 500-Antwort keine Details?"
+    },
+    {
+      "lesson": "api-m2-l3",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum überspringt ein Cursor nichts, wenn zwischen zwei Seiten ein Eintrag gelöscht wird?"
+    },
+    {
+      "lesson": "api-m2-l3",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bedeutet nextCursor: null in der Antwort?"
+    },
+    {
+      "lesson": "api-m2-l3",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient eine Obergrenze für limit?"
+    },
+    {
+      "lesson": "api-m2-l4",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum ist ein POST ohne Schutz bei Wiederholung problematisch?"
+    },
+    {
+      "lesson": "api-m2-l4",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was passiert, wenn derselbe Schlüssel mit anderem Inhalt gesendet wird?"
+    },
+    {
+      "lesson": "api-m2-l4",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was ändert sich, sobald die API auf mehreren Instanzen läuft?"
+    },
+    {
+      "lesson": "api-m2-l5",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was bewirkt If-Match bei einem PUT?"
+    },
+    {
+      "lesson": "api-m2-l5",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wann antwortet der Server auf ein GET mit 304?"
+    },
+    {
+      "lesson": "api-m2-l5",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum antwortet die API auf ein PUT ohne If-Match mit 428?"
+    },
+    {
+      "lesson": "api-m2-l6",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Ein Benutzer ist angemeldet, hat aber nur den Scope notes:read und sendet ein POST. Welcher Status ist richtig?"
+    },
+    {
+      "lesson": "api-m2-l6",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient die Objektprüfung in ownedNote?"
+    },
+    {
+      "lesson": "api-m2-l6",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum speichert der Server nur den Hash des Tokens?"
+    },
+    {
+      "lesson": "api-m2-l7",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Antwort erhält ein Client, dessen Eimer leer ist?"
+    },
+    {
+      "lesson": "api-m2-l7",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Welche Änderung bricht bestehende Clients?"
+    },
+    {
+      "lesson": "api-m2-l7",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Wozu dient der Header Sunset?"
+    },
+    {
+      "lesson": "api-m2-l8",
+      "index": 0,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was prüft ein Vertragstest gegen ein OpenAPI-Dokument?"
+    },
+    {
+      "lesson": "api-m2-l8",
+      "index": 1,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Warum muss jeder dokumentierte Status von einem Szenario ausgelöst werden?"
+    },
+    {
+      "lesson": "api-m2-l8",
+      "index": 2,
+      "revision": "2026-11-14-platform-tracks-v1",
+      "scenario": true,
+      "question": "Was beweist der Test mit absichtlich falschen Daten für den Mini-Prüfer?"
     },
     {
       "lesson": "mcp-m1-l1",

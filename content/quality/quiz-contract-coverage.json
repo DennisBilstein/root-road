@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-14T21:58:06.959Z",
-  "cards": 1823,
-  "learningContracts": 1823,
-  "individuallyRevised": 1823,
+  "updatedAt": "2026-11-15T10:58:01.395Z",
+  "cards": 1847,
+  "learningContracts": 1847,
+  "individuallyRevised": 1847,
   "independentFactualReviewComplete": false,
   "contracts": [
     {
@@ -43756,9 +43756,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/window-functions/",
-        "https://mariadb.com/kb/en/with/",
-        "https://mariadb.com/kb/en/recursive-common-table-expressions-overview/"
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/window-functions",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/with",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/recursive-common-table-expressions-overview"
       ],
       "rationales": [
         "Jede Zeile bleibt erhalten; die Funktion betrachtet das Fenster um sie herum.",
@@ -43791,9 +43791,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/window-functions/",
-        "https://mariadb.com/kb/en/with/",
-        "https://mariadb.com/kb/en/recursive-common-table-expressions-overview/"
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/window-functions",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/with",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/recursive-common-table-expressions-overview"
       ],
       "rationales": [
         "Das wäre DENSE_RANK, das Lücken vermeidet.",
@@ -43826,9 +43826,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/window-functions/",
-        "https://mariadb.com/kb/en/with/",
-        "https://mariadb.com/kb/en/recursive-common-table-expressions-overview/"
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/window-functions",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/with",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/recursive-common-table-expressions-overview"
       ],
       "rationales": [
         "Sie stehen in der SELECT-Liste oder in ORDER BY.",
@@ -43861,9 +43861,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/foreign-keys/",
-        "https://mariadb.com/kb/en/constraint/",
-        "https://mariadb.com/kb/en/database-normalization-third-normal-form-3nf/"
+        "https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/foreign-keys",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/constraint",
+        "https://mariadb.com/docs/general-resources/database-theory/database-normalization/database-normalization-overview"
       ],
       "rationales": [
         "Sie betrifft das Anlegen neuer Datensätze, die ohne andere Daten nicht speicherbar sind.",
@@ -43896,9 +43896,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/foreign-keys/",
-        "https://mariadb.com/kb/en/constraint/",
-        "https://mariadb.com/kb/en/database-normalization-third-normal-form-3nf/"
+        "https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/foreign-keys",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/constraint",
+        "https://mariadb.com/docs/general-resources/database-theory/database-normalization/database-normalization-overview"
       ],
       "rationales": [
         "Das wäre ein Verstoß gegen einen UNIQUE-Schlüssel.",
@@ -43931,9 +43931,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/foreign-keys/",
-        "https://mariadb.com/kb/en/constraint/",
-        "https://mariadb.com/kb/en/database-normalization-third-normal-form-3nf/"
+        "https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/foreign-keys",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/constraint",
+        "https://mariadb.com/docs/general-resources/database-theory/database-normalization/database-normalization-overview"
       ],
       "rationales": [
         "Joins sind mit passenden Indizes meist günstig.",
@@ -43966,10 +43966,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/json-data-type/",
-        "https://mariadb.com/kb/en/json_value/",
-        "https://mariadb.com/kb/en/json_table/",
-        "https://mariadb.com/kb/en/generated-columns/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/json",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_value",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_table",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/create/generated-columns"
       ],
       "rationales": [
         "Die MariaDB-Dokumentation beschreibt JSON als Alias für LONGTEXT.",
@@ -44002,10 +44002,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/json-data-type/",
-        "https://mariadb.com/kb/en/json_value/",
-        "https://mariadb.com/kb/en/json_table/",
-        "https://mariadb.com/kb/en/generated-columns/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/json",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_value",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_table",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/create/generated-columns"
       ],
       "rationales": [
         "LIMIT ändert nichts an der Suche.",
@@ -44038,10 +44038,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/json-data-type/",
-        "https://mariadb.com/kb/en/json_value/",
-        "https://mariadb.com/kb/en/json_table/",
-        "https://mariadb.com/kb/en/generated-columns/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/json",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_value",
+        "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_table",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/create/generated-columns"
       ],
       "rationales": [
         "Jede Array-Position wird zu einer Zeile.",
@@ -44074,9 +44074,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/innodb-lock-modes/",
-        "https://mariadb.com/kb/en/innodb-system-variables/",
-        "https://mariadb.com/kb/en/select/"
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-system-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/select"
       ],
       "rationales": [
         "Die Wartezeit-Grenze innodb_lock_wait_timeout wurde überschritten.",
@@ -44109,9 +44109,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/innodb-lock-modes/",
-        "https://mariadb.com/kb/en/innodb-system-variables/",
-        "https://mariadb.com/kb/en/select/"
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-system-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/select"
       ],
       "rationales": [
         "Das verändert nur, wann Fehler 1205 kommt.",
@@ -44144,9 +44144,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/innodb-lock-modes/",
-        "https://mariadb.com/kb/en/innodb-system-variables/",
-        "https://mariadb.com/kb/en/select/"
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-system-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/select"
       ],
       "rationales": [
         "Frühere Schritte sind verworfen; ein Teilneustart ist inkonsistent.",
@@ -44179,9 +44179,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/limit/",
-        "https://mariadb.com/kb/en/server-status-variables/",
-        "https://mariadb.com/kb/en/explain/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/limit",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/server-status-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/administrative-sql-statements/analyze-and-explain-statements/explain"
       ],
       "rationales": [
         "Die Arbeit wächst mit der Zahl der übersprungenen Zeilen.",
@@ -44214,9 +44214,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/limit/",
-        "https://mariadb.com/kb/en/server-status-variables/",
-        "https://mariadb.com/kb/en/explain/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/limit",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/server-status-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/administrative-sql-statements/analyze-and-explain-statements/explain"
       ],
       "rationales": [
         "Ohne passenden Index wird sie langsam.",
@@ -44249,9 +44249,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/limit/",
-        "https://mariadb.com/kb/en/server-status-variables/",
-        "https://mariadb.com/kb/en/explain/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/limit",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/server-status-variables",
+        "https://mariadb.com/docs/server/reference/sql-statements/administrative-sql-statements/analyze-and-explain-statements/explain"
       ],
       "rationales": [
         "Das gilt für die ausgeschriebene OR-Form.",
@@ -44284,8 +44284,8 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/alter-table/",
-        "https://mariadb.com/kb/en/innodb-online-ddl-overview/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-online-ddl/innodb-online-ddl-overview"
       ],
       "rationales": [
         "Das ist nicht der Grund.",
@@ -44318,8 +44318,8 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/alter-table/",
-        "https://mariadb.com/kb/en/innodb-online-ddl-overview/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-online-ddl/innodb-online-ddl-overview"
       ],
       "rationales": [
         "Die Geschwindigkeit ändert sich nicht.",
@@ -44352,8 +44352,8 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/alter-table/",
-        "https://mariadb.com/kb/en/innodb-online-ddl-overview/"
+        "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
+        "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-online-ddl/innodb-online-ddl-overview"
       ],
       "rationales": [
         "Ein großes UPDATE hält viele Zeilensperren sehr lange.",
@@ -44386,10 +44386,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/unicode/",
-        "https://mariadb.com/kb/en/decimal/",
-        "https://mariadb.com/kb/en/sql-mode/",
-        "https://mariadb.com/kb/en/timestamp/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/character-sets/unicode",
+        "https://mariadb.com/docs/server/reference/data-types/numeric-data-types/decimal",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode",
+        "https://mariadb.com/docs/server/reference/data-types/date-and-time-data-types/timestamp"
       ],
       "rationales": [
         "Das wäre CHAR_LENGTH.",
@@ -44422,10 +44422,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/unicode/",
-        "https://mariadb.com/kb/en/decimal/",
-        "https://mariadb.com/kb/en/sql-mode/",
-        "https://mariadb.com/kb/en/timestamp/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/character-sets/unicode",
+        "https://mariadb.com/docs/server/reference/data-types/numeric-data-types/decimal",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode",
+        "https://mariadb.com/docs/server/reference/data-types/date-and-time-data-types/timestamp"
       ],
       "rationales": [
         "Die Geschwindigkeit ist hier nicht entscheidend.",
@@ -44458,10 +44458,10 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/unicode/",
-        "https://mariadb.com/kb/en/decimal/",
-        "https://mariadb.com/kb/en/sql-mode/",
-        "https://mariadb.com/kb/en/timestamp/"
+        "https://mariadb.com/docs/server/reference/data-types/string-data-types/character-sets/unicode",
+        "https://mariadb.com/docs/server/reference/data-types/numeric-data-types/decimal",
+        "https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode",
+        "https://mariadb.com/docs/server/reference/data-types/date-and-time-data-types/timestamp"
       ],
       "rationales": [
         "DATETIME speichert den Wert unverändert.",
@@ -44494,9 +44494,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/mysqldump/",
-        "https://mariadb.com/kb/en/create-view/",
-        "https://mariadb.com/kb/en/start-transaction/"
+        "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump",
+        "https://mariadb.com/docs/server/server-usage/views/create-view",
+        "https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction"
       ],
       "rationales": [
         "Der Bestand wird durch das UPDATE geändert.",
@@ -44529,9 +44529,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/mysqldump/",
-        "https://mariadb.com/kb/en/create-view/",
-        "https://mariadb.com/kb/en/start-transaction/"
+        "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump",
+        "https://mariadb.com/docs/server/server-usage/views/create-view",
+        "https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction"
       ],
       "rationales": [
         "Im Lab wurde nur die Tabelle orders geprüft.",
@@ -44564,9 +44564,9 @@
         }
       ],
       "sources": [
-        "https://mariadb.com/kb/en/mysqldump/",
-        "https://mariadb.com/kb/en/create-view/",
-        "https://mariadb.com/kb/en/start-transaction/"
+        "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump",
+        "https://mariadb.com/docs/server/server-usage/views/create-view",
+        "https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction"
       ],
       "rationales": [
         "Es betrifft nicht die Tabellenauswahl.",
@@ -45202,6 +45202,855 @@
         "Die Umschreibung verhindert gerade den relevanten Testfall.",
         "Der untersagte Wert wird gezielt an der Servergrenze getestet.",
         "Das Vorhandensein von Code belegt keine Vertragsdurchsetzung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l1#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l1",
+      "recall": "Beantworte „Welcher Status passt zu einem erfolgreichen POST, das eine neue Notiz anlegt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ressourcen, Methoden und Statuscodes sauber entwerfen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "201 mit Location-Header auf die neue Notiz."
+        },
+        {
+          "label": "Begründung",
+          "reference": "201 mit Location folgt der Bedeutung der Codes in RFC 9110 und lässt den Client der Adresse folgen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ressourcen, Methoden und Statuscodes sauber entwerfen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Das sagt nicht, dass etwas Neues entstanden ist, und nennt keine Adresse.",
+        "201 bedeutet „angelegt“, Location nennt die Adresse.",
+        "202 steht für „angenommen, noch nicht verarbeitet“.",
+        "204 meldet Erfolg ohne Inhalt, nicht aber, dass etwas entstanden ist."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l1#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l1",
+      "recall": "Beantworte „Was bedeutet „idempotent“ bei DELETE?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ressourcen, Methoden und Statuscodes sauber entwerfen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Mehrfaches Senden führt zum selben Serverzustand wie einmaliges."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Idempotenz beschreibt den Serverzustand, nicht die Antwort."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ressourcen, Methoden und Statuscodes sauber entwerfen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Das wäre „sicher“.",
+        "Das erste DELETE liefert 204, das zweite 404; der Zustand ist gleich, die Antwort nicht.",
+        "Danach ist die Ressource weg, egal wie oft man löscht.",
+        "Gerade Wiederholungen sind unschädlich."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l1#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l1",
+      "recall": "Beantworte „Warum zählt der Server beim Lesen eines Rumpfes selbst mit, statt nur Content-Length zu vertrauen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Ressourcen, Methoden und Statuscodes sauber entwerfen“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Weil ein Client einen falschen Wert senden kann."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Eingaben des Clients sind nicht vertrauenswürdig; die gelesenen Bytes sind die verlässliche Größe."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Ressourcen, Methoden und Statuscodes sauber entwerfen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Der Header ist erlaubt und üblich.",
+        "Der Header ist Angabe des Clients; die tatsächliche Größe muss geprüft werden.",
+        "Node.js stellt die Header bereit.",
+        "413 gilt immer, wenn der Rumpf zu groß ist."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l2#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l2",
+      "recall": "Beantworte „Welcher Medientyp kennzeichnet Fehlerantworten nach RFC 9457?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler als Vertrag: Problem Details und Validierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "application/problem+json."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der eigene Medientyp zeigt Clients, dass der Rumpf ein Problem-Objekt ist."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler als Vertrag: Problem Details und Validierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9457.html",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa8-security-misconfiguration/"
+      ],
+      "rationales": [
+        "Das ist kein strukturierter Typ.",
+        "Diesen Typ gibt es im Standard nicht.",
+        "Der Standard definiert application/problem+json für JSON-Fehlerobjekte.",
+        "application/problem+xml existiert, aber für XML."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l2#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l2",
+      "recall": "Beantworte „Der Rumpf einer Anfrage ist gültiges JSON, aber der Titel ist leer. Welcher Status passt im Lab?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler als Vertrag: Problem Details und Validierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "422."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Das Lab trennt Syntaxfehler (400) von Inhaltsfehlern (422)."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler als Vertrag: Problem Details und Validierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9457.html",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa8-security-misconfiguration/"
+      ],
+      "rationales": [
+        "400 meldet das Lab bei nicht lesbarem JSON.",
+        "500 steht für Fehler des Servers.",
+        "Es fehlt keine Ressource.",
+        "Lesbar, aber inhaltlich nicht verarbeitbar."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l2#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l2",
+      "recall": "Beantworte „Warum enthält die 500-Antwort keine Details?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Fehler als Vertrag: Problem Details und Validierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Details würden Interna preisgeben; Ursachen gehören ins Protokoll."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Fehlerantworten dürfen keine Interna verraten; dafür gibt es das serverseitige Protokoll."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Fehler als Vertrag: Problem Details und Validierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9457.html",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa8-security-misconfiguration/"
+      ],
+      "rationales": [
+        "Pfade, SQL oder Konfiguration helfen vor allem Angreifern.",
+        "Ein Rumpf ist erlaubt und nützlich.",
+        "Ausnahmen gibt es; sie werden gefangen.",
+        "Menschen und Werkzeuge können sie lesen."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l3#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l3",
+      "recall": "Beantworte „Warum überspringt ein Cursor nichts, wenn zwischen zwei Seiten ein Eintrag gelöscht wird?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Listen paginieren: Cursor statt OFFSET“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Weil die nächste Seite „nach dieser Position“ beginnt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein Positions-Schlüssel verschiebt sich nicht, eine Zeilenzahl schon."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Listen paginieren: Cursor statt OFFSET“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc8288.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
+        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+      ],
+      "rationales": [
+        "Löschen ist erlaubt.",
+        "Es gibt keine Sperre.",
+        "Die Position bleibt gültig, auch wenn davor etwas wegfällt.",
+        "Der Client speichert nur den Cursor."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l3#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l3",
+      "recall": "Beantworte „Was bedeutet nextCursor: null in der Antwort?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Listen paginieren: Cursor statt OFFSET“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es gibt keine weitere Seite."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Server meldet das Ende, indem er keinen weiteren Cursor ausgibt."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Listen paginieren: Cursor statt OFFSET“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc8288.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
+        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+      ],
+      "rationales": [
+        "Abgelaufene Cursor liefern im Lab 400.",
+        "Die Liste ist zu Ende.",
+        "Fehler haben einen 4xx- oder 5xx-Status.",
+        "Das wäre ein neuer Abruf ohne Cursor."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l3#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l3",
+      "recall": "Beantworte „Wozu dient eine Obergrenze für limit?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Listen paginieren: Cursor statt OFFSET“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie verhindert, dass ein einzelner Aufruf den Server überlastet."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Eingabegrenzen sind Teil des Schutzes vor übermäßigem Ressourcenverbrauch."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Listen paginieren: Cursor statt OFFSET“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc8288.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
+        "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab"
+      ],
+      "rationales": [
+        "Es geht nicht um Optik.",
+        "Sie hat mit Anmeldung nichts zu tun.",
+        "Große Antworten kosten Speicher, Rechenzeit und Bandbreite.",
+        "Sie gilt für jede Form der Paginierung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l4#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l4",
+      "recall": "Beantworte „Warum ist ein POST ohne Schutz bei Wiederholung problematisch?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Idempotenz: Wiederholungen mit Idempotency-Key absichern“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Jede Wiederholung kann eine weitere Ressource erzeugen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Idempotency-Key macht aus „zwei Anfragen“ erkennbar „eine Absicht“."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Idempotenz: Wiederholungen mit Idempotency-Key absichern“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Eine solche Regel gibt es nicht.",
+        "POST ist nicht idempotent: Zwei Anfragen legen zwei Ressourcen an.",
+        "POST ist erlaubt, nur nicht idempotent.",
+        "Ohne Schutz erkennt der Server die Wiederholung nicht."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l4#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l4",
+      "recall": "Beantworte „Was passiert, wenn derselbe Schlüssel mit anderem Inhalt gesendet wird?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Idempotenz: Wiederholungen mit Idempotency-Key absichern“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Die API antwortet mit einem Fehler (422)."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Fingerabdruck erkennt die Abweichung, der Fehler macht den Programmierfehler sichtbar."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Idempotenz: Wiederholungen mit Idempotency-Key absichern“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Die erste Notiz bleibt unverändert.",
+        "Das wäre bei gleichem Inhalt der Fall.",
+        "Es wird nichts gelöscht.",
+        "Der Schlüssel gehört zu einer anderen Anfrage; das ist ein Clientfehler."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l4#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l4",
+      "recall": "Beantworte „Was ändert sich, sobald die API auf mehreren Instanzen läuft?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Idempotenz: Wiederholungen mit Idempotency-Key absichern“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Der Speicher der Schlüssel muss gemeinsam und eindeutig sein."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Sicherheit des Lab-Verfahrens beruht auf einem einzelnen Prozess."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Idempotenz: Wiederholungen mit Idempotency-Key absichern“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      ],
+      "rationales": [
+        "Ein lokaler Speicher kennt Schlüssel der anderen Instanz nicht.",
+        "Nur ein gemeinsamer Speicher mit eindeutigem Schlüssel verhindert doppelte Verarbeitung.",
+        "Er wird dann wichtiger.",
+        "Wiederholungen sind gerade dann nötig."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l5#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l5",
+      "recall": "Beantworte „Was bewirkt If-Match bei einem PUT?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Gleichzeitige Änderungen: ETag, If-Match und 304“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Es führt die Änderung nur aus, wenn das ETag noch passt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "If-Match macht die Änderung von einer erwarteten Version abhängig und verhindert verlorene Änderungen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Gleichzeitige Änderungen: ETag, If-Match und 304“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/If-Match"
+      ],
+      "rationales": [
+        "Das erledigt If-None-Match beim Lesen.",
+        "Sonst antwortet der Server mit 412.",
+        "Es wird nichts gesperrt.",
+        "Mit der Kodierung hat es nichts zu tun."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l5#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l5",
+      "recall": "Beantworte „Wann antwortet der Server auf ein GET mit 304?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Gleichzeitige Änderungen: ETag, If-Match und 304“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Wenn If-None-Match zum aktuellen ETag passt."
+        },
+        {
+          "label": "Begründung",
+          "reference": "304 spart Daten, wenn die Ressource sich nicht verändert hat."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Gleichzeitige Änderungen: ETag, If-Match und 304“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/If-Match"
+      ],
+      "rationales": [
+        "Dann wäre es 404.",
+        "Dann wäre es 401.",
+        "Ein leerer Rumpf allein ist kein Grund.",
+        "Der Client hat die aktuelle Version bereits und braucht keinen Rumpf."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l5#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l5",
+      "recall": "Beantworte „Warum antwortet die API auf ein PUT ohne If-Match mit 428?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Gleichzeitige Änderungen: ETag, If-Match und 304“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Weil sie verlorene Änderungen vermeiden will."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Server erzwingt die Bedingung, damit Clients nicht aus Versehen blind überschreiben."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Gleichzeitige Änderungen: ETag, If-Match und 304“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc9110.html",
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/If-Match"
+      ],
+      "rationales": [
+        "Das ist keine Regel von HTTP, sondern eine Entscheidung dieser API.",
+        "Das ist nicht der Zweck.",
+        "Ohne Bedingung wäre jede Änderung ein „letzter gewinnt“.",
+        "Das ETag existiert und wird mitgeliefert."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l6#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l6",
+      "recall": "Beantworte „Ein Benutzer ist angemeldet, hat aber nur den Scope notes:read und sendet ein POST. Welcher Status ist richtig?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Zugriff: Bearer-Token, Scopes und Objektautorisierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "403."
+        },
+        {
+          "label": "Begründung",
+          "reference": "401 betrifft die Identität, 403 die Berechtigung."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Zugriff: Bearer-Token, Scopes und Objektautorisierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6750.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/",
+        "https://api-security.owasp.org/editions/2023/en/0xa2-broken-authentication/"
+      ],
+      "rationales": [
+        "Er ist angemeldet; es fehlt die Berechtigung.",
+        "Die Ressource existiert.",
+        "Authentifiziert, aber nicht berechtigt.",
+        "Die Aktion darf nicht ausgeführt werden."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l6#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l6",
+      "recall": "Beantworte „Wozu dient die Objektprüfung in ownedNote?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Zugriff: Bearer-Token, Scopes und Objektautorisierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Sie verhindert, dass Benutzer über fremde IDs auf fremde Notizen zugreifen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Berechtigung auf Objektebene muss bei jedem Zugriff geprüft werden."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Zugriff: Bearer-Token, Scopes und Objektautorisierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6750.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/",
+        "https://api-security.owasp.org/editions/2023/en/0xa2-broken-authentication/"
+      ],
+      "rationales": [
+        "Das ist die Maßnahme gegen BOLA/IDOR.",
+        "Mit Geschwindigkeit hat sie nichts zu tun.",
+        "Token und Besitz sind getrennte Prüfungen.",
+        "Die Eingabe prüft validateNoteInput."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l6#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l6",
+      "recall": "Beantworte „Warum speichert der Server nur den Hash des Tokens?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Zugriff: Bearer-Token, Scopes und Objektautorisierung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Weil ein Datenleck sonst gültige Token preisgäbe."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Wer den Speicher liest, findet keine direkt verwendbaren Zugangsdaten."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Zugriff: Bearer-Token, Scopes und Objektautorisierung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6750.html",
+        "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/",
+        "https://api-security.owasp.org/editions/2023/en/0xa2-broken-authentication/"
+      ],
+      "rationales": [
+        "Die Länge ist nicht der Grund.",
+        "Der Browser sendet, was der Client setzt.",
+        "Ablauf wird getrennt gespeichert.",
+        "Aus dem Hash lässt sich ein zufälliges 192-Bit-Token nicht ableiten."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l7",
+      "recall": "Beantworte „Welche Antwort erhält ein Client, dessen Eimer leer ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "429 mit Retry-After."
+        },
+        {
+          "label": "Begründung",
+          "reference": "429 mit Retry-After sagt dem Client, wann er es erneut versuchen darf."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://www.rfc-editor.org/rfc/rfc9745.html",
+        "https://www.rfc-editor.org/rfc/rfc8594.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/"
+      ],
+      "rationales": [
+        "403 betrifft Berechtigung.",
+        "Zu viele Anfragen: wartet die angegebene Zeit.",
+        "503 meldet Überlast oder Wartung des Servers, nicht die Rate des einzelnen Clients.",
+        "Das täuscht Erfolg vor."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l7",
+      "recall": "Beantworte „Welche Änderung bricht bestehende Clients?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Umbenennen eines Feldes ohne Übergang."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Verträglich ist, was Clients nicht kennen müssen; unverträglich, was sie bereits benutzen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://www.rfc-editor.org/rfc/rfc9745.html",
+        "https://www.rfc-editor.org/rfc/rfc8594.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/"
+      ],
+      "rationales": [
+        "Unbekannte Felder werden ignoriert.",
+        "Alte Clients rufen ihn nicht auf.",
+        "Der Client liest ein Feld, das es nicht mehr gibt.",
+        "Der Text ist nicht Teil der Maschinenlogik."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l7#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l7",
+      "recall": "Beantworte „Wozu dient der Header Sunset?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Er nennt den Zeitpunkt der geplanten Abschaltung."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Sunset (RFC 8594) kündigt das Ende an; Deprecation (RFC 9745) zeigt, dass die Ressource veraltet ist."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Schutz und Wandel: Ratenbegrenzung, Versionen und Abkündigung“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc6585.html",
+        "https://www.rfc-editor.org/rfc/rfc9745.html",
+        "https://www.rfc-editor.org/rfc/rfc8594.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After",
+        "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/"
+      ],
+      "rationales": [
+        "So können Clients den Termin erkennen und rechtzeitig umziehen.",
+        "Das tun 429 und Retry-After.",
+        "Verschlüsselung leistet TLS.",
+        "Die Version steht nicht darin."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l8#0@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l8",
+      "recall": "Beantworte „Was prüft ein Vertragstest gegen ein OpenAPI-Dokument?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Vertrag in OpenAPI und Vertragstest“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Ob die Antworten der API zum Dokument passen."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Der Vertragstest verhindert, dass Beschreibung und Verhalten auseinanderlaufen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Vertrag in OpenAPI und Vertragstest“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://spec.openapis.org/oas/v3.1.1.html",
+        "https://json-schema.org/understanding-json-schema/reference",
+        "https://www.rfc-editor.org/rfc/rfc9457.html"
+      ],
+      "rationales": [
+        "Status, Header und Rümpfe werden mit der Beschreibung verglichen.",
+        "Dafür sind Lasttests nötig.",
+        "Mit Oberflächen hat er nichts zu tun.",
+        "Berechtigungen prüfen Fachtests."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l8#1@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l8",
+      "recall": "Beantworte „Warum muss jeder dokumentierte Status von einem Szenario ausgelöst werden?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Vertrag in OpenAPI und Vertragstest“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Damit nichts dokumentiert ist, was nie geprüft wurde."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Die Umkehrprüfung stellt sicher, dass auch seltene Fehlerfälle tatsächlich so aussehen wie beschrieben."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Vertrag in OpenAPI und Vertragstest“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://spec.openapis.org/oas/v3.1.1.html",
+        "https://json-schema.org/understanding-json-schema/reference",
+        "https://www.rfc-editor.org/rfc/rfc9457.html"
+      ],
+      "rationales": [
+        "Dauer ist kein Ziel.",
+        "Das ist eine Regel dieses Tests, keine der Spezifikation.",
+        "Änderungen bleiben möglich.",
+        "Ungeprüfte Dokumentation ist Behauptung."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "api-m2-l8#2@2026-11-14-platform-tracks-v1",
+      "lessonId": "api-m2-l8",
+      "recall": "Beantworte „Was beweist der Test mit absichtlich falschen Daten für den Mini-Prüfer?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Projekt: Vertrag in OpenAPI und Vertragstest“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Dass der Prüfer Abweichungen tatsächlich meldet."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Tests für die Prüfung verhindern ein „immer grün“."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Projekt: Vertrag in OpenAPI und Vertragstest“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://spec.openapis.org/oas/v3.1.1.html",
+        "https://json-schema.org/understanding-json-schema/reference",
+        "https://www.rfc-editor.org/rfc/rfc9457.html"
+      ],
+      "rationales": [
+        "Er prüft den Prüfer, nicht die API.",
+        "Ein Prüfer, der Fehler erkennt, ist die Voraussetzung dafür, dass ein grüner Lauf etwas bedeutet.",
+        "Vollständigkeit prüft er nicht.",
+        "Das Gegenteil: Er nutzt JSON Schema."
       ],
       "editorialStatus": "individually-revised"
     },

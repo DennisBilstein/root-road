@@ -47,6 +47,7 @@ Je Modul eine eigene Abnahme in `content/assessments-tech-tracks.json`.
 - Labs (Stand 14.11.2026): `content/examples/ts-lab` (27 Tests), `node-lab` (49 Tests, 48 bestanden, 1 übersprungen; Node 22.23 und 24.22, Docker-Image getestet),
   `websec-lab` (38 Tests; Node 22.23: 37 bestanden, 1 übersprungen (Argon2id braucht Node ≥ 24.7), Node 24.22 im Container: alle bestanden),
   `shell-lab` (Bash-Tests in einem Debian-Container; `./run-in-container.sh`, 216 Prüfungen ohne Fehler; braucht Docker und läuft nicht in `npm run test:labs`),
+  `api-lab` (25 `node:test`-Tests, Teil von `npm run test:labs`),
   `sql-lab` (acht MariaDB-Fälle in einem Wegwerf-Container; `node content/examples/sql-lab/run.mjs`; braucht Docker und läuft nicht in `npm run test:labs`).
   `npm run test:labs` führt ts-, node- und websec-Tests mit aus.
 - Nicht geprüft: Browser-Verhalten von CSP, SameSite und CORS, TLS, echte Netzwerk-Abrufe (SSRF-Beispiele mit ersetztem DNS), systemd, cron,
@@ -247,6 +248,17 @@ zufälliges Passwort, wird immer entfernt), erfundene Daten, acht Fälle mit erw
 Ausgaben aus diesen Dateien. Das Lab braucht Docker und läuft deshalb nicht in `npm test`, `npm run test:labs` oder der CI; die
 Playwright-Suite prüft nur Umfang, Darstellung und Überlauf. Nicht geprüft: MySQL und andere MariaDB-Versionen, Lastverhalten,
 Zeitzonen mit Sommerzeit. Abnahmeaufgabe: `content/assessments-platform-tracks.json`.
+
+### APIs: Vertiefung (8 weitere Lektionen)
+
+Modul `api-m2` (Ressourcen und Statuscodes, Fehler als Problem Details nach RFC 9457, Cursor-Paginierung, Idempotency-Key,
+ETag mit If-Match/If-None-Match, Bearer-Token mit Scopes und Objektprüfung, Ratenbegrenzung und Abkündigung von Versionen,
+Projekt mit OpenAPI-Vertrag und Vertragstest). Der Pfad `apis` hat damit 14 Lektionen. Quelle:
+`content/tech-tracks/api-vertiefung.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`. Das Lab
+`content/examples/api-lab/` kommt ohne Abhängigkeiten aus (`npm test`, 25 Tests mit `node:test`; Node 22.23 lokal und 24.22 im Container
+geprüft) und ist Teil von `npm run test:labs`. Die Testausgaben in den Lektionen entstehen beim Erzeugen aus einem echten Testlauf. Nicht geprüft:
+mehrere Instanzen, TLS, Anmeldung/Widerruf von Token, ein OpenAPI-Validator (der Vertrag wird nur durch den Vertragstest geprüft; die
+Spezifikation hat am Stichtag Version 3.2.1, das Lab nutzt 3.1.0). `Idempotency-Key` ist ein IETF-Entwurf, kein RFC.
 
 ## Geführte Codewerkstatt
 

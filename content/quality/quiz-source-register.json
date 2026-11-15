@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T21:58:07.789Z",
+  "generatedAt": "2026-11-15T10:58:01.906Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -5140,6 +5140,18 @@
       "questionIds": [
         "java-m22-l1#0@2026-11-07-full-v3",
         "java-m22-l3#1@2026-11-07-full-v3",
+        "api-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#2@2026-11-14-platform-tracks-v1",
         "x#295@2026-11-07-full-v3",
         "x#296@2026-11-07-full-v3"
       ],
@@ -5676,7 +5688,10 @@
       "questionIds": [
         "js-m1-l16#1@2026-11-07-full-v3",
         "api-m1-l1#1@2026-11-07-full-v3",
-        "api-m1-l2#3@2026-11-07-full-v3"
+        "api-m1-l2#3@2026-11-07-full-v3",
+        "api-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -5932,7 +5947,13 @@
         "js-m3-l2#2@2026-11-12-java-vue-v1",
         "js-m3-l5#0@2026-11-12-java-vue-v1",
         "js-m3-l5#1@2026-11-12-java-vue-v1",
-        "js-m3-l5#2@2026-11-12-java-vue-v1"
+        "js-m3-l5#2@2026-11-12-java-vue-v1",
+        "api-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6082,7 +6103,10 @@
       "questionIds": [
         "js-m4-l2#0@2026-11-12-java-vue-v1",
         "js-m4-l2#1@2026-11-12-java-vue-v1",
-        "js-m4-l2#2@2026-11-12-java-vue-v1"
+        "js-m4-l2#2@2026-11-12-java-vue-v1",
+        "api-m2-l6#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6322,7 +6346,10 @@
       "questionIds": [
         "js-m4-l6#0@2026-11-12-java-vue-v1",
         "js-m4-l6#1@2026-11-12-java-vue-v1",
-        "js-m4-l6#2@2026-11-12-java-vue-v1"
+        "js-m4-l6#2@2026-11-12-java-vue-v1",
+        "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6852,7 +6879,10 @@
       "questionIds": [
         "mariadb-m1-l2#0@2026-11-07-full-v3",
         "mariadb-m1-l2#1@2026-11-07-full-v3",
-        "mariadb-m1-l2#2@2026-11-07-full-v3"
+        "mariadb-m1-l2#2@2026-11-07-full-v3",
+        "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l2#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6873,7 +6903,10 @@
     {
       "url": "https://mariadb.com/docs/server/reference/data-types/numeric-data-types/decimal",
       "questionIds": [
-        "mariadb-m1-l2#1@2026-11-07-full-v3"
+        "mariadb-m1-l2#1@2026-11-07-full-v3",
+        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6884,7 +6917,10 @@
       "url": "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/select",
       "questionIds": [
         "mariadb-m1-l3#0@2026-11-07-full-v3",
-        "mariadb-m1-l3#2@2026-11-07-full-v3"
+        "mariadb-m1-l3#2@2026-11-07-full-v3",
+        "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l4#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6897,7 +6933,10 @@
         "mariadb-m1-l4#0@2026-11-scenario-v1-polish1",
         "mariadb-m1-l4#1@2026-11-07-full-v3",
         "mariadb-m1-l4#2@2026-11-07-full-v3",
-        "mariadb-m1-l4#3@2026-11-07-full-v3"
+        "mariadb-m1-l4#3@2026-11-07-full-v3",
+        "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l8#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6920,7 +6959,10 @@
       "url": "https://mariadb.com/docs/server/reference/sql-statements/administrative-sql-statements/analyze-and-explain-statements/explain",
       "questionIds": [
         "mariadb-m1-l5#0@2026-11-07-full-v3",
-        "mariadb-m1-l5#2@2026-11-07-full-v3"
+        "mariadb-m1-l5#2@2026-11-07-full-v3",
+        "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "mariadb-m2-l5#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
@@ -6950,7 +6992,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/window-functions/",
+      "url": "https://mariadb.com/docs/server/reference/sql-functions/special-functions/window-functions",
       "questionIds": [
         "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
@@ -6962,7 +7004,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/with/",
+      "url": "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/with",
       "questionIds": [
         "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
@@ -6974,7 +7016,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/recursive-common-table-expressions-overview/",
+      "url": "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/common-table-expressions/recursive-common-table-expressions-overview",
       "questionIds": [
         "mariadb-m2-l1#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l1#1@2026-11-14-platform-tracks-v1",
@@ -6986,7 +7028,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/foreign-keys/",
+      "url": "https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/foreign-keys",
       "questionIds": [
         "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
@@ -6998,7 +7040,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/constraint/",
+      "url": "https://mariadb.com/docs/general-resources/database-theory/database-normalization/database-normalization-overview",
       "questionIds": [
         "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
@@ -7010,19 +7052,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/database-normalization-third-normal-form-3nf/",
-      "questionIds": [
-        "mariadb-m2-l2#0@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l2#1@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l2#2@2026-11-14-platform-tracks-v1"
-      ],
-      "checkedAt": null,
-      "checkStatus": "not-content-reviewed-in-this-audit",
-      "reviewDue": "2027-02-08",
-      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
-    },
-    {
-      "url": "https://mariadb.com/kb/en/json-data-type/",
+      "url": "https://mariadb.com/docs/server/reference/data-types/string-data-types/json",
       "questionIds": [
         "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
@@ -7034,7 +7064,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/json_value/",
+      "url": "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_value",
       "questionIds": [
         "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
@@ -7046,7 +7076,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/json_table/",
+      "url": "https://mariadb.com/docs/server/reference/sql-functions/special-functions/json-functions/json_table",
       "questionIds": [
         "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
@@ -7058,7 +7088,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/generated-columns/",
+      "url": "https://mariadb.com/docs/server/reference/sql-statements/data-definition/create/generated-columns",
       "questionIds": [
         "mariadb-m2-l3#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l3#1@2026-11-14-platform-tracks-v1",
@@ -7070,7 +7100,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/innodb-lock-modes/",
+      "url": "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-lock-modes",
       "questionIds": [
         "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
@@ -7082,7 +7112,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/innodb-system-variables/",
+      "url": "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-system-variables",
       "questionIds": [
         "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
@@ -7094,19 +7124,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/select/",
-      "questionIds": [
-        "mariadb-m2-l4#0@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l4#1@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l4#2@2026-11-14-platform-tracks-v1"
-      ],
-      "checkedAt": null,
-      "checkStatus": "not-content-reviewed-in-this-audit",
-      "reviewDue": "2027-02-08",
-      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
-    },
-    {
-      "url": "https://mariadb.com/kb/en/limit/",
+      "url": "https://mariadb.com/docs/server/reference/sql-statements/data-manipulation/selecting-data/limit",
       "questionIds": [
         "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
@@ -7118,7 +7136,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/server-status-variables/",
+      "url": "https://mariadb.com/docs/server/server-management/variables-and-modes/server-status-variables",
       "questionIds": [
         "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
@@ -7130,19 +7148,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/explain/",
-      "questionIds": [
-        "mariadb-m2-l5#0@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l5#1@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l5#2@2026-11-14-platform-tracks-v1"
-      ],
-      "checkedAt": null,
-      "checkStatus": "not-content-reviewed-in-this-audit",
-      "reviewDue": "2027-02-08",
-      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
-    },
-    {
-      "url": "https://mariadb.com/kb/en/alter-table/",
+      "url": "https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table",
       "questionIds": [
         "mariadb-m2-l6#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l6#1@2026-11-14-platform-tracks-v1",
@@ -7154,7 +7160,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/innodb-online-ddl-overview/",
+      "url": "https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-online-ddl/innodb-online-ddl-overview",
       "questionIds": [
         "mariadb-m2-l6#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l6#1@2026-11-14-platform-tracks-v1",
@@ -7166,7 +7172,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/unicode/",
+      "url": "https://mariadb.com/docs/server/reference/data-types/string-data-types/character-sets/unicode",
       "questionIds": [
         "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
@@ -7178,7 +7184,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/decimal/",
+      "url": "https://mariadb.com/docs/server/server-management/variables-and-modes/sql_mode",
       "questionIds": [
         "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
@@ -7190,7 +7196,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/sql-mode/",
+      "url": "https://mariadb.com/docs/server/reference/data-types/date-and-time-data-types/timestamp",
       "questionIds": [
         "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
@@ -7202,19 +7208,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/timestamp/",
-      "questionIds": [
-        "mariadb-m2-l7#0@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l7#1@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l7#2@2026-11-14-platform-tracks-v1"
-      ],
-      "checkedAt": null,
-      "checkStatus": "not-content-reviewed-in-this-audit",
-      "reviewDue": "2027-02-08",
-      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
-    },
-    {
-      "url": "https://mariadb.com/kb/en/mysqldump/",
+      "url": "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump",
       "questionIds": [
         "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
@@ -7226,19 +7220,7 @@
       "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
     },
     {
-      "url": "https://mariadb.com/kb/en/create-view/",
-      "questionIds": [
-        "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
-        "mariadb-m2-l8#2@2026-11-14-platform-tracks-v1"
-      ],
-      "checkedAt": null,
-      "checkStatus": "not-content-reviewed-in-this-audit",
-      "reviewDue": "2027-02-08",
-      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
-    },
-    {
-      "url": "https://mariadb.com/kb/en/start-transaction/",
+      "url": "https://mariadb.com/docs/server/server-usage/views/create-view",
       "questionIds": [
         "mariadb-m2-l8#0@2026-11-14-platform-tracks-v1",
         "mariadb-m2-l8#1@2026-11-14-platform-tracks-v1",
@@ -7362,6 +7344,195 @@
         "api-m1-l6#0@2026-11-07-full-v3",
         "api-m1-l6#1@2026-11-07-full-v3",
         "api-m1-l6#2@2026-11-07-full-v3"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+      "questionIds": [
+        "api-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent",
+      "questionIds": [
+        "api-m2-l1#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l1#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://api-security.owasp.org/editions/2023/en/0xa8-security-misconfiguration/",
+      "questionIds": [
+        "api-m2-l2#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l2#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc8288.html",
+      "questionIds": [
+        "api-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption/",
+      "questionIds": [
+        "api-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://github.com/DennisBilstein/rootpfad/tree/main/content/examples/sql-lab",
+      "questionIds": [
+        "api-m2-l3#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l3#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+      "questionIds": [
+        "api-m2-l4#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l4#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc6585.html",
+      "questionIds": [
+        "api-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#2@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag",
+      "questionIds": [
+        "api-m2-l5#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l5#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/",
+      "questionIds": [
+        "api-m2-l6#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://api-security.owasp.org/editions/2023/en/0xa2-broken-authentication/",
+      "questionIds": [
+        "api-m2-l6#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9745.html",
+      "questionIds": [
+        "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc8594.html",
+      "questionIds": [
+        "api-m2-l7#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l7#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://spec.openapis.org/oas/v3.1.1.html",
+      "questionIds": [
+        "api-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://json-schema.org/understanding-json-schema/reference",
+      "questionIds": [
+        "api-m2-l8#0@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#1@2026-11-14-platform-tracks-v1",
+        "api-m2-l8#2@2026-11-14-platform-tracks-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",
