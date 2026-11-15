@@ -28,6 +28,14 @@ const digest = value => createHash('sha256').update(value).digest('hex');
 const dummyPasswordHash=await hash('non-account-dummy-password');
 const publicUser = u => ({id:u.id,email:u.email,name:u.name,role:u.role});
 let setup = db.prepare("SELECT id FROM users WHERE role='admin'").get() ? null : token();
+// Skript-Richtlinie: Skripte nur von der eigenen Herkunft, keine Inline-<script>-Blöcke, kein eval, Worker nur von der eigenen Herkunft.
+// Inline-Ereignisattribute (onclick …) bleiben erlaubt (script-src-attr), bis sie auf Ereignisdelegation umgestellt sind.
+const scriptPolicy = "script-src 'self'; script-src-attr 'unsafe-inline'; worker-src 'self'";
+// Ausnahme nur für die Sandbox der Code-Werkstatt (assets/guided-sandbox.html): Sie läuft im iframe mit sandbox="allow-scripts" (eigene, leere
+// Herkunft, kein Netz, keine Cookies) und führt Nutzercode in einem Blob-Worker mit new Function aus. Dafür braucht nur dieses Dokument
+// Inline-Skript und eval; die Seite selbst bekommt beides nicht.
+const sandboxPath = '/assets/guided-sandbox.html';
+const sandboxPolicy = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; worker-src blob:; connect-src 'none'; frame-ancestors 'self'";
 const app = express();
 if(process.env.TRUST_PROXY === '1') app.set('trust proxy',1);
 app.disable('x-powered-by');
@@ -36,9 +44,10 @@ app.disable('x-powered-by');
 // Brotli Stufe 9: ~10 % kleiner als die Voreinstellung bei ~36 ms je 250-KB-Datei; versionierte Dateien werden danach lange gecacht.
 app.use(compression({threshold:1024,brotli:{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:9}},filter:(req,res)=>!req.path.startsWith('/api/')&&compression.filter(req,res)}));
 app.use((req,res,next) => {
-  res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':'DENY',
-    // Teil-CSP: erlaubt Frames nur für die eigene Seite und die Zwei-Klick-Videos; verbietet Plugins und fremde base-URLs.
-    'Content-Security-Policy':"frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+  res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':req.path === sandboxPath ? 'SAMEORIGIN' : 'DENY',
+    // CSP ohne default-src: erlaubt Frames nur für die eigene Seite und die Zwei-Klick-Videos, verbietet Plugins und fremde base-URLs
+    // und lässt Skripte nur von der eigenen Herkunft zu. Bilder, Styles und Verbindungen sind bewusst noch nicht eingeschränkt.
+    'Content-Security-Policy':req.path === sandboxPath ? sandboxPolicy : `frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; ${scriptPolicy}`,
     // Die App nutzt keine dieser Browser-Funktionen; so kann auch eingebundener Fremdcode sie nicht anfordern.
     'Permissions-Policy':'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
     'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Resource-Policy':'same-origin'});

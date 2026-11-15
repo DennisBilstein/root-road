@@ -208,8 +208,8 @@ Fehlkonfiguration (A02 der OWASP Top 10) ist alles, was „aus Versehen offen“
       'HSTS: über HTTP wird ein fehlender Header nur als Hinweis „nur über HTTPS sinnvoll“ gemeldet. Über HTTPS verlangt der Test max-age von mindestens einem Jahr (31 536 000 Sekunden); weniger gilt als schwach.',
       'nosniff, Referrer-Policy (unsafe-url ist schwach), frame-ancestors oder X-Frame-Options, Permissions-Policy und Cross-Origin-Opener-Policy werden auf Vorhandensein geprüft. Außerdem meldet die Prüfung Versionsangaben im Server- oder X-Powered-By-Header; der bloße Name ohne Version ist unkritisch.',
       'audit-url.js holt eine Seite per fetch (ohne Weiterleitungen, mit Zeitlimit) und gibt die Befunde aus; Exit-Code 1, wenn etwas nicht ok ist. Das Werkzeug ist nur für eigene Systeme gedacht; Prüfungen fremder Systeme ohne Erlaubnis sind nicht in Ordnung.',
-      'Anwendung auf die lokale Entwicklungs-Instanz von Root Road (http://127.0.0.1:5173/, 14.11.2026): nosniff, Referrer-Policy, Permissions-Policy, Opener-Policy und frame-ancestors sind ok; HSTS fehlt über HTTP erwartungsgemäß (der Server setzt es nur in Produktion über HTTPS). Die CSP besteht aus frame-src, object-src, base-uri und frame-ancestors, aber ohne script-src und default-src. Die Prüfung stuft sie deshalb als schwach ein.',
-      'Mögliche Verbesserung für Root Road (nicht umgesetzt): eine CSP mit script-src (Nonce oder Hash) und default-src. Weil die Seite Inline-Skripte und Ereignisattribute nutzt, ist das ein größerer Umbau und muss im Report-Only-Modus erprobt werden; es ist eine offene Entscheidung, keine Korrektur in dieser Lektion.',
+      'Anwendung auf die lokale Entwicklungs-Instanz von Root Road (http://127.0.0.1:5293/, 15.11.2026): nosniff, Referrer-Policy, Permissions-Policy, Opener-Policy, frame-ancestors und die CSP sind ok; HSTS fehlt über HTTP erwartungsgemäß (der Server setzt es nur in Produktion über HTTPS). Vor dem 15.11.2026 hatte die CSP kein script-src und wurde als schwach eingestuft; seither enthält sie script-src \'self\', worker-src \'self\' und script-src-attr \'unsafe-inline\'.',
+      'Was die Root-Road-CSP leistet und was nicht: Skripte laufen nur von der eigenen Herkunft; eingeschleuste Inline-Skriptblöcke und eval sind blockiert (ein Browsertest prüft das). Die Einführung lief zuerst im Report-Only-Modus mit einer Sonde über die Oberfläche (18 Navigationspunkte, Lektion, Admin-Seite, Code-Werkstatt), danach wurde sie erzwungen. Die Code-Werkstatt führt Nutzercode in einem iframe mit eigener Sandbox-CSP aus; eval gibt es nur dort. Die Schwäche bleibt: script-src-attr \'unsafe-inline\' erlaubt rund 220 Inline-Ereignisattribute (onclick …), deshalb schützt die CSP noch nicht vor allem, was als Attribut eingeschleust wird. Nächster Schritt wäre, diese Attribute auf Ereignisdelegation umzustellen und script-src-attr zu entfernen; default-src fehlt weiterhin, Bilder, Styles und Verbindungen sind nicht eingeschränkt.',
     ],
     background: `Warum prüfen, statt nur setzen? Header gehen durch Proxys, Frameworks und Umgebungen verloren oder werden überschrieben. Ein automatischer Test gegen die laufende Anwendung (oder gegen die Konfiguration) bemerkt Rückschritte früh. Ähnliches gilt für Abhängigkeiten und Konfiguration: Wer die Prüfung in die Pipeline legt, entdeckt Fehler, bevor Besucher es tun.
 
@@ -231,10 +231,10 @@ Einordnung der Header-Liste: Sie ist ein Mindeststand. Weitere Header (Cross-Ori
     code2: { file: lab + 'src/headers/audit-url.js', lang: 'JavaScript' },
     code3: { file: lab + 'tests/hygiene.test.js', lang: 'JavaScript', from: "test('Header-Prüfung: fehlende und schwache Werte'", to: "'Name ohne Version ist unkritisch');", plus: 1 },
     order: ['body', 'code', 'code2', 'code3', 'body2'],
-    output: `node src/headers/audit-url.js http://127.0.0.1:5173/   (eigene Entwicklungs-Instanz, 14.11.2026, Node 22.23)
- schwach content-security-policy – Weder script-src noch default-src: Skripte sind nicht eingeschränkt (die CSP schützt dann nicht vor XSS).
+    output: `node src/headers/audit-url.js http://127.0.0.1:5293/   (eigene Entwicklungs-Instanz, 15.11.2026, Node 22.23)
+ ok      content-security-policy
  fehlt   strict-transport-security – Nur über HTTPS sinnvoll; über HTTP wird er vom Browser ignoriert.
- ok      (gekürzt: je eine Zeile für x-content-type-options, referrer-policy (same-origin), frame-ancestors, permissions-policy, cross-origin-opener-policy)
+ ok      (je eine Zeile für x-content-type-options, referrer-policy, frame-ancestors, permissions-policy, cross-origin-opener-policy)
  (Exit-Code 1: mindestens ein Punkt nicht ok)
 Tests Header-Prüfung (3 Tests) grün auf Node 22.23 und 24.22.
 Nicht geprüft: Verhalten der Header im Browser, TLS-Konfiguration und Zertifikate, die Produktionsumgebung von Root Road.`,

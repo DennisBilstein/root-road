@@ -104,3 +104,27 @@ test('Sprunglink hat ein Ziel, Knöpfe haben Namen, die den sichtbaren Text enth
   expect(r.dock).toBeTruthy();
   expect(r.chipName).toContain(r.chipLevel);
 });
+
+test('CSP erlaubt Skripte nur von der eigenen Herkunft; nur die Sandbox der Code-Werkstatt bekommt eval', async ({ page, request }) => {
+  const main = (await request.get('/')).headers()['content-security-policy'];
+  const scriptSrc = main.split(';').map((part) => part.trim()).find((part) => part.startsWith('script-src '));
+  expect(scriptSrc).toBe("script-src 'self'");
+  expect(main).not.toContain('unsafe-eval');
+  expect(main).toContain("frame-ancestors 'none'");
+  const sandbox = await request.get('/assets/guided-sandbox.html');
+  expect(sandbox.headers()['content-security-policy']).toContain("script-src 'unsafe-inline' 'unsafe-eval'");
+  expect(sandbox.headers()['content-security-policy']).toContain("connect-src 'none'");
+  expect(sandbox.headers()['x-frame-options']).toBe('SAMEORIGIN');
+  // Gegenprobe im Browser: Ein eingeschleustes Inline-Skript wird blockiert und gemeldet, Skripte von der eigenen Herkunft laufen.
+  await page.goto('/');
+  await page.waitForFunction(() => window.RP_APP_READY);
+  const result = await page.evaluate(() => new Promise((resolve) => {
+    let violation = '';
+    document.addEventListener('securitypolicyviolation', (event) => { violation = event.violatedDirective; });
+    const script = document.createElement('script');
+    script.textContent = 'window.__injected = true';
+    document.body.appendChild(script);
+    setTimeout(() => resolve({ ran: window.__injected === true, violation }), 100);
+  }));
+  expect(result).toEqual({ ran: false, violation: 'script-src-elem' });
+});

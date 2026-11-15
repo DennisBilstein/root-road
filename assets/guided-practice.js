@@ -55,11 +55,8 @@ async function rpPracticeRun(task){
   try{
     if(!rpPracticeWorkerSource){var response=await fetch('assets/guided-worker.js');if(!response.ok)throw Error('Ausführungsmodul nicht verfügbar.');rpPracticeWorkerSource=await response.text();}
     if(stopped)return;
-    var sandboxResponse=await fetch('assets/guided-sandbox.html');
-    if(!sandboxResponse.ok)throw Error('Sandbox nicht verfügbar.');
-    var sandboxHTML=await sandboxResponse.text();
-    if(stopped)return;
-    frame=document.createElement('iframe');frame.sandbox='allow-scripts';frame.hidden=true;frame.srcdoc=sandboxHTML;frame.title='Isolierte JavaScript-Ausführung';
+    // Eigene URL statt srcdoc: Ein srcdoc-Dokument erbt die CSP der Seite; die Sandbox braucht Inline-Skript und eval und bekommt sie deshalb über ihre eigene Antwort (server.mjs).
+    frame=document.createElement('iframe');frame.sandbox='allow-scripts';frame.hidden=true;frame.src='assets/guided-sandbox.html';frame.title='Isolierte JavaScript-Ausführung';
     var token=crypto.randomUUID();
     listener=function(event){
       if(event.source!==frame.contentWindow||event.data?.token!==token||event.data?.type!=='rp-practice-result')return;

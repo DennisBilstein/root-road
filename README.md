@@ -19,7 +19,7 @@
   nichts wird heruntergeladen oder gespiegelt. Das Video wird erst nach einem Klick auf „Video laden“ über
   `youtube-nocookie.com` eingebettet; vorher gibt es keine Anfrage an YouTube/Google. Daneben steht immer ein Direktlink.
   Titel und Kanal prüft `npm run verify:videos` per oEmbed (braucht Netz); der Inhalt der Videos ist nicht geprüft.
-  Der Server sendet dafür eine Teil-CSP (frame-src, object-src, base-uri, frame-ancestors). Die Datenschutzseite nennt die Einbettung
+  Der Server sendet dafür eine CSP (frame-src, object-src, base-uri, frame-ancestors) und seit 15.11.2026 zusätzlich script-src 'self' (ohne eval und Inline-Skriptblöcke; Ereignisattribute erlaubt über script-src-attr; die Sandbox der Code-Werkstatt hat eine eigene CSP). Die Datenschutzseite nennt die Einbettung
   (Entwurf, rechtlich prüfen lassen).
 - **Kleine Denkaufgaben** (`content/puzzles.json`, 7 Aufgaben in `java-m25-l1`, `java-m25-l2`, `js-m4-l1`, `js-m4-l2`, `js-m4-l4`):
   „Fehler finden“ und „Zeilen ordnen“ (Parsons-Aufgabe, per Pfeil-Schaltflächen bedienbar). Jede Aufgabe nennt, womit sie geprüft wurde;

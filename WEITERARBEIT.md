@@ -10,7 +10,7 @@ MariaDB Vertiefung: `mariadb-m2` (8), Pfad `mariadb` jetzt 14 Lektionen. Quelle 
 HTML & CSS Vertiefung: `html-m2` (4) und `css-m2` (5), Pfad `htmlcss` jetzt 21 Lektionen. Quellen `content/tech-tracks/{html,css}-vertiefung.mjs` → `node scripts/prepare-html-css-vertiefung.mjs` → `npm run build`; Lab `content/examples/html-css-lab/vertiefung/`, Tests `tests/html-css-vertiefung.spec.mjs`, Abnahmen `content/assessments-html-css.json`.
 Bestand jetzt 131 Module / 542 Lektionen / 1493+306=1799 Karten; zuvor (nur Tech-Tracks) 129 / 533 / 1772; 87 Playwright-Tests grün (neu: `tests/tech-tracks.spec.mjs`), `npm run scan:secrets` sauber.
 Quellen `content/tech-tracks/*.mjs` → `node scripts/prepare-tech-tracks.mjs` (Gruppenliste dort pflegen) → `npm run build`. Details: README, Abschnitt „TypeScript, Node.js, Linux & Shell und Web-Sicherheit“.
-Offen: (1) Eigene Seite hat nur eine Teil-CSP ohne `script-src`/`default-src` (siehe Lektion ws-m2-l3); strikte Nonce-CSP erfordert Umbau der Inline-Skripte/Ereignisattribute, vorher im Report-Only-Modus testen.
+Offen: (1) CSP seit 15.11.2026 mit `script-src 'self'` (erst Report-Only mit Sonde, dann erzwungen; Test in `tests/page-quality.spec.mjs`), aber noch mit `script-src-attr 'unsafe-inline'` für rund 220 Inline-Ereignisattribute und ohne `default-src`; nächster Schritt: Attribute auf Ereignisdelegation umstellen und `script-src-attr` entfernen (siehe Lektion ws-m2-l3). Die Sandbox der Code-Werkstatt wird als eigene URL (`assets/guided-sandbox.html`) mit eigener CSP geladen, nicht mehr als `srcdoc`.
 (2) Eine `unhandledrejection` „Transition was skipped“ entsteht bei sehr schnellem Lektionswechsel (View Transitions); harmlos, im Test herausgefiltert.
 (3) Ältere Skripte (`build-quiz-revisions.mjs`, `build-experts.mjs`) betten Daten ebenfalls mit `String.replace` ein; bei Inhalten mit `$'` oder `$&` dasselbe Muster wie in `build-learning-content.mjs` (Ersatzfunktion) verwenden.
 (4) Quellen: 186 Quellen warten laut `audit:learning` auf Abruf; alle URLs der 33 neuen Lektionen wurden am 14.11.2026 per HTTP-Abruf auf Erreichbarkeit geprüft, nicht inhaltlich.
@@ -29,7 +29,7 @@ Stand 13.11.2026: Testcontainers-Test lief mit Docker gegen PostgreSQL 17 und de
 (pom.xml ergänzt, Lektionen java-m26-l1/l2 angepasst); der Spring-Check in `run-learning-checks.mjs` hat jetzt 10 Minuten Zeit.
 Neue Bausteine (Plan „Videos, Denkaufgaben, Wiederholplan“): `content/lesson-videos.json` + `scripts/build-lesson-videos.mjs`,
 `content/puzzles.json` + `scripts/build-puzzles.mjs`, `assets/lesson-videos*.{js,css}`, `assets/practice-puzzles*.{js,css}`,
-`assets/weak-spots*.{js,css}`; Teil-CSP in `server.mjs`. NACH Änderungen an `assets/script-01.js` immer `npm run build`, weil die
+`assets/weak-spots*.{js,css}`; CSP in `server.mjs`. NACH Änderungen an `assets/script-01.js` immer `npm run build`, weil die
 Lernskripte unter `assets/learning/` daraus erzeugt werden. Videos: 23 Einträge (Stand 13.11.2026, Titel/Kanal per oEmbed geprüft, Inhalt nicht);
 für HTML, Laravel-Vertiefung, Rest von ABAP/SAP gibt es noch keine. Schriften sind selbst gehostet (`assets/fonts/`, `assets/fonts.css`).
 Syntax-Glossar (13.11.2026): `content/syntax-glossary/<sprache>.mjs` (12 Sprachen, 650 Einträge; Erweiterungen in `<sprache>.more*.mjs` (müssen alphabetisch nach der Basisdatei kommen) werden an die Basisdatei angehängt) → `scripts/build-syntax-glossary.mjs` →
