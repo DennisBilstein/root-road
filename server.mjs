@@ -11,6 +11,8 @@ import {validateProgress,mergeLatestMap} from './server/progress-validation.mjs'
 import {hashPassword as hash,verifyPassword as verify} from './server/passwords.mjs';
 import {installAccountLifecycle} from './server/account-lifecycle.mjs';
 import {installErrorLog} from './server/error-log.mjs';
+import {mainPolicy,sandboxPolicy,sandboxPath,permissionsPolicy} from './server/web-policy.mjs';
+import {createAssetVersions} from './server/asset-versions.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dir = process.env.ROOTPFAD_DATA_DIR || path.join(root, '.data');
@@ -28,16 +30,6 @@ const digest = value => createHash('sha256').update(value).digest('hex');
 const dummyPasswordHash=await hash('non-account-dummy-password');
 const publicUser = u => ({id:u.id,email:u.email,name:u.name,role:u.role});
 let setup = db.prepare("SELECT id FROM users WHERE role='admin'").get() ? null : token();
-// Skript-Richtlinie: Skripte nur von der eigenen Herkunft, keine Inline-<script>-Blöcke, kein eval, Worker nur von der eigenen Herkunft.
-// Inline-Ereignisattribute sind verboten (script-src-attr 'none'); die Oberfläche nutzt data-on…-Attribute und assets/actions.js.
-const scriptPolicy = "script-src 'self'; script-src-attr 'none'; worker-src 'self'";
-// Ausnahme nur für die Sandbox der Code-Werkstatt (assets/guided-sandbox.html): Sie läuft im iframe mit sandbox="allow-scripts" (eigene, leere
-// Herkunft, kein Netz, keine Cookies) und führt Nutzercode in einem Blob-Worker mit new Function aus. Dafür braucht nur dieses Dokument
-// Inline-Skript und eval; die Seite selbst bekommt beides nicht.
-const sandboxPath = '/assets/guided-sandbox.html';
-const sandboxPolicy = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; worker-src blob:; connect-src 'none'; frame-ancestors 'self'";
-const mainPolicy = ["default-src 'self'", scriptPolicy, "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:", "font-src 'self'", "connect-src 'self' http: https:",
-  "frame-src 'self' https://www.youtube-nocookie.com", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'"].join('; ');
 const app = express();
 if(process.env.TRUST_PROXY === '1') app.set('trust proxy',1);
 app.disable('x-powered-by');
@@ -47,12 +39,9 @@ app.disable('x-powered-by');
 app.use(compression({threshold:1024,brotli:{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:9}},filter:(req,res)=>!req.path.startsWith('/api/')&&compression.filter(req,res)}));
 app.use((req,res,next) => {
   res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':req.path === sandboxPath ? 'SAMEORIGIN' : 'DENY',
-    // Haupt-CSP: alles standardmäßig nur von der eigenen Herkunft. Ausnahmen: style-src 'unsafe-inline' (style-Attribute in der Oberfläche),
-    // img-src data:/blob: (Favicon, Erfolgskarte, Export) und connect-src http:/https: (der KI-Tutor spricht einen frei einstellbaren
-    // lokalen oder entfernten Endpunkt an). Skripte nur von der eigenen Herkunft, keine Inline-Ereignisattribute, keine Plugins.
+    // CSP-Begründungen und Ausnahmen: server/web-policy.mjs
     'Content-Security-Policy':req.path === sandboxPath ? sandboxPolicy : mainPolicy,
-    // Die App nutzt keine dieser Browser-Funktionen; so kann auch eingebundener Fremdcode sie nicht anfordern.
-    'Permissions-Policy':'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
+    'Permissions-Policy':permissionsPolicy,
     'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Resource-Policy':'same-origin'});
   // HSTS nur über HTTPS (hinter einem Proxy mit TRUST_PROXY=1) und in Produktion; lokal über http würde es nur schaden.
   if(process.env.NODE_ENV === 'production' && req.secure) res.set('Strict-Transport-Security','max-age=31536000');
@@ -261,35 +250,13 @@ app.get('/api/admin/participants',auth,admin,(req,res) => {
   })});
 });
 // Skripte und Styles werden mit einem Inhalts-Hash als Abfrageparameter ausgeliefert (index.html und Lernmanifest bekommen
-// ihn hier zur Laufzeit eingesetzt, abhängig von der Dateiänderungszeit). Mit passendem ?v= gelten sie als unveränderlich und werden
-// ein Jahr gecacht; ohne ?v= (nachgeladene Daten) wird per ETag revalidiert. Weil der Hash beim Ausliefern entsteht, kann nach einer
-// Änderung ohne Build nie eine alte, "unveränderliche" Datei hängen bleiben. Schriften ändern sich praktisch nie (30 Tage).
+// ihn hier zur Laufzeit eingesetzt, siehe server/asset-versions.mjs). Mit passendem ?v= gelten sie als unveränderlich und werden
+// ein Jahr gecacht; ohne ?v= (nachgeladene Daten) wird per ETag revalidiert. Schriften ändern sich praktisch nie (30 Tage).
 const revalidate = 'no-cache';
 const assetsDir = path.join(root,'assets');
-const hashCache = new Map();
-function assetVersion(rel){
-  if(!/^assets\/[A-Za-z0-9._\/-]+$/.test(rel) || rel.includes('..')) throw new Error('Ungültiger Asset-Pfad');
-  const file = path.join(root,rel), st = fs.statSync(file), hit = hashCache.get(file);
-  if(hit && hit.mtimeMs === st.mtimeMs && hit.size === st.size) return hit.hash;
-  const hash = createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0,10);
-  hashCache.set(file,{mtimeMs:st.mtimeMs,size:st.size,hash});
-  return hash;
-}
-const htmlCache = new Map();
-function versionedHtml(name){
-  const file = path.join(root,name), st = fs.statSync(file);
-  let entry = htmlCache.get(file);
-  if(!entry || entry.mtimeMs !== st.mtimeMs){ entry = {mtimeMs:st.mtimeMs,text:fs.readFileSync(file,'utf8')}; htmlCache.set(file,entry); }
-  return entry.text.replace(/(data-rp-src|href)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g,(match,attr,rel) => {
-    try { return `${attr}="${rel}?v=${assetVersion(rel)}"`; } catch { return match; }
-  });
-}
+const {versionedHtml,versionedManifest} = createAssetVersions(root);
 app.get('/assets/learning-manifest.json',(req,res,next) => {
-  try {
-    const manifest = JSON.parse(fs.readFileSync(path.join(assetsDir,'learning-manifest.json'),'utf8'));
-    manifest.versions = Object.fromEntries([...manifest.files,...(manifest.data||[]),...Object.values(manifest.bodies||{}),...(manifest.quiz?[manifest.quiz]:[])].map(file => [file,assetVersion(file)]));
-    res.set('Cache-Control',revalidate).json(manifest);
-  } catch(error){ next(error); }
+  try { res.set('Cache-Control',revalidate).json(versionedManifest()); } catch(error){ next(error); }
 });
 app.use('/assets',express.static(assetsDir,{dotfiles:'deny',setHeaders:(res,file) => {
   const versioned = /[?&]v=[0-9a-f]{10}(?:&|$)/.test(res.req.url) && /\.(?:js|css)$|(?:learning-data[\\/]literal-\d+|lesson-bodies[\\/][a-z0-9-]+|quiz-data)\.json$/.test(file);

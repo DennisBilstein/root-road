@@ -343,8 +343,10 @@ Nutzers wurden bisher nicht konkretisiert; keine ABAP-/PHP-Vorkenntnisse vorauss
   Fortschrittsübertragung und Adminampel unter `/admin`.
 - Ampel misst Bearbeitungsstand und übertragene Aktivität, keine fachliche
   Beherrschung oder individuellen Lernfristen. Schwellen einstellbar.
-- Noch kein öffentliches Deployment. Internetbetrieb benötigt HTTPS,
+- Kein produktives Deployment. Internetbetrieb mit Konten benötigt HTTPS,
   persistente Datenablage, Backups und Sicherheits-/Datenschutzprüfung.
+  Ein statischer Test-Deploy ohne Konten (Offline-Modus, `noindex`) läuft auf
+  Netlify; Build siehe `scripts/build-static.mjs` und README.
 - Konten und Lernstände in `.data/` sind absichtlich NICHT im Repository.
   Kein festes Adminpasswort; erster Start erzeugt einmaligen Setup-Link im Terminal.
 

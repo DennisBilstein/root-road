@@ -408,6 +408,16 @@ Tests: `tests/error-log.spec.mjs`.
 zum Quellstand passen, und führt Secret-Scan, Lernaudit und alle Playwright-Tests aus. Der Workflow ist lokal nicht ausgeführt
 worden und läuft erstmals nach dem nächsten Push; Lab-Tests (`npm run test:labs`, brauchen PHP, Java, Docker) laufen dort nicht.
 
+### Statischer Test-Deploy (Netlify)
+
+`node scripts/build-static.mjs` erzeugt `dist-static/` (ohne Server, Konten und Admin-Oberfläche) mit Inhalts-Hashes und einer
+`_headers`-Datei, deren CSP und weitere Header aus `server/web-policy.mjs` stammen, also identisch zum Server sind. Ohne `/api`
+läuft die App im Offline-Modus: Fortschritt nur im Browser, keine Anmeldung, kein Geräte-Abgleich. `netlify.toml` führt den Build
+bei einer Git-Anbindung automatisch aus (Node 22, keine `npm install`-Abhängigkeiten nötig); alternativ den Ordner oder eine Zip-Datei
+davon per Netlify Drop hochladen. Die Header setzen `X-Robots-Tag: noindex`, solange Impressum und Datenschutzerklärung Vorlagen sind.
+`tests/static-build.spec.mjs` prüft, dass Build und Server dieselben Hashes und Richtlinien liefern. Das ist kein Produktivbetrieb:
+Dafür gilt der Abschnitt „Gemeinsamer Betrieb“.
+
 ### Gemeinsamer Betrieb
 
 Standardmäßig ist der Server nur lokal erreichbar. Für andere Geräte benötigt

@@ -20,3 +20,5 @@ content/examples/laravel-lab/storage/framework/views/*.php
 content/examples/laravel-lab/.phpunit.result.cache
 content/examples/vue-lab/dist/
 content/quality/.runtime/
+dist-static/
+dist-static-test/
