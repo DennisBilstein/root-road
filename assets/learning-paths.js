@@ -18,6 +18,7 @@ var RP_PATHS = [
   ,{ id:'docker', title:'Docker & Container', description:'Images und Build-Cache, mehrstufige Builds, Härtung, Volumes, Netzwerke, Betrieb und Compose.' }
   ,{ id:'python', title:'Python', description:'Werte und Zahlen, Datenstrukturen, Dateien und Kodierung, Fehler, Klassen und ein getestetes Projekt.' }
   ,{ id:'cicd', title:'CI/CD mit GitHub Actions', description:'Workflow-Aufbau, Tempo, Rechte, Eingaben, Lieferkette und Releases mit Freigabe.' }
+  ,{ id:'prinzipien', title:'Programmierprinzipien', description:'KISS, DRY, YAGNI, SOLID, Aufbauregeln und Domain-Driven Design im Überblick, mit getesteten Vorher/Nachher-Beispielen.' }
 ];
 var rpPath = 'all';
 try { rpPath = localStorage.getItem('rootpfad-learning-path') || 'all'; } catch(e) {}

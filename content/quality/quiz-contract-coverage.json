@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-15T20:03:39.854Z",
-  "cards": 1901,
-  "learningContracts": 1901,
-  "individuallyRevised": 1901,
+  "updatedAt": "2026-11-16T09:27:13.595Z",
+  "cards": 1904,
+  "learningContracts": 1904,
+  "individuallyRevised": 1904,
   "independentFactualReviewComplete": false,
   "contracts": [
     {
@@ -52681,6 +52681,132 @@
         "Python bleibt interpretiert.",
         "Verschlüsselung ist nicht ihre Aufgabe.",
         "So haben Projekte ihre eigenen Paketversionen."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "pp-m1-l1#0@2026-11-16-principles-v1",
+      "lessonId": "pp-m1-l1",
+      "recall": "Beantworte „Ein Team baut für einen Export ein Plug-in-System und vier Formate, obwohl nur CSV verlangt ist. Welches Prinzip spricht dagegen, und warum?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "YAGNI, weil Ungebrauchtes trotzdem gebaut und gepflegt werden muss."
+        },
+        {
+          "label": "Begründung",
+          "reference": "YAGNI warnt vor Funktionen auf Vorrat: Sie kosten Bau, Tests und Pflege, und ob der vermutete Bedarf eintritt, ist offen."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/",
+        "https://martinfowler.com/bliki/Yagni.html",
+        "https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf",
+        "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
+        "https://martinfowler.com/ieeeSoftware/failFast.pdf",
+        "https://en.wikipedia.org/wiki/Law_of_Demeter",
+        "https://en.wikipedia.org/wiki/Composition_over_inheritance",
+        "https://en.wikipedia.org/wiki/KISS_principle",
+        "https://www.domainlanguage.com/ddd/reference/",
+        "https://martinfowler.com/bliki/BoundedContext.html"
+      ],
+      "rationales": [
+        "Die Formate vervielfachen kein Wissen; es geht um Funktionen, die niemand verlangt hat.",
+        "Liskov betrifft die Ersetzbarkeit von Untertypen, nicht die Frage, ob etwas gebraucht wird.",
+        "Richtig: Auf Vorrat gebaute Optionen verursachen laufende Kosten, ohne dass ein Bedarf belegt ist.",
+        "Das Law of Demeter betrifft Zugriffsketten auf fremde Innenstruktur, nicht überzählige Funktionen."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "pp-m1-l1#1@2026-11-16-principles-v1",
+      "lessonId": "pp-m1-l1",
+      "recall": "Beantworte „Code setzt ein Rechteck auf Breite 4 und Höhe 5 und erwartet die Fläche 20. Bei einem Quadrat als Unterklasse kommt 25 heraus. Welche Regel ist verletzt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Das Liskovsche Substitutionsprinzip: Der Untertyp erfüllt die Erwartung des Obertyps nicht."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein Untertyp muss überall einsetzbar sein, wo der Obertyp erwartet wird. Hier ändert setWidth auch die Höhe und bricht die Annahme des Aufrufers."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/",
+        "https://martinfowler.com/bliki/Yagni.html",
+        "https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf",
+        "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
+        "https://martinfowler.com/ieeeSoftware/failFast.pdf",
+        "https://en.wikipedia.org/wiki/Law_of_Demeter",
+        "https://en.wikipedia.org/wiki/Composition_over_inheritance",
+        "https://en.wikipedia.org/wiki/KISS_principle",
+        "https://www.domainlanguage.com/ddd/reference/",
+        "https://martinfowler.com/bliki/BoundedContext.html"
+      ],
+      "rationales": [
+        "Richtig: Das Quadrat lässt sich nicht an der Stelle des Rechtecks einsetzen, ohne dass der Aufrufer ein falsches Ergebnis bekommt.",
+        "Dependency Inversion betrifft die Richtung von Abhängigkeiten, nicht das Verhalten von Untertypen.",
+        "Das Quadrat hat eine Aufgabe; das Problem ist das gebrochene Versprechen des Obertyps.",
+        "Ein Fehler wäre hier kein Ausweg: Der Aufrufer darf das Verhalten des Obertyps erwarten."
+      ],
+      "editorialStatus": "individually-revised"
+    },
+    {
+      "id": "pp-m1-l1#2@2026-11-16-principles-v1",
+      "lessonId": "pp-m1-l1",
+      "recall": "Beantworte „Im Verkauf bedeutet „Kunde“ etwas anderes als im Versand: Dort zählen Kreditlimit, hier die Lieferadresse. Welche DDD-Idee löst das sauber?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“.",
+      "criteria": [
+        {
+          "label": "Fachliche Entscheidung",
+          "reference": "Zwei Bounded Contexts mit je eigenem Modell und einer Übersetzung an der Grenze."
+        },
+        {
+          "label": "Begründung",
+          "reference": "Ein Bounded Context grenzt ab, wo ein Begriff genau eine Bedeutung hat. Jeder Kontext hat sein eigenes Modell; an der Grenze wird übersetzt."
+        },
+        {
+          "label": "Abgrenzung",
+          "reference": "Erkläre anhand der Begründung, welche Annahme einer konkreten anderen Antwort widerspricht. Ist der Widerspruch nicht belegbar, markiere die Frage zur Prüfung."
+        },
+        {
+          "label": "Anwendung",
+          "reference": "Formuliere zu „Die wichtigsten Prinzipien im Überblick: KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+        }
+      ],
+      "sources": [
+        "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/",
+        "https://martinfowler.com/bliki/Yagni.html",
+        "https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf",
+        "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
+        "https://martinfowler.com/ieeeSoftware/failFast.pdf",
+        "https://en.wikipedia.org/wiki/Law_of_Demeter",
+        "https://en.wikipedia.org/wiki/Composition_over_inheritance",
+        "https://en.wikipedia.org/wiki/KISS_principle",
+        "https://www.domainlanguage.com/ddd/reference/",
+        "https://martinfowler.com/bliki/BoundedContext.html"
+      ],
+      "rationales": [
+        "Eine Alleskönner-Klasse vermischt beide Bedeutungen und koppelt die Bereiche eng aneinander.",
+        "Ein Value Object beschreibt einen unveränderlichen Wert wie einen Geldbetrag, löst aber keine Mehrdeutigkeit zwischen Fachbereichen.",
+        "Ein Aggregate sichert Regeln innerhalb eines Modells; es vereint nicht zwei Bedeutungen desselben Begriffs.",
+        "Richtig: So sieht der Versand kein Kreditlimit, und beide Modelle bleiben klein und für ihren Zweck passend."
       ],
       "editorialStatus": "individually-revised"
     },

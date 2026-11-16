@@ -4,7 +4,7 @@ import {readSourceVariable} from './support/source-variable.mjs';
 test('Vollständiger Quizbestand ist revidiert und technische Längensignale sind bereinigt',async({page})=>{
  await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);await page.evaluate(()=>rpHydrateAll());
  const result=await page.evaluate(()=>({cards:CARDS.length,revised:CARDS.filter(c=>c.id.includes('@')).length,lessonQuestions:FLAT.reduce((n,l)=>n+l.quiz.length,0),unique:new Set(CARDS.map(c=>c.id)).size}));
- expect(result).toEqual({cards:1901,revised:1901,lessonQuestions:1595,unique:1901});
+ expect(result).toEqual({cards:1904,revised:1904,lessonQuestions:1598,unique:1904});
  expect(readSourceVariable('RP_EXTRA_REVISIONS')).toHaveLength(306);
  const audit=JSON.parse(fs.readFileSync('content/quality/quiz-style-audit.json','utf8'));expect(audit.findings).toEqual([]);
 });

@@ -147,7 +147,8 @@
     "ws-m2": "assets/lesson-bodies/ws-m2.json",
     "dk-m1": "assets/lesson-bodies/dk-m1.json",
     "ci-m1": "assets/lesson-bodies/ci-m1.json",
-    "py-m1": "assets/lesson-bodies/py-m1.json"
+    "py-m1": "assets/lesson-bodies/py-m1.json",
+    "pp-m1": "assets/lesson-bodies/pp-m1.json"
   },
   "quiz": "assets/quiz-data.json",
   "stats": {

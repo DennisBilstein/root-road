@@ -21,7 +21,7 @@ test('Start lädt keine Quizfragen, kennt aber Karten, Zähler und IDs', async (
     id: rpQuestionId(lessonById('m1-l2'), 0),
     lazy: !!lessonById('m1-l2').lazyQuiz,
   }));
-  expect(start).toEqual({ ready: false, cards: 1901, withText: 0, quizLength: 3, id: 'm1-l2#0@2026-11-scenario-v1-polish1', lazy: true });
+  expect(start).toEqual({ ready: false, cards: 1904, withText: 0, quizLength: 3, id: 'm1-l2#0@2026-11-scenario-v1-polish1', lazy: true });
 });
 
 test('Eine Lektion lädt die Fragen einmal nach und zeigt das Quiz', async ({ page }) => {

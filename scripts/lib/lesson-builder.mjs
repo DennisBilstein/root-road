@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 
 const exerciseLabels = ['Normalfall', 'Grenzfall', 'Fehlerfall'];
-const codeSlots = ['code', 'code2', 'code3'];
+const codeSlots = ['code', 'code2', 'code3', 'code4'];
 
 const escape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paragraphs = (text) => text.split(/\n{2,}/).map((part) => `<p>${escape(part.trim())}</p>`).join('');

@@ -1,7 +1,7 @@
 {
-  "modules": 136,
-  "manualAssignments": 136,
-  "individuallyAuthored": 136,
+  "modules": 137,
+  "manualAssignments": 137,
+  "individuallyAuthored": 137,
   "fullyIndependentRubrics": 0,
   "drafts": 0,
   "execution": "not-executed-manual-review-required",
@@ -5284,6 +5284,46 @@
         "https://docs.python.org/3/library/unittest.html",
         "https://docs.python.org/3/library/decimal.html",
         "https://docs.python.org/3/library/csv.html"
+      ]
+    },
+    {
+      "id": "pp-m1@assessment-tech-tracks-v1",
+      "moduleId": "pp-m1",
+      "title": "Ein kleines Programm nach Prinzipien umbauen und den Umbau belegen",
+      "lessonId": "pp-m1-l1",
+      "status": "manual-review-required",
+      "editorialStatus": "individually-authored-manual",
+      "brief": "Schreibe in einer Sprache deiner Wahl eine Funktion processOrder(lines, store), die Bestellzeilen im Format „Name;Menge;Cent“ liest, die Summe berechnet, einen Text wie „Summe: 9.50 EUR“ erzeugt und die Summe im übergebenen Speicherobjekt ablegt. Baue zuerst eine Alleskönner-Fassung (Lesen, Rechnen, Formatieren und Speichern in einer Funktion, die Prüfung der Zahlen zweimal kopiert) und halte ihr Verhalten mit Tests fest. Baue sie dann ohne Verhaltensänderung nach mindestens drei Prinzipien aus der Lektion um (zum Beispiel Separation of Concerns, DRY und Fail Fast oder Dependency Inversion). Die ursprünglichen Tests müssen vor und nach dem Umbau unverändert grün laufen. Erkläre je Prinzip, welche künftige Änderung dadurch billiger wird, und nenne ein Prinzip, das du bewusst nicht angewendet hast, mit Begründung.",
+      "acceptance": "Prüfe die unten konkret benannten Soll-Ergebnisse und vier modulspezifischen Kriterien.",
+      "cases": [
+        {
+          "kind": "Normalfall",
+          "request": "processOrder(['Kabel;3;250','Stecker;2;100'], store)",
+          "expected": "Die Ausgabe lautet „Summe: 9.50 EUR“ (950 Cent), store enthält die Summe, und dieselben Tests sind vor und nach dem Umbau grün."
+        },
+        {
+          "kind": "Grenzfall",
+          "request": "processOrder([], store) und processOrder(['Kabel;0;250'], store)",
+          "expected": "Beide Aufrufe ergeben die Summe 0 ohne Fehler; die leere Liste und die Menge 0 sind als gültige Fälle in je einem benannten Test belegt."
+        },
+        {
+          "kind": "Fehlerfall",
+          "request": "processOrder(['Kabel;abc;250'], store) und processOrder(['Kabel;3'], store)",
+          "expected": "Beide Aufrufe werden sofort mit einer verständlichen Meldung abgelehnt, statt als NaN weiterzurechnen (Fail Fast); store bleibt in beiden Fällen unverändert, und die Tests belegen das."
+        }
+      ],
+      "evidence": "Textprotokoll mit Befehlen/Testfällen/Ergebnissen oder Verweis auf ein freigegebenes Arbeitsartefakt. Keine Geheimnisse, Kundendaten oder öffentlichen Uploads nötig.",
+      "rubric": [
+        "Die Alleskönner-Fassung ist durch Tests abgesichert, bevor sie verändert wird, und dieselben Tests laufen nach dem Umbau unverändert grün.",
+        "Mindestens drei Prinzipien sind erkennbar angewendet (zum Beispiel getrennte Schichten, eine einzige Prüfregel, Speicher als übergebene Abhängigkeit) und im Code benannt.",
+        "Normal-, Grenz- und Fehlerfall stehen als Tests mit konkreten Ein- und Ausgaben; ungültige Zeilen werden sofort abgelehnt.",
+        "Die Abgabe erklärt je Prinzip, welche künftige Änderung billiger wird, und begründet, welches Prinzip bewusst nicht angewendet wurde."
+      ],
+      "revision": "assessment-tech-tracks-v1",
+      "sources": [
+        "https://martinfowler.com/bliki/Yagni.html",
+        "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
+        "https://martinfowler.com/ieeeSoftware/failFast.pdf"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-15T20:03:39.435Z",
-  "revised": 1595,
-  "total": 1595,
+  "updatedAt": "2026-11-16T09:27:13.297Z",
+  "revised": 1598,
+  "total": 1598,
   "remaining": 0,
   "extras": {
     "total": 306,
@@ -11173,6 +11173,27 @@
       "revision": "2026-11-14-platform-tracks-v1",
       "scenario": true,
       "question": "Wozu dient eine virtuelle Umgebung (venv)?"
+    },
+    {
+      "lesson": "pp-m1-l1",
+      "index": 0,
+      "revision": "2026-11-16-principles-v1",
+      "scenario": true,
+      "question": "Ein Team baut für einen Export ein Plug-in-System und vier Formate, obwohl nur CSV verlangt ist. Welches Prinzip spricht dagegen, und warum?"
+    },
+    {
+      "lesson": "pp-m1-l1",
+      "index": 1,
+      "revision": "2026-11-16-principles-v1",
+      "scenario": true,
+      "question": "Code setzt ein Rechteck auf Breite 4 und Höhe 5 und erwartet die Fläche 20. Bei einem Quadrat als Unterklasse kommt 25 heraus. Welche Regel ist verletzt?"
+    },
+    {
+      "lesson": "pp-m1-l1",
+      "index": 2,
+      "revision": "2026-11-16-principles-v1",
+      "scenario": true,
+      "question": "Im Verkauf bedeutet „Kunde“ etwas anderes als im Versand: Dort zählen Kreditlimit, hier die Lieferadresse. Welche DDD-Idee löst das sauber?"
     }
   ]
 }

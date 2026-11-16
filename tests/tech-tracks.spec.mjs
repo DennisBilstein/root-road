@@ -14,6 +14,7 @@ const tracks = [
   { path: 'docker', modules: ['dk-m1'], lessons: 6 },
   { path: 'cicd', modules: ['ci-m1'], lessons: 6 },
   { path: 'python', modules: ['py-m1'], lessons: 6 },
+  { path: 'prinzipien', modules: ['pp-m1'], lessons: 1 },
 ];
 
 for (const track of tracks) {

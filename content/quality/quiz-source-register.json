@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T20:03:40.567Z",
+  "generatedAt": "2026-11-16T09:27:14.152Z",
   "policy": "Drei Monate sind eine organisatorische Prüffrist, keine fachliche Aktualitätsgarantie.",
   "sources": [
     {
@@ -9552,6 +9552,126 @@
         "py-m1-l6#0@2026-11-14-platform-tracks-v1",
         "py-m1-l6#1@2026-11-14-platform-tracks-v1",
         "py-m1-l6#2@2026-11-14-platform-tracks-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://martinfowler.com/bliki/Yagni.html",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://martinfowler.com/ieeeSoftware/failFast.pdf",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Law_of_Demeter",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Composition_over_inheritance",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/KISS_principle",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://www.domainlanguage.com/ddd/reference/",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
+      ],
+      "checkedAt": null,
+      "checkStatus": "not-content-reviewed-in-this-audit",
+      "reviewDue": "2027-02-08",
+      "scope": "Fragebezogene Quelle; Erreichbarkeit und fachliche Passung getrennt prüfen."
+    },
+    {
+      "url": "https://martinfowler.com/bliki/BoundedContext.html",
+      "questionIds": [
+        "pp-m1-l1#0@2026-11-16-principles-v1",
+        "pp-m1-l1#1@2026-11-16-principles-v1",
+        "pp-m1-l1#2@2026-11-16-principles-v1"
       ],
       "checkedAt": null,
       "checkStatus": "not-content-reviewed-in-this-audit",

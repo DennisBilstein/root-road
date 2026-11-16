@@ -1,6 +1,6 @@
 # Node.js-Lab
 
-Geprüfter Code für die Lektionen `node-m1` und `node-m2`. Keine Abhängigkeiten, nur eingebaute Node-Module.
+Geprüfter Code für die Lektionen `node-m1` und `node-m2` sowie `pp-m1-l1` (Programmierprinzipien). Keine Abhängigkeiten, nur eingebaute Node-Module.
 
 ```bash
 npm test            # node --test "tests/*.test.js"
@@ -19,5 +19,6 @@ Geprüft mit Node 22.23 (lokal) und Node 24.22 (Container `node:24-slim`). Auf a
 | `src/data` | `node:sqlite`, Migrationen, Konfiguration aus der Umgebung |
 | `src/ops` | strukturiertes Logging, sauberes Beenden, Worker Threads |
 | `src/testing` | `node:test`, Mocks, gesteuerte Zeit |
+| `src/principles` | KISS, DRY, YAGNI, SOLID, Aufbauregeln und DDD: je eine „Vorher“- und eine „Nachher“-Fassung (Lektion `pp-m1-l1`) |
 
 `Dockerfile` baut ein Image mit dem Server (läuft als Benutzer `node`, Exec-Form für `SIGTERM`). Im Modus `production` bricht der Start ohne `DB_PATH` und `SESSION_SECRET` mit Exit-Code 78 ab.

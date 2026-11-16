@@ -288,6 +288,12 @@ der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` e
 (`python3 -m unittest`, 27 Tests, auch in `npm run test:labs`; Demo-Skripte `demos/0N_*.py` liefern die Ausgaben der Lektionen). Getestet mit Python 3.12.15, 3.13.16 und 3.14.6
 (Ausgaben aus 3.14.6). Nicht geprüft: Python 3.15 (laut python.org am 15.11.2026 die aktuelle Version), Windows, Linux, `pip`/`venv`/Packaging, Typprüfer.
 
+**Programmierprinzipien (16.11.2026):** Modul `pp-m1` mit einer Lektion (`pp-m1-l1`: KISS, DRY, YAGNI, SOLID, Separation of Concerns, Law of Demeter, Komposition vor Vererbung, Fail Fast, geringste Überraschung und DDD im Überblick), neuer Pfad `prinzipien`.
+Quelle: `content/tech-tracks/programmierprinzipien.mjs` → `node scripts/prepare-principles-track.mjs` (eigenes Skript mit eigenem Stichtag) → `npm run build`; der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen,
+die Modulabnahme in `content/assessments-tech-tracks.json`. Der Lektionsbaukasten (`scripts/lib/lesson-builder.mjs`) kennt jetzt vier Code-Slots (`code4`). Die Beispiele (je eine „Vorher“- und eine „Nachher“-Fassung) liegen unter
+`content/examples/node-lab/src/principles/` mit 17 Tests (`tests/principles-*.test.js`, Teil von `npm test` im node-lab). Nicht geprüft: andere Sprachen, Urheber und Jahreszahlen im Hintergrundtext (aus allgemeiner Fachliteratur, nicht gegen jede Quelle einzeln), DDD nur im Überblick.
+Bestand danach: 137 Module, 577 Lektionen, 1598+306=1904 Karten.
+
 ## Geführte Codewerkstatt
 
 30 eigene interaktive Aufgaben für JavaScript, TypeScript, Vue, PHP, Laravel,
