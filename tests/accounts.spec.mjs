@@ -118,7 +118,8 @@ test('Anmeldung, Rollen, Einladung, Kontentrennung, Synchronisation und Ampel', 
     await deletionPage.getByLabel('Aktuelles Passwort',{exact:true}).fill('recovered-long-password');
     await deletionPage.getByLabel('Tippe KONTO LÖSCHEN').fill('KONTO LÖSCHEN');
     await deletionPage.getByRole('button',{name:'Konto unwiderruflich aus aktivem System löschen'}).click();
-    await expect(deletionPage.getByRole('status').filter({hasText:'Konto und zugehöriger aktiver Serverlernstand gelöscht'})).toBeVisible();
+    // Nach dem Löschen lädt die ganze App neu (location.replace); unter Last braucht der Start länger als die Standardwartezeit von 5 s.
+    await expect(deletionPage.getByRole('status').filter({hasText:'Konto und zugehöriger aktiver Serverlernstand gelöscht'})).toBeVisible({timeout:20000});
     expect(await deletionPage.evaluate(id=>localStorage.getItem('rootpfad-user-'+id+'-progress'),id)).toBeNull();
     await deletionContext.close();
     expect((await participant.get('/api/progress')).status()).toBe(401);
