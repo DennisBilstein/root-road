@@ -27,4 +27,6 @@ Das Format der Beträge: „12,50“ oder „1.249,90“ (Dezimalkomma, optional
 
 ## Getestet mit
 
-Python 3.12.15, 3.13.16 und 3.14.6 (macOS). Die Ausgaben der Lektionen stammen aus Läufen mit 3.14.6. Nicht getestet: Python 3.15 (am 15.11.2026 die aktuelle Version laut python.org), Windows und Linux.
+Python 3.12.15, 3.13.16 und 3.14.6 (macOS) sowie 3.15.2 im Container `python:3.15-slim` (Linux, 16.11.2026: alle 27 Tests und alle fünf Demo-Skripte, Ausgaben gleich wie unter 3.14). Die Ausgaben der Lektionen stammen aus Läufen mit 3.14.6. Nicht getestet: Windows und Linux außerhalb des Containers.
+
+Befehl für 3.15 ohne Installation: `docker run --rm -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD":/lab:ro -w /lab python:3.15-slim python3 -m unittest`.

@@ -286,7 +286,7 @@ Modul `py-m1` (Werte und Zahlen, Datenstrukturen, Dateien/Kodierung/CSV/JSON, Fe
 ein getestetes Kommandozeilenprojekt). Quelle: `content/tech-tracks/python-grundlagen.mjs` → `node scripts/prepare-platform-tracks.mjs` → `npm run build`;
 der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen. Das Lab `content/examples/python-lab/` nutzt nur die Standardbibliothek
 (`python3 -m unittest`, 27 Tests, auch in `npm run test:labs`; Demo-Skripte `demos/0N_*.py` liefern die Ausgaben der Lektionen). Getestet mit Python 3.12.15, 3.13.16 und 3.14.6
-(Ausgaben aus 3.14.6). Nicht geprüft: Python 3.15 (laut python.org am 15.11.2026 die aktuelle Version), Windows, Linux, `pip`/`venv`/Packaging, Typprüfer.
+(Ausgaben aus 3.14.6). Python 3.15.2 lief am 16.11.2026 im Container `python:3.15-slim` (27 Tests und 5 Demo-Skripte, Ausgaben gleich wie unter 3.14; mit ISO-8859-1-Locale nutzt `open` unter 3.14.10 ISO-8859-1 und unter 3.15.2 UTF-8). Nicht geprüft: Windows, Linux außerhalb des Containers, `pip`/`venv`/Packaging, Typprüfer.
 
 **Programmierprinzipien (16.11.2026):** Modul `pp-m1` mit einer Lektion (`pp-m1-l1`: KISS, DRY, YAGNI, SOLID, Separation of Concerns, Law of Demeter, Komposition vor Vererbung, Fail Fast, geringste Überraschung und DDD im Überblick), neuer Pfad `prinzipien`.
 Quelle: `content/tech-tracks/programmierprinzipien.mjs` → `node scripts/prepare-principles-track.mjs` (eigenes Skript mit eigenem Stichtag) → `npm run build`; der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen,

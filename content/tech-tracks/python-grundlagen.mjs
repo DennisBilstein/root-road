@@ -47,7 +47,7 @@ export const module = {
 };
 
 const prerequisites = 'Grundkenntnisse in der Kommandozeile (Modul „Linux & Shell“) und eine installierte Python-Version (python3 --version). Programmiererfahrung in einer anderen Sprache hilft, ist aber nicht nötig.';
-const verification = (what, notTested) => `Geprüft wurde mit dem Python-Lab (Python ${pythonVersion} auf macOS; die ${unittestCount} Tests liefen zusätzlich mit 3.12.15 und 3.13.16): ${what} Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: ${notTested} Am 15.11.2026 ist laut python.org Python 3.15 die aktuelle Version; sie war lokal nicht installiert.`;
+const verification = (what, notTested) => `Geprüft wurde mit dem Python-Lab (Python ${pythonVersion} auf macOS; die ${unittestCount} Tests liefen zusätzlich mit 3.12.15 und 3.13.16): ${what} Jede Ausgabe stammt aus einem echten Lauf. Nicht geprüft: ${notTested} Python 3.15 (am 15.11.2026 laut python.org die aktuelle Version) lief am 16.11.2026 nur im Container python:3.15-slim (Version 3.15.2, Linux): alle Tests und die fünf Demo-Skripte lieferten dieselben Ergebnisse wie unter 3.14.`;
 
 export const lessons = [
   {
@@ -77,7 +77,7 @@ Außerdem zählt die „Wahrheit“ von Werten: Leere Dinge (0, "", [], None) ge
 
 Was gilt für == und is? == fragt, ob zwei Werte gleich sind; is fragt, ob es dasselbe Objekt ist. Für Vergleiche von Inhalten nimmst du ==. is gehört fast nur zu None (x is None).
 
-Zum Stand: Das Lab wurde mit Python 3.12, 3.13 und 3.14 geprüft; die Ausgaben der Lektionen stammen aus 3.14.6. Laut python.org war am 15.11.2026 Python 3.15 die aktuelle Version, die hier nicht lief. Sprachkern und die genutzten Teile der Standardbibliothek sind stabil; Fehlermeldungen und Standardverhalten (zum Beispiel die Kodierung bei open, Lektion 3) können sich zwischen Versionen unterscheiden. Prüfe bei Zweifeln die Dokumentation deiner Version.`,
+Zum Stand: Das Lab wurde mit Python 3.12, 3.13 und 3.14 geprüft; die Ausgaben der Lektionen stammen aus 3.14.6. Laut python.org war am 15.11.2026 Python 3.15 die aktuelle Version; sie lief am 16.11.2026 im Container (3.15.2) mit denselben Ergebnissen. Sprachkern und die genutzten Teile der Standardbibliothek sind stabil; Fehlermeldungen und Standardverhalten (zum Beispiel die Kodierung bei open, Lektion 3) können sich zwischen Versionen unterscheiden. Prüfe bei Zweifeln die Dokumentation deiner Version.`,
     terms: [
       { term: 'Objekt', text: 'Alles in Python ist ein Objekt mit Typ und Wert; Namen verweisen auf Objekte.' },
       { term: 'veränderlich (mutable)', text: 'Ein Objekt, das sich nach dem Anlegen ändern lässt, zum Beispiel Liste, Wörterbuch, Menge.' },
@@ -224,7 +224,7 @@ Das Modul csv zerlegt Zeilen; es versteht Trennzeichen (bei uns das Semikolon), 
       'Vergleiche json.dumps ohne und mit ensure_ascii=False: Standardmäßig steht „ü“ als \\u00fc im Text; mit False bleibt es lesbar. Beide Schreibweisen sind gültiges JSON und werden gleich zurückgelesen.',
       'Beachte das Verhalten bei ungültigem JSON: json.loads löst JSONDecodeError mit Zeile und Spalte aus; fange ihn dort ab, wo du Eingaben liest.',
     ],
-    background: `Warum nicht einfach den Standard nehmen? Ohne encoding hängt das Ergebnis vom Computer ab. Bis Python 3.14 richtet sich open bei ausgeschaltetem UTF-8-Modus nach der Spracheinstellung des Systems; ein Skript, das auf dem Mac läuft, kann unter Windows Umlaute zerstören. Laut Dokumentation ist UTF-8 ab Python 3.15 der Standard (PEP 686). Die Dokumentation von 3.15 ist am 15.11.2026 die aktuelle; das Lab lief hier nicht mit 3.15, sondern mit 3.12 bis 3.14. Gib die Kodierung trotzdem immer an: Der Code läuft dann auf allen Versionen gleich und zeigt die Absicht.
+    background: `Warum nicht einfach den Standard nehmen? Ohne encoding hängt das Ergebnis vom Computer ab. Bis Python 3.14 richtet sich open bei ausgeschaltetem UTF-8-Modus nach der Spracheinstellung des Systems; ein Skript, das auf dem Mac läuft, kann unter Windows Umlaute zerstören. Laut Dokumentation ist UTF-8 ab Python 3.15 der Standard (PEP 686). Das ließ sich am 16.11.2026 in Containern bestätigen: Mit einer ISO-8859-1-Spracheinstellung nutzte open unter Python 3.14.10 ISO-8859-1 und unter 3.15.2 UTF-8. Das Lab selbst lief mit 3.12 bis 3.15. Gib die Kodierung trotzdem immer an: Der Code läuft dann auf allen Versionen gleich und zeigt die Absicht.
 
 Was tun mit unbekannten Dateien? Lies sie als Bytes, probiere bekannte Kodierungen und melde einen Fehler, wenn keine passt. Ersetzen mit errors="replace" verbirgt Probleme und gehört in Anzeigen, nicht in Datenverarbeitung.
 
@@ -276,7 +276,7 @@ CSV ist weniger einheitlich, als es scheint: Trennzeichen (Komma oder Semikolon)
       docs('Unicode-HOWTO', 'https://docs.python.org/3/howto/unicode.html'),
       docs('open (Kodierung)', 'https://docs.python.org/3/library/functions.html#open'),
     ],
-    verification: verification('Pfadzerlegung, Schreiben und Lesen mit Umlauten, CSV mit Semikolon im Feld, falsche Kodierung (Fehler und stilles Fehlverhalten), JSON mit und ohne ensure_ascii und das Einlesen mit und ohne BOM durch die Tests.', 'Windows-Pfade und -Zeilenenden, sehr große Dateien und andere Kodierungen als UTF-8 und Latin-1; Python 3.15 mit UTF-8 als Standard.'),
+    verification: verification('Pfadzerlegung, Schreiben und Lesen mit Umlauten, CSV mit Semikolon im Feld, falsche Kodierung (Fehler und stilles Fehlverhalten), JSON mit und ohne ensure_ascii und das Einlesen mit und ohne BOM durch die Tests.', 'Windows-Pfade und -Zeilenenden, sehr große Dateien und andere Kodierungen als UTF-8 und Latin-1.'),
   },
   {
     id: 'py-m1-l4', title: 'Fehler und Ausnahmen: abfangen, verketten und aufräumen', minutes: 35,
@@ -456,7 +456,7 @@ Mit unittest aus der Standardbibliothek schreibst du Tests als Klassen mit Metho
 
 Was gehört nicht in ein Skript? Alles, was eine Datei oder das Netz berührt, sollte man in einem Test nicht ungeprüft anfassen. Das Lab nutzt temporäre Ordner (tempfile) und aufgezeichnete Daten, nicht echte. Für Fremdsysteme würde man Ersatzobjekte (unittest.mock) verwenden; das Lab brauchte sie nicht.
 
-Zum Stand: pip, venv und das Packaging (pyproject.toml, Bauwerkzeuge) wurden hier nicht ausgeführt, weil dafür Downloads nötig wären, und sind in dieser Lektion nur beschrieben. Die offizielle Anleitung zu venv steht in der Dokumentation. Außerdem laufen die Tests des Labs unter Python 3.12 bis 3.14; unter 3.15 (am 15.11.2026 aktuell) wurden sie nicht ausgeführt.`,
+Zum Stand: pip, venv und das Packaging (pyproject.toml, Bauwerkzeuge) wurden hier nicht ausgeführt, weil dafür Downloads nötig wären, und sind in dieser Lektion nur beschrieben. Die offizielle Anleitung zu venv steht in der Dokumentation. Außerdem laufen die Tests des Labs unter Python 3.12 bis 3.15 (3.15.2 im Container, am 16.11.2026).`,
     terms: [
       { term: 'Exit-Code', text: 'Zahl, mit der ein Prozess endet; 0 bedeutet Erfolg, alles andere einen Fehler.' },
       { term: 'argparse', text: 'Standardmodul für Kommandozeilenargumente samt Hilfe und Fehlermeldungen.' },
@@ -504,6 +504,6 @@ Zum Stand: pip, venv und das Packaging (pyproject.toml, Bauwerkzeuge) wurden hie
       docs('Module und Pakete (Tutorial)', 'https://docs.python.org/3/tutorial/modules.html'),
       docs('sys.exit und Exit-Codes', 'https://docs.python.org/3/library/sys.html#sys.exit'),
     ],
-    verification: verification(`die Kommandozeile mit Exit-Codes 0, 1 und 2, alle ${unittestCount} Tests (Normal-, Grenz- und Fehlerfälle) und Mutationsproben auf die Kernlogik (alle erkannt).`, 'pip, venv, Packaging und Veröffentlichung, unittest.mock, Windows und Linux sowie Python 3.15.'),
+    verification: verification(`die Kommandozeile mit Exit-Codes 0, 1 und 2, alle ${unittestCount} Tests (Normal-, Grenz- und Fehlerfälle) und Mutationsproben auf die Kernlogik (alle erkannt).`, 'pip, venv, Packaging und Veröffentlichung, unittest.mock, Windows und Linux außerhalb des Containers.'),
   },
 ];
