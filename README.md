@@ -2,6 +2,8 @@
 
 > Seit 14.11.2026 heißt die Plattform „Root Road“ (früher ROOTPFAD). Geändert wurden nur sichtbare Namen. Technische Kennungen bleiben bewusst, damit gespeicherte Lernstände und Konten gültig bleiben: `localStorage`-Schlüssel `rootpfad-*`, Datenbankdatei `rootpfad.sqlite`, Export-Format `rootpfad-account-export-v1`, Header `X-Rootpfad-User`, Umgebungsvariablen `ROOTPFAD_*`, Java-Pakete `de.rootpfad.lab`. Seit 15.11.2026 heißen das npm-Paket in `package.json` und das GitHub-Repository `root-road` (`github.com/DennisBilstein/root-road`; der alte Name leitet weiter, der lokale Ordner heißt weiter `rootpfad`).
 
+Aktueller Gesamtbestand (16.11.2026): **137 Module, 577 Lektionen, 1.598 Lektionsfragen + 306 Zusatzkarten = 1.904 Karten**; die Bestandsangaben in den Abschnitten unten sind Zwischenstände.
+
 ## Qualität: Start, Header, Caching · 13.11.2026
 
 - `index.html` hat einen gültigen `<head>` (Titel, Meta-Description, `utf-8`), die Startseite eine `h1` und einen Footer mit Link zu Impressum und Datenschutz (`#/recht`).
@@ -84,7 +86,7 @@ Lizenzhinweise: Vue-Dokumentation steht unter CC BY 4.0, Zod und TanStack Query 
 kopiert, Texte sind eigene Zusammenfassungen mit Quellenlinks. JEP- und Oracle-Texte sind nur verlinkt.
 Nicht geprüft: unabhängige Fachfreigabe, echte Browser-/Screenreader-Bedienung des Dialogs.
 
-Aktueller Bestand: **121 Module, 500 Lektionen, 1.367 Lektionsfragen + 306 Zusatzkarten = 1.673 Karten**.
+Bestand nach dieser Vertiefung (Stand damals): **121 Module, 500 Lektionen, 1.367 Lektionsfragen + 306 Zusatzkarten = 1.673 Karten**.
 
 ## ABAP / BTP / S/4HANA / Fiori · Vertiefung 08.11.2026
 
