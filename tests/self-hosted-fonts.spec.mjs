@@ -15,8 +15,8 @@ test('Schriften kommen vom eigenen Server und sind einsatzbereit', async ({ page
   page.on('response', (response) => { if (/\.woff2$/.test(response.url())) fontFiles.push({ url: new URL(response.url()).pathname, status: response.status(), type: response.headers()['content-type'] }); });
   await page.goto('/'); await page.waitForFunction(() => window.RP_APP_READY);
   const loaded = await page.evaluate(async () => {
-    await Promise.all(['16px "IBM Plex Sans"', '600 16px "IBM Plex Sans"', '600 16px "Source Serif 4"', '14px "IBM Plex Mono"'].map((font) => document.fonts.load(font, 'Äöüß')));
-    return ['16px "IBM Plex Sans"', '600 16px "Source Serif 4"', '14px "IBM Plex Mono"'].map((font) => document.fonts.check(font, 'Äöüß'));
+    await Promise.all(['16px "IBM Plex Sans"', '600 16px "IBM Plex Sans"', '600 16px "Root Road Serif"', '14px "IBM Plex Mono"'].map((font) => document.fonts.load(font, 'Äöüß')));
+    return ['16px "IBM Plex Sans"', '600 16px "Root Road Serif"', '14px "IBM Plex Mono"'].map((font) => document.fonts.check(font, 'Äöüß'));
   });
   expect(loaded).toEqual([true, true, true]);
   expect(fontFiles.length).toBeGreaterThan(0);

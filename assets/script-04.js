@@ -547,7 +547,7 @@ function rbErfolgskarte(){
   g.fillStyle = '#565f89'; g.font = '500 22px "IBM Plex Mono", monospace';
   g.fillText('AP1 · Fachinformatik Anwendungsentwicklung', 80, 138);
   g.font = '120px system-ui, "Apple Color Emoji", "Segoe UI Emoji"'; g.fillText(lp.cur.icon, 80, 320);
-  g.fillStyle = '#c0caf5'; g.font = '700 64px "Source Serif 4", Georgia, serif';
+  g.fillStyle = '#c0caf5'; g.font = '700 64px "Root Road Serif", Georgia, serif';
   g.fillText(lp.cur.name, 240, 290);
   g.fillStyle = '#bb9af7'; g.font = '600 26px "IBM Plex Mono", monospace';
   g.fillText('Level ' + lp.cur.lvl + ' · ' + (state.xp || 0).toLocaleString('de-DE') + ' XP', 244, 336);
