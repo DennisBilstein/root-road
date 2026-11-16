@@ -824,10 +824,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 @media (max-width:980px){ .progress-pill{display:none;} }
 @media (max-width:900px){
   .hamburger{display:grid; place-items:center;}
-  .sidebar{position:fixed; top:0; bottom:0; left:0; z-index:35; transform:translateX(-100%);
-    transition:transform .24s cubic-bezier(.22,1,.36,1); box-shadow:var(--sh-lg);
+  /* Geschlossen: unsichtbar statt nur verschoben. Sonst ragt der Schatten in den Bildschirm und die Menüeinträge bleiben per Tab erreichbar. */
+  .sidebar{position:fixed; top:0; bottom:0; left:0; z-index:35; transform:translateX(-100%); visibility:hidden;
+    transition:transform .24s cubic-bezier(.22,1,.36,1), visibility 0s .24s;
     padding-top:calc(var(--s4) + env(safe-area-inset-top,0px)); width:min(320px,86vw);}
-  .sidebar.open{transform:translateX(0);}
+  .sidebar.open{transform:translateX(0); visibility:visible; box-shadow:var(--sh-lg);
+    transition:transform .24s cubic-bezier(.22,1,.36,1), visibility 0s;}
   .scrim.open{display:block;}
   main.content{padding:var(--s5) var(--s4) var(--s7);}
   .nav-btn{max-width:100%; flex:1 1 100%;}
@@ -836,7 +838,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 }
 @media (max-width:620px){
   body{font-size:14.5px;}
-  .lvl-chip .lc-name{display:none;}
+  .lvl-chip .lc-name{display:none;} /* Levelname erst ab 460 px, s. u.: davor fehlt in der Kopfzeile der Platz */
   .topbar{padding:0 var(--s4); gap:var(--s2);}
   .today-panel, .ex-card, .srs-card{padding:var(--s4);}
   .toast-host{left:16px; right:16px; align-items:stretch;}
@@ -1031,7 +1033,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .mobilbar{display:none;}
 @media (max-width:860px){
   .mobilbar{
-    min-height:84px;
     display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60;
     background:var(--surface); border-top:1px solid var(--border);
     padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
@@ -1046,6 +1047,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
   .mb .punkt{position:absolute; transform:translate(12px,-3px); width:7px; height:7px;
     border-radius:50%; background:var(--accent2);}
   .main{padding-bottom:84px;}
+  .sidebar{padding-bottom:calc(77px + env(safe-area-inset-bottom,0px));} /* letzter Eintrag nicht hinter der Leiste */
   .heute-kopf{gap:var(--s4);}
   .ziel-ring{width:88px; height:88px;}
 }
@@ -1196,7 +1198,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 
 /* ---------- Kopfzeile: Levelchip ruhiger ---------- */
 .lvl-chip{border-radius:var(--r-full); padding:5px 12px 5px 8px;}
-.lvl-chip .lc-lvl{font-variant-numeric:tabular-nums;}
+.lvl-chip .lc-lvl{font-variant-numeric:tabular-nums; white-space:nowrap;}
+/* Schmale Handys: engere Kopfzeile, damit „Lv 1“ nicht auf zwei Zeilen umbricht. */
+@media (max-width:360px){
+  .topbar{gap:4px; padding-inline:12px;}
+  .topbar .brand{gap:6px;}
+  .topbar-right{gap:4px;}
+  .lvl-chip{gap:4px; padding:5px 8px 5px 6px;}
+}
+/* Ab 460 px ist neben der Wortmarke Platz für den Levelnamen; zu lange Namen werden gekürzt. */
+@media (min-width:460px) and (max-width:620px){
+  .lvl-chip .lc-name{display:inline; max-width:12ch; overflow:hidden; text-overflow:ellipsis; line-height:1.2;}
+}
 .xp-track{height:5px;}
 .xp-fill{background:var(--accent);}
 
