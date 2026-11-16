@@ -42,6 +42,8 @@ const headers = [
   rule('/index.html', document),
   rule(sandboxPath, { 'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': sandboxPolicy }),
   rule('/assets/fonts/*', { 'Cache-Control': 'public, max-age=2592000' }),
+  // Netlify kennt .webmanifest nicht und würde application/octet-stream senden.
+  rule('/assets/manifest.webmanifest', { 'Content-Type': 'application/manifest+json' }),
 ].join('\n');
 fs.writeFileSync(path.join(out, '_headers'), headers);
 

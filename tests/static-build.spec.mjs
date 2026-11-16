@@ -38,6 +38,7 @@ test('_headers enthält dieselben Richtlinien wie der Server, je Pfad genau eine
   expect(rules[sandboxPath]['content-security-policy']).toBe(sandboxPolicy);
   expect(rules[sandboxPath]['x-frame-options']).toBe('SAMEORIGIN');
   expect(rules['/*']['permissions-policy']).toBe(permissionsPolicy);
+  expect(rules['/assets/manifest.webmanifest']['content-type']).toBe('application/manifest+json');
   expect(rules['/*']['content-security-policy']).toBeUndefined();
   // Gegenprobe: Der Server sendet dieselben Werte.
   const served = (await request.get('/')).headers();
