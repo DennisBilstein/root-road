@@ -19555,10 +19555,25 @@ function renderContentIntern(){
   el.innerHTML = html;
 }
 
-function openDrawer(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
-function closeDrawer(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+// Mobiles Menü als Overlay: Zustand für Screenreader (aria-expanded), Rest der Seite währenddessen nicht bedienbar (inert),
+// Fokus wandert ins Menü, Escape oder erneuter Klick auf den Hamburger schließt es.
+function setDrawer(open){
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('scrim').classList.toggle('open', open);
+  document.getElementById('hamburger').setAttribute('aria-expanded', open ? 'true' : 'false');
+  ['content','rail','mobilbar','dockKnopf'].forEach(function(id){ var el = document.getElementById(id); if(el) el.inert = open; });
+  var footer = document.querySelector('.site-footer'); if(footer) footer.inert = open;
+}
+function openDrawer(){ setDrawer(true); var first = document.querySelector('#sidebar button, #sidebar a[href]'); if(first) first.focus(); }
+function closeDrawer(){ setDrawer(false); }
+document.addEventListener('keydown', function(ev){
+  if(ev.key !== 'Escape' || !document.getElementById('sidebar').classList.contains('open') || kp.offen) return;
+  closeDrawer(); document.getElementById('hamburger').focus();
+});
+// Wird das Fenster so breit, dass die Seitenleiste fest steht, darf das Overlay nicht „offen“ hängen bleiben.
+window.matchMedia('(min-width:901px)').addEventListener('change', function(ev){ if(ev.matches) closeDrawer(); });
 
-document.getElementById('hamburger').onclick = openDrawer;
+document.getElementById('hamburger').onclick = function(){ if(document.getElementById('sidebar').classList.contains('open')) closeDrawer(); else openDrawer(); };
 document.getElementById('rechtBtn').onclick = function(){ selectLesson('recht'); };
 document.getElementById('scrim').onclick = closeDrawer;
 document.getElementById('navIntro').onclick = function(){ selectLesson('intro'); };

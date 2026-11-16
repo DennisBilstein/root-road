@@ -2287,6 +2287,60 @@ td small { display:block; color:var(--text-2); }
 #content code:not(pre code){background:#24283b;color:#c0caf5;border-color:#414868}
 #content textarea.mono,#rpCodeEditor{background:#1a1b26;color:#c0caf5;caret-color:#c0caf5}
 .tn-c{color:#a9b1d6;font-style:italic}.tn-k{color:#bb9af7}.tn-s{color:#9ece6a}.tn-n{color:#ff9e64}.tn-f,.tn-key{color:#7aa2f7}.tn-t,.tn-cls{color:#7dcfff}.tn-v{color:#c0caf5}.tn-this,.tn-tag{color:#f7768e}.tn-p{color:#73daca}.tn-o{color:#89ddff}.tn-a{color:#bb9af7}.tn-d{color:#e0af68}.tn-const{color:#ff9e64}
-.rq-preflight{margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:8px}.rq-preflight label{display:block;font-weight:600}.rq-preflight textarea{box-sizing:border-box;width:100%;min-height:76px;padding:10px;font:inherit;background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:6px}.rq-preflight select{min-height:44px;font:inherit;background:var(--surface);color:var(--text);margin:8px 0}.rq-review{margin-top:12px;padding:12px;background:var(--surface-2);border-radius:6px}.rq-review li{margin-bottom:8px}
+.rq-preflight{margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:8px}.rq-preflight label{display:block;font-weight:600}.rq-preflight textarea{box-sizing:border-box;width:100%;min-height:76px;padding:10px;font:inherit;background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:6px}.rq-preflight select{min-height:44px;font:inherit;background:var(--surface);color:var(--text);margin:8px 0;padding:8px 12px;border:1px solid var(--border-strong);border-radius:6px}.rq-review{margin-top:12px;padding:12px;background:var(--surface-2);border-radius:6px}.rq-review li{margin-bottom:8px}
 @media print{#content pre,#content code{background:white!important;color:black!important}.rp-tokyo span{color:inherit!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* device.css */
+/* Geräteanpassungen für Handys. Steht als letztes Stylesheet im Bündel (scripts/build-css-bundle.mjs) und überstimmt deshalb Einzelregeln. */
+
+/* Safe-Area links/rechts (Querformat mit Aussparung; die Seite nutzt viewport-fit=cover): Inhalt nicht unter die Notch.
+   Fest positionierte Elemente brauchen den Abstand einzeln, sie folgen dem Padding von :root nicht. Ohne Aussparung sind alle Werte 0. */
+:root{padding-left:env(safe-area-inset-left,0px); padding-right:env(safe-area-inset-right,0px);}
+@media (max-width:900px){
+  .sidebar{padding-left:calc(var(--s3) + env(safe-area-inset-left,0px));}
+}
+@media (max-width:860px){
+  .mobilbar{padding-left:max(4px,env(safe-area-inset-left,0px)); padding-right:max(4px,env(safe-area-inset-right,0px));}
+  .dock-knopf{right:calc(14px + env(safe-area-inset-right,0px));}
+  .dock{left:calc(8px + env(safe-area-inset-left,0px)); right:calc(8px + env(safe-area-inset-right,0px));}
+}
+@media (max-width:620px){
+  .toast-host{left:calc(16px + env(safe-area-inset-left,0px)); right:calc(16px + env(safe-area-inset-right,0px));}
+}
+
+/* Nur für Geräte mit grobem Zeiger (Finger). */
+@media (pointer:coarse){
+  /* iOS-Safari zoomt beim Fokussieren eines Feldes unter 16 px die Seite heran. */
+  :is(input,select,textarea):not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=submit],[type=button],[type=reset],[type=image]){
+    font-size:max(16px,1em);
+  }
+  #rpPathSelect{font-size:max(16px,1em);} /* ID-Selektor in learning-paths.css ist spezifischer als die Regel darüber */
+  /* Zielfläche mindestens 44 × 44 px, ohne das Aussehen zu ändern: eine unsichtbare Fläche um kleine Knöpfe in der Kopfzeile und im Code-Block. */
+  .hamburger, .lvl-chip, .rb-teilen-knopf, .copy-btn{position:relative;}
+  .hamburger::after, .lvl-chip::after, .rb-teilen-knopf::after, .copy-btn::after{
+    content:""; position:absolute; top:50%; left:50%; width:max(100%,44px); height:max(100%,44px); transform:translate(-50%,-50%);}
+  /* Knöpfe im Textfluss werden dagegen wirklich 44 px hoch. */
+  .q-weiter, .ex-btn, .check-btn, .filter-btn, .complete-toggle, .lab-mini{min-height:44px;}
+  .site-footer a{padding-block:13px;}
+  /* Der Kopieren-Knopf sitzt am oberen Rand des Code-Blocks (overflow:hidden): Kopfzeile so hoch, dass seine 44 px Trefferfläche ganz hineinpassen. */
+  .code-head{padding-block:9px;}
+}
+
+/* Kleinste Beschriftungen (Typ-Labels, Badges, Code-Sprache, Tab-Leiste) waren 10 bis 11 px groß; auf dem Handy mindestens 12 px. */
+@media (max-width:620px){
+  .lab-mini .m-typ, .badge, .hk-oben, .code-lang, .lab-liste-gruppe, .lab-abschnitt, .today-item .ti-label, .nav-btn .lbl, .mb, .lvl-chip .lc-lvl, .copy-btn,
+  .q-fuss > span, .stat-tile .lbl, .breadcrumb, .heute-datum, .ring-mitte .ring-unter, .callout-label{font-size:.75rem;}
+  /* Mit der größeren Schrift sind lange Badges („Lernstand: … · Kriterien und Modul-Bosse“) breiter als der Bildschirm: umbrechen statt die Seite aufzuweiten. */
+  .badge{white-space:normal; overflow-wrap:anywhere;}
+}
+
+/* Niedriges Querformat (Handy gedreht): Kopfzeile und untere Leiste brauchen weniger Höhe, damit mehr Platz zum Lesen bleibt. */
+@media (orientation:landscape) and (max-height:500px){
+  :root{--topbar-h:48px;}
+}
+@media (max-width:860px) and (orientation:landscape) and (max-height:500px){
+  /* Symbol und Beschriftung nebeneinander statt untereinander. */
+  .mobilbar{min-height:0; padding-top:2px; padding-bottom:calc(2px + env(safe-area-inset-bottom,0px));}
+  .mb{flex-direction:row; justify-content:center; align-items:center; gap:6px; padding:4px 2px; min-height:44px;}
+}

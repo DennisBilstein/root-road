@@ -3,7 +3,7 @@
 // admin.html lädt weiter einzelne Dateien; die Quelldateien bleiben bestehen. Nach Änderungen an einer Quelldatei: npm run build.
 import fs from 'node:fs';
 
-const sources = ['style-01', 'style-02', 'fonts', 'learning-paths', 'weak-spots', 'practice-puzzles', 'syntax-glossary', 'lesson-videos', 'admin', 'guided-practice', 'code-theme'];
+const sources = ['style-01', 'style-02', 'fonts', 'learning-paths', 'weak-spots', 'practice-puzzles', 'syntax-glossary', 'lesson-videos', 'admin', 'guided-practice', 'code-theme', 'device'];
 const known = new Set([...sources, 'app']);
 const unknown = fs.readdirSync('assets').filter((name) => name.endsWith('.css') && !known.has(name.slice(0, -4)));
 if (unknown.length) throw new Error(`Neue Stylesheets müssen in scripts/build-css-bundle.mjs eingeordnet werden: ${unknown.join(', ')}`);

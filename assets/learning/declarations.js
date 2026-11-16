@@ -4159,8 +4159,15 @@ function renderContentIntern(){
 
   el.innerHTML = html;
 }
-function openDrawer(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
-function closeDrawer(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+function setDrawer(open){
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('scrim').classList.toggle('open', open);
+  document.getElementById('hamburger').setAttribute('aria-expanded', open ? 'true' : 'false');
+  ['content','rail','mobilbar','dockKnopf'].forEach(function(id){ var el = document.getElementById(id); if(el) el.inert = open; });
+  var footer = document.querySelector('.site-footer'); if(footer) footer.inert = open;
+}
+function openDrawer(){ setDrawer(true); var first = document.querySelector('#sidebar button, #sidebar a[href]'); if(first) first.focus(); }
+function closeDrawer(){ setDrawer(false); }
 function dockAnsichtName(){
   var l = lessonById(state.currentId);
   if(l){
