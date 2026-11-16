@@ -293,7 +293,7 @@ der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` e
 **Programmierprinzipien (16.11.2026):** Modul `pp-m1` mit einer Lektion (`pp-m1-l1`: KISS, DRY, YAGNI, SOLID, Separation of Concerns, Law of Demeter, Komposition vor Vererbung, Fail Fast, geringste Überraschung und DDD im Überblick), neuer Pfad `prinzipien`.
 Quelle: `content/tech-tracks/programmierprinzipien.mjs` → `node scripts/prepare-principles-track.mjs` (eigenes Skript mit eigenem Stichtag) → `npm run build`; der Pfad ist in `assets/learning-paths.js` und `tests/learning-paths.spec.mjs` eingetragen,
 die Modulabnahme in `content/assessments-tech-tracks.json`. Der Lektionsbaukasten (`scripts/lib/lesson-builder.mjs`) kennt jetzt vier Code-Slots (`code4`). Die Beispiele (je eine „Vorher“- und eine „Nachher“-Fassung) liegen unter
-`content/examples/node-lab/src/principles/` mit 17 Tests (`tests/principles-*.test.js`, Teil von `npm test` im node-lab). Urheber und Jahreszahlen im Hintergrundtext am 16.11.2026 gegen die verlinkten Quellen gegengelesen. Nicht geprüft: andere Sprachen, der Wortlaut der Bücher, DDD nur im Überblick.
+`content/examples/node-lab/src/principles/` mit 17 Tests (`tests/principles-*.test.js`, Teil von `npm test` im node-lab). Urheber und Jahreszahlen im Hintergrundtext am 16.11.2026 gegen die verlinkten Quellen gegengelesen. Redaktionell gegengelesen am 16.11.2026 (Sprache, Beispiele gegen den Code, Übung 2 ersetzt). Nicht geprüft: andere Sprachen, der Wortlaut der Bücher, DDD nur im Überblick.
 Bestand danach: 137 Module, 577 Lektionen, 1598+306=1904 Karten.
 
 ## Geführte Codewerkstatt

@@ -48,7 +48,7 @@ test('I: ein kleines Gerät erfüllt den großen Vertrag nicht, aber den kleinen
 test('D: mit Injektion lässt sich der Dienst ohne echten Versand prüfen', () => {
   const sentBefore = SmtpMailer.sent;
   new OrderServiceCoupled().confirm({ id: 7, email: 'a@example.org' });
-  assert.equal(SmtpMailer.sent, sentBefore + 1); // der Test löst echten Versand aus
+  assert.equal(SmtpMailer.sent, sentBefore + 1); // der Test löst den Versand aus (hier als Zähler simuliert)
 
   const outbox = [];
   const spy = { send: (to, text) => outbox.push({ to, text }) };

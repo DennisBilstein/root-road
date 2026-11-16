@@ -68,7 +68,7 @@ export function printAll(device, documents) {
 }
 
 // ---- D: Dependency Inversion, von Abstraktionen abhängen, nicht von konkreten Klassen ----
-// Vorher: Der Dienst erzeugt seinen Mailversand selbst und lässt sich nicht ohne echten Versand prüfen.
+// Vorher: Der Dienst erzeugt seinen Mailversand selbst und lässt sich nicht ohne Versand prüfen (hier zählt SmtpMailer.sent die Aufrufe).
 export class SmtpMailer {
   static sent = 0;
   send() { SmtpMailer.sent += 1; }
