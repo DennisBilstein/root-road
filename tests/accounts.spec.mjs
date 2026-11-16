@@ -2,19 +2,30 @@ import { test, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
+import net from 'node:net';
 import path from 'node:path';
 import Database from 'better-sqlite3';
 
+// Freier Port je Testlauf, damit parallele oder wiederholte Läufe nicht um denselben Port konkurrieren.
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => { const { port } = probe.address(); probe.close(() => resolve(port)); });
+  });
+}
+
 test('Anmeldung, Rollen, Einladung, Kontentrennung, Synchronisation und Ampel', async ({ browser, playwright }) => {
+  const port = await freePort();
   const dir = fs.mkdtempSync(path.join(os.tmpdir(),'rootpfad-auth-test-'));
-  const server = spawn(process.execPath,['server.mjs'],{env:{...process.env,PORT:'5189',ROOTPFAD_DATA_DIR:dir,MAIL_MODE:'development',PUBLIC_BASE_URL:'http://127.0.0.1:5189'},stdio:['ignore','pipe','pipe']});
+  const server = spawn(process.execPath,['server.mjs'],{env:{...process.env,PORT:String(port),ROOTPFAD_DATA_DIR:dir,MAIL_MODE:'development',PUBLIC_BASE_URL:`http://127.0.0.1:${port}`},stdio:['ignore','pipe','pipe']});
   try {
     const setupToken = await new Promise((resolve,reject) => {
       let log=''; const timer=setTimeout(()=>reject(Error('Testserver startet nicht')),15000);
       server.stdout.on('data',chunk=>{log+=chunk;const match=log.match(/#setup=([a-f0-9]{64})/);if(match){clearTimeout(timer);resolve(match[1]);}});
       server.once('exit',code=>{clearTimeout(timer);reject(Error('Server beendet: '+code));});
     });
-    const baseURL='http://127.0.0.1:5189';
+    const baseURL=`http://127.0.0.1:${port}`;
     const admin=await playwright.request.newContext({baseURL});
     const guest=await playwright.request.newContext({baseURL});
     expect((await guest.get('/api/progress')).status()).toBe(401);
