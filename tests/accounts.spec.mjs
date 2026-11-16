@@ -113,6 +113,8 @@ test('Anmeldung, Rollen, Einladung, Kontentrennung, Synchronisation und Ampel', 
     const deletionPage=await deletionContext.newPage();await deletionPage.goto(baseURL);await deletionPage.waitForFunction(()=>window.RP_APP_READY&&window.rpAccount);
     await deletionPage.evaluate(()=>selectLesson('account-settings'));
     await deletionPage.getByRole('button',{name:'Löschvorgang öffnen'}).click();
+    // Die Löschseite erscheint erst kurz nach dem Klick; bis dahin steht das gleichnamige Feld der Kontoeinstellungen da und würde beim Neuzeichnen verworfen.
+    await expect(deletionPage.getByRole('heading',{name:'Konto und Lernstand löschen'})).toBeVisible();
     await deletionPage.getByLabel('Aktuelles Passwort',{exact:true}).fill('recovered-long-password');
     await deletionPage.getByLabel('Tippe KONTO LÖSCHEN').fill('KONTO LÖSCHEN');
     await deletionPage.getByRole('button',{name:'Konto unwiderruflich aus aktivem System löschen'}).click();
