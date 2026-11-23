@@ -46,3 +46,18 @@ test('_headers enthält dieselben Richtlinien wie der Server, je Pfad genau eine
   expect(served['permissions-policy']).toBe(permissionsPolicy);
   expect((await request.get(sandboxPath)).headers()['content-security-policy']).toBe(sandboxPolicy);
 });
+
+// Solange Impressum oder Datenschutzerklärung Platzhalter (mark.luecke) enthalten, darf der Static-Build nicht indexierbar sein.
+// Wird noindex entfernt (Livegang), müssen vorher alle Platzhalter durch echte Angaben ersetzt sein.
+test('noindex bleibt, solange Impressum und Datenschutz Platzhalter enthalten', async ({ page }) => {
+  const noindex = /^\/\*\n(?:.*\n)*?\s+x-robots-tag:\s*noindex/im.test(read('_headers'));
+  await page.goto('/#/recht');
+  await page.waitForFunction(() => window.RP_APP_READY);
+  const placeholders = [];
+  for (const tab of ['impressum', 'datenschutz']) {
+    await page.evaluate((name) => setzeRecht(name), tab);
+    await expect(page.locator('#content h1')).toContainText('Impressum');
+    for (const text of await page.locator('#content mark.luecke').allTextContents()) placeholders.push(tab + ': ' + text);
+  }
+  if (placeholders.length) expect(noindex, 'noindex fehlt, aber Platzhalter vorhanden:\n' + placeholders.join('\n')).toBe(true);
+});
