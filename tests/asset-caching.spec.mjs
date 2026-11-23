@@ -15,7 +15,7 @@ test('index.html und Lernmanifest setzen Inhalts-Hashes ein', async ({ request }
   expect(manifestResponse.headers()['cache-control']).toBe('no-cache');
   const manifest = await manifestResponse.json();
   expect(manifest.data.length).toBeGreaterThan(0);
-  expect(Object.keys(manifest.versions).sort()).toEqual([...manifest.files,...manifest.data,...Object.values(manifest.bodies),manifest.quiz].sort());
+  expect(Object.keys(manifest.versions).sort()).toEqual([...manifest.files,...manifest.data,...Object.values(manifest.bodies),manifest.quiz,manifest.exercises].sort());
   for (const hash of Object.values(manifest.versions)) expect(hash).toMatch(/^[0-9a-f]{10}$/);
 });
 
@@ -36,6 +36,9 @@ test('Mit passendem Hash unveränderlich, sonst revalidieren', async ({ request 
   expect(bodyWithHash.status()).toBe(200);
   expect(bodyWithHash.headers()['cache-control']).toBe('public, max-age=31536000, immutable');
   expect((await request.get(`/${bodyFile}`)).headers()['cache-control']).toBe('no-cache');
+  const exerciseFile = manifest.exercises;
+  expect((await request.get(`/${exerciseFile}?v=${manifest.versions[exerciseFile]}`)).headers()['cache-control']).toBe('public, max-age=31536000, immutable');
+  expect((await request.get(`/${exerciseFile}`)).headers()['cache-control']).toBe('no-cache');
   const data = await request.get('/assets/module-assessments-data.js');
   expect(data.headers()['cache-control']).toBe('no-cache');
 });

@@ -151,6 +151,7 @@
     "pp-m1": "assets/lesson-bodies/pp-m1.json"
   },
   "quiz": "assets/quiz-data.json",
+  "exercises": "assets/exercise-data.json",
   "stats": {
     "figures": 50
   }

@@ -36,6 +36,7 @@ window.RP_BOOTING=true;
     var ids=Object.keys(window.RP_BODY_FILES||{});
     for(var i=0;i<ids.length;i+=8)await window.rpLoadBodies(ids.slice(i,i+8));
     await window.rpLoadQuizzes();
+    await window.rpLoadExercises();
   };
 })();
 /* Quizfragen (Frage, Optionen, Lösung, Erklärung) liegen in assets/quiz-data.json. Der Start kennt je Lektion nur Platzhalter ({revision} je Frage,
@@ -61,6 +62,22 @@ window.RP_BOOTING=true;
     return laufend;
   };
 })();
+/* Übungsaufgaben: Der Start kennt je Aufgabe nur ID, Stufe, Thema und Titel (lazy:true). assets/exercise-data.json liefert Aufgabentext, Tipps und Lösung;
+   rpLoadExercises setzt sie in dieselben Objekte ein (Verweise in rpCatalog bleiben gültig) und setzt RP_EXERCISES_READY. */
+(function(){
+  var laufend=null;
+  window.rpLoadExercises=function(){
+    if(window.RP_EXERCISES_READY)return Promise.resolve();
+    if(!window.RP_EXERCISE_FILE)return Promise.reject(new Error('Aufgabendaten nicht verfügbar.'));
+    if(!laufend)laufend=fetch(window.RP_EXERCISE_FILE).then(function(response){
+      if(!response.ok)throw new Error('Aufgabendaten nicht verfügbar.');return response.json();
+    }).then(function(daten){
+      rpCatalog.exercises.forEach(function(aufgabe){Object.assign(aufgabe,daten[aufgabe.id]);delete aufgabe.lazy;});
+      window.RP_EXERCISES_READY=true;
+    }).catch(function(error){laufend=null;throw error;});
+    return laufend;
+  };
+})();
 /* Konto (/api/me) und Lerndaten werden gleichzeitig geladen; erst wenn beides vorliegt, laufen die Skripte in Listenreihenfolge. */
 (async function(){
   var meFertig=(async function(){
@@ -74,20 +91,18 @@ window.RP_BOOTING=true;
   /* Alle Skripte werden gleichzeitig geladen, aber in der Reihenfolge der Liste ausgeführt (async=false bei
      dynamisch eingefügten Skripten). Das Nacheinander-Laden kostete pro Datei einen vollen Netzwerk-Rundlauf. */
   function load(src){return new Promise(function(resolve,reject){var element=document.createElement('script');element.async=false;element.src=src;element.onload=resolve;element.onerror=function(){reject(new Error('Datei konnte nicht geladen werden: '+src));};document.body.appendChild(element);});}
-  function preload(path){var link=document.createElement('link');link.rel='preload';link.as='script';link.href=path;document.head.appendChild(link);}
-  scripts.forEach(function(source){if(source.dataset.rpSrc.split('?')[0]!=='assets/script-01.js')preload(source.dataset.rpSrc);});
-  /* Manifest holen, Lernskripte vorab laden (preload) und die JSON-Datensätze abrufen. Gibt die Skriptpfade in Ausführungsreihenfolge zurück. */
+  /* Manifest holen und die JSON-Datensätze abrufen (Skripte, Manifest und Datensätze lädt der Browser schon über die Preload-Links, die der Server in index.html einsetzt). Gibt die Skriptpfade in Ausführungsreihenfolge zurück. */
   async function ladeLerndaten(){
-    var manifestResponse=await fetch('assets/learning-manifest.json',{cache:'no-cache'});if(!manifestResponse.ok)throw Error('Lernmanifest nicht verfügbar. Bitte npm run build ausführen.');
+    var manifestResponse=await fetch('assets/learning-manifest.json');if(!manifestResponse.ok)throw Error('Lernmanifest nicht verfügbar. Bitte npm run build ausführen.');
     var manifest=await manifestResponse.json();
     function mitVersion(file){return manifest.versions&&/^[0-9a-f]{10}$/.test(manifest.versions[file]||'')?file+'?v='+manifest.versions[file]:file;}
     var paths=[];
     for(var file of manifest.files){if(!/^assets\/learning\/[a-z0-9-]+\.js$/.test(file))throw Error('Ungültiger Lernskriptpfad.');paths.push(mitVersion(file));}
-    /* Die Skripte dürfen erst nach den Datensätzen laufen; heruntergeladen werden sie schon jetzt parallel. */
-    paths.forEach(preload);
+    /* Die Skripte dürfen erst nach den Datensätzen laufen; heruntergeladen sind sie über die Preload-Links bereits. */
     window.RP_LITERALS={};
     window.RP_BODY_STATS=manifest.stats||{};
     if(manifest.quiz){if(manifest.quiz!=='assets/quiz-data.json')throw Error('Ungültiger Quizpfad.');window.RP_QUIZ_FILE=mitVersion(manifest.quiz);}
+    if(manifest.exercises){if(manifest.exercises!=='assets/exercise-data.json')throw Error('Ungültiger Aufgabenpfad.');window.RP_EXERCISE_FILE=mitVersion(manifest.exercises);}
     window.RP_BODY_FILES=Object.fromEntries(Object.entries(manifest.bodies||{}).map(function(entry){if(!/^assets\/lesson-bodies\/[a-z0-9-]+\.json$/.test(entry[1]))throw Error('Ungültiger Textpfad.');return [entry[0],mitVersion(entry[1])];}));
     await Promise.all((manifest.data||[]).map(function(file){var m=/^assets\/learning-data\/literal-(\d+)\.json$/.exec(file);if(!m)throw Error('Ungültiger Datenpfad.');
       return fetch(mitVersion(file)).then(function(r){if(!r.ok)throw Error('Lerndaten nicht verfügbar. Bitte npm run build ausführen.');return r.json();}).then(function(data){window.RP_LITERALS[m[1]]=data;});}));

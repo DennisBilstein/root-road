@@ -100,13 +100,16 @@ function bumpStreak(){
 }
 function showToast(html, cls){
   var host = document.getElementById('toastHost');
-  if(!host) return;
+  if(!host) return null;
   var el = document.createElement('div');
   el.className = 'toast' + (cls ? ' ' + cls : '');
   el.innerHTML = html;
+  /* Höchstens zwei Hinweise gleichzeitig, damit sie auf dem Handy nicht den Inhalt überdecken. */
+  while(host.children.length >= 2) host.removeChild(host.firstChild);
   host.appendChild(el);
   setTimeout(function(){ el.classList.add('out'); }, 2600);
   setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 3100);
+  return el;
 }
 function xpAnzeige(basis){ return basis * XP_FAKTOR; }
 function awardXp(amount, reason, once){
@@ -119,7 +122,15 @@ function awardXp(amount, reason, once){
   state.xp = (state.xp || 0) + amount;
   bumpStreak();
   var after = rankFor(state.xp).lvl;
-  showToast('<span class="t-xp">+'+amount+' XP</span><span class="t-reason">'+esc(reason)+'</span>');
+  /* „+0 XP“ ist kein Ereignis, das einen Hinweis verdient (z. B. Prüfung ohne richtige Antwort). */
+  if(amount > 0){
+    var toast = showToast('<span class="t-xp">+'+amount+' XP</span><span class="t-reason">'+esc(reason)+'</span>');
+    /* Größere Erfolge (ab 50 XP) bekommen zusätzlich Glanz und einen kleinen Ausbruch; kleine bleiben ruhig. */
+    if(toast && amount >= xpAnzeige(25) && window.rpCelebrate){
+      toast.classList.add('celebrate');
+      window.rpCelebrate(toast, amount >= xpAnzeige(50) ? 'burst' : 'spark');
+    }
+  }
   if(state.xp >= 1000) grantBadge('xp1000');
   if(state.xp >= 3000) grantBadge('xp3000');
   if(after > before) celebrateLevel(rankFor(state.xp));
@@ -132,7 +143,8 @@ function grantBadge(id){
   var b = BADGE_BY_ID[id];
   if(!b) return;
   state.badges[id] = Date.now();
-  showToast('<span class="t-xp">'+b.icon+' Abzeichen</span><span class="t-reason">'+esc(b.name)+'</span>', 'badge');
+  var badgeToast = showToast('<span class="t-xp">'+b.icon+' Abzeichen</span><span class="t-reason">'+esc(b.name)+'</span>', 'badge');
+  if(badgeToast && window.rpCelebrate){ badgeToast.classList.add('celebrate'); window.rpCelebrate(badgeToast, 'burst'); }
   state.xp = (state.xp || 0) + xpAnzeige(25);
   updateXpBar();
   saveProgress();
@@ -176,6 +188,7 @@ function celebrateLevel(rank){
   host.appendChild(el);
   var weiter = el.querySelector('#luWeiter');
   if(weiter){ weiter.onclick = luSchliessen; weiter.focus(); }
+  if(window.rpCelebrateAfterRender) window.rpCelebrateAfterRender(el.querySelector('.lu-icon'), 'confetti');
 }
 function countLessonToday(){
   var heute = todayKey();
@@ -557,6 +570,7 @@ function toggleComplete(id, checked){
   renderSidebar();
   renderProgressPill();
   renderContent();
+  if(checked && window.rpCelebrateAfterRender) window.rpCelebrateAfterRender('.complete-toggle.on', 'burst');
 }
 function selectLesson(id){
   /* Laufende Prüfung nicht stillschweigend verwerfen. */
@@ -657,7 +671,7 @@ function renderQuiz(lesson){
   if(!lesson.quiz || !lesson.quiz.length) return '';
   var html = '<div class="quiz"><h3>Kurz-Check</h3>';
   lesson.quiz.forEach(function(q, qi){
-    html += '<fieldset class="qcard" id="q_'+lesson.id+'_'+qi+'"><legend>'+esc(q.q)+'</legend>';
+    html += '<fieldset class="qcard" id="q_'+lesson.id+'_'+qi+'"><legend><span class="qnum">Frage '+(qi+1)+' von '+lesson.quiz.length+'</span>'+esc(q.q)+'</legend>';
     q.options.forEach(function(opt, oi){
       html += '<label class="opt"><input type="radio" name="rq_'+lesson.id+'_'+qi+'" value="'+oi+'"> <span>'+esc(opt)+'</span></label>';
     });
@@ -671,6 +685,7 @@ function checkQuiz(lessonId){
   var lesson = lessonById(lessonId);
   var answeredAll = true;
   var gain = 0;
+  var rightOptions = [];
   lesson.quiz.forEach(function(q, qi){
     var sel = document.querySelector('input[name="rq_'+lessonId+'_'+qi+'"]:checked');
     var fb = document.getElementById('fb_'+lessonId+'_'+qi);
@@ -695,7 +710,9 @@ function checkQuiz(lessonId){
     /* Antwort aus der Lektion heraus plant die Karte ins Wiederholungssystem ein. */
     if(ok){ if(!state.srs[cardId]) rateCard(cardId, 2); }
     else { rateCard(cardId, 0); }
-    if(ok && !state.xpLog['quiz:' + cardId]){ state.xpLog['quiz:' + cardId] = 1; gain += 10; }
+    var firstRight = ok && !state.xpLog['quiz:' + cardId];
+    if(firstRight){ state.xpLog['quiz:' + cardId] = 1; gain += 10; }
+    if(ok) rightOptions.push({ el: optionRoot.querySelector('.opt.is-correct'), fresh: firstRight });
 
     if(ok){
       fb.className = 'qfeedback show correct';
@@ -715,6 +732,15 @@ function checkQuiz(lessonId){
     }
   });
   if(gain) awardXp(gain, 'Quizfragen richtig');
+  /* Richtige Antworten leuchten kurz auf; Funken nur bei der ersten richtigen Antwort einer Frage (höchstens drei). */
+  if(window.rpCelebrate){
+    var sparks = 0;
+    rightOptions.forEach(function(r){
+      if(!r.el) return;
+      if(r.fresh && sparks < 3){ sparks++; window.rpCelebrate(r.el, 'spark'); }
+      else window.rpCelebrate(r.el, 'none');
+    });
+  }
   if(answeredAll){
     var note = document.getElementById('quizNote_'+lessonId);
     if(note){
@@ -757,9 +783,11 @@ function toggleSolved(id){
     state.solved[id] = Date.now();
     awardXp(30, 'Übungsaufgabe gelöst', 'solved:' + id);
     checkMilestones();
+    var justSolved = true;
   }
   saveProgress();
   renderContent();
+  if(justSolved && window.rpCelebrateAfterRender) window.rpCelebrateAfterRender('#sv_' + id, 'burst');
 }
 function copyPrompt(exId){
   var ex = EXERCISES.find(function(e){ return e.id===exId; });
@@ -945,7 +973,7 @@ function ueFehlertext(code){
 }
 function ueGeloestAnzeigen(exId){
   var b = document.getElementById('sv_' + exId);
-  if(b){ b.className = 'ex-btn'; b.textContent = '✓ Gelöst'; }
+  if(b){ b.className = 'ex-btn'; b.textContent = '✓ Gelöst'; if(window.rpCelebrate) window.rpCelebrate(b, 'burst'); }
   var h = document.getElementById('exh_' + exId);
   if(h && h.getAttribute('data-ok') !== '1'){
     h.setAttribute('data-ok', '1');
@@ -1112,6 +1140,7 @@ function pickReview(i){
     awardXp(5 + ((s && s.iv >= 7) ? 3 : 0), 'Karte gewusst');
   }
   renderContent();
+  if(ok && window.rpCelebrateAfterRender) window.rpCelebrateAfterRender('.srs-opt.correct', 'spark');
 }
 function rateAndNext(rating){
   var card = review.queue[review.idx];
@@ -1189,7 +1218,7 @@ function renderReview(){
       if(i === card.correct) cls = ' correct';
       else if(i === review.picked) cls = ' wrong';
     }
-    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'')+' data-onclick="pickReview('+i+')">'+esc(opt)+'</button>';
+    html += '<button class="srs-opt'+cls+'" '+(revealed?'disabled':'aria-keyshortcuts="'+(i+1)+'"')+' data-onclick="pickReview('+i+')">'+(revealed?'':'<kbd class="opt-key" aria-hidden="true">'+(i+1)+'</kbd>')+esc(opt)+'</button>';
   });
   html += '</div>';
 
@@ -1314,6 +1343,7 @@ function finishExam(auto){
   saveProgress();
   renderContent();
   renderSidebar();
+  if(quote >= 70 && window.rpCelebrateAfterRender) window.rpCelebrateAfterRender('.score-hero', quote >= 90 ? 'confetti' : 'burst');
 }
 function renderExam(){
   if(!exam.active){
@@ -1536,8 +1566,9 @@ function buildIndex(){
     });
   });
   EXERCISES.forEach(function(x){
+    if(x.lazy) textOffen = true;
     SEARCH_INDEX.push({ id:'exercises', kind:'exercise', title:x.title, sub:'Übung · '+x.topic+' · '+(['','Einsteiger','Fortgeschritten','Experte'][x.level]),
-                        hay:(x.title + ' ' + x.topic + ' ' + x.task).replace(/<[^>]+>/g,' ').toLowerCase() });
+                        hay:(x.title + ' ' + x.topic + ' ' + (x.task || '')).replace(/<[^>]+>/g,' ').toLowerCase() });
   });
   TRACES.forEach(function(t){
     SEARCH_INDEX.push({ id:'trace:'+t.id, kind:'trace', title:t.title, sub:'Algorithmus-Trainer · '+t.input,
@@ -4033,6 +4064,19 @@ function renderContentIntern(){
     return;
   }
 
+  /* Übungsaufgaben und Klausur zeigen Aufgabentexte und Lösungen; der Start kennt nur Titel, Stufe und Thema (assets/exercise-data.json, rpLoadExercises in bootstrap.js). */
+  if((state.currentId === 'exercises' || state.currentId === 'klausur') && !window.RP_EXERCISES_READY && typeof rpLoadExercises === 'function'){
+    var gewollteAufgaben = state.currentId;
+    el.innerHTML = '<h1>Aufgaben werden geladen …</h1><p role="status" class="lesson-loading">Einen Moment, die Aufgaben werden geholt.</p>';
+    rpLoadExercises().then(function(){
+      if(state.currentId === gewollteAufgaben) renderContent();
+    }, function(){
+      if(state.currentId !== gewollteAufgaben) return;
+      el.innerHTML = '<h1>Aufgaben nicht verfügbar</h1><p role="alert">Die Aufgaben konnten nicht geladen werden. Prüfe die Verbindung und versuche es erneut.</p><button class="ex-btn" data-onclick="renderContent()">Erneut versuchen</button>';
+    });
+    return;
+  }
+
   if(state.currentId === 'heute'){ el.innerHTML = renderHeute(); return; }
   if(state.currentId === 'tasten'){ el.innerHTML = renderTasten(); return; }
   if(state.currentId === 'recht'){ el.innerHTML = renderRecht(); return; }
@@ -4141,7 +4185,7 @@ function renderContentIntern(){
   if((lesson.lazy || lesson.lazyQuiz) && typeof rpLoadBodies === 'function'){
     /* Texte und Quizfragen stehen noch nicht bereit: Rahmen anzeigen, beides laden (Texte des Moduls, alle Fragen), dann neu zeichnen. */
     var wanted = lesson.id, loadModule = moduleOfLesson(lesson.id);
-    el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="status" class="lesson-loading">Lektion wird geladen …</p>';
+    el.innerHTML = '<div class="breadcrumb">Teil '+loadModule.part+' · '+esc(loadModule.title)+'</div><h1>'+esc(lesson.title)+'</h1><p role="status" class="lesson-loading">Lektion wird geladen …</p><div class="skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span></div>';
     Promise.all([lesson.lazy ? rpLoadBodies([loadModule.id]) : null, lesson.lazyQuiz ? rpLoadQuizzes() : null]).then(function(){
       if(state.currentId === wanted) renderContent();
     }, function(){

@@ -10,7 +10,9 @@ const dir='assets/learning',dataDir='assets/learning-data';fs.rmSync(dir,{recurs
    Ebenso die Quizfragen: Der Start bekommt je Lektion nur Platzhalter ({revision} je Frage, damit Anzahl und IDs stimmen) und Karten ohne Fragetext;
    Fragen, Optionen und Erklärungen stehen in assets/quiz-data.json und kommen beim ersten Bedarf (bootstrap.js: rpLoadQuizzes).
    Das Quellaggregat assets/script-01.js bleibt vollständig und ist die Grundlage für Build und Prüfungen. */
-const HEAVY=['body','body2','body3','tip','code','code2','code3','code4'];
+/* Neben den Textfeldern liegen auch Lernziele, Quellen, Übungen und Qualitätsvermerke in den Textdateien: Die Oberfläche liest sie am Lektionsobjekt
+   nicht (nur Tests und Audits), sie machten aber rund 390 KB der Startdaten aus. */
+const HEAVY=['body','body2','body3','tip','code','code2','code3','code4','objectives','sources','exercises','quality'];
 const isVar=(statement,name)=>statement.type==='VariableDeclaration'&&statement.declarations.length===1&&statement.declarations[0].id.name===name;
 const modulesAt=ast.body.findIndex(statement=>isVar(statement,'MODULES'));
 const sortAt=ast.body.findIndex((statement,i)=>i>modulesAt&&statement.type==='ExpressionStatement'&&source.slice(statement.start,statement.end).startsWith('MODULES.sort('));
@@ -30,6 +32,21 @@ for(let i=modulesAt;i<=sortAt;i++){
  if(regionAction(text)==='keep'&&!text.startsWith('var RP_APPLICATION_SUPPLEMENTS'))continue;
  vm.runInContext(text,context,{timeout:30000});
 }
+/* Übungsaufgaben: Der Start bekommt nur Stubs (ID, Stufe, Thema, Titel, ggf. Lernpfad), Aufgabentext, Tipps und Lösung liegen in assets/exercise-data.json
+   (bootstrap.js: rpLoadExercises). Die Aufgaben sind reine Datenliteral; sie werden in einem eigenen Kontext ausgewertet, weil der Bereich oben sie überspringt. */
+const EXERCISE_HEAVY=['task','hints','solution','solutionLang','solutionNote'];
+const exerciseContext=vm.createContext({});
+for(let i=modulesAt;i<=sortAt;i++){
+ const text=source.slice(ast.body[i].start,ast.body[i].end);
+ if(/^(var EXERCISES\b|EXERCISES\.push\.apply)/.test(text))vm.runInContext(text,exerciseContext,{timeout:30000});
+}
+const finalExercises=JSON.parse(vm.runInContext('JSON.stringify(EXERCISES)',exerciseContext));
+if(new Set(finalExercises.map(exercise=>exercise.id)).size!==finalExercises.length)throw new Error('Doppelte Aufgaben-IDs.');
+const exerciseStubs=finalExercises.map(exercise=>({...Object.fromEntries(Object.entries(exercise).filter(([key])=>!EXERCISE_HEAVY.includes(key))),lazy:true}));
+const exerciseData=Object.fromEntries(finalExercises.map(exercise=>[exercise.id,Object.fromEntries(EXERCISE_HEAVY.filter(key=>exercise[key]!==undefined).map(key=>[key,exercise[key]]))]));
+const sortedJson=value=>JSON.stringify(value,(key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a<b?-1:a>b?1:0)):item);
+if(sortedJson(exerciseStubs.map(stub=>{const{lazy,...rest}=stub;return {...rest,...exerciseData[stub.id]};}))!==sortedJson(finalExercises))throw new Error('Die aus Stubs und exercise-data.json rekonstruierten Aufgaben weichen von der Quellkette ab.');
+fs.writeFileSync('assets/exercise-data.json',JSON.stringify(exerciseData));
 /* Quiz-Kette nach MODULES.sort: Querschnitt, Überarbeitungen, Karten. Sie wird hier einmal ausgewertet; auch hier muss jede neue Anweisung eingeordnet werden. */
 const textOf=statement=>source.slice(statement.start,statement.end);
 const cardsEnd=ast.body.findIndex((statement,i)=>i>sortAt&&textOf(statement).startsWith('CARDS.forEach(function(c){ CARD_BY_ID'));
@@ -88,11 +105,14 @@ let literalNumber=0;
 const modulesLiteral=++literalNumber;
 fs.writeFileSync(dataDir+'/literal-'+modulesLiteral+'.json',JSON.stringify(slimModules));dataFiles.push(dataDir+'/literal-'+modulesLiteral+'.json');
 function safe(node){if(!node)return true;if(node.type==='Literal')return !node.regex;if(node.type==='ArrayExpression')return node.elements.every(safe);if(node.type==='ObjectExpression')return node.properties.every(p=>p.type==='Property'&&!p.computed&&p.kind==='init'&&safe(p.value));if(node.type==='UnaryExpression')return node.operator==='-'&&node.argument.type==='Literal'&&typeof node.argument.value==='number';return false;}
-function add(text){if(Buffer.byteLength(chunk+text)>250000)flush();chunk+=text;}
+/* Teile bis ca. 150 KB: Mehrere kleinere Skripte laden parallel und werden einzeln zwischengespeichert. */
+function add(text){if(Buffer.byteLength(chunk+text)>150000)flush();chunk+=text;}
 for(const [position,statement] of ast.body.entries()){
  if(position>=modulesAt&&position<=sortAt){
   const action=regionAction(source.slice(statement.start,statement.end));
   if(action==='slim'){add('var MODULES=window.RP_LITERALS['+modulesLiteral+'];\n');continue;}
+  if(/^var EXERCISES\b/.test(source.slice(statement.start,statement.end))){add('var EXERCISES='+JSON.stringify(exerciseStubs)+';\n');continue;}
+  if(/^EXERCISES\.push\.apply/.test(source.slice(statement.start,statement.end)))continue;
   if(action==='drop')continue;
   if(action==='slimLessons'){add('var RP_ABAP_SENIOR_LESSONS='+JSON.stringify(vm.runInContext('RP_ABAP_SENIOR_LESSONS',context).map(withoutHeavy))+';\n');continue;}
  }
@@ -119,5 +139,5 @@ for(const [position,statement] of ast.body.entries()){
 }flush();
 const hoist=ast.body.filter(node=>node.type==='FunctionDeclaration').map(node=>source.slice(node.start,node.end)).join('\n');
 fs.writeFileSync(dir+'/declarations.js',hoist+'\n');
-fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:2,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files],data:dataFiles,bodies:bodyFiles,quiz:'assets/quiz-data.json',stats:{figures}},null,2)+'\n');
+fs.writeFileSync('assets/learning-manifest.json',JSON.stringify({format:2,source:'assets/script-01.js',files:['assets/learning/declarations.js',...files],data:dataFiles,bodies:bodyFiles,quiz:'assets/quiz-data.json',exercises:'assets/exercise-data.json',stats:{figures}},null,2)+'\n');
 console.log(`${files.length+1} geordnete Lernskripte, ${dataFiles.length} JSON-Datensätze und ${Object.keys(bodyFiles).length} Textdateien je Modul statt monolithischem Browserabruf; Quellaggregat bleibt für Build/Prüfungen.`);

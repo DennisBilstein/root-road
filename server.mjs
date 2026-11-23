@@ -259,7 +259,7 @@ app.get('/assets/learning-manifest.json',(req,res,next) => {
   try { res.set('Cache-Control',revalidate).json(versionedManifest()); } catch(error){ next(error); }
 });
 app.use('/assets',express.static(assetsDir,{dotfiles:'deny',setHeaders:(res,file) => {
-  const versioned = /[?&]v=[0-9a-f]{10}(?:&|$)/.test(res.req.url) && /\.(?:js|css)$|(?:learning-data[\\/]literal-\d+|lesson-bodies[\\/][a-z0-9-]+|quiz-data)\.json$/.test(file);
+  const versioned = /[?&]v=[0-9a-f]{10}(?:&|$)/.test(res.req.url) && /\.(?:js|css)$|(?:learning-data[\\/]literal-\d+|lesson-bodies[\\/][a-z0-9-]+|quiz-data|exercise-data)\.json$/.test(file);
   res.setHeader('Cache-Control',/\.woff2?$/.test(file) ? 'public, max-age=2592000' : versioned ? 'public, max-age=31536000, immutable' : revalidate);
 }}));
 app.get(['/', '/index.html'],(req,res) => res.set('Cache-Control',revalidate).type('html').send(versionedHtml('index.html')));

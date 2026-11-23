@@ -22,14 +22,30 @@ export function createAssetVersions(root) {
     const file = path.join(root, name), st = fs.statSync(file);
     let entry = htmlCache.get(file);
     if (!entry || entry.mtimeMs !== st.mtimeMs) { entry = { mtimeMs: st.mtimeMs, text: fs.readFileSync(file, 'utf8') }; htmlCache.set(file, entry); }
-    return entry.text.replace(/(data-rp-src|href)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g, (match, attr, rel) => {
+    const html = entry.text.replace(/(data-rp-src|href)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g, (match, attr, rel) => {
       try { return `${attr}="${rel}?v=${assetVersion(rel)}"`; } catch { return match; }
     });
+    return html.replace('</head>', () => `${preloadLinks(html)}</head>`);
+  }
+
+  // Die Skripte stehen als data-rp-src im HTML und werden erst von bootstrap.js geladen; die Lernskripte und Datensätze kennt erst das Manifest.
+  // Preload-Links im HTML starten alle Downloads sofort und parallel zu bootstrap.js (sonst: HTML → bootstrap.js → Manifest → Lerndaten).
+  // Die URLs tragen denselben ?v-Hash wie die späteren Abrufe, damit der Browser die vorgeladenen Dateien wiederverwendet.
+  function preloadLinks(html) {
+    const manifest = versionedManifest();
+    const scripts = [...html.matchAll(/data-rp-src="(assets\/[A-Za-z0-9._\/-]+\.js\?v=[0-9a-f]{10})"/g)].map((m) => m[1]).filter((src) => !src.startsWith('assets/script-01.js?'));
+    const learning = manifest.files.map((file) => `${file}?v=${manifest.versions[file]}`);
+    const data = (manifest.data || []).map((file) => `${file}?v=${manifest.versions[file]}`);
+    return [
+      '<link rel="preload" href="assets/learning-manifest.json" as="fetch" crossorigin>',
+      ...[...scripts, ...learning].map((src) => `<link rel="preload" href="${src}" as="script">`),
+      ...data.map((src) => `<link rel="preload" href="${src}" as="fetch" crossorigin>`),
+    ].join('\n');
   }
 
   function versionedManifest() {
     const manifest = JSON.parse(fs.readFileSync(path.join(root, 'assets', 'learning-manifest.json'), 'utf8'));
-    manifest.versions = Object.fromEntries([...manifest.files, ...(manifest.data || []), ...Object.values(manifest.bodies || {}), ...(manifest.quiz ? [manifest.quiz] : [])].map((file) => [file, assetVersion(file)]));
+    manifest.versions = Object.fromEntries([...manifest.files, ...(manifest.data || []), ...Object.values(manifest.bodies || {}), ...(manifest.quiz ? [manifest.quiz] : []), ...(manifest.exercises ? [manifest.exercises] : [])].map((file) => [file, assetVersion(file)]));
     return manifest;
   }
 

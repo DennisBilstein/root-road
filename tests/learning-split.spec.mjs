@@ -19,7 +19,7 @@ test('Browser lädt geordnete kleine Skripte statt das Quellaggregat',async({pag
  for(const id of bodyIds){
   expect(manifest.bodies[id]).toBe('assets/lesson-bodies/'+id+'.json');
   const texts=JSON.parse(fs.readFileSync(manifest.bodies[id],'utf8'));
-  for(const lesson of Object.values(texts)){expect(Object.keys(lesson).every(key=>['body','body2','body3','tip','code','code2','code3','code4'].includes(key))).toBe(true);lessonsWithText++;}
+  for(const lesson of Object.values(texts)){expect(Object.keys(lesson).every(key=>['body','body2','body3','tip','code','code2','code3','code4','objectives','sources','exercises','quality'].includes(key))).toBe(true);lessonsWithText++;}
  }
  expect(lessonsWithText).toBe(577);
  /* Öffnen einer Lektion lädt genau die Textdatei ihres Moduls nach und ersetzt den Platzhalter. */
