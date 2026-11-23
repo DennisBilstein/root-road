@@ -122,5 +122,7 @@ window.RP_BOOTING=true;
     window.RP_BOOTING=false;render();
   }catch(error){window.RP_APP_ERROR=error.message;var banner=document.createElement('section');banner.setAttribute('role','alert');banner.style.cssText='padding:24px;background:#fff;color:#172438;border:2px solid #b3261e';var title=document.createElement('h1');title.textContent='Root Road konnte nicht vollständig starten';var text=document.createElement('p');text.textContent=error.message+' Bitte die Seite neu laden und prüfen, ob der lokale Server läuft.';var button=document.createElement('button');button.textContent='Neu laden';button.onclick=function(){location.reload();};banner.append(title,text,button);document.body.prepend(banner);window.RP_BOOTING=false;document.documentElement.classList.add('rp-bereit');return;}
   window.RP_APP_READY = true;
+  var vorschau=document.getElementById('content');
+  if(vorschau){vorschau.removeAttribute('aria-busy');vorschau.removeAttribute('inert');vorschau.removeAttribute('data-rp-vorschau');}
   document.documentElement.classList.add('rp-bereit');
 })();

@@ -36,6 +36,7 @@ Aktueller Gesamtbestand (16.11.2026): **137 Module, 577 Lektionen, 1.598 Lektion
   nicht ausgeführt. Keine unabhängige Fachprüfung.
 - **Secret-Scan** (`npm run scan:secrets`): prüft alle von Git verfolgten Textdateien auf typische Schlüssel, Tokens, Zugangsdaten in URLs und lokale Home-Pfade; gibt nie den gefundenen Wert aus. Prüft nicht die Git-Historie (Stand 13.11.2026: Verlauf manuell mit denselben Mustern gescannt, keine Funde).
 - `npm run build` erzeugt `assets/lesson-videos-data.js`, `assets/syntax-glossary-data.js` und `assets/practice-puzzles-data.js`.
+- **Vorgerenderte Startseite** (23.11.2026): Lernmission und Lernpfad-Auswahl für neue Besucher stehen als `content/prerender/start.html` im HTML (`server/asset-versions.mjs` setzt sie ein, `node scripts/build-prerender.mjs` erzeugt sie aus dem echten Rendering, `npm run verify:prerender` prüft sie, `npm run build` schreibt sie neu). Bis zum App-Start ist der Bereich `inert` und `aria-busy`; `assets/prerender-guard.js` blendet ihn aus, wenn Lernstand, gewählter Lernpfad oder ein Adress-Einstieg vorliegt (sonst gäbe es kurz falsche Zahlen). Alles Datums- und Tageszeitabhängige (Gruß, Tagesziel, Daily Dojo) wird bewusst nicht vorgerendert. Nach jeder Änderung an Lektionszahlen oder Pfadtexten muss `npm run build` laufen, sonst schlägt `tests/prerender.spec.mjs` an. Lighthouse mobil: Leistung 69–74 → 81–90, LCP 5,3–5,5 s → 3,1–3,3 s, CLS 0.
 
 ## TypeScript, Node.js, Linux & Shell und Web-Sicherheit · 14.11.2026
 

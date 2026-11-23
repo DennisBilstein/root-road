@@ -269,6 +269,8 @@ Dateien: `assets/guided-practice*.js/css`, `guided-worker.js`, `guided-sandbox.h
 Nächster Ausbau: mehr themenspezifische Aufgaben je Lektion und vollständige
 Projekte; keine freie serverseitige Codeausführung ohne separate harte Isolation.
 
+Vorgerenderte Startseite (23.11.2026): `content/prerender/start.html` (Lernmission + Lernpfad-Auswahl, erzeugt von `scripts/build-prerender.mjs` mit eigenem Server und leerem Datenverzeichnis) wird von `server/asset-versions.mjs` in `index.html` eingesetzt; `assets/prerender-guard.js` im Kopf blendet sie bei vorhandenem Lernstand, gewähltem Pfad oder Adress-Einstieg aus, `assets/bootstrap.js` entfernt `inert`/`aria-busy`. Nach Änderungen an Lektionszahlen oder Pfadtexten `npm run build` laufen lassen (sonst rot: `tests/prerender.spec.mjs`, `npm run verify:prerender`). Nicht vorgerendert: alles Datums-/Tageszeitabhängige darunter (Gruß, Tagesziel, Daily Dojo) und die Seitenleiste. Gebündelte Skripte im Kopf (`src="assets/…"`) bekommen jetzt ebenfalls den `?v=`-Hash.
+
 Werkstatt-Modus und Aufgaben-Lazy-Load (23.11.2026): 107 schwere Aufgaben in 21 Spuren, je Spur eine Datei
 `assets/workshop/<spur>.js` plus `core.js` (lazy über `rpPracticeSetMode`/`rpPracticeLoadWorkshop`), jedes Codemodul mit
 mindestens einer Aufgabe (Liste `CODE_MODULES` in `tests/workshop.spec.mjs`). Rote Fehlermarkierung im Editor

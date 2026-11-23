@@ -1687,7 +1687,10 @@ mark.luecke{background:color-mix(in srgb, var(--accent2) 22%, transparent); colo
 /* Die Oberfläche wird von mehreren nacheinander geladenen Skripten zusammengesetzt. Bis bootstrap.js alle
    geladen hat, bleiben die dynamischen Bereiche unsichtbar (behalten aber ihren Platz), damit keine
    Zwischenstände gezeichnet werden und nichts nachträglich springt (CLS). */
-html:not(.rp-bereit) :is(#content, #sidebar, #mobilbar, .topbar-right, .site-footer){visibility:hidden;}
+html:not(.rp-bereit) :is(#content:not([data-rp-vorschau]), #sidebar, #mobilbar, .topbar-right, .site-footer){visibility:hidden;}
+/* Die Startseite für neue Besucher steht vorgerendert im HTML (content/prerender/start.html) und ist sofort sichtbar. Wer schon Lernstand
+   hat, bekommt eine andere Startseite; assets/prerender-guard.js blendet die Vorschau dann bis zum Start aus. */
+html.rp-ohne-vorschau:not(.rp-bereit) #content{visibility:hidden;}
 .site-footer{padding:var(--s4) clamp(var(--s4),4vw,var(--s7)); border-top:1px solid var(--border);
   font-size:.82rem; text-align:center;}
 .site-footer a{display:inline-block; padding:8px 12px; color:var(--text-dim);}

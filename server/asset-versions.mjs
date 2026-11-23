@@ -22,10 +22,21 @@ export function createAssetVersions(root) {
     const file = path.join(root, name), st = fs.statSync(file);
     let entry = htmlCache.get(file);
     if (!entry || entry.mtimeMs !== st.mtimeMs) { entry = { mtimeMs: st.mtimeMs, text: fs.readFileSync(file, 'utf8') }; htmlCache.set(file, entry); }
-    const html = entry.text.replace(/(data-rp-src|href)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g, (match, attr, rel) => {
+    const html = withPrerender(entry.text).replace(/(data-rp-src|href|src)="(assets\/[A-Za-z0-9._\/-]+\.(?:js|css))"/g, (match, attr, rel) => {
       try { return `${attr}="${rel}?v=${assetVersion(rel)}"`; } catch { return match; }
     });
     return html.replace('</head>', () => `${preloadLinks(html)}</head>`);
+  }
+
+  // Die Startseite eines neuen Besuchers steht vorgerendert im HTML (erzeugt von scripts/build-prerender.mjs), damit der größte sichtbare Inhalt
+  // nicht erst nach allen Skripten entsteht. Bis zum App-Start ist sie nicht bedienbar (inert) und für Hilfstechnik als „beschäftigt“ markiert;
+  // assets/bootstrap.js entfernt beides, assets/prerender-guard.js blendet sie für Besucher mit Lernstand aus.
+  function withPrerender(html) {
+    const file = path.join(root, 'content', 'prerender', 'start.html');
+    if (!fs.existsSync(file)) return html;
+    const empty = '<main class="content" id="content" tabindex="-1"></main>';
+    if (!html.includes(empty)) throw new Error('index.html: leeres <main id="content"> für die Vorrenderung nicht gefunden');
+    return html.replace(empty, () => `<main class="content" id="content" tabindex="-1" aria-busy="true" inert data-rp-vorschau>${fs.readFileSync(file, 'utf8')}</main>`);
   }
 
   // Die Skripte stehen als data-rp-src im HTML und werden erst von bootstrap.js geladen; die Lernskripte und Datensätze kennt erst das Manifest.
