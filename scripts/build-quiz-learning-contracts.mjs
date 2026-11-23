@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {writeReport} from './lib/write-report.mjs';
 const file='assets/script-01.js';
 let script=fs.readFileSync(file,'utf8').replace(/\n\/\* QUIZ-CONTRACTS:START \*\/[\s\S]*?\/\* QUIZ-CONTRACTS:END \*\/\n/g,'');
 const ctx={};vm.createContext(ctx);vm.runInContext(script.slice(0,script.indexOf('var VERSION =')),ctx);
@@ -27,5 +28,5 @@ const block=`\n/* QUIZ-CONTRACTS:START */\nvar RP_QUIZ_CONTRACTS=[];\nvar RP_QUI
 script=script.replace('var VERSION =',()=>block+'var VERSION =');fs.writeFileSync(file,script);
 fs.writeFileSync('assets/quiz-contracts-data.js',`/* Erzeugt von scripts/build-quiz-learning-contracts.mjs; nicht von Hand ändern. */\n(function(list){\n  list.forEach(function(c){RP_QUIZ_CONTRACT_BY_ID[c.id]=c;});\n  RP_QUIZ_CONTRACTS=list;window.RP_QUIZ_CONTRACTS_READY=true;\n})(${JSON.stringify(contracts)});\n`);
 fs.mkdirSync('content/quality',{recursive:true});
-fs.writeFileSync('content/quality/quiz-contract-coverage.json',JSON.stringify({updatedAt:new Date().toISOString(),cards:contracts.length,learningContracts:contracts.length,individuallyRevised:contracts.filter(c=>c.editorialStatus==='individually-revised').length,independentFactualReviewComplete:false,contracts},null,2)+'\n');
+writeReport('content/quality/quiz-contract-coverage.json','updatedAt',{cards:contracts.length,learningContracts:contracts.length,individuallyRevised:contracts.filter(c=>c.editorialStatus==='individually-revised').length,independentFactualReviewComplete:false,contracts});
 console.log(`${contracts.length} aufgabenspezifische Abruf-/Bewertungsverträge erstellt; keine vollständige Fachprüfung behauptet.`);
