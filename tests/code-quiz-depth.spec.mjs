@@ -12,6 +12,8 @@ test('Quiz verlangt Abruf vor Optionen, erklärt Distraktoren und bewahrt alte I
   await page.goto('/');await page.waitForFunction(()=>window.RP_APP_READY);
   await page.evaluate(()=>{rpChoosePath('php');state.currentId='m52-l3';renderContent();});
   await expect(page.locator('#rq-options-m52-l3\\#0')).toBeHidden();
+  await expect(page.locator('.rq-preflight details').first()).not.toHaveAttribute('open');
+  await page.getByText('Deine Erklärung vor der Auswahl · Frage 1').click();
   await page.getByLabel('Deine Erklärung vor der Auswahl · Frage 1').fill('Division ergibt 2.5; Typ und Rundung getrennt prüfen.');
   await page.evaluate(()=>{const l=lessonById('m52-l3');l.quiz.forEach((q,i)=>{rpQuizReveal(l.id,i);document.querySelector('input[name="rq_'+l.id+'_'+i+'"][value="'+q.correct+'"]').checked=true;});checkQuiz(l.id);});
   await expect(page.locator('.qfeedback > .rq-review')).toHaveCount(4);
