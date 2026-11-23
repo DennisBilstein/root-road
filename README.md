@@ -17,7 +17,7 @@ Aktueller Gesamtbestand (16.11.2026): **137 Module, 577 Lektionen, 1.598 Lektion
 
 ## Lernfunktionen: Videos, Denkaufgaben, Wiederholplan · 13.11.2026
 
-- **Videos zu Lektionen** (`content/lesson-videos.json`, aktuell 23 Videos zu 21 Lektionen, Englisch, offizielle Kanäle (Java, Spring, SAP, Laravel) sowie freeCodeCamp u. a.):
+- **Videos zu Lektionen** (`content/lesson-videos.json`, aktuell 45 Videos zu 42 Lektionen (23.11.2026), Englisch, offizielle Kanäle (Java, Spring, SAP, Laravel) sowie freeCodeCamp u. a.):
   nichts wird heruntergeladen oder gespiegelt. Das Video wird erst nach einem Klick auf „Video laden“ über
   `youtube-nocookie.com` eingebettet; vorher gibt es keine Anfrage an YouTube/Google. Daneben steht immer ein Direktlink.
   Titel und Kanal prüft `npm run verify:videos` per oEmbed (braucht Netz); der Inhalt der Videos ist nicht geprüft.

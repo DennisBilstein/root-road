@@ -184,6 +184,182 @@
       "channel": "SAP Developers",
       "language": "en",
       "note": "Offizieller SAP-Developers-Kanal; Einsteiger-Überblick zu RAP. Produktstände veralten schnell."
+    },
+    {
+      "lessonId": "py-m1-l1",
+      "id": "oDOw5tB3Udw",
+      "title": "Python for Beginners with Hands-On Projects",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Sehr langer Einsteigerkurs (rund 8,6 Stunden, Juli 2026). Schau nur die Kapitel, die zur Lektion passen."
+    },
+    {
+      "lessonId": "js-m1-l1",
+      "id": "PkZNo7MFNFg",
+      "title": "Learn JavaScript - Full Course for Beginners",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Einsteigerkurs (rund 3,4 Stunden) von 2018; später eingeführte Sprachfeatures kommen darin nicht vor. Schau nur die Kapitel, die zur Lektion passen."
+    },
+    {
+      "lessonId": "html-m1-l1",
+      "id": "916GWv2Qs08",
+      "title": "HTML Tutorial - Website Crash Course for Beginners",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Kurzer Einsteigerkurs (knapp 50 Minuten) von 2021."
+    },
+    {
+      "lessonId": "lx-m1-l1",
+      "id": "6WatcfENsOU",
+      "title": "Linux Crash Course for Beginners with Labs",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Einsteigerkurs (rund 2,4 Stunden, 2024) mit praktischen Übungen."
+    },
+    {
+      "lessonId": "dk-m1-l1",
+      "id": "fqMOX6JJhGo",
+      "title": "Docker Tutorial for Beginners - A Full DevOps Course on How to Run Applications in Containers",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Einführung (rund 2,2 Stunden) von 2019; Befehle und Compose-Details können sich seitdem geändert haben."
+    },
+    {
+      "lessonId": "api-m1-l2",
+      "id": "2JYT5f2isg4",
+      "title": "Full HTTP Networking Course – Fetch and REST APIs in JavaScript",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Langer Kurs (rund 5,1 Stunden, 2023) zu HTTP, fetch und REST aus Sicht von JavaScript."
+    },
+    {
+      "lessonId": "api-m2-l6",
+      "id": "YYe0FdfdgDU",
+      "title": "OWASP API Security Top 10 Course – Secure Your Web Apps",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Kurs (rund 1,4 Stunden, aufgenommen 2023) zu den OWASP API Security Top 10."
+    },
+    {
+      "lessonId": "mcp-m1-l4",
+      "id": "gYXLRMycVMk",
+      "title": "MCP Security Fundamentals Course",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Kurs (rund 2,2 Stunden) vom Oktober 2026. MCP-Spezifikation und Sicherheitsleitlinien ändern sich schnell; prüfe Details gegen die aktuelle Revision auf modelcontextprotocol.io."
+    },
+    {
+      "lessonId": "java-m7-l1",
+      "id": "A74TOX803D0",
+      "title": "Java Programming for Beginners – Full Course",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Einsteigerkurs (rund 4,2 Stunden) von 2022; neuere Java-Versionen haben seitdem Syntax ergänzt."
+    },
+    {
+      "lessonId": "java-m23-l1",
+      "id": "5rNk7m_zlAg",
+      "title": "Spring Boot & Spring Data JPA – Complete Course",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Sehr langer Kurs (rund 12,7 Stunden, 2024) zu Spring Boot und Spring Data JPA. Spring Boot 4 ändert einiges; siehe die Lektion zu den Änderungen (java-m26-l5)."
+    },
+    {
+      "lessonId": "java-m1-l4",
+      "id": "8hly31xKli0",
+      "title": "Algorithms and Data Structures Tutorial - Full Course for Beginners",
+      "channel": "freeCodeCamp.org",
+      "language": "en",
+      "note": "Langer Kurs (rund 5,4 Stunden, 2021) zu Algorithmen und Datenstrukturen; die Programmiersprache der Beispiele kann von Java abweichen."
+    },
+    {
+      "lessonId": "abap-m13-senior-side-effects",
+      "id": "yh_pje7ry0U",
+      "title": "ABAP Cloud: RAP Side Effects",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 3 Min., aufgenommen 2023. Kurzvideo zu Side Effects in RAP."
+    },
+    {
+      "lessonId": "abap-m12-l4",
+      "id": "YNOa1c0BxR0",
+      "title": "ABAP Cloud:  RAP Extensibility",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 3 Min., aufgenommen 2023. Kurzvideo zur Erweiterbarkeit von RAP-Business-Objekten."
+    },
+    {
+      "lessonId": "abap-m12-quellen-vom-business-object-zum-odata-v4-ui-service",
+      "id": "8Qz35klEwOs",
+      "title": "05 - ABAP Cloud - Odata UI Service from Scratch Wizard (without Joule Chat )",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 10 Min., aufgenommen 2026. Kurzvideo zum Assistenten „OData UI Service from Scratch“ in den ABAP Development Tools."
+    },
+    {
+      "lessonId": "abap-m14-quellen-abap-cloud-rap-und-laufzeit-die-richtige-erweiterungsarchitektur-wahlen",
+      "id": "Zmo7YU9BUlc",
+      "title": "🟢 Clean Core Extensibility Strategy powered by ABAP Cloud and Generative AI",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 52 Min., aufgenommen 2025. Vortrag zur Clean-Core-Strategie mit ABAP Cloud."
+    },
+    {
+      "lessonId": "abap-m14-l3",
+      "id": "xnYPI3ZTRfM",
+      "title": "Extensibility with ABAP Cloud for SAP S/4HANA Cloud, Public Edition - DT200v",
+      "channel": "SAP Community",
+      "language": "en",
+      "note": "SAP Community, rund 24 Min., aufgenommen 2023. Sitzung zu Erweiterbarkeit mit ABAP Cloud in SAP S/4HANA Cloud Public Edition."
+    },
+    {
+      "lessonId": "abap-m14-l1",
+      "id": "xqCKxFfytiQ",
+      "title": "Clean core extensibility in SAP S/4HANA Cloud Private Edition | DT200",
+      "channel": "SAP Community",
+      "language": "en",
+      "note": "SAP Community, rund 25 Min., aufgenommen 2025. Sitzung zu Clean-Core-Erweiterbarkeit mit dem ABAP-Cloud-Entwicklungsmodell in SAP S/4HANA Cloud Private Edition."
+    },
+    {
+      "lessonId": "abap-m14-senior-s4-migration",
+      "id": "PVCxotz4t2A",
+      "title": "🟢 Developing and Transforming your ABAP Custom Code for Clean Core in SAP S/4HANA",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 57 Min., aufgenommen 2024. Vortrag zur Umstellung von eigenem ABAP-Code für Clean Core in SAP S/4HANA."
+    },
+    {
+      "lessonId": "abap-m16-l2",
+      "id": "whVUkobo5bM",
+      "title": "SAP TechBytes — ABAP Test Cockpit ( ATC ) on Cloud",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 17 Min., aufgenommen 2024. Kurzvortrag zum ABAP Test Cockpit (ATC) in der Cloud."
+    },
+    {
+      "lessonId": "abap-m14-l2",
+      "id": "oWmaucAiVl0",
+      "title": "ABAP: SAP BTP ABAP Environment",
+      "channel": "SAP Developers",
+      "language": "en",
+      "note": "Offizieller SAP-Kanal, rund 2 Min., aufgenommen 2022. Kurzvideo zur ABAP-Umgebung auf SAP BTP."
+    },
+    {
+      "lessonId": "abap-m13-quellen-fiori-ux-und-elements-list-report-und-object-page-mit-fiori-tools",
+      "id": "Q6Of9NWAqEs",
+      "title": "Modernize SAP Fiori app development using SAP Fiori tools",
+      "channel": "UI5",
+      "language": "en",
+      "note": "Offizieller UI5-Kanal, rund 28 Min., aufgenommen 2020. Vortrag zu SAP Fiori tools; die Werkzeuge haben sich seit der Aufnahme weiterentwickelt, prüfe Menüs und Schritte gegen die aktuelle Dokumentation."
+    },
+    {
+      "lessonId": "abap-m13-l3",
+      "id": "28wqxfEayyo",
+      "title": "Create Analytical SAP Fiori Apps Quickly and Efficiently | SAP TechEd for SAP Community:",
+      "channel": "SAP Community",
+      "language": "en",
+      "note": "SAP Community, rund 1,6 Std., aufgenommen 2021. Langer TechEd-Vortrag zu analytischen Fiori-Apps; Details können sich seit der Aufnahme geändert haben."
     }
   ]
 }
