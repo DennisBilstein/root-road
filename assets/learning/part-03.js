@@ -1049,6 +1049,14 @@ function checkQuiz(lessonId){
     }
     var val = parseInt(sel.value, 10);
     var ok = val === q.correct;
+    /* Richtige Option immer markieren, falsch gewählte zusätzlich; Markierungen früherer Prüfungen zuerst löschen. */
+    var optionRoot = document.getElementById('q_'+lessonId+'_'+qi);
+    optionRoot.querySelectorAll('.opt').forEach(function(label){
+      var radio = label.querySelector('input');
+      var index = parseInt(radio.value, 10);
+      label.classList.toggle('is-correct', index === q.correct);
+      label.classList.toggle('is-wrong', index === val && !ok);
+    });
     var cardId = rpQuestionId(lesson,qi);
     recordAnswer(cardId, ok);
     /* Antwort aus der Lektion heraus plant die Karte ins Wiederholungssystem ein. */
@@ -1058,7 +1066,16 @@ function checkQuiz(lessonId){
 
     if(ok){
       fb.className = 'qfeedback show correct';
-      fb.textContent = '✓ Richtig. ' + q.explain;
+      /* Bei richtiger Antwort liegt die Erklärung eingeklappt; nach einem Fehler bleibt sie sichtbar. */
+      fb.textContent = '✓ Richtig. ';
+      var explain = document.createElement('details');
+      explain.className = 'qexplain';
+      var summary = document.createElement('summary');
+      summary.textContent = 'Erklärung anzeigen';
+      var explainText = document.createElement('p');
+      explainText.textContent = q.explain;
+      explain.append(summary, explainText);
+      fb.appendChild(explain);
     } else {
       fb.className = 'qfeedback show wrong';
       fb.textContent = '✗ Nicht ganz. Richtig ist: „' + q.options[q.correct] + '". ' + q.explain;
@@ -1553,8 +1570,12 @@ function renderReview(){
   html += '</div>';
 
   if(revealed){
-    html += '<div class="srs-explain">'+(review.picked === card.correct ? '✓ ' : '✗ ')+esc(card.explain)+
-            ' <button class="ex-btn" style="padding:3px 9px;margin-left:6px;" data-onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button></div>';
+    var lessonBtn = '<button class="ex-btn" style="padding:3px 9px;margin-left:6px;" data-onclick="selectLesson(\''+card.lessonId+'\')">Zur Lektion</button>';
+    if(review.picked === card.correct){
+      html += '<details class="srs-explain"><summary>✓ Richtig – Erklärung anzeigen</summary><p>'+esc(card.explain)+lessonBtn+'</p></details>';
+    } else {
+      html += '<div class="srs-explain">✗ '+esc(card.explain)+' '+lessonBtn+'</div>';
+    }
     html += '<div><div class="ti-label" style="margin-bottom:6px;">Wie sicher saß das?</div><div class="rate-row">'+
       '<button class="rate-btn again" data-onclick="rateAndNext(0)">Nochmal<span class="rt-sub"><kbd>1</kbd> heute erneut</span></button>'+
       '<button class="rate-btn" data-onclick="rateAndNext(1)">Schwer<span class="rt-sub"><kbd>2</kbd> kurzes Intervall</span></button>'+
@@ -1739,7 +1760,7 @@ function renderExam(){
         h2 += '<div class="ex-card"><div class="ex-head"><h3>'+esc(c.q)+'</h3><span class="badge topic">'+esc(c.moduleTitle)+'</span></div>'+
               '<p style="font-size:.87rem;margin:0 0 6px;"><span style="color:var(--danger);">Deine Antwort:</span> '+
               (exam.answers[i] === -1 ? '<em>nicht beantwortet</em>' : esc(c.options[exam.answers[i]]))+'<br>'+
-              '<span style="color:var(--success);">Richtig:</span> '+esc(c.options[c.correct])+'</p>'+
+              '<span class="richtig-antwort">✓ Richtig: '+esc(c.options[c.correct])+'</span></p>'+
               '<p style="font-size:.85rem;color:var(--text-dim);margin:0;">'+esc(c.explain)+'</p>'+
               '<div class="ex-actions"><button class="ex-btn" data-onclick="selectLesson(\''+c.lessonId+'\')">Zur Lektion: '+esc(c.lessonTitle)+'</button></div></div>';
       });
@@ -2610,12 +2631,5 @@ function tutorSenden(){
   var frage = ta ? ta.value.trim() : '';
   if(!frage) return;
   if(ta) ta.value = '';
-  tutorFrage(frage);
-}
-function dockFrage(frage){
-  var f = document.getElementById('dockFeld');
-  if(!frage && f) frage = f.value.trim();
-  if(!frage) return;
-  if(f){ f.value = ''; f.style.height = 'auto'; }
   tutorFrage(frage);
 }

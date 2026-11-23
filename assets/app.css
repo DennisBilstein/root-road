@@ -46,6 +46,9 @@
 
   --success:#11704a;
   --success-bg:#e2f1ea;
+  /* Richtige Antwortoption im Quiz: kräftiger als das Feedback-Grün, damit sie sich abhebt. */
+  --correct-bg:#bfe9cf;
+  --correct-border:#0a7a3d;
   --danger:#b3261e;
   --danger-bg:#fbeae9;
 
@@ -96,6 +99,8 @@
 
     --success:#4cc98a;
     --success-bg:#0d2a1d;
+    --correct-bg:#14452c;
+    --correct-border:#5fe3a1;
     --danger:#f0746e;
     --danger-bg:#2c1513;
 
@@ -133,6 +138,8 @@
 
   --success:#4cc98a;
   --success-bg:#0d2a1d;
+  --correct-bg:#14452c;
+  --correct-border:#5fe3a1;
   --danger:#f0746e;
   --danger-bg:#2c1513;
 
@@ -427,7 +434,7 @@ fieldset.qcard legend{font-weight:600; font-size:.9rem; padding:0 6px; font-fami
 /* Fieldsets sind standardmäßig min-content breit; lange Badges im Quiz müssen umbrechen dürfen (sonst Überlauf bei 375 px). */
 fieldset.qcard{min-inline-size:0;}
 fieldset.qcard p.badge{white-space:normal; border-radius:var(--r-sm);}
-.opt{display:flex; align-items:flex-start; gap:var(--s2); padding:7px 6px; border-radius:var(--r-sm);
+.opt{display:flex; align-items:flex-start; gap:var(--s2); padding:7px 6px; border:1.5px solid transparent; border-radius:var(--r-sm);
   font-size:.89rem; cursor:pointer; color:var(--text-2); transition:background .13s;}
 .opt:hover{background:var(--surface-2); color:var(--text);}
 .opt input{margin-top:4px; accent-color:var(--accent);}
@@ -435,6 +442,17 @@ fieldset.qcard p.badge{white-space:normal; border-radius:var(--r-sm);}
 .qfeedback.show{display:block; animation:fadeUp .2s ease;}
 .qfeedback.correct{background:var(--success-bg); color:var(--success);}
 .qfeedback.wrong{background:var(--danger-bg); color:var(--danger);}
+/* Nach dem Prüfen: richtige Option in eigenem Grün (mit Häkchen), falsch gewählte in Rot (mit Kreuz) – nie nur per Farbe. */
+.opt.is-correct, .opt.is-wrong{font-weight:600; color:var(--text);}
+.opt.is-correct{background:var(--correct-bg); border-color:var(--correct-border);}
+.opt.is-wrong{background:var(--danger-bg); border-color:var(--danger);}
+.opt.is-correct::after, .opt.is-wrong::after{margin-inline-start:auto; padding-inline-start:var(--s2); font-weight:700;}
+.opt.is-correct::after{content:"✓" / ""; color:var(--correct-border);}
+.opt.is-wrong::after{content:"✗" / ""; color:var(--danger);}
+/* Erklärung bei richtiger Antwort: eingeklappt, mit dem Feedback-Text direkt davor. */
+.qexplain{margin-top:var(--s2);}
+.qexplain summary{cursor:pointer; font-weight:600;}
+.qexplain p{margin:var(--s2) 0 0;}
 
 /* ---------- Buttons ---------- */
 .check-btn{background:var(--accent); color:var(--accent-contrast); border:none; border-radius:var(--r-sm);
@@ -686,11 +704,15 @@ fieldset.qcard p.badge{white-space:normal; border-radius:var(--r-sm);}
   transition:border-color .14s, background .14s, transform .1s;}
 .srs-opt:hover:not(:disabled){border-color:var(--accent); background:var(--accent-soft);}
 .srs-opt:active:not(:disabled){transform:scale(.995);}
-.srs-opt.correct{border-color:var(--success); background:var(--success-bg); color:var(--success); font-weight:600;}
+.srs-opt.correct{border-color:var(--correct-border); background:var(--correct-bg); color:var(--text); font-weight:600;}
+.srs-opt.correct::after{content:" ✓" / ""; color:var(--correct-border);}
+.srs-opt.wrong::after{content:" ✗" / ""; color:var(--danger);}
 .srs-opt.wrong{border-color:var(--danger); background:var(--danger-bg); color:var(--danger);}
 .srs-opt:disabled{cursor:default;}
 .srs-explain{background:var(--surface-2); border-left:3px solid var(--accent); border-radius:var(--r-sm);
   padding:var(--s3) var(--s4); font-size:.87rem; color:var(--text-2);}
+details.srs-explain summary{cursor:pointer; font-weight:600; color:var(--text);}
+details.srs-explain p{margin:var(--s2) 0 0;}
 .rate-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(104px,1fr)); gap:var(--s2); margin-top:4px;}
 .rate-btn{border:1px solid var(--border); background:var(--surface); border-radius:var(--r-md); padding:11px 8px;
   font:inherit; font-size:.82rem; font-weight:600; cursor:pointer; color:var(--text);
@@ -1262,9 +1284,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .fh-koerper{padding:0 var(--s4) var(--s4); border-top:1px solid var(--border);
   display:flex; flex-direction:column; gap:10px;}
 .fh-antwort{margin-top:var(--s3); font-size:.9rem; padding:10px 13px; border-radius:var(--r-sm);
-  background:var(--success-bg); border:1px solid color-mix(in srgb, var(--success) 35%, transparent);}
+  background:var(--correct-bg); border:1.5px solid var(--correct-border);}
 .fh-label{display:block; font-family:var(--mono); font-size:.62rem; font-weight:600;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--success); margin-bottom:3px;}
+  letter-spacing:.1em; text-transform:uppercase; color:var(--text); margin-bottom:3px;}
+.richtig-antwort{padding:1px 6px; border-radius:var(--r-sm); background:var(--correct-bg); border:1.5px solid var(--correct-border); font-weight:600;}
 .fh-erklaerung{font-size:.85rem; line-height:1.6; color:var(--text-2); margin:0;}
 .fh-koerper .ex-btn{align-self:flex-start;}
 

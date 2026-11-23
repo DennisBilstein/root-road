@@ -1,3 +1,10 @@
+function dockFrage(frage){
+  var f = document.getElementById('dockFeld');
+  if(!frage && f) frage = f.value.trim();
+  if(!frage) return;
+  if(f){ f.value = ''; f.style.height = 'auto'; }
+  tutorFrage(frage);
+}
 async function tutorFrage(frage){
   if(tutor.busy || tutor.off || !tutor.fn) return;
   frage = String(frage || '').trim();
