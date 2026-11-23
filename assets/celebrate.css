@@ -1,0 +1,40 @@
+/* Erfolgsrückmeldung (celebrate.js): Partikel, Hervorhebung, kleine Einblendungen. Animiert wird nur transform/opacity (Ausnahme: kurzer Ring um den Anker).
+   „Bewegung reduzieren“: keine Partikel, keine Animation; Hervorhebungen erscheinen ruhig und stehen bis zum Entfernen der Klasse. */
+.rp-fx{position:fixed;inset:0;z-index:95;pointer-events:none;overflow:hidden}
+.rp-p{position:absolute;display:block;width:8px;height:12px;border-radius:2px;opacity:0;will-change:transform,opacity;
+  animation:rpFly var(--t,900ms) cubic-bezier(.12,.7,.3,1) var(--d,0ms) both}
+.rp-p.rp-round{width:9px;height:9px;border-radius:50%}
+.rp-c0{background:var(--accent)}
+.rp-c1{background:var(--accent2)}
+.rp-c2{background:var(--success)}
+.rp-c3{background:color-mix(in srgb,var(--accent) 55%,var(--success))}
+.rp-c4{background:color-mix(in srgb,var(--accent2) 60%,#fff)}
+@keyframes rpFly{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(0deg)}
+  12%{opacity:1}
+  45%{opacity:1;transform:translate(calc(-50% + var(--x) * .85),calc(-50% + var(--y1) * .85)) scale(1) rotate(calc(var(--r) * .5))}
+  100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y2))) scale(.8) rotate(var(--r))}
+}
+
+/* Hervorhebung des Ankers: ein weicher grüner Ring, der ausklingt. */
+.rp-hit{box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 50%,transparent)}
+@keyframes rpHit{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--success) 70%,transparent)}
+  35%{box-shadow:0 0 0 9px color-mix(in srgb,var(--success) 40%,transparent)}
+  100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 0%,transparent)}
+}
+
+/* Richtige Quizantwort und abgeschlossene Lektion: kurzes Aufpoppen des Hakens bzw. der Rückmeldung. */
+@keyframes rpPopIn{0%{opacity:0;transform:translateY(6px) scale(.97)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:none}}
+@keyframes rpCheck{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.35);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes rpShine{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+
+@media (prefers-reduced-motion:no-preference){
+  .rp-hit{animation:rpHit 1.2s ease-out both}
+  .qfeedback.show.correct{animation:rpPopIn .42s cubic-bezier(.2,.9,.3,1.2) both}
+  .opt.is-correct::after{display:inline-block;animation:rpCheck .5s cubic-bezier(.2,.9,.3,1.6) .1s both}
+  .complete-toggle.on{animation:rpPopIn .45s cubic-bezier(.2,.9,.3,1.2) both}
+  .toast.celebrate{position:relative;overflow:hidden}
+  .toast.celebrate::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,color-mix(in srgb,var(--accent) 28%,transparent) 50%,transparent 70%);animation:rpShine .9s ease-out .15s both;pointer-events:none}
+}
+@media (prefers-reduced-motion:reduce){.rp-fx{display:none}}

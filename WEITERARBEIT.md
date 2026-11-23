@@ -264,6 +264,18 @@ Dateien: `assets/guided-practice*.js/css`, `guided-worker.js`, `guided-sandbox.h
 Nächster Ausbau: mehr themenspezifische Aufgaben je Lektion und vollständige
 Projekte; keine freie serverseitige Codeausführung ohne separate harte Isolation.
 
+Werkstatt-Modus und Aufgaben-Lazy-Load (23.11.2026): 94 schwere Aufgaben in 21 Spuren, je Spur eine Datei
+`assets/workshop/<spur>.js` plus `core.js` (lazy über `rpPracticeSetMode`/`rpPracticeLoadWorkshop`), jedes Codemodul mit
+mindestens einer Aufgabe (Liste `CODE_MODULES` in `tests/workshop.spec.mjs`). Rote Fehlermarkierung im Editor
+(`guided-practice.js`: Spiegel, `rpScan`, `rpEvaluate`); Regeln `required`/`forbidden`, JS-Syntax- und Laufzeitzeilen
+aus `guided-sandbox.html`/`guided-worker.js` (`HEADER_LINES` = Kopfzeilen vor dem Lernercode). `code-theme.js/css` darf
+den Spiegel nicht umfärben (Ausnahmen `.gp-ed-mirror`). Shell/YAML: `#` ist nur am Wortanfang ein Kommentar, `#!` in
+Zeile 1 gilt als Code (Shebang prüfbar). Übungsaufgaben: `assets/exercise-data.json` + Stubs im Start
+(`split-learning-bundle.mjs`, `rpLoadExercises`); neue Ansichten, die Aufgabentext/Lösung zeigen, brauchen ein Gate wie
+in `renderContentIntern`. Erfolgsrückmeldung (`assets/celebrate.js/.css`): siehe README; neue Abschlussstellen rufen
+`rpCelebrate`/`rpCelebrateAfterRender` auf. Ungeprüft: ABAP- und Dockerfile-Lösungen sowie Spring/JPA/JUnit nur per
+Syntax; die CI-Aufgabe nutzt einen Platzhalter-SHA.
+
 Der Nutzer hat anschließend die Überarbeitung **aller** PHP-/Laravel-Lektionen
 und danach aller JavaScript-/Vue-Einheiten beauftragt. Die nachstehenden älteren
 Haltepunkte dokumentieren den Verlauf und gelten nicht mehr als aktueller Umfang.

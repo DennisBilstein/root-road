@@ -445,6 +445,7 @@ fieldset.qcard p.badge{white-space:normal; border-radius:var(--r-sm);}
 .opt.is-correct::after{content:"✓" / ""; color:var(--correct-border);}
 .opt.is-wrong::after{content:"✗" / ""; color:var(--danger);}
 /* Erklärung bei richtiger Antwort: eingeklappt, mit dem Feedback-Text direkt davor. */
+.qnum{display:inline; margin-inline-end:var(--s2); font-family:var(--mono); font-size:.78rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim);}
 .qexplain{margin-top:var(--s2);}
 .qexplain summary{cursor:pointer; font-weight:600;}
 .qexplain p{margin:var(--s2) 0 0;}
@@ -704,6 +705,19 @@ fieldset.qcard p.badge{white-space:normal; border-radius:var(--r-sm);}
 .srs-opt.wrong::after{content:" ✗" / ""; color:var(--danger);}
 .srs-opt.wrong{border-color:var(--danger); background:var(--danger-bg); color:var(--danger);}
 .srs-opt:disabled{cursor:default;}
+/* Tastenhinweis nur, wo es eine Tastatur gibt; auf Touchgeräten wäre er Rauschen. */
+.opt-key{display:none;}
+.srs-opt:has(> .opt-key){display:flex; align-items:flex-start;}
+@media (hover:hover) and (pointer:fine){
+  .opt-key{display:inline-block; flex-shrink:0; min-width:1.4em; margin-inline-end:var(--s3); padding:0 5px; border:1px solid var(--border-strong); border-radius:var(--r-sm);
+    font-family:var(--mono); font-size:.78rem; text-align:center; color:var(--text-dim);}
+}
+/* Platzhalter beim Nachladen einer Lektion; ruhig, ohne Bewegung bei reduzierter Animation. */
+.skeleton{display:grid; gap:var(--s3); margin-top:var(--s4);}
+.skeleton span{display:block; height:14px; border-radius:var(--r-sm); background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2)); background-size:200% 100%; animation:skeletonShimmer 1.4s ease-in-out infinite;}
+.skeleton span:nth-child(2){width:92%;} .skeleton span:nth-child(3){width:76%;} .skeleton span:nth-child(4){width:84%;}
+@keyframes skeletonShimmer{from{background-position:200% 0;} to{background-position:-200% 0;}}
+@media (prefers-reduced-motion:reduce){.skeleton span{animation:none;}}
 .srs-explain{background:var(--surface-2); border-left:3px solid var(--accent); border-radius:var(--r-sm);
   padding:var(--s3) var(--s4); font-size:.87rem; color:var(--text-2);}
 details.srs-explain summary{cursor:pointer; font-weight:600; color:var(--text);}
@@ -747,10 +761,10 @@ details.srs-explain p{margin:var(--s2) 0 0;}
 .score-hero .score-sub{color:var(--text-dim); font-size:.88rem; margin-top:var(--s2);}
 .score-pass{color:var(--success);} .score-fail{color:var(--danger);}
 .topic-bar-row{display:flex; align-items:center; gap:var(--s3); margin-bottom:9px; font-size:.84rem;}
-.topic-bar-row .tname{min-width:152px; flex-shrink:0; color:var(--text-2);}
+.topic-bar-row .tname{flex:0 1 152px; min-width:0; overflow-wrap:anywhere; color:var(--text-2);}
 .topic-bar{flex:1; height:8px; background:var(--surface-3); border-radius:var(--r-full); overflow:hidden;}
 .topic-bar > div{height:100%; border-radius:var(--r-full); transition:width .5s;}
-.topic-bar-row .tval{min-width:50px; text-align:right; font-family:var(--mono); font-size:.76rem; color:var(--text-dim);}
+.topic-bar-row .tval{min-width:50px; flex-shrink:0; text-align:right; font-family:var(--mono); font-size:.76rem; color:var(--text-dim);}
 
 /* ---------- Algorithmus-Trainer ---------- */
 .trace-wrap{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:var(--s4); margin:var(--s4) 0;}
