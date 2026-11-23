@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-16T09:27:13.595Z",
+  "updatedAt": "2026-11-23T14:02:04.409Z",
   "cards": 1904,
   "learningContracts": 1904,
   "individuallyRevised": 1904,
@@ -38022,7 +38022,7 @@
     {
       "id": "js-m1-l8#0@2026-11-07-full-v3",
       "lessonId": "js-m1-l8",
-      "recall": "Beantworte „Zwei Instanzen derselben Vue-SFC deklarieren in script setup jeweils const offen = ref(false). Eine Instanz schaltet offen um. Was folgt für die andere?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg mit SFC und script setup“.",
+      "recall": "Beantworte „Zwei Instanzen derselben Vue-SFC deklarieren in script setup jeweils const offen = ref(false). Eine Instanz schaltet offen um. Was folgt für die andere?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg: Single-File-Komponenten und script setup“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38038,7 +38038,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue-Einstieg mit SFC und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue-Einstieg: Single-File-Komponenten und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38055,7 +38055,7 @@
     {
       "id": "js-m1-l8#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l8",
-      "recall": "Beantworte „In script setup steht const klicks = ref(0). Eine Funktion soll den Zähler erhöhen. Welche Anweisung ist dafür korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg mit SFC und script setup“.",
+      "recall": "Beantworte „In script setup steht const klicks = ref(0). Eine Funktion soll den Zähler erhöhen. Welche Anweisung ist dafür korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg: Single-File-Komponenten und script setup“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38071,7 +38071,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue-Einstieg mit SFC und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue-Einstieg: Single-File-Komponenten und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38088,7 +38088,7 @@
     {
       "id": "js-m1-l8#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l8",
-      "recall": "Beantworte „Eine importierte TaskCard soll in einer script-setup-SFC drei Aufgaben anzeigen. Jede Aufgabe besitzt eine stabile id. Welche Templateform erhält die Identität beim Sortieren?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg mit SFC und script setup“.",
+      "recall": "Beantworte „Eine importierte TaskCard soll in einer script-setup-SFC drei Aufgaben anzeigen. Jede Aufgabe besitzt eine stabile id. Welche Templateform erhält die Identität beim Sortieren?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue-Einstieg: Single-File-Komponenten und script setup“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38104,7 +38104,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue-Einstieg mit SFC und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue-Einstieg: Single-File-Komponenten und script setup“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38121,7 +38121,7 @@
     {
       "id": "js-m1-l9#0@2026-11-scenario-v1-polish1",
       "lessonId": "js-m1-l9",
-      "recall": "Beantworte „Vue 3.5: const {title} = defineProps(...) im selben script setup und const {count} = reactive({count:0}) sehen ähnlich aus. Welche Aussage ist präzise?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität, computed, watch und Lifecycle“.",
+      "recall": "Beantworte „Vue 3.5: const {title} = defineProps(...) im selben script setup und const {count} = reactive({count:0}) sehen ähnlich aus. Welche Aussage ist präzise?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität: ref, computed, watch und Aufräumen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38137,7 +38137,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Reaktivität, computed, watch und Lifecycle“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Reaktivität: ref, computed, watch und Aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38153,7 +38153,7 @@
     {
       "id": "js-m1-l9#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l9",
-      "recall": "Beantworte „Ein Dashboard soll aus tasks nur die offenen Aufgaben ableiten, ohne Netzwerk oder Stateänderung. Wo gehört diese Berechnung hin?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität, computed, watch und Lifecycle“.",
+      "recall": "Beantworte „Ein Dashboard soll aus tasks nur die offenen Aufgaben ableiten, ohne Netzwerk oder Stateänderung. Wo gehört diese Berechnung hin?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität: ref, computed, watch und Aufräumen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38169,7 +38169,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Reaktivität, computed, watch und Lifecycle“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Reaktivität: ref, computed, watch und Aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38186,7 +38186,7 @@
     {
       "id": "js-m1-l9#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l9",
-      "recall": "Beantworte „Ein Watcher lädt Details zur wechselnden id. Beim Wechsel muss der vorige Request aufgeräumt werden. Was gilt für onWatcherCleanup in Vue 3.5+?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität, computed, watch und Lifecycle“.",
+      "recall": "Beantworte „Ein Watcher lädt Details zur wechselnden id. Beim Wechsel muss der vorige Request aufgeräumt werden. Was gilt für onWatcherCleanup in Vue 3.5+?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität: ref, computed, watch und Aufräumen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38202,7 +38202,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Reaktivität, computed, watch und Lifecycle“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Reaktivität: ref, computed, watch und Aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38219,7 +38219,7 @@
     {
       "id": "js-m1-l9#3@2026-11-07-full-v3",
       "lessonId": "js-m1-l9",
-      "recall": "Beantworte „Vue 3.5+: const { title } = defineProps([\"title\"]) und const { count } = reactive({ count: 0 }) stehen im selben script setup. Welche Folge ist korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität, computed, watch und Lifecycle“.",
+      "recall": "Beantworte „Vue 3.5+: const { title } = defineProps([\"title\"]) und const { count } = reactive({ count: 0 }) stehen im selben script setup. Welche Folge ist korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Reaktivität: ref, computed, watch und Aufräumen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38235,7 +38235,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Reaktivität, computed, watch und Lifecycle“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Reaktivität: ref, computed, watch und Aufräumen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38353,7 +38353,7 @@
     {
       "id": "js-m1-l11#0@2026-11-scenario-v1",
       "lessonId": "js-m1-l11",
-      "recall": "Beantworte „Anfrage A startet, danach B. B liefert neue Daten, danach A alte Daten. Abort wurde auf A angefordert, der Fetch-Fake liefert trotzdem. Was muss die UI vor dem Schreiben prüfen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables, API-Zustände und Race-Sicherheit“.",
+      "recall": "Beantworte „Anfrage A startet, danach B. B liefert neue Daten, danach A alte Daten. Abort wurde auf A angefordert, der Fetch-Fake liefert trotzdem. Was muss die UI vor dem Schreiben prüfen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables: API-Zustände und Schutz vor veralteten Antworten“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38369,7 +38369,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Composables, API-Zustände und Race-Sicherheit“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Composables: API-Zustände und Schutz vor veralteten Antworten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38386,7 +38386,7 @@
     {
       "id": "js-m1-l11#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l11",
-      "recall": "Beantworte „Eine Suche lädt zuerst A und dann B. A scheitert erst, nachdem B erfolgreich angezeigt wird. Wo muss der Aktualitätscheck greifen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables, API-Zustände und Race-Sicherheit“.",
+      "recall": "Beantworte „Eine Suche lädt zuerst A und dann B. A scheitert erst, nachdem B erfolgreich angezeigt wird. Wo muss der Aktualitätscheck greifen?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables: API-Zustände und Schutz vor veralteten Antworten“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38402,7 +38402,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Composables, API-Zustände und Race-Sicherheit“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Composables: API-Zustände und Schutz vor veralteten Antworten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38420,7 +38420,7 @@
     {
       "id": "js-m1-l11#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l11",
-      "recall": "Beantworte „Eine Suche bekommt für den aktuellen Begriff erfolgreich []. Welcher Zustand unterscheidet das fachlich von einem fehlgeschlagenen Request?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables, API-Zustände und Race-Sicherheit“.",
+      "recall": "Beantworte „Eine Suche bekommt für den aktuellen Begriff erfolgreich []. Welcher Zustand unterscheidet das fachlich von einem fehlgeschlagenen Request?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables: API-Zustände und Schutz vor veralteten Antworten“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38436,7 +38436,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Composables, API-Zustände und Race-Sicherheit“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Composables: API-Zustände und Schutz vor veralteten Antworten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38453,7 +38453,7 @@
     {
       "id": "js-m1-l11#3@2026-11-07-full-v3",
       "lessonId": "js-m1-l11",
-      "recall": "Beantworte „B wurde nach A gestartet und liefert zuerst neue Daten. Ein Fetch-Fake liefert A trotz angefordertem Abort anschließend aus. Was verhindert das Überschreiben?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables, API-Zustände und Race-Sicherheit“.",
+      "recall": "Beantworte „B wurde nach A gestartet und liefert zuerst neue Daten. Ein Fetch-Fake liefert A trotz angefordertem Abort anschließend aus. Was verhindert das Überschreiben?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Composables: API-Zustände und Schutz vor veralteten Antworten“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38469,7 +38469,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Composables, API-Zustände und Race-Sicherheit“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Composables: API-Zustände und Schutz vor veralteten Antworten“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38487,7 +38487,7 @@
     {
       "id": "js-m1-l12#0@2026-11-07-full-v3",
       "lessonId": "js-m1-l12",
-      "recall": "Beantworte „Ein Vue-Router-Guard leitet nicht angemeldete Personen von /admin weg. Ein direkter API-Aufruf liefert trotzdem alle Konten. Wo liegt die notwendige Korrektur?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router, Navigation und Backendgrenzen“.",
+      "recall": "Beantworte „Ein Vue-Router-Guard leitet nicht angemeldete Personen von /admin weg. Ein direkter API-Aufruf liefert trotzdem alle Konten. Wo liegt die notwendige Korrektur?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router: Navigation, Lazy Loading und Backendgrenzen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38503,7 +38503,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue Router, Navigation und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue Router: Navigation, Lazy Loading und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38521,7 +38521,7 @@
     {
       "id": "js-m1-l12#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l12",
-      "recall": "Beantworte „Eine Ansicht bleibt zwischen /tasks/10 und /tasks/11 als dieselbe Komponenteninstanz bestehen. Details wurden nur beim Mount geladen. Welche Reparatur passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router, Navigation und Backendgrenzen“.",
+      "recall": "Beantworte „Eine Ansicht bleibt zwischen /tasks/10 und /tasks/11 als dieselbe Komponenteninstanz bestehen. Details wurden nur beim Mount geladen. Welche Reparatur passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router: Navigation, Lazy Loading und Backendgrenzen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38537,7 +38537,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue Router, Navigation und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue Router: Navigation, Lazy Loading und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38554,7 +38554,7 @@
     {
       "id": "js-m1-l12#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l12",
-      "recall": "Beantworte „Eine ungespeicherte Bearbeitung soll beim Verlassen der Route vor Datenverlust warnen. Welcher Mechanismus adressiert diese Navigation?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router, Navigation und Backendgrenzen“.",
+      "recall": "Beantworte „Eine ungespeicherte Bearbeitung soll beim Verlassen der Route vor Datenverlust warnen. Welcher Mechanismus adressiert diese Navigation?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Vue Router: Navigation, Lazy Loading und Backendgrenzen“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38570,7 +38570,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Vue Router, Navigation und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Vue Router: Navigation, Lazy Loading und Backendgrenzen“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38587,7 +38587,7 @@
     {
       "id": "js-m1-l13#0@2026-11-scenario-v1",
       "lessonId": "js-m1-l13",
-      "recall": "Beantworte „const {tasks} = store liefert in einer Komponente einen alten Eindruck nach store.replace(). Welcher Ansatz erhält beim Destrukturieren den Bezug auf Pinia-State?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia, Zustandsarchitektur und storeToRefs“.",
+      "recall": "Beantworte „const {tasks} = store liefert in einer Komponente einen alten Eindruck nach store.replace(). Welcher Ansatz erhält beim Destrukturieren den Bezug auf Pinia-State?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia: Zustand teilen, Aktionen und storeToRefs“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38603,7 +38603,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Pinia, Zustandsarchitektur und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Pinia: Zustand teilen, Aktionen und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38619,7 +38619,7 @@
     {
       "id": "js-m1-l13#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l13",
-      "recall": "Beantworte „Eine Pinia-Store-Action soll in einer Komponente destrukturiert verwendet werden, daneben ein reaktives tasks-Feld. Welche Kombination passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia, Zustandsarchitektur und storeToRefs“.",
+      "recall": "Beantworte „Eine Pinia-Store-Action soll in einer Komponente destrukturiert verwendet werden, daneben ein reaktives tasks-Feld. Welche Kombination passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia: Zustand teilen, Aktionen und storeToRefs“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38635,7 +38635,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Pinia, Zustandsarchitektur und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Pinia: Zustand teilen, Aktionen und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38652,7 +38652,7 @@
     {
       "id": "js-m1-l13#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l13",
-      "recall": "Beantworte „Zwei Ansichten sollen dieselbe Aufgabenliste bearbeiten, ein Dialog hat zusätzlich einen nur lokalen Draft. Welche Zustandsaufteilung passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia, Zustandsarchitektur und storeToRefs“.",
+      "recall": "Beantworte „Zwei Ansichten sollen dieselbe Aufgabenliste bearbeiten, ein Dialog hat zusätzlich einen nur lokalen Draft. Welche Zustandsaufteilung passt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia: Zustand teilen, Aktionen und storeToRefs“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38668,7 +38668,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Pinia, Zustandsarchitektur und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Pinia: Zustand teilen, Aktionen und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38686,7 +38686,7 @@
     {
       "id": "js-m1-l13#3@2026-11-07-full-v3",
       "lessonId": "js-m1-l13",
-      "recall": "Beantworte „Eine Action ersetzt store.tasks vollständig. const { tasks } = store zeigte zuvor auf die alte Liste. Welche Bindung verfolgt auch den Ersatz des Storefelds?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia, Zustandsarchitektur und storeToRefs“.",
+      "recall": "Beantworte „Eine Action ersetzt store.tasks vollständig. const { tasks } = store zeigte zuvor auf die alte Liste. Welche Bindung verfolgt auch den Ersatz des Storefelds?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Pinia: Zustand teilen, Aktionen und storeToRefs“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38702,7 +38702,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Pinia, Zustandsarchitektur und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Pinia: Zustand teilen, Aktionen und storeToRefs“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38719,7 +38719,7 @@
     {
       "id": "js-m1-l14#0@2026-11-07-full-v3",
       "lessonId": "js-m1-l14",
-      "recall": "Beantworte „Ein Unit-Test mit DOM-Simulation ist grün. Welche zusätzliche Prüfung benötigt einen echten Browser besonders direkt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Unit-, Komponenten- und E2E-Tests“.",
+      "recall": "Beantworte „Ein Unit-Test mit DOM-Simulation ist grün. Welche zusätzliche Prüfung benötigt einen echten Browser besonders direkt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38735,7 +38735,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Unit-, Komponenten- und E2E-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38752,7 +38752,7 @@
     {
       "id": "js-m1-l14#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l14",
-      "recall": "Beantworte „Ein E2E-Test klickt Speichern und wartet immer genau 500 ms. Unter CI ist er instabil. Welche Änderung prüft Verhalten statt angenommener Geschwindigkeit?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Unit-, Komponenten- und E2E-Tests“.",
+      "recall": "Beantworte „Ein E2E-Test klickt Speichern und wartet immer genau 500 ms. Unter CI ist er instabil. Welche Änderung prüft Verhalten statt angenommener Geschwindigkeit?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38768,7 +38768,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Unit-, Komponenten- und E2E-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38785,7 +38785,7 @@
     {
       "id": "js-m1-l14#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l14",
-      "recall": "Beantworte „Ein Komponententest soll beweisen, dass ein Child nach Klick toggle mit id=17 emittiert. Welche Assertion trifft diesen Vertrag?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Unit-, Komponenten- und E2E-Tests“.",
+      "recall": "Beantworte „Ein Komponententest soll beweisen, dass ein Child nach Klick toggle mit id=17 emittiert. Welche Assertion trifft diesen Vertrag?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38801,7 +38801,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Unit-, Komponenten- und E2E-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Tests: Unit-, Komponenten- und Ende-zu-Ende-Tests“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38818,7 +38818,7 @@
     {
       "id": "js-m1-l15#0@2026-11-07-full-v3",
       "lessonId": "js-m1-l15",
-      "recall": "Beantworte „Ein Team entfernt Source Maps und nennt den eingebauten API-Schlüssel nun geheim. Welche Bewertung ist korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Security, Accessibility, Performance und Deployment“.",
+      "recall": "Beantworte „Ein Team entfernt Source Maps und nennt den eingebauten API-Schlüssel nun geheim. Welche Bewertung ist korrekt?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Sicherheit, Barrierefreiheit, Performance und Deployment“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38834,7 +38834,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Security, Accessibility, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Sicherheit, Barrierefreiheit, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38852,7 +38852,7 @@
     {
       "id": "js-m1-l15#1@2026-11-07-full-v3",
       "lessonId": "js-m1-l15",
-      "recall": "Beantworte „Ein Kommentar wird aus einer fremden Quelle geladen. Eine Vue-Komponente nutzt v-html für ungeprüftes Markup. Welche Änderung beseitigt diesen konkreten HTML-Injektionspfad, wenn nur Text nötig ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Security, Accessibility, Performance und Deployment“.",
+      "recall": "Beantworte „Ein Kommentar wird aus einer fremden Quelle geladen. Eine Vue-Komponente nutzt v-html für ungeprüftes Markup. Welche Änderung beseitigt diesen konkreten HTML-Injektionspfad, wenn nur Text nötig ist?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Sicherheit, Barrierefreiheit, Performance und Deployment“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38868,7 +38868,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Security, Accessibility, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Sicherheit, Barrierefreiheit, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [
@@ -38885,7 +38885,7 @@
     {
       "id": "js-m1-l15#2@2026-11-07-full-v3",
       "lessonId": "js-m1-l15",
-      "recall": "Beantworte „Nach einem SPA-Deployment funktioniert die Startseite, aber ein direkter Aufruf von /tasks/17 liefert vom Webserver 404. Welche Konfiguration fehlt typischerweise bei History-Routing?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Security, Accessibility, Performance und Deployment“.",
+      "recall": "Beantworte „Nach einem SPA-Deployment funktioniert die Startseite, aber ein direkter Aufruf von /tasks/17 liefert vom Webserver 404. Welche Konfiguration fehlt typischerweise bei History-Routing?“ zunächst ohne Optionen. Begründe deine Entscheidung im Zusammenhang mit „Sicherheit, Barrierefreiheit, Performance und Deployment“.",
       "criteria": [
         {
           "label": "Fachliche Entscheidung",
@@ -38901,7 +38901,7 @@
         },
         {
           "label": "Anwendung",
-          "reference": "Formuliere zu „Security, Accessibility, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
+          "reference": "Formuliere zu „Sicherheit, Barrierefreiheit, Performance und Deployment“ einen neuen Fall und ein beobachtbares Soll-Ergebnis. Bei einer reinen Begriffsfrage darf dies eine begründete Zuordnung statt ausführbarem Code sein."
         }
       ],
       "sources": [

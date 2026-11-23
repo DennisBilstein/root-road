@@ -20,3 +20,5 @@ for(const unit of units){
 }
 fs.writeFileSync(file,JSON.stringify(data,null,2)+'\n');
 console.log('JavaScript/Vue: '+module.lessons.length+' zusammenhängende Einheiten vorbereitet.');
+// Die Vue-Lektionen js-m1-l8 bis l16 stehen in content/java-vue/vue-basics.mjs und werden direkt danach angehängt.
+await import('./prepare-vue-basics.mjs');

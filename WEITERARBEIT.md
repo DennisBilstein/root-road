@@ -49,6 +49,11 @@ Serverthemen); Retry-After wird nicht ausgewertet (Übung); infinite.spec.ts nut
 Fokus und Tastatur nur strukturell in jsdom getestet; IETF-Entwurf zu Browser-Apps ist noch nicht final. Nicht abgedeckt
 (Lücken-Liste): SSR/Nuxt, i18n, KeepAlive, eigene Direktiven/Plugins, WebSocket, v-memo, DevTools.
 Neuinhalte ändern: Quelldateien in `content/java-vue/` anpassen, dann `node scripts/prepare-java-vue-content.mjs && npm run build`.
+Vue-Grundlagen (23.11.2026): `js-m1-l8` bis `l16` waren dünne Vorlagentexte und sind jetzt ausführliche Lektionen in `content/java-vue/vue-basics.mjs`
+(Generator `scripts/prepare-vue-basics.mjs`, wird von `revise-javascript-curriculum.mjs` aufgerufen; die alten Einheiten 8 bis 16 sind aus
+`content/javascript-curriculum.mjs` entfernt). Änderungen: Quelle anpassen, `node scripts/revise-javascript-curriculum.mjs &&
+node scripts/build-learning-content.mjs && npm run build`, danach `git checkout -- content/quality`, falls nur Zeitstempel abweichen.
+Neu im vue-lab: `src/lessons/basics/`, `tests/basics.spec.ts`; `src/router.ts` exportiert jetzt `routes`. Nicht geprüft: Browser, Screenreader, E2E.
 Unbekannte Datei rootpfad.iml ist lokale IDE-Datei, NICHT mitcommitten. Nicht committet (auf Wunsch committen).
 
 ## AKTUELL – Gesamtrevision auf ausdrücklichen Auftrag
@@ -264,7 +269,7 @@ Dateien: `assets/guided-practice*.js/css`, `guided-worker.js`, `guided-sandbox.h
 Nächster Ausbau: mehr themenspezifische Aufgaben je Lektion und vollständige
 Projekte; keine freie serverseitige Codeausführung ohne separate harte Isolation.
 
-Werkstatt-Modus und Aufgaben-Lazy-Load (23.11.2026): 94 schwere Aufgaben in 21 Spuren, je Spur eine Datei
+Werkstatt-Modus und Aufgaben-Lazy-Load (23.11.2026): 107 schwere Aufgaben in 21 Spuren, je Spur eine Datei
 `assets/workshop/<spur>.js` plus `core.js` (lazy über `rpPracticeSetMode`/`rpPracticeLoadWorkshop`), jedes Codemodul mit
 mindestens einer Aufgabe (Liste `CODE_MODULES` in `tests/workshop.spec.mjs`). Rote Fehlermarkierung im Editor
 (`guided-practice.js`: Spiegel, `rpScan`, `rpEvaluate`); Regeln `required`/`forbidden`, JS-Syntax- und Laufzeitzeilen

@@ -1,6 +1,7 @@
 # Root Road JavaScript-/Vue-Lernlabor
 
-Eigenes zusammenhängendes Beispiel für `js-m1-l6` bis `js-m1-l16`. Seit 12.11.2026 zusätzlich
+Eigenes zusammenhängendes Beispiel für `js-m1-l6` bis `js-m1-l16` (Vue-Grundlagen; zusätzlich `src/lessons/basics/` und
+`tests/basics.spec.ts` für Einstieg, Reaktivität, Router und Pinia). Seit 12.11.2026 zusätzlich
 die Belege für `js-m2` (Komponenten-Architektur, `src/lessons/components`, `src/lessons/injection`,
 `tests/components.spec.ts`) und `js-m3` (Formulare und Serverdaten mit Zod 4 und TanStack Query,
 `src/lessons/forms`, `src/lessons/data`, `tests/data.spec.ts`, `tests/fakeServer.ts`) sowie `js-m4`

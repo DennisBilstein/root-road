@@ -77,6 +77,10 @@ drei Quizfragen mit Begründungen und Quellen:
 Quellen der Inhalte: `content/java-vue/*.mjs` (eigene Texte). Generator: `node scripts/prepare-java-vue-content.mjs`
 schreibt die Module in `content/learning-refinements.json`; danach `npm run build`. Code-Ausschnitte werden beim Erzeugen
 aus den Lab-Dateien gelesen. Vier Modulabnahmen: `content/assessments-java-vue.json`.
+Die Vue-Grundlagen (`js-m1-l8` bis `js-m1-l16`: Einstieg, Reaktivität, Props/Emits/Slots, Composables, Router, Pinia, Tests,
+Sicherheit/Deployment, Abschlussprojekt) stehen in `content/java-vue/vue-basics.mjs`; `node scripts/revise-javascript-curriculum.mjs`
+erzeugt `js-m1-l1` bis `l7` und hängt sie über `scripts/prepare-vue-basics.mjs` an. Belege: `content/examples/vue-lab`
+(`src/lessons/basics/`, `tests/basics.spec.ts`, `tests/learning.spec.ts`; 125 Tests in 11 Dateien). Danach `node scripts/build-learning-content.mjs && npm run build`.
 
 Ausführbare Belege (Stand 12.11.2026): `content/examples/java-modern` (JDK 21 und 26; Structured Concurrency mit
 `--enable-preview`, Gatherers erst ab JDK 24), `content/examples/spring-lab` (Spring Boot 4.1.2, Maven Wrapper; 18 Tests, alle bestanden; der Testcontainers-Test
@@ -307,7 +311,7 @@ Alle anderen Spuren kennzeichnen die Prüfung als Codeergänzung ohne Laufzeit.
 Kein beliebiger PHP-/Java-/ABAP-Code wird auf dem App-Server ausgeführt.
 Details und Grenzen: `reports/Geführte Codewerkstatt.md`.
 
-**Werkstatt-Modus (schwere Aufgaben):** Über den Umschalter „Werkstatt · schwer, mehr Code“ gibt es 94 längere
+**Werkstatt-Modus (schwere Aufgaben):** Über den Umschalter „Werkstatt · schwer, mehr Code“ gibt es 107 längere
 Aufgaben in 21 Spuren; jedes Codemodul (Programmierung, Datenbank, Web, Git, Node.js, Python, Linux, Docker, CI/CD,
 Web-Sicherheit …) hat mindestens eine Aufgabe. Netzwerk-, UML-, Kalkulations-, Hardware- und KI-Recht-Module
 sind bewusst ausgenommen. Die Aufgaben liegen je Spur in `assets/workshop/<spur>.js` (plus `core.js` mit den
