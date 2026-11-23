@@ -1681,7 +1681,7 @@ function lfFilterZeile(){
 var rechtTab = 'impressum';
 function setzeRecht(t){ rechtTab = t; renderContent(); }
 function luecke(was){
-  return '<mark class="luecke">' + esc(was) + '</mark>';
+  return '<mark class="luecke">' + was + '</mark>';
 }
 function renderRecht(){
   var h = '<div class="breadcrumb">Rechtliches</div><h1>Impressum, Datenschutz &amp; Nutzung</h1>';

@@ -131,3 +131,16 @@ test('CSP erlaubt Skripte nur von der eigenen Herkunft; nur die Sandbox der Code
   }));
   expect(result).toEqual({ ran: false, violation: 'script-src-elem' });
 });
+
+test('Platzhalter in Impressum und Datenschutz zeigen Umlaute statt HTML-Entities', async ({ page }) => {
+  await page.goto('/#/recht');
+  await page.waitForFunction(() => window.RP_APP_READY);
+  for (const tab of ['impressum', 'datenschutz', 'nutzung']) {
+    await page.evaluate((name) => setzeRecht(name), tab);
+    await expect(page.locator('#content mark.luecke').first(), tab).toBeVisible();
+    const marks = await page.locator('#content mark.luecke').allTextContents();
+    expect(marks.filter((text) => /&[a-z]+;/i.test(text)), tab).toEqual([]);
+  }
+  await page.evaluate(() => setzeRecht('impressum'));
+  await expect(page.locator('#content mark.luecke', { hasText: 'Straße und Hausnummer' })).toBeVisible();
+});

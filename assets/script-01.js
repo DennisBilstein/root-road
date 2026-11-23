@@ -17777,8 +17777,9 @@ function lfFilterZeile(){
 var rechtTab = 'impressum';
 function setzeRecht(t){ rechtTab = t; renderContent(); }
 
+/* Der Text sind feste Platzhalter-Strings mit HTML-Entities (&szlig;, &uuml;); sie werden bewusst nicht noch einmal maskiert. */
 function luecke(was){
-  return '<mark class="luecke">' + esc(was) + '</mark>';
+  return '<mark class="luecke">' + was + '</mark>';
 }
 
 function renderRecht(){
