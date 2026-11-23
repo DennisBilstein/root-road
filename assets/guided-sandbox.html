@@ -4,8 +4,21 @@
 // Parent supplies a fixed worker source. Learner code executes only in this
 // child worker, with no same-origin privileges or network credentials.
 let worker;
+// Syntaxprüfung ohne Ausführung: Der Code wird nur in eine nie aufgerufene Funktion eingebettet und geparst. Das Fehlerereignis nennt Zeile und Spalte.
+function checkSyntax(code){
+  let found=null;
+  const onError=function(event){found={line:Math.max(1,event.lineno-1),col:event.colno,message:String(event.message).replace(/^Uncaught\s+/,'')};event.preventDefault();};
+  addEventListener('error',onError);
+  const script=document.createElement('script');
+  script.textContent='(function(){"use strict";\n'+code+'\n});';
+  document.head.appendChild(script);script.remove();
+  removeEventListener('error',onError);
+  return found;
+}
 addEventListener('message',function(event){
-  if(event.source!==parent||event.data?.type!=='start')return;
+  if(event.source!==parent)return;
+  if(event.data?.type==='syntax'){parent.postMessage({type:'rp-practice-syntax',token:event.data.token,error:checkSyntax(String(event.data.code))},'*');return;}
+  if(event.data?.type!=='start')return;
   worker?.terminate();
   const blob=new Blob([event.data.workerSource],{type:'text/javascript'});
   const url=URL.createObjectURL(blob);

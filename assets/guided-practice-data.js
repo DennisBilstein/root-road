@@ -76,3 +76,13 @@ var RP_PRACTICE_TRACKS = [
     {title:'Transfer: gerade Zahlen wählen',text:'Ergänze den Restoperator für die Prüfung auf gerade Zahlen.',code:'WENN zahl [[0]] 2 = 0 DANN\n  AUSGABE zahl\nENDEWENN',answers:[['MOD','mod']],hint:'Nicht Division ohne Rest, sondern der Rest ist entscheidend.',why:'Gerade Zahlen hinterlassen bei Division durch 2 keinen Rest. Auch 0 ist gerade.'}
   ]}
 ];
+
+/* Spuren, die nur aus Werkstattaufgaben bestehen (kein geführter Kurzmodus). Die Aufgaben liegen in assets/workshop/<spur>.js. */
+var RP_WORKSHOP_TRACKS = [
+  {id:'node',title:'Node.js',path:'node',lesson:'node-m1-l1',intro:'Schreibe Node.js-Code mit Event Loop, Modulen und HTTP-Handlern. Funktionen laufen isoliert mit Tests, größere Stücke werden mit Regeln geprüft.',source:'https://nodejs.org/docs/latest/api/',tasks:[]},
+  {id:'linux',title:'Linux & Shell',path:'linux',lesson:'lx-m1-l1',intro:'Schreibe Shell-Befehle und Skripte. Geprüft werden Struktur und gefährliche Muster, nichts wird auf einem Server ausgeführt.',source:'https://www.gnu.org/software/bash/manual/',tasks:[]},
+  {id:'python',title:'Python',path:'python',lesson:'py-m1-l1',intro:'Schreibe Python-Funktionen mit Typangaben und sauberer Fehlerbehandlung. Geprüft werden Struktur und typische Fehler, kein Python wird im Browser ausgeführt.',source:'https://docs.python.org/3/',tasks:[]},
+  {id:'docker',title:'Docker',path:'docker',lesson:'dk-m1-l1',intro:'Schreibe Dockerfile und Compose-Dateien für sichere, kleine Images. Geprüft werden Anweisungen und typische Fehler, kein Container wird gestartet.',source:'https://docs.docker.com/reference/dockerfile/',tasks:[]},
+  {id:'cicd',title:'CI/CD',path:'cicd',lesson:'ci-m1-l1',intro:'Schreibe GitHub-Actions-Workflows mit minimalen Rechten und gepinnten Actions. Geprüft wird die Struktur, kein Workflow läuft.',source:'https://docs.github.com/actions',tasks:[]},
+  {id:'websec',title:'Web-Sicherheit',path:'websec',lesson:'ws-m1-l1',intro:'Schreibe sichere Varianten typischer Schwachstellen: Ausgabe kodieren, Header setzen, Sitzungen härten. Geprüft werden Muster, kein echter Angriff.',source:'https://owasp.org/www-project-cheat-sheets/',tasks:[]}
+];

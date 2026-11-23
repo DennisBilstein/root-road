@@ -13,7 +13,7 @@ var rpOriginalLanguage=rbSprache;
 rbSprache=function(lang){var value=String(lang||'').toLowerCase();if(/vue|sfc/.test(value))return'vue';if(/typescript|javascript|node|\bjs\b|\bts\b/.test(value))return'javascript';if(/abap|cds/.test(value))return'abap';if(/^java\b/.test(value))return'java';if(/html|xml/.test(value)&&!/blade|php/.test(value))return'html';if(/css|scss/.test(value))return'css';return rpOriginalLanguage(lang);};
 function rpColorCode(root){
   root.querySelectorAll('pre').forEach(function(pre){
-    if(pre.matches('.gp-feedback,.qfeedback')||pre.querySelector('input,textarea,button')||pre.closest('.trace-code'))return;
+    if(pre.matches('.gp-feedback,.qfeedback,.gp-ed-mirror')||pre.querySelector('input,textarea,button')||pre.closest('.trace-code'))return;
     var text=pre.textContent;if(pre.dataset.tokyoText===text)return;
     var label=pre.closest('.code-block')?.querySelector('.code-lang')?.textContent||pre.dataset.language||'';
     if(!label){if(/^\s*</.test(text))label='html';else if(/<\?php/.test(text))label='php';else if(/\b(const|let|import|function)\b/.test(text))label='javascript';}

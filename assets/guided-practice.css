@@ -11,3 +11,80 @@
 .gp-editor details pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .gp-editor textarea:focus-visible,.gp-code input:focus-visible,.gp-actions button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:1000px){.gp-workbench{grid-template-columns:1fr}.gp-instructions,.gp-editor{padding:16px}}
+
+/* Umschalter Geführt / Werkstatt */
+.gp-modes{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.gp-modes button{min-height:44px}
+.gp-modes [aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.gp-details{margin:0 0 12px;padding-inline-start:1.2em}
+.gp-details li{margin-bottom:4px}
+.gp-note{font-size:.84rem;color:var(--text-dim)}
+
+/* Editor: durchsichtiges Textfeld über einem Spiegel, der die roten Markierungen zeichnet. Beide teilen Schrift, Abstand und Scrollposition. */
+.gp-editor{--gp-gutter:3.2rem;--gp-pad:14px}
+.gp-ed{display:grid;position:relative}
+.gp-ed>*{grid-area:1/1}
+.gp-ed textarea,.gp-ed-mirror{box-sizing:border-box;margin:0;padding:var(--gp-pad) var(--gp-pad) var(--gp-pad) calc(var(--gp-gutter) + var(--gp-pad));font:14px/1.7 var(--mono);font-variant-ligatures:none;tab-size:2;letter-spacing:0;white-space:pre;overflow-wrap:normal;word-break:normal}
+.gp-ed textarea{width:100%;min-height:240px;resize:vertical;overflow:auto;background:transparent;color:var(--code-text);caret-color:var(--code-text);border:1px solid var(--border-strong);border-radius:6px;position:relative;z-index:1}
+.gp-ed-mirror{background:var(--code-bg);border:1px solid transparent;border-radius:6px;overflow:hidden;pointer-events:none;color:transparent;counter-reset:gp-line}
+.gp-ln{display:block;position:relative}
+.gp-ln::before{counter-increment:gp-line;content:counter(gp-line);position:absolute;inset-inline-start:calc(-1 * var(--gp-gutter));width:calc(var(--gp-gutter) - 12px);text-align:end;color:var(--code-dim);font-size:.85em}
+.gp-ln-err::before{color:#ff8a84;font-weight:700}
+.gp-err{color:transparent;background:rgba(240,116,110,.3);border-radius:2px;text-decoration:underline wavy #ff8a84;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.gp-ed textarea[aria-invalid=true]{border-color:#ff8a84}
+.gp-ed textarea:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* Fehlerliste, Anforderungen */
+.gp-diag{margin:8px 0 12px;padding:0;list-style:none;display:grid;gap:6px}
+.gp-diag li{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;padding:8px 10px;border-left:3px solid var(--danger);background:var(--danger-bg);border-radius:var(--r-sm);color:var(--text)}
+.gp-diag li>span{overflow-wrap:anywhere}
+.gp-jump{min-height:44px;padding:4px 12px;font:inherit;font-size:.82rem;font-family:var(--mono);color:var(--danger);background:var(--surface);border:1px solid var(--danger);border-radius:var(--r-sm);cursor:pointer}
+.gp-jump:hover{background:var(--danger-bg)}
+.gp-jump:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.gp-diag-ok{margin:8px 0;padding:8px 10px;border-left:3px solid var(--correct-border);background:var(--correct-bg);border-radius:var(--r-sm);color:var(--text)}
+.gp-req{margin:0 0 12px;padding:0;list-style:none;display:grid;gap:4px}
+.gp-req li{display:flex;gap:8px;align-items:baseline;color:var(--text-2)}
+.gp-req-ok{color:var(--text)}
+.gp-req-bad{color:var(--danger);font-weight:600}
+.gp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Falsche Lücken in Ergänzungsaufgaben */
+.gp-code input.gp-bad{border-color:#ff8a84;background:var(--danger-bg);color:var(--text);text-decoration:underline wavy #ff8a84}
+
+/* Modulbezug und Aufgabenliste (Werkstatt) */
+.gp-module{margin:-4px 0 10px;color:var(--text-2);font-size:.9rem}
+.gp-module-lbl{display:inline-block;margin-inline-end:6px;padding:1px 8px;border:1px solid var(--border-strong);border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.gp-tasklist{margin:10px 0 14px;border:1px solid var(--border);border-radius:var(--r-sm);padding:2px 10px}
+.gp-tasklist summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600}
+.gp-tasklist ol{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px}
+.gp-go{width:100%;min-height:44px;padding:6px 10px;text-align:start;font:inherit;font-size:.9rem;color:var(--text);background:transparent;border:1px solid transparent;border-radius:var(--r-sm);cursor:pointer}
+.gp-go:hover{background:var(--surface-2,var(--surface));border-color:var(--border)}
+.gp-go[aria-current=step]{border-color:var(--accent);font-weight:700}
+.gp-go:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Erfolgsfeld nach einer gelösten Aufgabe: Ring mit Haken, Zusammenfassung, XP und der Weg zur nächsten Aufgabe. Grundzustand = Endzustand (ohne Animation vollständig sichtbar). */
+.gp-win{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:14px 0;padding:14px 16px;border:1px solid var(--correct-border);border-radius:var(--r-md);background:var(--correct-bg);color:var(--text)}
+.gp-win-ring{flex:none;width:52px;height:52px;fill:none;stroke:var(--correct-border);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.gp-win-ring circle{stroke-dasharray:145;transform-origin:center;transform:rotate(-90deg)}
+.gp-win-ring path{stroke-dasharray:40}
+.gp-win-text{flex:1 1 12rem;min-width:0}
+.gp-win-title{margin:0;font-family:var(--display);font-weight:700;font-size:1.1rem;line-height:1.2}
+.gp-win-sub{margin:2px 0 0;font-size:.9rem;overflow-wrap:anywhere}
+.gp-win-xp{font-family:var(--mono);font-weight:700;font-size:.9rem;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--correct-border)}
+.gp-win-next{min-height:44px;margin-inline-start:auto}
+.gp-workbench.gp-solved .gp-editor{border-color:var(--correct-border)}
+.gp-workbench.gp-solved .gp-ed textarea{border-color:var(--correct-border)}
+.gp-workbench.gp-solved .gp-req-ok>span[aria-hidden]{color:var(--correct-border)}
+@keyframes gpWinIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes gpRing{from{stroke-dashoffset:145}to{stroke-dashoffset:0}}
+@keyframes gpCheck{from{stroke-dashoffset:40}to{stroke-dashoffset:0}}
+@keyframes gpTick{0%{transform:scale(0);opacity:0}60%{transform:scale(1.4);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes gpGlow{0%,100%{box-shadow:0 0 0 0 transparent}40%{box-shadow:0 0 0 6px color-mix(in srgb,var(--success) 35%,transparent)}}
+@media (prefers-reduced-motion:no-preference){
+  .gp-win.is-new{animation:gpWinIn .5s cubic-bezier(.2,.9,.3,1.2) both}
+  .gp-win.is-new .gp-win-ring circle{animation:gpRing .7s ease-out .1s both}
+  .gp-win.is-new .gp-win-ring path{animation:gpCheck .4s ease-out .65s both}
+  .gp-win.is-new .gp-win-xp{animation:gpTick .5s cubic-bezier(.2,.9,.3,1.5) .95s both}
+  .gp-workbench:has(.gp-win.is-new) .gp-req-ok>span[aria-hidden]{display:inline-block;animation:gpTick .45s cubic-bezier(.2,.9,.3,1.6) calc(var(--i,0) * 90ms + 150ms) both}
+  .gp-workbench:has(.gp-win.is-new) .gp-ed textarea{animation:gpGlow 1.1s ease-out both}
+}
