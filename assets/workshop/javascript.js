@@ -132,4 +132,100 @@ W.add('javascript',[
   hint:'Drehe das Problem um: Der Code geht einmal durch das Schema, die Besonderheiten jedes Formulars stehen als Daten im Schema.',
   why:'DRY heißt: Wissen steht genau einmal. Wenn drei Formulare dieselbe Prüfung kopieren, muss ein Fehler dreimal behoben werden. Ein Schema macht aus Code Daten – kürzer und testbar.'}
 ]);
+W.add('javascript',[
+{id:'js-w6',modules:['js-m1'],level:'schwer',type:'run',language:'javascript',functionName:'parseCsv',
+  title:'CSV mit Anführungszeichen zuverlässig einlesen',
+  text:'Implementiere parseCsv(text): Sie zerlegt CSV-Text (RFC 4180) in eine Liste von Zeilen, jede Zeile ist eine Liste von Texten. Ein einfaches split(",") reicht nicht.',
+  details:['Felder werden durch Kommas getrennt, Zeilen durch \\n oder \\r\\n.','Ein Feld in doppelten Anführungszeichen darf Kommas, Zeilenumbrüche und verdoppelte Anführungszeichen ("") enthalten; "" steht für ein einzelnes ".','Ein abschließender Zeilenumbruch erzeugt keine leere letzte Zeile. Ein leerer Text ergibt [].','Leere Felder bleiben erhalten ("a,,b" ergibt ["a","","b"]). Leerzeichen werden nicht entfernt.','Ein nie geschlossenes Anführungszeichen wirft einen Error mit dem Text "Anführungszeichen".','Gehe das Zeichen für Zeichen durch (Zustandsautomat), nutze kein regulärer-Ausdruck-Wunder.'],
+  starter:L('function parseCsv(text) {','  // Zustand: innerhalb von Anführungszeichen oder nicht','  return [];','}'),
+  cases:[
+    {name:'einfach',args:['a,b,c\n1,2,3'],expected:[['a','b','c'],['1','2','3']]},
+    {name:'leerer Text',args:[''],expected:[]},
+    {name:'abschließender Zeilenumbruch',args:['a,b\n'],expected:[['a','b']]},
+    {name:'CRLF',args:['a,b\r\nc,d\r\n'],expected:[['a','b'],['c','d']]},
+    {name:'leere Felder',args:['a,,b\n,,'],expected:[['a','','b'],['','','']]},
+    {name:'Komma im Anführungszeichen',args:['"Hallo, Welt",x'],expected:[['Hallo, Welt','x']]},
+    {name:'verdoppeltes Anführungszeichen',args:['"sie sagte ""ja""",x'],expected:[['sie sagte "ja"','x']]},
+    {name:'Zeilenumbruch im Feld',args:['"a\nb",c\nd,e'],expected:[['a\nb','c'],['d','e']]},
+    {name:'Leerzeichen bleiben',args:[' a , b '],expected:[[' a ',' b ']]},
+    {name:'offenes Anführungszeichen',args:['"offen,x'],throws:true,throwsMatch:'Anführungszeichen'}
+  ],
+  rules:[
+    bad(/\bvar\b/,'var ist veraltet – nutze const oder let.'),
+    bad(/[^=!<>]==[^=]/,'Verwende === statt ==, damit keine stille Typumwandlung passiert.'),
+    bad(/\.split\s*\(\s*["'],["']\s*\)/,'split(",") zerreißt Felder mit Kommas in Anführungszeichen. Lies Zeichen für Zeichen.')
+  ],
+  solution:L('function parseCsv(text) {','  const rows = [];','  let row = [];','  let field = "";','  let quoted = false;','  let started = false;','  for (let i = 0; i < text.length; i++) {','    const char = text[i];','    if (quoted) {','      if (char === \'"\') {','        if (text[i + 1] === \'"\') {','          field += \'"\';','          i++;','        } else {','          quoted = false;','        }','      } else {','        field += char;','      }','      continue;','    }','    if (char === \'"\') {','      quoted = true;','      started = true;','    } else if (char === ",") {','      row.push(field);','      field = "";','      started = true;','    } else if (char === "\\n" || char === "\\r") {','      if (char === "\\r" && text[i + 1] === "\\n") i++;','      row.push(field);','      rows.push(row);','      row = [];','      field = "";','      started = false;','    } else {','      field += char;','      started = true;','    }','  }','  if (quoted) throw new Error("Anführungszeichen nicht geschlossen");','  if (started || field !== "" || row.length > 0) {','    row.push(field);','    rows.push(row);','  }','  return rows;','}'),
+  hint:'Merke dir in einer Variablen, ob du gerade in Anführungszeichen bist. Nur außerhalb sind Komma und Zeilenumbruch Trennzeichen; innerhalb ist ein doppeltes " ein einzelnes ".',
+  why:'Fast jede selbstgebaute CSV-Verarbeitung scheitert an Kommas und Zeilenumbrüchen innerhalb von Feldern. Ein kleiner Zustandsautomat ist kürzer und sicherer als Sonderfall-Patches.'},
+{id:'js-w7',modules:['js-m1'],level:'schwer',type:'run',language:'javascript',functionName:'planOrder',
+  title:'Aufgabenreihenfolge mit Abhängigkeiten',
+  text:'Implementiere planOrder(tasks): Jede Aufgabe hat eine id und eine Liste deps mit den ids, die vorher erledigt sein müssen. Gib die ids in einer gültigen Reihenfolge zurück.',
+  details:['Eine Aufgabe erscheint erst, nachdem alle ihre Abhängigkeiten erschienen sind.','Bei freier Wahl gilt die Reihenfolge der Eingabe (stabil).','Eine Abhängigkeit auf eine unbekannte id wirft einen Error mit dem Text "unbekannt" und der id.','Ein Zyklus (a braucht b, b braucht a) wirft einen Error mit dem Text "Zyklus".','Doppelte ids in der Eingabe werfen einen Error mit dem Text "doppelt".','Die Eingabe bleibt unverändert.'],
+  starter:L('function planOrder(tasks) {','  return tasks.map((task) => task.id);','}'),
+  cases:[
+    {name:'bereits geordnet',args:[[{id:'a',deps:[]},{id:'b',deps:['a']}]],expected:['a','b']},
+    {name:'Abhängigkeit steht später',args:[[{id:'b',deps:['a']},{id:'a',deps:[]}]],expected:['a','b']},
+    {name:'stabile Reihenfolge bei freier Wahl',args:[[{id:'x',deps:[]},{id:'y',deps:[]},{id:'z',deps:['y']}]],expected:['x','y','z']},
+    {name:'Raute',args:[[{id:'d',deps:['b','c']},{id:'b',deps:['a']},{id:'c',deps:['a']},{id:'a',deps:[]}]],expected:['a','b','c','d']},
+    {name:'leere Liste',args:[[]],expected:[]},
+    {name:'Zyklus',args:[[{id:'a',deps:['b']},{id:'b',deps:['a']}]],throws:true,throwsMatch:'Zyklus'},
+    {name:'Selbstabhängigkeit',args:[[{id:'a',deps:['a']}]],throws:true,throwsMatch:'Zyklus'},
+    {name:'unbekannte Abhängigkeit',args:[[{id:'a',deps:['zzz']}]],throws:true,throwsMatch:'unbekannt'},
+    {name:'doppelte id',args:[[{id:'a',deps:[]},{id:'a',deps:[]}]],throws:true,throwsMatch:'doppelt'}
+  ],
+  rules:[
+    bad(/\bvar\b/,'var ist veraltet – nutze const oder let.'),
+    bad(/[^=!<>]==[^=]/,'Verwende === statt ==, damit keine stille Typumwandlung passiert.'),
+    bad(/\btasks\s*\.\s*sort\s*\(|\btasks\s*\.\s*(?:push|pop|shift|splice)\s*\(/,'Verändere die Eingabe nicht.')
+  ],
+  solution:L('function planOrder(tasks) {','  const byId = new Map();','  for (const task of tasks) {','    if (byId.has(task.id)) throw new Error("id doppelt: " + task.id);','    byId.set(task.id, task);','  }','  for (const task of tasks) {','    for (const dep of task.deps) {','      if (!byId.has(dep)) throw new Error("Abhängigkeit unbekannt: " + dep);','    }','  }','  const order = [];','  const state = new Map();','  function visit(id) {','    if (state.get(id) === "done") return;','    if (state.get(id) === "active") throw new Error("Zyklus bei " + id);','    state.set(id, "active");','    for (const dep of byId.get(id).deps) visit(dep);','    state.set(id, "done");','    order.push(id);','  }','  for (const task of tasks) visit(task.id);','  return order;','}'),
+  hint:'Tiefensuche: Besuche zuerst alle Abhängigkeiten, hänge dann die Aufgabe selbst an. Wer gerade „in Arbeit“ ist und nochmal erreicht wird, bildet einen Zyklus.',
+  why:'Abhängigkeitsauflösung steckt in Build-Werkzeugen, Paketmanagern und Migrationen. Wichtig ist das Erkennen von Zyklen, damit nichts endlos läuft.'},
+{id:'js-w8',modules:['js-m1'],level:'schwer',type:'run',language:'javascript',functionName:'simulateLru',
+  title:'LRU-Cache simulieren',
+  text:'Implementiere simulateLru(capacity, ops): ein Cache mit fester Größe, der bei Überlauf den am längsten ungenutzten Eintrag entfernt.',
+  details:['ops ist eine Liste von Befehlen: ["put", key, value] oder ["get", key].','put legt den Wert an oder überschreibt ihn; der Schlüssel gilt danach als zuletzt benutzt. Ist der Cache voll, fliegt zuvor der am längsten unbenutzte Schlüssel raus.','get liefert den Wert (oder null, wenn der Schlüssel fehlt) und markiert den Schlüssel als zuletzt benutzt.','Rückgabe: { results, keys }. results enthält je get-Befehl eine Antwort in der Reihenfolge der Befehle; keys sind die Schlüssel am Ende, vom ältesten zum neuesten.','Eine Kapazität unter 1 wirft einen Error mit dem Text "capacity". Nutze eine Map (sie merkt sich die Einfügereihenfolge).'],
+  starter:L('function simulateLru(capacity, ops) {','  return { results: [], keys: [] };','}'),
+  cases:[
+    {name:'einfaches put und get',args:[2,[['put','a',1],['get','a'],['get','b']]],expected:{results:[1,null],keys:['a']}},
+    {name:'ältester fliegt raus',args:[2,[['put','a',1],['put','b',2],['put','c',3],['get','a'],['get','c']]],expected:{results:[null,3],keys:['b','c']}},
+    {name:'get frischt auf',args:[2,[['put','a',1],['put','b',2],['get','a'],['put','c',3],['get','b'],['get','a']]],expected:{results:[1,null,1],keys:['c','a']}},
+    {name:'put überschreibt und frischt auf',args:[2,[['put','a',1],['put','b',2],['put','a',9],['put','c',3],['get','a'],['get','b']]],expected:{results:[9,null],keys:['c','a']}},
+    {name:'Wert 0 und leerer Text sind gültig',args:[2,[['put','x',0],['put','y',''],['get','x'],['get','y']]],expected:{results:[0,''],keys:['x','y']}},
+    {name:'Kapazität 1',args:[1,[['put','a',1],['put','b',2],['get','a'],['get','b']]],expected:{results:[null,2],keys:['b']}},
+    {name:'ungültige Kapazität',args:[0,[]],throws:true,throwsMatch:'capacity'}
+  ],
+  rules:[
+    bad(/\bvar\b/,'var ist veraltet – nutze const oder let.'),
+    bad(/[^=!<>]==[^=]/,'Verwende === statt ==, damit keine stille Typumwandlung passiert.'),
+    bad(/\bif\s*\(\s*!\s*(?:cache|map)\s*\.\s*get\s*\(/,'Wert 0 oder "" ist gültig: Prüfe mit has(), nicht mit der Wahrheit des Werts.')
+  ],
+  solution:L('function simulateLru(capacity, ops) {','  if (!Number.isInteger(capacity) || capacity < 1) throw new Error("capacity muss mindestens 1 sein");','  const cache = new Map();','  const results = [];','  for (const [command, key, value] of ops) {','    if (command === "get") {','      if (!cache.has(key)) {','        results.push(null);','        continue;','      }','      const current = cache.get(key);','      cache.delete(key);','      cache.set(key, current);','      results.push(current);','    } else if (command === "put") {','      if (cache.has(key)) cache.delete(key);','      else if (cache.size >= capacity) cache.delete(cache.keys().next().value);','      cache.set(key, value);','    }','  }','  return { results, keys: [...cache.keys()] };','}'),
+  hint:'Eine Map behält die Einfügereihenfolge. Löschst du einen Schlüssel und legst ihn neu an, wandert er ans Ende, der erste Schlüssel ist dann der älteste.',
+  why:'Caches begrenzen Speicher und Kosten. Die Regel „am längsten ungenutzt zuerst raus“ hält die häufig genutzten Daten bereit und ist mit einer Map in wenigen Zeilen umsetzbar.'},
+{id:'js-w9',modules:['js-m1','pp-m1'],level:'schwer',type:'run',language:'javascript',functionName:'mergeConfigJson',
+  title:'Konfigurationen zusammenführen ohne Prototype Pollution',
+  text:'Implementiere mergeConfigJson(baseJson, overrideJson): Beide Argumente sind JSON-Texte. Gib { merged, polluted } zurück.',
+  details:['merged ist das tief zusammengeführte Objekt: Objekte werden rekursiv gemischt, alle anderen Werte (auch Arrays und null) ersetzt der Überschreibwert.','Die Schlüssel "__proto__", "constructor" und "prototype" werden auf jeder Ebene ignoriert.','polluted ist true, wenn nach dem Zusammenführen ({}).polluted !== undefined gilt (sollte immer false sein).','Die geparsten Eingaben dürfen nicht verändert werden: Baue ein neues Objekt.','Ungültiges JSON wirft den Fehler von JSON.parse weiter (nicht verschlucken).'],
+  starter:L('function mergeConfigJson(baseJson, overrideJson) {','  return { merged: {}, polluted: false };','}'),
+  cases:[
+    {name:'einfach',args:['{"a":1,"b":2}','{"b":3,"c":4}'],expected:{merged:{a:1,b:3,c:4},polluted:false}},
+    {name:'tief gemischt',args:['{"db":{"host":"x","port":1}}','{"db":{"port":2}}'],expected:{merged:{db:{host:'x',port:2}},polluted:false}},
+    {name:'Arrays werden ersetzt',args:['{"a":[1,2,3]}','{"a":[9]}'],expected:{merged:{a:[9]},polluted:false}},
+    {name:'null überschreibt',args:['{"a":{"b":1}}','{"a":null}'],expected:{merged:{a:null},polluted:false}},
+    {name:'__proto__ wird ignoriert',args:['{}','{"__proto__":{"polluted":true}}'],expected:{merged:{},polluted:false}},
+    {name:'verschachtelt: constructor und prototype',args:['{"a":{}}','{"a":{"constructor":{"prototype":{"polluted":1}},"ok":1}}'],expected:{merged:{a:{ok:1}},polluted:false}},
+    {name:'Objekt ersetzt Zahl',args:['{"a":1}','{"a":{"b":2}}'],expected:{merged:{a:{b:2}},polluted:false}},
+    {name:'ungültiges JSON',args:['{','{}'],throws:true,throwsMatch:'JSON'}
+  ],
+  rules:[
+    bad(/\bvar\b/,'var ist veraltet – nutze const oder let.'),
+    bad(/[^=!<>]==[^=]/,'Verwende === statt ==, damit keine stille Typumwandlung passiert.'),
+    bad(/Object\s*\.\s*assign\s*\(\s*(?:base|a|target)\b|\bJSON\s*\.\s*parse\s*\([^)]*,\s*(?:function|\()/,'Weder Object.assign auf die Eingabe noch ein Reviver lösen das Problem: Filtere die gefährlichen Schlüssel beim Zusammenführen.')
+  ],
+  solution:L('const BLOCKED = new Set(["__proto__", "constructor", "prototype"]);','','function isPlainObject(value) {','  return value !== null && typeof value === "object" && !Array.isArray(value);','}','','function merge(base, override) {','  const result = {};','  for (const [key, value] of Object.entries(base)) {','    if (!BLOCKED.has(key)) result[key] = value;','  }','  for (const [key, value] of Object.entries(override)) {','    if (BLOCKED.has(key)) continue;','    result[key] = isPlainObject(value) && isPlainObject(result[key]) ? merge(result[key], value) : isPlainObject(value) ? merge({}, value) : value;','  }','  return result;','}','','function mergeConfigJson(baseJson, overrideJson) {','  const merged = merge(JSON.parse(baseJson), JSON.parse(overrideJson));','  return { merged, polluted: ({}).polluted !== undefined };','}'),
+  hint:'JSON.parse erzeugt „__proto__“ als ganz normalen eigenen Schlüssel. Wer ihn beim Zusammenführen blind kopiert, kann Object.prototype verändern.',
+  why:'Prototype Pollution entsteht, wenn fremde Schlüssel unkontrolliert in Objekte gemischt werden. Eine Sperrliste und ein neues Zielobjekt schließen die Lücke.'}
+]);
 })();

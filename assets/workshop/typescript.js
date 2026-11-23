@@ -42,4 +42,69 @@ var tasks=[
     why:'Generics bewahren Typinformation über die Funktion hinweg: Aus einer Liste von Tasks werden Gruppen von Tasks – ohne any und ohne Umwege.'}
 ];
 W.add('typescript',tasks);
+W.add('typescript',[
+{id:'typescript-w3',modules:['ts-m1'],level:'schwer',type:'write',language:'typescript',rows:34,
+  title:'Result-Typ mit Union und ausführlicher Prüfung',
+  text:'Baue einen kleinen Result-Typ, der Erfolg und Fehler im Typsystem trennt, und nutze ihn zum Einlesen eines Ports.',
+  details:['type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E } (Union mit ok als Unterscheidungsmerkmal).','function ok<T>(value: T): Result<T, never> und function err<E>(error: E): Result<never, E>.','function mapResult<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E>: Bei einem Fehler wird dieser unverändert weitergereicht.','function unwrapOr<T, E>(result: Result<T, E>, fallback: T): T.','function parsePort(input: string): Result<number>: nur ganze Zahlen von 1 bis 65535 sind gültig, sonst err mit einer Meldung. Prüfe mit Number(…) und Number.isInteger, nicht mit parseInt.','Kein any, keine Typzusicherung (as), kein @ts-ignore.'],
+  starter:L('// Schreibe hier Result, ok, err, mapResult, unwrapOr und parsePort','',''),
+  rules:[
+    need('type Result<T, E = string> als Union',/\btype\s+Result\s*<\s*T\s*,\s*E\s*=\s*string\s*>\s*=\s*\{\s*ok\s*:\s*true\s*;\s*value\s*:\s*T\s*\}\s*\|\s*\{\s*ok\s*:\s*false\s*;\s*error\s*:\s*E\s*\}/),
+    need('function ok<T>(value: T): Result<T, never>',/\bfunction\s+ok\s*<\s*T\s*>\s*\(\s*value\s*:\s*T\s*\)\s*:\s*Result\s*<\s*T\s*,\s*never\s*>/),
+    need('function err<E>(error: E): Result<never, E>',/\bfunction\s+err\s*<\s*E\s*>\s*\(\s*error\s*:\s*E\s*\)\s*:\s*Result\s*<\s*never\s*,\s*E\s*>/),
+    need('function mapResult mit drei Typparametern',/\bfunction\s+mapResult\s*<\s*T\s*,\s*U\s*,\s*E\s*>\s*\(\s*result\s*:\s*Result\s*<\s*T\s*,\s*E\s*>\s*,\s*fn\s*:\s*\(\s*value\s*:\s*T\s*\)\s*=>\s*U\s*\)\s*:\s*Result\s*<\s*U\s*,\s*E\s*>/),
+    need('mapResult prüft result.ok',/\bmapResult\b[\s\S]*?\bif\s*\(\s*!?\s*result\s*\.\s*ok\b/),
+    need('function unwrapOr<T, E>',/\bfunction\s+unwrapOr\s*<\s*T\s*,\s*E\s*>\s*\(\s*result\s*:\s*Result\s*<\s*T\s*,\s*E\s*>\s*,\s*fallback\s*:\s*T\s*\)\s*:\s*T/),
+    need('function parsePort(input: string): Result<number>',/\bfunction\s+parsePort\s*\(\s*input\s*:\s*string\s*\)\s*:\s*Result\s*<\s*number\s*>/),
+    need('Number.isInteger und Grenzen 1 und 65535',/\bNumber\s*\.\s*isInteger\s*\([\s\S]*?65535/),
+    bad(/\bany\b/,'any schaltet die Typprüfung aus – das ist hier der ganze Sinn des Typs.'),
+    bad(/\bas\s+(?!const\b)[A-Za-z{(\[]/,'Eine Typzusicherung (as) überstimmt den Compiler. Die Union lässt sich durch Prüfen von ok eingrenzen.'),
+    bad(/@ts-ignore|@ts-nocheck|@ts-expect-error/,'Unterdrücke keine Typfehler – behebe ihre Ursache.'),
+    bad(/\bparseInt\s*\(/,'parseInt("80abc") ergibt 80. Number("80abc") ergibt NaN und lässt sich sauber ablehnen.')
+  ],
+  solution:L('type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };','','function ok<T>(value: T): Result<T, never> {','  return { ok: true, value };','}','','function err<E>(error: E): Result<never, E> {','  return { ok: false, error };','}','','function mapResult<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {','  if (!result.ok) return result;','  return ok(fn(result.value));','}','','function unwrapOr<T, E>(result: Result<T, E>, fallback: T): T {','  return result.ok ? result.value : fallback;','}','','function parsePort(input: string): Result<number> {','  const trimmed = input.trim();','  if (trimmed === "") return err("Port fehlt");','  const port = Number(trimmed);','  if (!Number.isInteger(port) || port < 1 || port > 65535) {','    return err("Port muss eine ganze Zahl von 1 bis 65535 sein");','  }','  return ok(port);','}'),
+  hint:'Nach if (!result.ok) kennt der Compiler im Rest der Funktion den Erfolgsfall: result.value ist dort erlaubt. Bei einem Fehler kannst du result unverändert zurückgeben.',
+  why:'Ein Union mit Unterscheidungsmerkmal zwingt Aufrufer, den Fehlerfall zu behandeln – der Compiler verbietet den Zugriff auf value, bevor ok geprüft wurde. Das ersetzt versteckte Exceptions durch sichtbare Typen.'},
+{id:'typescript-w4',modules:['ts-m2'],level:'schwer',type:'write',language:'typescript',rows:34,
+  title:'Typsicherer Event-Emitter mit Generics',
+  text:'Schreibe die generische Klasse Emitter, bei der Ereignisname und Nutzlast zusammenpassen müssen.',
+  details:['class Emitter<E extends Record<string, unknown>>, intern private handlers: { [K in keyof E]?: Array<(payload: E[K]) => void> } = {}.','on<K extends keyof E>(event: K, handler: (payload: E[K]) => void): () => void registriert den Handler und gibt eine Funktion zurück, die ihn wieder entfernt.','emit<K extends keyof E>(event: K, payload: E[K]): void ruft alle Handler dieses Ereignisses in der Reihenfolge der Registrierung auf.','Beim Entfernen während emit darf kein Handler übersprungen werden: Iteriere über eine Kopie ([...list]).','Danach: type AppEvents = { login: { userId: string }; error: { message: string } } und const bus = new Emitter<AppEvents>().','Kein any, keine Typzusicherung (as), kein @ts-ignore.'],
+  starter:L('// Schreibe hier die Klasse Emitter und den Typ AppEvents','',''),
+  rules:[
+    need('class Emitter<E extends Record<string, unknown>>',/\bclass\s+Emitter\s*<\s*E\s+extends\s+Record\s*<\s*string\s*,\s*unknown\s*>\s*>/),
+    need('handlers als abgebildeter Typ mit Array von Funktionen',/\bprivate\s+(?:readonly\s+)?handlers\s*:\s*\{\s*\[\s*K\s+in\s+keyof\s+E\s*\]\s*\?\s*:\s*Array\s*<\s*\(\s*payload\s*:\s*E\s*\[\s*K\s*\]\s*\)\s*=>\s*void\s*>\s*\}\s*=\s*\{\s*\}/),
+    need('on<K extends keyof E>(event: K, handler: …): () => void',/\bon\s*<\s*K\s+extends\s+keyof\s+E\s*>\s*\(\s*event\s*:\s*K\s*,\s*handler\s*:\s*\(\s*payload\s*:\s*E\s*\[\s*K\s*\]\s*\)\s*=>\s*void\s*\)\s*:\s*\(\s*\)\s*=>\s*void/),
+    need('emit<K extends keyof E>(event: K, payload: E[K]): void',/\bemit\s*<\s*K\s+extends\s+keyof\s+E\s*>\s*\(\s*event\s*:\s*K\s*,\s*payload\s*:\s*E\s*\[\s*K\s*\]\s*\)\s*:\s*void/),
+    need('emit iteriert über eine Kopie',/\bfor\s*\(\s*const\s+\w+\s+of\s+\[\s*\.\.\.|\[\s*\.\.\.[^\]]+\]\s*\.\s*forEach|\.slice\s*\(\s*\)/),
+    need('Handler wird wieder entfernt (filter oder splice)',/\.\s*filter\s*\(|\.\s*splice\s*\(/),
+    need('type AppEvents',/\btype\s+AppEvents\s*=\s*\{\s*login\s*:\s*\{\s*userId\s*:\s*string\s*\}\s*;\s*error\s*:\s*\{\s*message\s*:\s*string\s*\}\s*;?\s*\}/),
+    need('const bus = new Emitter<AppEvents>()',/\bconst\s+bus\s*=\s*new\s+Emitter\s*<\s*AppEvents\s*>\s*\(\s*\)/),
+    bad(/\bany\b/,'any würde Ereignisname und Nutzlast entkoppeln – genau das soll der Typ verhindern.'),
+    bad(/\bas\s+(?!const\b)[A-Za-z{(\[]/,'Eine Typzusicherung (as) überstimmt den Compiler. Formuliere die Typen so, dass sie ohne auskommen.'),
+    bad(/@ts-ignore|@ts-nocheck|@ts-expect-error/,'Unterdrücke keine Typfehler – behebe ihre Ursache.'),
+    bad(/\bhandlers\s*:\s*(?:Record\s*<\s*string|\{\s*\[\s*\w+\s*:\s*string)/,'Ein Record<string, …> kennt keinen Zusammenhang zwischen Name und Nutzlast. Nimm den abgebildeten Typ über keyof E.')
+  ],
+  solution:L('class Emitter<E extends Record<string, unknown>> {','  private handlers: { [K in keyof E]?: Array<(payload: E[K]) => void> } = {};','','  on<K extends keyof E>(event: K, handler: (payload: E[K]) => void): () => void {','    const list = this.handlers[event] ?? [];','    list.push(handler);','    this.handlers[event] = list;','    return () => {','      this.handlers[event] = (this.handlers[event] ?? []).filter((entry) => entry !== handler);','    };','  }','','  emit<K extends keyof E>(event: K, payload: E[K]): void {','    for (const handler of [...(this.handlers[event] ?? [])]) {','      handler(payload);','    }','  }','}','','type AppEvents = { login: { userId: string }; error: { message: string } };','','const bus = new Emitter<AppEvents>();','const stop = bus.on("login", (payload) => console.log(payload.userId));','bus.emit("login", { userId: "u1" });','stop();'),
+  hint:'keyof E liefert die Ereignisnamen, E[K] die dazu passende Nutzlast. Weil K an beiden Stellen derselbe Typparameter ist, prüft der Compiler die Kombination.',
+  why:'Ein Emitter ohne Generics akzeptiert jeden Namen und jede Nutzlast; Tippfehler bemerkt man erst zur Laufzeit. Mit keyof und indiziertem Zugriff wird die Zuordnung zur Compilezeit geprüft.'},
+{id:'typescript-w5',modules:['ts-m2','ts-m1'],level:'schwer',type:'write',language:'typescript',rows:32,
+  title:'Typ-Werkzeuge: Mapped, Conditional und Template-Literal-Typen',
+  text:'Schreibe vier Hilfstypen, die aus einem Modelltyp neue Typen ableiten, und teste sie mit einem Typ-Vergleich.',
+  details:['type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false und type Expect<T extends true> = T (Hilfstypen für Typtests).','type DeepReadonly<T>: Funktionen bleiben unverändert, Arrays und Objekte werden rekursiv schreibgeschützt: T extends (...args: never[]) => unknown ? T : T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T.','type PickByType<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] } wählt alle Eigenschaften eines Typs V aus.','type Getters<T> = { [K in keyof T & string as `get${Capitalize<K>}`]: () => T[K] } erzeugt Getter-Namen mit Template-Literal-Typ.','type Task = { id: number; title: string; done: boolean }. Prüfe mit type _checks = [Expect<Equal<PickByType<Task, string>, { title: string }>>, Expect<Equal<keyof Getters<Task>, "getId" | "getTitle" | "getDone">>].','Kein any, keine Typzusicherung (as), kein @ts-ignore.'],
+  starter:L('// Schreibe hier die Typen Equal, Expect, DeepReadonly, PickByType, Getters und Task','',''),
+  rules:[
+    need('type Equal<A, B>',/\btype\s+Equal\s*<\s*A\s*,\s*B\s*>\s*=\s*\(\s*<\s*T\s*>\s*\(\s*\)\s*=>\s*T\s+extends\s+A\s*\?\s*1\s*:\s*2\s*\)\s+extends\s+\(\s*<\s*T\s*>\s*\(\s*\)\s*=>\s*T\s+extends\s+B\s*\?\s*1\s*:\s*2\s*\)\s*\?\s*true\s*:\s*false/),
+    need('type Expect<T extends true> = T',/\btype\s+Expect\s*<\s*T\s+extends\s+true\s*>\s*=\s*T\b/),
+    need('DeepReadonly mit Funktionsausnahme und readonly',/\btype\s+DeepReadonly\s*<\s*T\s*>\s*=\s*T\s+extends\s+\(\s*\.\.\.\s*args\s*:\s*never\[\]\s*\)\s*=>\s*unknown\s*\?\s*T\s*:\s*T\s+extends\s+object\s*\?\s*\{\s*readonly\s*\[\s*K\s+in\s+keyof\s+T\s*\]\s*:\s*DeepReadonly\s*<\s*T\s*\[\s*K\s*\]\s*>\s*\}\s*:\s*T/),
+    need('PickByType mit as-Klausel',/\btype\s+PickByType\s*<\s*T\s*,\s*V\s*>\s*=\s*\{\s*\[\s*K\s+in\s+keyof\s+T\s+as\s+T\s*\[\s*K\s*\]\s+extends\s+V\s*\?\s*K\s*:\s*never\s*\]\s*:\s*T\s*\[\s*K\s*\]\s*\}/),
+    need('Getters mit Template-Literal und Capitalize',/\btype\s+Getters\s*<\s*T\s*>\s*=\s*\{\s*\[\s*K\s+in\s+keyof\s+T\s*&\s*string\s+as\s+`get\$\{\s*Capitalize\s*<\s*K\s*>\s*\}`\s*\]\s*:\s*\(\s*\)\s*=>\s*T\s*\[\s*K\s*\]\s*\}/),
+    need('type Task',/\btype\s+Task\s*=\s*\{\s*id\s*:\s*number\s*;\s*title\s*:\s*string\s*;\s*done\s*:\s*boolean\s*;?\s*\}/),
+    need('Typtests mit Expect<Equal<…>>',/\btype\s+_checks\s*=\s*\[[\s\S]*Expect\s*<\s*Equal\s*<\s*PickByType\s*<\s*Task\s*,\s*string\s*>[\s\S]*Expect\s*<\s*Equal\s*<\s*keyof\s+Getters\s*<\s*Task\s*>/),
+    bad(/\bany\b/,'any würde jeden Typtest bestehen lassen – es macht die Prüfung wertlos.'),
+    bad(/@ts-ignore|@ts-nocheck|@ts-expect-error/,'Unterdrücke keine Typfehler – ein fehlschlagender Typtest zeigt einen echten Fehler.')
+  ],
+  solution:L('type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;','type Expect<T extends true> = T;','','type DeepReadonly<T> = T extends (...args: never[]) => unknown ? T : T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T;','','type PickByType<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };','','type Getters<T> = { [K in keyof T & string as `get${Capitalize<K>}`]: () => T[K] };','','type Task = { id: number; title: string; done: boolean };','','type _checks = [','  Expect<Equal<PickByType<Task, string>, { title: string }>>,','  Expect<Equal<keyof Getters<Task>, "getId" | "getTitle" | "getDone">>,','  Expect<Equal<DeepReadonly<{ tags: string[] }>, { readonly tags: readonly string[] }>>','];'),
+  hint:'In einem abgebildeten Typ steuert die as-Klausel den neuen Schlüssel; liefert sie never, entfällt die Eigenschaft. Der Equal-Trick vergleicht Typen exakt, nicht nur auf Zuweisbarkeit.',
+  why:'Typen sind Code: Wer sie testet wie Funktionen, merkt sofort, wenn ein Hilfstyp zu viel oder zu wenig zulässt. So bleiben wiederverwendete Typen verlässlich.'}
+]);
 })();

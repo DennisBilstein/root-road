@@ -71,7 +71,7 @@ test('Jede Musterlösung der Werkstatt besteht und zeigt keine rote Markierung',
       await expect(page.locator('#gpWin'),id+'#'+i).toContainText('Aufgabe gelöst');
     }
   }
-  expect(total).toBeGreaterThanOrEqual(94);
+  expect(total).toBeGreaterThanOrEqual(107);
 });
 
 test('Falscher Starttext besteht nie, Pflichtfelder und Lektionsbezug stimmen, jedes Codemodul hat eine Aufgabe',async({page})=>{
